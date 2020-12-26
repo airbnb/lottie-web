@@ -12,9 +12,9 @@ SVGBaseElement.prototype = {
     this._sizeChanged = false;
     var layerElementParent = null;
     // If this layer acts as a mask for the following layer
-    var filId,
-      fil,
-      gg;
+    var filId;
+    var fil;
+    var gg;
     if (this.data.td) {
       if (this.data.td == 3 || this.data.td == 1) { // eslint-disable-line eqeqeq
         var masker = createNS('mask');

@@ -9,8 +9,8 @@ DynamicPropertyContainer.prototype = {
   },
   iterateDynamicProperties: function () {
     this._mdf = false;
-    var i,
-      len = this.dynamicProperties.length;
+    var i;
+    var len = this.dynamicProperties.length;
     for (i = 0; i < len; i += 1) {
       this.dynamicProperties[i].getValue();
       if (this.dynamicProperties[i]._mdf) {

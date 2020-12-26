@@ -62,8 +62,8 @@ var TransformPropertyFactory = (function () {
           .rotateX(this.or.v[0]);
       }
       if (this.autoOriented) {
-        var v1,
-          v2;
+        var v1;
+        var v2;
         frameRate = this.elem.globalData.frameRate;
         if (this.p && this.p.keyframes && this.p.getValueAtTime) {
           if (this.p._caching.lastFrame + this.p.offsetTime <= this.p.keyframes[0].t) {
@@ -79,8 +79,8 @@ var TransformPropertyFactory = (function () {
         } else if (this.px && this.px.keyframes && this.py.keyframes && this.px.getValueAtTime && this.py.getValueAtTime) {
           v1 = [];
           v2 = [];
-          var px = this.px,
-            py = this.py;
+          var px = this.px;
+          var py = this.py;
           if (px._caching.lastFrame + px.offsetTime <= px.keyframes[0].t) {
             v1[0] = px.getValueAtTime((px.keyframes[0].t + 0.01) / frameRate, 0);
             v1[1] = py.getValueAtTime((py.keyframes[0].t + 0.01) / frameRate, 0);
@@ -184,8 +184,8 @@ var TransformPropertyFactory = (function () {
       this.ry = PropertyFactory.getProp(elem, data.ry, 0, degToRads, this);
       this.rz = PropertyFactory.getProp(elem, data.rz, 0, degToRads, this);
       if (data.or.k[0].ti) {
-        var i,
-          len = data.or.k.length;
+        var i;
+        var len = data.or.k.length;
         for (i = 0; i < len; i += 1) {
           data.or.k[i].to = null;
           data.or.k[i].ti = null;

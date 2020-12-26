@@ -69,9 +69,9 @@ ShapePath.prototype.setTripleAt = function (vX, vY, oX, oY, iX, iY, pos, replace
 ShapePath.prototype.reverse = function () {
   var newPath = new ShapePath();
   newPath.setPathData(this.c, this._length);
-  var vertices = this.v,
-    outPoints = this.o,
-    inPoints = this.i;
+  var vertices = this.v;
+  var outPoints = this.o;
+  var inPoints = this.i;
   var init = 0;
   if (this.c) {
     newPath.setTripleAt(vertices[0][0], vertices[0][1], inPoints[0][0], inPoints[0][1], outPoints[0][0], outPoints[0][1], 0, false);

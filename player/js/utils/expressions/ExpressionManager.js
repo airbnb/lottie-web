@@ -21,8 +21,8 @@ var ExpressionManager = (function () {
       return -a;
     }
     if ($bm_isInstanceOfArray(a)) {
-      var i,
-        lenA = a.length;
+      var i;
+      var lenA = a.length;
       var retArr = [];
       for (i = 0; i < lenA; i += 1) {
         retArr[i] = -a[i];
@@ -59,9 +59,9 @@ var ExpressionManager = (function () {
       return b;
     }
     if ($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
-      var i = 0,
-        lenA = a.length,
-        lenB = b.length;
+      var i = 0;
+      var lenA = a.length;
+      var lenB = b.length;
       var retArr = [];
       while (i < lenA || i < lenB) {
         if ((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)) {
@@ -100,9 +100,9 @@ var ExpressionManager = (function () {
       return b;
     }
     if ($bm_isInstanceOfArray(a) && $bm_isInstanceOfArray(b)) {
-      var i = 0,
-        lenA = a.length,
-        lenB = b.length;
+      var i = 0;
+      var lenA = a.length;
+      var lenB = b.length;
       var retArr = [];
       while (i < lenA || i < lenB) {
         if ((typeof a[i] === 'number' || a[i] instanceof Number) && (typeof b[i] === 'number' || b[i] instanceof Number)) {
@@ -125,8 +125,8 @@ var ExpressionManager = (function () {
       return a * b;
     }
 
-    var i,
-      len;
+    var i;
+    var len;
     if ($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       len = a.length;
       arr = createTypedArray('float32', len);
@@ -153,8 +153,8 @@ var ExpressionManager = (function () {
     if (isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
       return a / b;
     }
-    var i,
-      len;
+    var i;
+    var len;
     if ($bm_isInstanceOfArray(a) && isNumerable(tOfB, b)) {
       len = a.length;
       arr = createTypedArray('float32', len);
@@ -217,8 +217,8 @@ var ExpressionManager = (function () {
     if (!arr2) {
       arr2 = helperLengthArray;
     }
-    var i,
-      len = Math.min(arr1.length, arr2.length);
+    var i;
+    var len = Math.min(arr1.length, arr2.length);
     var addedLength = 0;
     for (i = 0; i < len; i += 1) {
       addedLength += Math.pow(arr2[i] - arr1[i], 2);
@@ -232,11 +232,11 @@ var ExpressionManager = (function () {
 
   function rgbToHsl(val) {
     var r = val[0]; var g = val[1]; var b = val[2];
-    var max = Math.max(r, g, b),
-      min = Math.min(r, g, b);
-    var h,
-      s,
-      l = (max + min) / 2;
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    var h;
+    var s;
+    var l = (max + min) / 2;
 
     if (max === min) {
       h = 0; // achromatic
@@ -270,9 +270,9 @@ var ExpressionManager = (function () {
     var s = val[1];
     var l = val[2];
 
-    var r,
-      g,
-      b;
+    var r;
+    var g;
+    var b;
 
     if (s === 0) {
       r = l; // achromatic
@@ -310,8 +310,8 @@ var ExpressionManager = (function () {
     if (!value1.length) {
       return value1 + (value2 - value1) * perc;
     }
-    var i,
-      len = value1.length;
+    var i;
+    var len = value1.length;
     var arr = createTypedArray('float32', len);
     for (i = 0; i < len; i += 1) {
       arr[i] = value1[i] + (value2[i] - value1[i]) * perc;
@@ -329,8 +329,8 @@ var ExpressionManager = (function () {
       }
     }
     if (max.length) {
-      var i,
-        len = max.length;
+      var i;
+      var len = max.length;
       if (!min) {
         min = createTypedArray('float32', len);
       }
@@ -349,13 +349,13 @@ var ExpressionManager = (function () {
   }
 
   function createPath(points, inTangents, outTangents, closed) {
-    var i,
-      len = points.length;
+    var i;
+    var len = points.length;
     var path = shapePool.newElement();
     path.setPathData(!!closed, len);
-    var arrPlaceholder = [0, 0],
-      inVertexPoint,
-      outVertexPoint;
+    var arrPlaceholder = [0, 0];
+    var inVertexPoint;
+    var outVertexPoint;
     for (i = 0; i < len; i += 1) {
       inVertexPoint = (inTangents && inTangents[i]) ? inTangents[i] : arrPlaceholder;
       outVertexPoint = (outTangents && outTangents[i]) ? outTangents[i] : arrPlaceholder;
@@ -369,10 +369,10 @@ var ExpressionManager = (function () {
     var needsVelocity = /velocity(?![\w\d])/.test(val);
     var _needsRandom = val.indexOf('random') !== -1;
     var elemType = elem.data.ty;
-    var transform,
-      $bm_transform,
-      content,
-      effect;
+    var transform;
+    var $bm_transform;
+    var content;
+    var effect;
     var thisProperty = property;
     thisProperty.valueAtTime = thisProperty.getValueAtTime;
     Object.defineProperty(thisProperty, 'value', {
@@ -387,25 +387,25 @@ var ExpressionManager = (function () {
     var width = elem.data.sw ? elem.data.sw : 0;
     var height = elem.data.sh ? elem.data.sh : 0;
     var name = elem.data.nm;
-    var loopIn,
-      loop_in,
-      loopOut,
-      loop_out,
-      smooth;
-    var toWorld,
-      fromWorld,
-      fromComp,
-      toComp,
-      fromCompToSurface,
-      position,
-      rotation,
-      anchorPoint,
-      scale,
-      thisLayer,
-      thisComp,
-      mask,
-      valueAtTime,
-      velocityAtTime;
+    var loopIn;
+    var loop_in;
+    var loopOut;
+    var loop_out;
+    var smooth;
+    var toWorld;
+    var fromWorld;
+    var fromComp;
+    var toComp;
+    var fromCompToSurface;
+    var position;
+    var rotation;
+    var anchorPoint;
+    var scale;
+    var thisLayer;
+    var thisComp;
+    var mask;
+    var valueAtTime;
+    var velocityAtTime;
 
     var scoped_bm_rt;
     var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
@@ -414,9 +414,9 @@ var ExpressionManager = (function () {
     var active = !this.data || this.data.hd !== true;
 
     var wiggle = function wiggle(freq, amp) {
-      var iWiggle,
-        j,
-        lenWiggle = this.pv.length ? this.pv.length : 1;
+      var iWiggle;
+      var j;
+      var lenWiggle = this.pv.length ? this.pv.length : 1;
       var addedAmps = createTypedArray('float32', lenWiggle);
       freq = 5;
       var iterations = Math.floor(time * freq);
@@ -510,8 +510,8 @@ var ExpressionManager = (function () {
       }
       var mult = fn(t);
       if ($bm_isInstanceOfArray(val1)) {
-        var iKey,
-          lenKey = val1.length;
+        var iKey;
+        var lenKey = val1.length;
         var arr = createTypedArray('float32', lenKey);
         for (iKey = 0; iKey < lenKey; iKey += 1) {
           arr[iKey] = (val2[iKey] - val1[iKey]) * mult + val1[iKey];
@@ -522,10 +522,10 @@ var ExpressionManager = (function () {
     }
 
     function nearestKey(time) {
-      var iKey,
-        lenKey = data.k.length,
-        index,
-        keyTime;
+      var iKey;
+      var lenKey = data.k.length;
+      var index;
+      var keyTime;
       if (!data.k.length || typeof (data.k[0]) === 'number') {
         index = 0;
         keyTime = 0;
@@ -565,9 +565,9 @@ var ExpressionManager = (function () {
     }
 
     function key(ind) {
-      var obKey,
-        iKey,
-        lenKey;
+      var obKey;
+      var iKey;
+      var lenKey;
       if (!data.k.length || typeof (data.k[0]) === 'number') {
         throw new Error('The property has no keyframe at index ' + ind);
       }
@@ -636,13 +636,13 @@ var ExpressionManager = (function () {
       value = valueAtTime(time);
     }
 
-    var time,
-      velocity,
-      value,
-      text,
-      textIndex,
-      textTotal,
-      selectorValue;
+    var time;
+    var velocity;
+    var value;
+    var text;
+    var textIndex;
+    var textTotal;
+    var selectorValue;
     var index = elem.data.ind;
     var hasParent = !!(elem.hierarchy && elem.hierarchy.length);
     var parent;

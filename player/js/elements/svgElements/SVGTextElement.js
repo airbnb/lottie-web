@@ -13,10 +13,10 @@ SVGTextElement.prototype.createContent = function () {
 };
 
 SVGTextElement.prototype.buildTextContents = function (textArray) {
-  var i = 0,
-    len = textArray.length;
-  var textContents = [],
-    currentTextContent = '';
+  var i = 0;
+  var len = textArray.length;
+  var textContents = [];
+  var currentTextContent = '';
   while (i < len) {
     if (textArray[i] === String.fromCharCode(13) || textArray[i] === String.fromCharCode(3)) {
       textContents.push(currentTextContent);
@@ -31,8 +31,8 @@ SVGTextElement.prototype.buildTextContents = function (textArray) {
 };
 
 SVGTextElement.prototype.buildNewText = function () {
-  var i,
-    len;
+  var i;
+  var len;
 
   var documentData = this.textProperty.currentData;
   this.renderedLetters = createSizedArray(documentData ? documentData.l.length : 0);
@@ -51,8 +51,8 @@ SVGTextElement.prototype.buildNewText = function () {
     this.layerElement.setAttribute('class', fontData.fClass);
   } else {
     this.layerElement.setAttribute('font-family', fontData.fFamily);
-    var fWeight = documentData.fWeight,
-      fStyle = documentData.fStyle;
+    var fWeight = documentData.fWeight;
+    var fStyle = documentData.fStyle;
     this.layerElement.setAttribute('font-style', fStyle);
     this.layerElement.setAttribute('font-weight', fWeight);
   }
@@ -64,12 +64,12 @@ SVGTextElement.prototype.buildNewText = function () {
 
   var tSpan;
   var matrixHelper = this.mHelper;
-  var shapes,
-    shapeStr = '',
-    singleShape = this.data.singleShape;
-  var xPos = 0,
-    yPos = 0,
-    firstLine = true;
+  var shapes;
+  var shapeStr = '';
+  var singleShape = this.data.singleShape;
+  var xPos = 0;
+  var yPos = 0;
+  var firstLine = true;
   var trackingOffset = documentData.tr * 0.001 * documentData.finalSize;
   if (singleShape && !usesGlyphs && !documentData.sz) {
     var tElement = this.textContainer;
@@ -104,8 +104,8 @@ SVGTextElement.prototype.buildNewText = function () {
     this.layerElement.appendChild(tElement);
   } else {
     var cachedSpansLength = this.textSpans.length;
-    var shapeData,
-      charData;
+    var shapeData;
+    var charData;
     for (i = 0; i < len; i += 1) {
       if (!usesGlyphs || !singleShape || i === 0) {
         tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs ? 'path' : 'text');
@@ -184,15 +184,15 @@ SVGTextElement.prototype.renderInnerContent = function () {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if (this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {
       this._sizeChanged = true;
-      var i,
-        len;
+      var i;
+      var len;
       var renderedLetters = this.textAnimator.renderedLetters;
 
       var letters = this.textProperty.currentData.l;
 
       len = letters.length;
-      var renderedLetter,
-        textSpan;
+      var renderedLetter;
+      var textSpan;
       for (i = 0; i < len; i += 1) {
         if (!letters[i].n) {
           renderedLetter = renderedLetters[i];

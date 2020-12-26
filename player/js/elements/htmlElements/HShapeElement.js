@@ -49,8 +49,8 @@ HShapeElement.prototype.createContent = function () {
 };
 
 HShapeElement.prototype.getTransformedPoint = function (transformers, point) {
-  var i,
-    len = transformers.length;
+  var i;
+  var len = transformers.length;
   for (i = 0; i < len; i += 1) {
     point = transformers[i].mProps.v.applyToPointArray(point[0], point[1], 0);
   }
@@ -60,13 +60,13 @@ HShapeElement.prototype.getTransformedPoint = function (transformers, point) {
 HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox) {
   var shape = item.sh.v;
   var transformers = item.transformers;
-  var i,
-    len = shape._length,
-    vPoint,
-    oPoint,
-    nextIPoint,
-    nextVPoint,
-    bounds;
+  var i;
+  var len = shape._length;
+  var vPoint;
+  var oPoint;
+  var nextIPoint;
+  var nextVPoint;
+  var bounds;
   if (len <= 1) {
     return;
   }
@@ -157,9 +157,9 @@ HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
 };
 
 HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox) {
-  var i,
-    len = itemsData.length,
-    path;
+  var i;
+  var len = itemsData.length;
+  var path;
   for (i = 0; i < len; i += 1) {
     if (itemsData[i] && itemsData[i].sh) {
       this.calculateShapeBoundingBox(itemsData[i], boundingBox);

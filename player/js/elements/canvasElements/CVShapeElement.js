@@ -102,8 +102,8 @@ CVShapeElement.prototype.createShapeElement = function (data) {
 
 CVShapeElement.prototype.reloadShapes = function () {
   this._isFirstFrame = true;
-  var i,
-    len = this.itemsData.length;
+  var i;
+  var len = this.itemsData.length;
   for (i = 0; i < len; i += 1) {
     this.prevViewData[i] = this.itemsData[i];
   }
@@ -117,8 +117,8 @@ CVShapeElement.prototype.reloadShapes = function () {
 };
 
 CVShapeElement.prototype.addTransformToStyleList = function (transform) {
-  var i,
-    len = this.stylesList.length;
+  var i;
+  var len = this.stylesList.length;
   for (i = 0; i < len; i += 1) {
     if (!this.stylesList[i].closed) {
       this.stylesList[i].transforms.push(transform);
@@ -127,8 +127,8 @@ CVShapeElement.prototype.addTransformToStyleList = function (transform) {
 };
 
 CVShapeElement.prototype.removeTransformFromStyleList = function () {
-  var i,
-    len = this.stylesList.length;
+  var i;
+  var len = this.stylesList.length;
   for (i = 0; i < len; i += 1) {
     if (!this.stylesList[i].closed) {
       this.stylesList[i].transforms.pop();
@@ -137,25 +137,25 @@ CVShapeElement.prototype.removeTransformFromStyleList = function () {
 };
 
 CVShapeElement.prototype.closeStyles = function (styles) {
-  var i,
-    len = styles.length,
-    j,
-    jLen;
+  var i;
+  var len = styles.length;
+  var j;
+  var jLen;
   for (i = 0; i < len; i += 1) {
     styles[i].closed = true;
   }
 };
 
 CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, shouldRender, transforms) {
-  var i,
-    len = arr.length - 1;
-  var j,
-    jLen;
-  var ownStyles = [],
-    ownModifiers = [],
-    processedPos,
-    modifier,
-    currentTransform;
+  var i;
+  var len = arr.length - 1;
+  var j;
+  var jLen;
+  var ownStyles = [];
+  var ownModifiers = [];
+  var processedPos;
+  var modifier;
+  var currentTransform;
   var ownTransforms = [].concat(transforms);
   for (i = len; i >= 0; i -= 1) {
     processedPos = this.searchProcessedElement(arr[i]);
@@ -236,8 +236,8 @@ CVShapeElement.prototype.renderInnerContent = function () {
 };
 
 CVShapeElement.prototype.renderShapeTransform = function (parentTransform, groupTransform) {
-  var props,
-    groupMatrix;
+  var props;
+  var groupMatrix;
   if (parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
     groupTransform.opacity = parentTransform.opacity;
     groupTransform.opacity *= groupTransform.op.v;
@@ -246,18 +246,18 @@ CVShapeElement.prototype.renderShapeTransform = function (parentTransform, group
 };
 
 CVShapeElement.prototype.drawLayer = function () {
-  var i,
-    len = this.stylesList.length;
-  var j,
-    jLen,
-    k,
-    kLen,
-    elems,
-    nodes,
-    renderer = this.globalData.renderer,
-    ctx = this.globalData.canvasContext,
-    type,
-    currentStyle;
+  var i;
+  var len = this.stylesList.length;
+  var j;
+  var jLen;
+  var k;
+  var kLen;
+  var elems;
+  var nodes;
+  var renderer = this.globalData.renderer;
+  var ctx = this.globalData.canvasContext;
+  var type;
+  var currentStyle;
   for (i = 0; i < len; i += 1) {
     currentStyle = this.stylesList[i];
     type = currentStyle.type;
@@ -321,8 +321,8 @@ CVShapeElement.prototype.drawLayer = function () {
 };
 
 CVShapeElement.prototype.renderShape = function (parentTransform, items, data, isMain) {
-  var i,
-    len = items.length - 1;
+  var i;
+  var len = items.length - 1;
   var groupTransform;
   groupTransform = parentTransform;
   for (i = len; i >= 0; i -= 1) {
@@ -352,10 +352,10 @@ CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
   if (this._isFirstFrame || shape._mdf || styledShape.transforms._mdf) {
     var shapeNodes = styledShape.trNodes;
     var paths = shape.paths;
-    var i,
-      len,
-      j,
-      jLen = paths._length;
+    var i;
+    var len;
+    var j;
+    var jLen = paths._length;
     shapeNodes.length = 0;
     var groupTransformMat = styledShape.transforms.finalTransform;
     for (j = 0; j < jLen; j += 1) {
@@ -397,8 +397,8 @@ CVShapeElement.prototype.renderStyledShape = function (styledShape, shape) {
 
 CVShapeElement.prototype.renderPath = function (pathData, itemData) {
   if (pathData.hd !== true && pathData._shouldRender) {
-    var i,
-      len = itemData.styledShapes.length;
+    var i;
+    var len = itemData.styledShapes.length;
     for (i = 0; i < len; i += 1) {
       this.renderStyledShape(itemData.styledShapes[i], itemData.sh);
     }
@@ -424,8 +424,8 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
   var grd;
   if (!styleElem.grd || itemData.g._mdf || itemData.s._mdf || itemData.e._mdf || (styleData.t !== 1 && (itemData.h._mdf || itemData.a._mdf))) {
     var ctx = this.globalData.canvasContext;
-    var pt1 = itemData.s.v,
-      pt2 = itemData.e.v;
+    var pt1 = itemData.s.v;
+    var pt2 = itemData.e.v;
     if (styleData.t === 1) {
       grd = ctx.createLinearGradient(pt1[0], pt1[1], pt2[0], pt2[1]);
     } else {
@@ -444,8 +444,8 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
       grd = ctx.createRadialGradient(x, y, 0, pt1[0], pt1[1], rad);
     }
 
-    var i,
-      len = styleData.g.p;
+    var i;
+    var len = styleData.g.p;
     var cValues = itemData.g.c;
     var opacity = 1;
 

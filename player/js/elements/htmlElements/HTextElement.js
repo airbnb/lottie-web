@@ -51,23 +51,23 @@ HTextElement.prototype.buildNewText = function () {
       this.innerElem.className = fontData.fClass;
     } else {
       innerElemStyle.fontFamily = fontData.fFamily;
-      var fWeight = documentData.fWeight,
-        fStyle = documentData.fStyle;
+      var fWeight = documentData.fWeight;
+      var fStyle = documentData.fStyle;
       innerElemStyle.fontStyle = fStyle;
       innerElemStyle.fontWeight = fWeight;
     }
   }
-  var i,
-    len;
+  var i;
+  var len;
 
   var letters = documentData.l;
   len = letters.length;
-  var tSpan,
-    tParent,
-    tCont;
+  var tSpan;
+  var tParent;
+  var tCont;
   var matrixHelper = this.mHelper;
-  var shapes,
-    shapeStr = '';
+  var shapes;
+  var shapeStr = '';
   var cnt = 0;
   for (i = 0; i < len; i += 1) {
     if (this.globalData.fontManager.chars) {
@@ -193,17 +193,17 @@ HTextElement.prototype.renderInnerContent = function () {
   if (!this.lettersChangedFlag && !this.textAnimator.lettersChangedFlag) {
     return;
   }
-  var i,
-    len,
-    count = 0;
+  var i;
+  var len;
+  var count = 0;
   var renderedLetters = this.textAnimator.renderedLetters;
 
   var letters = this.textProperty.currentData.l;
 
   len = letters.length;
-  var renderedLetter,
-    textSpan,
-    textPath;
+  var renderedLetter;
+  var textSpan;
+  var textPath;
   for (i = 0; i < len; i += 1) {
     if (letters[i].n) {
       count += 1;

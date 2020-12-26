@@ -104,8 +104,8 @@ CanvasRenderer.prototype.save = function (actionFlag) {
   if (this.contextData._length <= this.contextData.cArrPos) {
     this.contextData.duplicate();
   }
-  var i,
-    arr = this.contextData.saved[this.contextData.cArrPos];
+  var i;
+  var arr = this.contextData.saved[this.contextData.cArrPos];
   for (i = 0; i < 16; i += 1) {
     arr[i] = props[i];
   }
@@ -124,8 +124,8 @@ CanvasRenderer.prototype.restore = function (actionFlag) {
   }
   this.contextData.cArrPos -= 1;
   var popped = this.contextData.saved[this.contextData.cArrPos];
-  var i,
-    arr = this.contextData.cTr.props;
+  var i;
+  var arr = this.contextData.cTr.props;
   for (i = 0; i < 16; i += 1) {
     arr[i] = popped[i];
   }
@@ -183,8 +183,8 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
 
 CanvasRenderer.prototype.updateContainerSize = function () {
   this.reset();
-  var elementWidth,
-    elementHeight;
+  var elementWidth;
+  var elementHeight;
   if (this.animationItem.wrapper && this.animationItem.container) {
     elementWidth = this.animationItem.wrapper.offsetWidth;
     elementHeight = this.animationItem.wrapper.offsetHeight;
@@ -194,8 +194,8 @@ CanvasRenderer.prototype.updateContainerSize = function () {
     elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
     elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
   }
-  var elementRel,
-    animationRel;
+  var elementRel;
+  var animationRel;
   if (this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1) {
     var par = this.renderConfig.preserveAspectRatio.split(' ');
     var fillType = par[1] || 'meet';
@@ -257,8 +257,8 @@ CanvasRenderer.prototype.destroy = function () {
   if (this.renderConfig.clearCanvas && this.animationItem.wrapper) {
     this.animationItem.wrapper.innerText = '';
   }
-  var i,
-    len = this.layers ? this.layers.length : 0;
+  var i;
+  var len = this.layers ? this.layers.length : 0;
   for (i = len - 1; i >= 0; i -= 1) {
     if (this.elements[i]) {
       this.elements[i].destroy();
@@ -282,8 +282,8 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
 
   // console.log('--------');
   // console.log('NEW: ',num);
-  var i,
-    len = this.layers.length;
+  var i;
+  var len = this.layers.length;
   if (!this.completeLayers) {
     this.checkLayers(num);
   }

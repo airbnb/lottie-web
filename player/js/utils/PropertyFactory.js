@@ -10,10 +10,10 @@ var PropertyFactory = (function () {
     }
     var iterationIndex = caching.lastIndex;
     var i = iterationIndex;
-    var len = this.keyframes.length - 1,
-      flag = true;
-    var keyData,
-      nextKeyData;
+    var len = this.keyframes.length - 1;
+    var flag = true;
+    var keyData;
+    var nextKeyData;
 
     while (flag) {
       keyData = this.keyframes[i];
@@ -37,12 +37,12 @@ var PropertyFactory = (function () {
       }
     }
 
-    var k,
-      kLen,
-      perc,
-      jLen,
-      j,
-      fnc;
+    var k;
+    var kLen;
+    var perc;
+    var jLen;
+    var j;
+    var fnc;
     var nextKeyTime = nextKeyData.t - offsetTime;
     var keyTime = keyData.t - offsetTime;
     var endValue;
@@ -100,11 +100,11 @@ var PropertyFactory = (function () {
         caching._lastKeyframeIndex = i;
       }
     } else {
-      var outX,
-        outY,
-        inX,
-        inY,
-        keyValue;
+      var outX;
+      var outY;
+      var inX;
+      var inY;
+      var keyValue;
       len = keyData.s.length;
       endValue = nextKeyData.s || keyData.e;
       if (this.sh && keyData.h !== 1) {
@@ -176,20 +176,20 @@ var PropertyFactory = (function () {
   // based on @Toji's https://github.com/toji/gl-matrix/
   function slerp(a, b, t) {
     var out = [];
-    var ax = a[0],
-      ay = a[1],
-      az = a[2],
-      aw = a[3],
-      bx = b[0],
-      by = b[1],
-      bz = b[2],
-      bw = b[3];
+    var ax = a[0];
+    var ay = a[1];
+    var az = a[2];
+    var aw = a[3];
+    var bx = b[0];
+    var by = b[1];
+    var bz = b[2];
+    var bw = b[3];
 
-    var omega,
-      cosom,
-      sinom,
-      scale0,
-      scale1;
+    var omega;
+    var cosom;
+    var sinom;
+    var scale0;
+    var scale1;
 
     cosom = ax * bx + ay * by + az * bz + aw * bw;
     if (cosom < 0.0) {
@@ -273,8 +273,8 @@ var PropertyFactory = (function () {
         this._mdf = true;
       }
     } else {
-      var i = 0,
-        len = this.v.length;
+      var i = 0;
+      var len = this.v.length;
       while (i < len) {
         multipliedValue = val[i] * this.mult;
         if (mathAbs(this.v[i] - multipliedValue) > 0.00001) {
@@ -297,8 +297,8 @@ var PropertyFactory = (function () {
     this.lock = true;
     this._mdf = this._isFirstFrame;
     var multipliedValue;
-    var i,
-      len = this.effectsSequence.length;
+    var i;
+    var len = this.effectsSequence.length;
     var finalValue = this.kf ? this.pv : this.data.k;
     for (i = 0; i < len; i += 1) {
       finalValue = this.effectsSequence[i](finalValue);
@@ -345,8 +345,8 @@ var PropertyFactory = (function () {
     this.k = false;
     this.kf = false;
     this.frameId = -1;
-    var i,
-      len = data.k.length;
+    var i;
+    var len = data.k.length;
     this.v = createTypedArray('float32', len);
     this.pv = createTypedArray('float32', len);
     var arr = createTypedArray('float32', len);
@@ -389,12 +389,12 @@ var PropertyFactory = (function () {
 
   function KeyframedMultidimensionalProperty(elem, data, mult, container) {
     this.propType = 'multidimensional';
-    var i,
-      len = data.k.length;
-    var s,
-      e,
-      to,
-      ti;
+    var i;
+    var len = data.k.length;
+    var s;
+    var e;
+    var to;
+    var ti;
     for (i = 0; i < len - 1; i += 1) {
       if (data.k[i].to && data.k[i].s && data.k[i + 1] && data.k[i + 1].s) {
         s = data.k[i].s;

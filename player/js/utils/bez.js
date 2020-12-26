@@ -33,14 +33,14 @@ function bezFunction() {
     return function (pt1, pt2, pt3, pt4) {
       var curveSegments = defaultCurveSegments;
       var k;
-      var i,
-        len;
-      var ptCoord,
-        perc,
-        addedLength = 0;
+      var i;
+      var len;
+      var ptCoord;
+      var perc;
+      var addedLength = 0;
       var ptDistance;
-      var point = [],
-        lastPoint = [];
+      var point = [];
+      var lastPoint = [];
       var lengthData = bezierLengthPool.newElement();
       len = pt3.length;
       for (k = 0; k < curveSegments; k += 1) {
@@ -72,8 +72,8 @@ function bezFunction() {
     var pathV = shapeData.v;
     var pathO = shapeData.o;
     var pathI = shapeData.i;
-    var i,
-      len = shapeData._length;
+    var i;
+    var len = shapeData._length;
     var lengths = segmentsLength.lengths;
     var totalLength = 0;
     for (i = 0; i < len - 1; i += 1) {
@@ -105,15 +105,15 @@ function bezFunction() {
       var bezierName = (pt1[0] + '_' + pt1[1] + '_' + pt2[0] + '_' + pt2[1] + '_' + pt3[0] + '_' + pt3[1] + '_' + pt4[0] + '_' + pt4[1]).replace(/\./g, 'p');
       if (!storedData[bezierName]) {
         var curveSegments = defaultCurveSegments;
-        var k,
-          i,
-          len;
-        var ptCoord,
-          perc,
-          addedLength = 0;
+        var k;
+        var i;
+        var len;
+        var ptCoord;
+        var perc;
+        var addedLength = 0;
         var ptDistance;
-        var point,
-          lastPoint = null;
+        var point;
+        var lastPoint = null;
         if (pt1.length === 2 && (pt1[0] !== pt2[0] || pt1[1] !== pt2[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt1[0] + pt3[0], pt1[1] + pt3[1]) && pointOnLine2D(pt1[0], pt1[1], pt2[0], pt2[1], pt2[0] + pt4[0], pt2[1] + pt4[1])) {
           curveSegments = 2;
         }
@@ -196,8 +196,8 @@ function bezFunction() {
     var t0 = getDistancePerc(startPerc, bezierData);
     endPerc = endPerc > 1 ? 1 : endPerc;
     var t1 = getDistancePerc(endPerc, bezierData);
-    var i,
-      len = pt1.length;
+    var i;
+    var len = pt1.length;
     var u0 = 1 - t0;
     var u1 = 1 - t1;
     var u0u0u0 = u0 * u0 * u0;

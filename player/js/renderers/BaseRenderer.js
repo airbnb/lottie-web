@@ -1,8 +1,8 @@
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
-  var i,
-    len = this.layers.length,
-    data;
+  var i;
+  var len = this.layers.length;
+  var data;
   this.completeLayers = true;
   for (i = len - 1; i >= 0; i -= 1) {
     if (!this.elements[i]) {
@@ -48,8 +48,8 @@ BaseRenderer.prototype.createAudio = function (data) {
 };
 
 BaseRenderer.prototype.buildAllItems = function () {
-  var i,
-    len = this.layers.length;
+  var i;
+  var len = this.layers.length;
   for (i = 0; i < len; i += 1) {
     this.buildItem(i);
   }
@@ -58,10 +58,10 @@ BaseRenderer.prototype.buildAllItems = function () {
 
 BaseRenderer.prototype.includeLayers = function (newLayers) {
   this.completeLayers = false;
-  var i,
-    len = newLayers.length;
-  var j,
-    jLen = this.layers.length;
+  var i;
+  var len = newLayers.length;
+  var j;
+  var jLen = this.layers.length;
   for (i = 0; i < len; i += 1) {
     j = 0;
     while (j < jLen) {
@@ -86,8 +86,8 @@ BaseRenderer.prototype.initItems = function () {
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
   var elements = this.elements;
   var layers = this.layers;
-  var i = 0,
-    len = layers.length;
+  var i = 0;
+  var len = layers.length;
   while (i < len) {
     if (layers[i].ind == parentName) { // eslint-disable-line eqeqeq
       if (!elements[i] || elements[i] === true) {
@@ -112,8 +112,8 @@ BaseRenderer.prototype.addPendingElement = function (element) {
 };
 
 BaseRenderer.prototype.searchExtraCompositions = function (assets) {
-  var i,
-    len = assets.length;
+  var i;
+  var len = assets.length;
   for (i = 0; i < len; i += 1) {
     if (assets[i].xt) {
       var comp = this.createComp(assets[i]);

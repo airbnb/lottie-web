@@ -173,11 +173,11 @@ AnimationItem.prototype.includeLayers = function (data) {
     this.totalFrames = Math.floor(data.op - this.animationData.ip);
   }
   var layers = this.animationData.layers;
-  var i,
-    len = layers.length;
+  var i;
+  var len = layers.length;
   var newLayers = data.layers;
-  var j,
-    jLen = newLayers.length;
+  var j;
+  var jLen = newLayers.length;
   for (j = 0; j < jLen; j += 1) {
     i = 0;
     while (i < len) {
@@ -503,8 +503,8 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
     this.segments.length = 0;
   }
   if (typeof arr[0] === 'object') {
-    var i,
-      len = arr.length;
+    var i;
+    var len = arr.length;
     for (i = 0; i < len; i += 1) {
       this.segments.push(arr[i]);
     }
@@ -622,8 +622,8 @@ AnimationItem.prototype.getAssetsPath = function (assetData) {
 };
 
 AnimationItem.prototype.getAssetData = function (id) {
-  var i = 0,
-    len = this.assets.length;
+  var i = 0;
+  var len = this.assets.length;
   while (i < len) {
     if (id === this.assets[i].id) {
       return this.assets[i];

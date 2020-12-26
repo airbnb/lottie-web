@@ -7,10 +7,10 @@ function SVGStrokeEffect(elem, filterManager) {
 
 SVGStrokeEffect.prototype.initialize = function () {
   var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
-  var path,
-    groupPath,
-    i,
-    len;
+  var path;
+  var groupPath;
+  var i;
+  var len;
   if (this.filterManager.effectElements[1].p.v === 1) {
     len = this.elem.maskManager.masksProperties.length;
     i = 0;
@@ -61,10 +61,10 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
   if (!this.initialized) {
     this.initialize();
   }
-  var i,
-    len = this.paths.length;
-  var mask,
-    path;
+  var i;
+  var len = this.paths.length;
+  var mask;
+  var path;
   for (i = 0; i < len; i += 1) {
     if (this.paths[i].m !== -1) {
       mask = this.elem.maskManager.viewData[this.paths[i].m];

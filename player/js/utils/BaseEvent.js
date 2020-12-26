@@ -22,8 +22,8 @@ BaseEvent.prototype = {
     if (!callback) {
       this._cbs[eventName] = null;
     } else if (this._cbs[eventName]) {
-      var i = 0,
-        len = this._cbs[eventName].length;
+      var i = 0;
+      var len = this._cbs[eventName].length;
       while (i < len) {
         if (this._cbs[eventName][i] === callback) {
           this._cbs[eventName].splice(i, 1);

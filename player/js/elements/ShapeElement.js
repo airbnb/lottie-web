@@ -3,15 +3,15 @@ function IShapeElement() {
 
 IShapeElement.prototype = {
   addShapeToModifiers: function (data) {
-    var i,
-      len = this.shapeModifiers.length;
+    var i;
+    var len = this.shapeModifiers.length;
     for (i = 0; i < len; i += 1) {
       this.shapeModifiers[i].addShape(data);
     }
   },
   isShapeInAnimatedModifiers: function (data) {
-    var i = 0,
-      len = this.shapeModifiers.length;
+    var i = 0;
+    var len = this.shapeModifiers.length;
     while (i < len) {
       if (this.shapeModifiers[i].isAnimatedWithShape(data)) {
         return true;
@@ -23,8 +23,8 @@ IShapeElement.prototype = {
     if (!this.shapeModifiers.length) {
       return;
     }
-    var i,
-      len = this.shapes.length;
+    var i;
+    var len = this.shapes.length;
     for (i = 0; i < len; i += 1) {
       this.shapes[i].sh.reset();
     }
@@ -46,8 +46,8 @@ IShapeElement.prototype = {
   },
   searchProcessedElement: function (elem) {
     var elements = this.processedElements;
-    var i = 0,
-      len = elements.length;
+    var i = 0;
+    var len = elements.length;
     while (i < len) {
       if (elements[i].elem === elem) {
         return elements[i].pos;

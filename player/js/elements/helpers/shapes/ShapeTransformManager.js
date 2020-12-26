@@ -6,8 +6,8 @@ function ShapeTransformManager() {
 
 ShapeTransformManager.prototype = {
   addTransformSequence: function (transforms) {
-    var i,
-      len = transforms.length;
+    var i;
+    var len = transforms.length;
     var key = '_';
     for (i = 0; i < len; i += 1) {
       key += transforms[i].transform.key + '_';
@@ -25,9 +25,9 @@ ShapeTransformManager.prototype = {
     return sequence;
   },
   processSequence: function (sequence, isFirstFrame) {
-    var i = 0,
-      len = sequence.transforms.length,
-      _mdf = isFirstFrame;
+    var i = 0;
+    var len = sequence.transforms.length;
+    var _mdf = isFirstFrame;
     while (i < len && !isFirstFrame) {
       if (sequence.transforms[i].transform.mProps._mdf) {
         _mdf = true;
@@ -46,8 +46,8 @@ ShapeTransformManager.prototype = {
     sequence._mdf = _mdf;
   },
   processSequences: function (isFirstFrame) {
-    var i,
-      len = this.sequenceList.length;
+    var i;
+    var len = this.sequenceList.length;
     for (i = 0; i < len; i += 1) {
       this.processSequence(this.sequenceList[i], isFirstFrame);
     }

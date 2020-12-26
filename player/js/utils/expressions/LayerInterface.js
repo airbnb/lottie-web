@@ -39,8 +39,8 @@ var LayerExpressionInterface = (function () {
 
   function applyPoint(matrix, arr) {
     if (this._elem.hierarchy && this._elem.hierarchy.length) {
-      var i,
-        len = this._elem.hierarchy.length;
+      var i;
+      var len = this._elem.hierarchy.length;
       for (i = 0; i < len; i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
       }
@@ -50,8 +50,8 @@ var LayerExpressionInterface = (function () {
 
   function invertPoint(matrix, arr) {
     if (this._elem.hierarchy && this._elem.hierarchy.length) {
-      var i,
-        len = this._elem.hierarchy.length;
+      var i;
+      var len = this._elem.hierarchy.length;
       for (i = 0; i < len; i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(matrix);
       }
@@ -64,8 +64,8 @@ var LayerExpressionInterface = (function () {
     toWorldMat.reset();
     this._elem.finalTransform.mProp.applyToMatrix(toWorldMat);
     if (this._elem.hierarchy && this._elem.hierarchy.length) {
-      var i,
-        len = this._elem.hierarchy.length;
+      var i;
+      var len = this._elem.hierarchy.length;
       for (i = 0; i < len; i += 1) {
         this._elem.hierarchy[i].finalTransform.mProp.applyToMatrix(toWorldMat);
       }

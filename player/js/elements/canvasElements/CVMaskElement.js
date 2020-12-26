@@ -3,9 +3,9 @@ function CVMaskElement(data, element) {
   this.element = element;
   this.masksProperties = this.data.masksProperties || [];
   this.viewData = createSizedArray(this.masksProperties.length);
-  var i,
-    len = this.masksProperties.length,
-    hasMasks = false;
+  var i;
+  var len = this.masksProperties.length;
+  var hasMasks = false;
   for (i = 0; i < len; i += 1) {
     if (this.masksProperties[i].mode !== 'n') {
       hasMasks = true;
@@ -24,11 +24,11 @@ CVMaskElement.prototype.renderFrame = function () {
   }
   var transform = this.element.finalTransform.mat;
   var ctx = this.element.canvasContext;
-  var i,
-    len = this.masksProperties.length;
-  var pt,
-    pts,
-    data;
+  var i;
+  var len = this.masksProperties.length;
+  var pt;
+  var pts;
+  var data;
   ctx.beginPath();
   for (i = 0; i < len; i += 1) {
     if (this.masksProperties[i].mode !== 'n') {
@@ -42,8 +42,8 @@ CVMaskElement.prototype.renderFrame = function () {
       data = this.viewData[i].v;
       pt = transform.applyToPointArray(data.v[0][0], data.v[0][1], 0);
       ctx.moveTo(pt[0], pt[1]);
-      var j,
-        jLen = data._length;
+      var j;
+      var jLen = data._length;
       for (j = 1; j < jLen; j += 1) {
         pts = transform.applyToTriplePoints(data.o[j - 1], data.i[j], data.v[j]);
         ctx.bezierCurveTo(pts[0], pts[1], pts[2], pts[3], pts[4], pts[5]);

@@ -3,15 +3,15 @@ var ShapePropertyFactory = (function () {
 
   function interpolateShape(frameNum, previousValue, caching) {
     var iterationIndex = caching.lastIndex;
-    var keyPropS,
-      keyPropE,
-      isHold,
-      j,
-      k,
-      jLen,
-      kLen,
-      perc,
-      vertexValue;
+    var keyPropS;
+    var keyPropE;
+    var isHold;
+    var j;
+    var k;
+    var jLen;
+    var kLen;
+    var perc;
+    var vertexValue;
     var kf = this.keyframes;
     if (frameNum < kf[0].t - this.offsetTime) {
       keyPropS = kf[0].s[0];
@@ -27,10 +27,10 @@ var ShapePropertyFactory = (function () {
       isHold = true;
     } else {
       var i = iterationIndex;
-      var len = kf.length - 1,
-        flag = true,
-        keyData,
-        nextKeyData;
+      var len = kf.length - 1;
+      var flag = true;
+      var keyData;
+      var nextKeyData;
       while (flag) {
         keyData = kf[i];
         nextKeyData = kf[i + 1];
@@ -103,8 +103,8 @@ var ShapePropertyFactory = (function () {
     if (shape1._length !== shape2._length || shape1.c !== shape2.c) {
       return false;
     }
-    var i,
-      len = shape1._length;
+    var i;
+    var len = shape1._length;
     for (i = 0; i < len; i += 1) {
       if (shape1.v[i][0] !== shape2.v[i][0]
             || shape1.v[i][1] !== shape2.v[i][1]
@@ -149,8 +149,8 @@ var ShapePropertyFactory = (function () {
     } else {
       finalValue = this.data.pt.k;
     }
-    var i,
-      len = this.effectsSequence.length;
+    var i;
+    var len = this.effectsSequence.length;
     for (i = 0; i < len; i += 1) {
       finalValue = this.effectsSequence[i](finalValue);
     }
@@ -197,8 +197,8 @@ var ShapePropertyFactory = (function () {
     this.keyframes = type === 3 ? data.pt.k : data.ks.k;
     this.k = true;
     this.kf = true;
-    var i,
-      len = this.keyframes[0].s[0].i.length;
+    var i;
+    var len = this.keyframes[0].s[0].i.length;
     var jLen = this.keyframes[0].s[0].i[0].length;
     this.v = shapePool.newElement();
     this.v.setPathData(this.keyframes[0].s[0].c, len);
@@ -260,10 +260,10 @@ var ShapePropertyFactory = (function () {
         }
       },
       convertEllToPath: function () {
-        var p0 = this.p.v[0],
-          p1 = this.p.v[1],
-          s0 = this.s.v[0] / 2,
-          s1 = this.s.v[1] / 2;
+        var p0 = this.p.v[0];
+        var p1 = this.p.v[1];
+        var s0 = this.s.v[0] / 2;
+        var s1 = this.s.v[1] / 2;
         var _cw = this.d !== 3;
         var _v = this.v;
         _v.v[0][0] = p0;
@@ -356,11 +356,11 @@ var ShapePropertyFactory = (function () {
         var shortRound = this.is.v;
         var longPerimSegment = (2 * Math.PI * longRad) / (numPts * 2);
         var shortPerimSegment = (2 * Math.PI * shortRad) / (numPts * 2);
-        var i,
-          rad,
-          roundness,
-          perimSegment,
-          currentAng = -Math.PI / 2;
+        var i;
+        var rad;
+        var roundness;
+        var perimSegment;
+        var currentAng = -Math.PI / 2;
         currentAng += this.r.v;
         var dir = this.data.d === 3 ? -1 : 1;
         this.v._length = 0;
@@ -390,8 +390,8 @@ var ShapePropertyFactory = (function () {
         var rad = this.or.v;
         var roundness = this.os.v;
         var perimSegment = (2 * Math.PI * rad) / (numPts * 4);
-        var i,
-          currentAng = -Math.PI * 0.5;
+        var i;
+        var currentAng = -Math.PI * 0.5;
         var dir = this.data.d === 3 ? -1 : 1;
         currentAng += this.r.v;
         this.v._length = 0;
@@ -440,10 +440,10 @@ var ShapePropertyFactory = (function () {
 
     RectShapePropertyFactory.prototype = {
       convertRectToPath: function () {
-        var p0 = this.p.v[0],
-          p1 = this.p.v[1],
-          v0 = this.s.v[0] / 2,
-          v1 = this.s.v[1] / 2;
+        var p0 = this.p.v[0];
+        var p1 = this.p.v[1];
+        var v0 = this.s.v[0] / 2;
+        var v1 = this.s.v[1] / 2;
         var round = bmMin(v0, v1, this.r.v);
         var cPoint = round * (1 - roundCorner);
         this.v._length = 0;

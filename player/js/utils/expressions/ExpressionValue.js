@@ -1,15 +1,15 @@
 function ExpressionValue(elementProp, mult, type) {
   mult = mult || 1;
-  var expressionValue,
-    arrayValue;
+  var expressionValue;
+  var arrayValue;
 
   if (elementProp.k) {
     elementProp.getValue();
   }
-  var i,
-    len,
-    arrValue,
-    val;
+  var i;
+  var len;
+  var arrValue;
+  var val;
   if (type) {
     if (type === 'color') {
       len = 4;

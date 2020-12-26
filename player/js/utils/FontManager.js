@@ -13,8 +13,8 @@ var FontManager = (function () {
 
   function trimFontOptions(font) {
     var familyArray = font.split(',');
-    var i,
-      len = familyArray.length;
+    var i;
+    var len = familyArray.length;
     var enabledFamilies = [];
     for (i = 0; i < len; i += 1) {
       if (familyArray[i] !== 'sans-serif' && familyArray[i] !== 'monospace') {
@@ -51,10 +51,10 @@ var FontManager = (function () {
   }
 
   function checkLoadedFonts() {
-    var i,
-      len = this.fonts.length;
-    var node,
-      w;
+    var i;
+    var len = this.fonts.length;
+    var node;
+    var w;
     var loadedCount = len;
     for (i = 0; i < len; i += 1) {
       if (this.fonts[i].loaded) {
@@ -122,8 +122,8 @@ var FontManager = (function () {
     }
 
     var fontArr = fontData.list;
-    var i,
-      len = fontArr.length;
+    var i;
+    var len = fontArr.length;
     var _pendingFonts = len;
     for (i = 0; i < len; i += 1) {
       var shouldLoadFont = true;
@@ -209,11 +209,11 @@ var FontManager = (function () {
     if (!this.chars) {
       this.chars = [];
     }
-    var i,
-      len = chars.length;
-    var j,
-      jLen = this.chars.length,
-      found;
+    var i;
+    var len = chars.length;
+    var j;
+    var jLen = this.chars.length;
+    var found;
     for (i = 0; i < len; i += 1) {
       j = 0;
       found = false;
@@ -231,8 +231,8 @@ var FontManager = (function () {
   }
 
   function getCharData(char, style, font) {
-    var i = 0,
-      len = this.chars.length;
+    var i = 0;
+    var len = this.chars.length;
     while (i < len) {
       if (this.chars[i].ch === char && this.chars[i].style === style && this.chars[i].fFamily === font) {
         return this.chars[i];
@@ -274,8 +274,8 @@ var FontManager = (function () {
   }
 
   function getFontByName(name) {
-    var i = 0,
-      len = this.fonts.length;
+    var i = 0;
+    var len = this.fonts.length;
     while (i < len) {
       if (this.fonts[i].fName === name) {
         return this.fonts[i];

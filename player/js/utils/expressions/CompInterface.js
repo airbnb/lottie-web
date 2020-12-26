@@ -1,8 +1,8 @@
 var CompExpressionInterface = (function () {
   return function (comp) {
     function _thisLayerFunction(name) {
-      var i = 0,
-        len = comp.layers.length;
+      var i = 0;
+      var len = comp.layers.length;
       while (i < len) {
         if (comp.layers[i].nm === name || comp.layers[i].ind === name) {
           return comp.elements[i].layerInterface;

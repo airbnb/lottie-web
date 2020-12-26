@@ -88,8 +88,8 @@ var ImagePreloader = (function () {
 
   function loadAssets(assets, cb) {
     this.imagesLoadedCb = cb;
-    var i,
-      len = assets.length;
+    var i;
+    var len = assets.length;
     for (i = 0; i < len; i += 1) {
       if (!assets[i].layers) {
         this.totalImages += 1;
@@ -107,8 +107,8 @@ var ImagePreloader = (function () {
   }
 
   function getImage(assetData) {
-    var i = 0,
-      len = this.images.length;
+    var i = 0;
+    var len = this.images.length;
     while (i < len) {
       if (this.images[i].assetData === assetData) {
         return this.images[i].img;

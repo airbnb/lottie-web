@@ -30,11 +30,11 @@ ITextElement.prototype.prepareFrame = function (num) {
 };
 
 ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
-  var j,
-    jLen = shapes.length;
-  var k,
-    kLen,
-    pathNodes;
+  var j;
+  var jLen = shapes.length;
+  var k;
+  var kLen;
+  var pathNodes;
   var shapeStr = '';
   for (j = 0; j < jLen; j += 1) {
     pathNodes = shapes[j].ks.k;

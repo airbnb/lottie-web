@@ -7,8 +7,8 @@ var EffectsExpressionInterface = (function () {
     if (elem.effectsManager) {
       var effectElements = [];
       var effectsData = elem.data.ef;
-      var i,
-        len = elem.effectsManager.effectElements.length;
+      var i;
+      var len = elem.effectsManager.effectElements.length;
       for (i = 0; i < len; i += 1) {
         effectElements.push(createGroupInterface(effectsData[i], elem.effectsManager.effectElements[i], propertyGroup, elem));
       }
@@ -37,9 +37,9 @@ var EffectsExpressionInterface = (function () {
 
   function createGroupInterface(data, elements, propertyGroup, elem) {
     function groupInterface(name) {
-      var effects = data.ef,
-        i = 0,
-        len = effects.length;
+      var effects = data.ef;
+      var i = 0;
+      var len = effects.length;
       while (i < len) {
         if (name === effects[i].nm || name === effects[i].mn || name === effects[i].ix) {
           if (effects[i].ty === 5) {
@@ -54,8 +54,8 @@ var EffectsExpressionInterface = (function () {
     var _propertyGroup = propertyGroupFactory(groupInterface, propertyGroup);
 
     var effectElements = [];
-    var i,
-      len = data.ef.length;
+    var i;
+    var len = data.ef.length;
     for (i = 0; i < len; i += 1) {
       if (data.ef[i].ty === 5) {
         effectElements.push(createGroupInterface(data.ef[i], elements.effectElements[i], elements.effectElements[i].propertyGroup, elem));

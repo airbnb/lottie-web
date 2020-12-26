@@ -11,22 +11,22 @@ var audioControllerFactory = (function () {
       this.audios.push(audio);
     },
     pause: function () {
-      var i,
-        len = this.audios.length;
+      var i;
+      var len = this.audios.length;
       for (i = 0; i < len; i += 1) {
         this.audios[i].pause();
       }
     },
     resume: function () {
-      var i,
-        len = this.audios.length;
+      var i;
+      var len = this.audios.length;
       for (i = 0; i < len; i += 1) {
         this.audios[i].resume();
       }
     },
     setRate: function (rateValue) {
-      var i,
-        len = this.audios.length;
+      var i;
+      var len = this.audios.length;
       for (i = 0; i < len; i += 1) {
         this.audios[i].setRate(rateValue);
       }
@@ -67,8 +67,8 @@ var audioControllerFactory = (function () {
       return this._volume;
     },
     _updateVolume: function () {
-      var i,
-        len = this.audios.length;
+      var i;
+      var len = this.audios.length;
       for (i = 0; i < len; i += 1) {
         this.audios[i].volume(this._volume * (this._isMuted ? 0 : 1));
       }

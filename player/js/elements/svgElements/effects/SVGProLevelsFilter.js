@@ -2,9 +2,9 @@ function SVGProLevelsFilter(filter, filterManager) {
   this.filterManager = filterManager;
   var effectElements = this.filterManager.effectElements;
   var feComponentTransfer = createNS('feComponentTransfer');
-  var feFuncR,
-    feFuncG,
-    feFuncB;
+  var feFuncR;
+  var feFuncG;
+  var feFuncB;
 
   if (effectElements[10].p.k || effectElements[10].p.v !== 0 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 1 || effectElements[13].p.k || effectElements[13].p.v !== 0 || effectElements[14].p.k || effectElements[14].p.v !== 1) {
     this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
@@ -70,10 +70,10 @@ SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, g
 
 SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
   if (forceRender || this.filterManager._mdf) {
-    var val,
-      cnt,
-      perc,
-      bezier;
+    var val;
+    var cnt;
+    var perc;
+    var bezier;
     var effectElements = this.filterManager.effectElements;
     if (this.feFuncRComposed && (forceRender || effectElements[3].p._mdf || effectElements[4].p._mdf || effectElements[5].p._mdf || effectElements[6].p._mdf || effectElements[7].p._mdf)) {
       val = this.getTableValue(effectElements[3].p.v, effectElements[4].p.v, effectElements[5].p.v, effectElements[6].p.v, effectElements[7].p.v);

@@ -11,7 +11,6 @@
     },
     "rules": {
         "no-var": "off",
-        "no-unused-vars": "off",
         "prefer-destructuring": "off",
         "prefer-template": "off",
         "linebreak-style": "off",
@@ -24,7 +23,7 @@
             "exports": "always-multiline",
             "functions": "never"
         }],
-        "no-undef": "off",
+        
         "no-restricted-properties": "off",
         "prefer-spread": "off",
         "no-restricted-globals": "off",
@@ -33,13 +32,14 @@
         "no-restricted-syntax": "off",
         "strict": "off",
         "------": "off",
+        "no-undef": "off",
+        "no-unused-vars": "off",
         "func-names": "off",
         "max-len": "off",
+        "no-underscore-dangle": "off",
         "-------": "off",
         "no-param-reassign": "off",
-        "one-var": "off",
         "vars-on-top": "off",
-        "no-underscore-dangle": "off",
         "no-use-before-define": "off",
         "lines-around-directive": "off"
     }

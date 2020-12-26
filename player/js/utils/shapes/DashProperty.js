@@ -8,9 +8,9 @@ function DashProperty(elem, data, renderer, container) {
   this.dashArray = createTypedArray('float32', data.length ? data.length - 1 : 0);
   this.dashoffset = createTypedArray('float32', 1);
   this.initDynamicPropertyContainer(container);
-  var i,
-    len = data.length || 0,
-    prop;
+  var i;
+  var len = data.length || 0;
+  var prop;
   for (i = 0; i < len; i += 1) {
     prop = PropertyFactory.getProp(elem, data[i].v, 0, 0, this);
     this.k = prop.k || this.k;
@@ -30,8 +30,8 @@ DashProperty.prototype.getValue = function (forceRender) {
   this.iterateDynamicProperties();
   this._mdf = this._mdf || forceRender;
   if (this._mdf) {
-    var i = 0,
-      len = this.dataProps.length;
+    var i = 0;
+    var len = this.dataProps.length;
     if (this.renderer === 'svg') {
       this.dashStr = '';
     }

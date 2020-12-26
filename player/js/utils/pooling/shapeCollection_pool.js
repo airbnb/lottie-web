@@ -20,8 +20,8 @@ var shapeCollectionPool = (function () {
   }
 
   function release(shapeCollection) {
-    var i,
-      len = shapeCollection._length;
+    var i;
+    var len = shapeCollection._length;
     for (i = 0; i < len; i += 1) {
       shapePool.release(shapeCollection.shapes[i]);
     }

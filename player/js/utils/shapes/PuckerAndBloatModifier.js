@@ -9,8 +9,8 @@ PuckerAndBloatModifier.prototype.initModifierProperties = function (elem, data) 
 PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
   var percent = amount / 100;
   var centerPoint = [0, 0];
-  var pathLength = path._length,
-    i = 0;
+  var pathLength = path._length;
+  var i = 0;
   for (i = 0; i < pathLength; i += 1) {
     centerPoint[0] += path.v[i][0];
     centerPoint[1] += path.v[i][1];
@@ -19,12 +19,12 @@ PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
   centerPoint[1] /= pathLength;
   var clonedPath = shapePool.newElement();
   clonedPath.c = path.c;
-  var vX,
-    vY,
-    oX,
-    oY,
-    iX,
-    iY;
+  var vX;
+  var vY;
+  var oX;
+  var oY;
+  var iX;
+  var iY;
   for (i = 0; i < pathLength; i += 1) {
     vX = path.v[i][0] + (centerPoint[0] - path.v[i][0]) * percent;
     vY = path.v[i][1] + (centerPoint[1] - path.v[i][1]) * percent;
@@ -39,16 +39,16 @@ PuckerAndBloatModifier.prototype.processPath = function (path, amount) {
 
 PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
   var shapePaths;
-  var i,
-    len = this.shapes.length;
-  var j,
-    jLen;
+  var i;
+  var len = this.shapes.length;
+  var j;
+  var jLen;
   var amount = this.amount.v;
 
   if (amount !== 0) {
-    var shapeData,
-      newPaths,
-      localShapeCollection;
+    var shapeData;
+    var newPaths;
+    var localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       newPaths = shapeData.shape.paths;

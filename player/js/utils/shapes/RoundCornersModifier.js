@@ -9,24 +9,24 @@ RoundCornersModifier.prototype.initModifierProperties = function (elem, data) {
 RoundCornersModifier.prototype.processPath = function (path, round) {
   var clonedPath = shapePool.newElement();
   clonedPath.c = path.c;
-  var i,
-    len = path._length;
-  var currentV,
-    currentI,
-    currentO,
-    closerV,
-    newV,
-    newO,
-    newI,
-    distance,
-    newPosPerc,
-    index = 0;
-  var vX,
-    vY,
-    oX,
-    oY,
-    iX,
-    iY;
+  var i;
+  var len = path._length;
+  var currentV;
+  var currentI;
+  var currentO;
+  var closerV;
+  var newV;
+  var newO;
+  var newI;
+  var distance;
+  var newPosPerc;
+  var index = 0;
+  var vX;
+  var vY;
+  var oX;
+  var oY;
+  var iX;
+  var iY;
   for (i = 0; i < len; i += 1) {
     currentV = path.v[i];
     currentO = path.o[i];
@@ -81,16 +81,16 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
 
 RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
   var shapePaths;
-  var i,
-    len = this.shapes.length;
-  var j,
-    jLen;
+  var i;
+  var len = this.shapes.length;
+  var j;
+  var jLen;
   var rd = this.rd.v;
 
   if (rd !== 0) {
-    var shapeData,
-      newPaths,
-      localShapeCollection;
+    var shapeData;
+    var newPaths;
+    var localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
       newPaths = shapeData.shape.paths;
