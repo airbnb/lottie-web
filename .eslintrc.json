@@ -25,6 +25,7 @@
             "functions": "never"
         }],
         "no-undef": "off",
+        "no-restricted-properties": "off",
         "------": "off",
         "func-names": "off",
         "-------": "off",
@@ -41,7 +42,6 @@
         "lines-around-directive": "off",
         "no-useless-escape": "off",
         "block-scoped-var": "off",
-        "wrap-iife": "off",
         "no-shadow": "off",
         "no-restricted-globals": "off",
         "default-case": "off",
@@ -67,7 +67,6 @@
         "no-bitwise": "off",
         "no-multi-assign": "off",
         "no-prototype-builtins": "off",
-        "no-restricted-properties": "off",
         "camelcase": "off",
         "no-eval": "off",
         "no-restricted-syntax": "off",

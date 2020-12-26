@@ -54,7 +54,7 @@ var lottiejs = (function (window) {
 
   var renderer = '';
   return lottiejs;
-})({});
+}({}));
 
 var animations = [];
 
