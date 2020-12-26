@@ -1,4 +1,5 @@
 'use strict';
+
 /* <%= contents %> */
 var lottie = {};
 

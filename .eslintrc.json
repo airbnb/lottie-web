@@ -37,10 +37,9 @@
         "func-names": "off",
         "max-len": "off",
         "no-underscore-dangle": "off",
-        "-------": "off",
         "no-param-reassign": "off",
         "vars-on-top": "off",
-        "no-use-before-define": "off",
-        "lines-around-directive": "off"
+        "-------": "off",
+        "no-use-before-define": "off"
     }
 }

@@ -1,5 +1,6 @@
 var lottiejs = (function (window) {
   'use strict';
+
   /* <%= contents %> */
   var lottiejsLibrary = {};
 
