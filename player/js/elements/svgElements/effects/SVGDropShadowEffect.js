@@ -1,3 +1,5 @@
+/* global createNS, rgbToHex, degToRads */
+
 function SVGDropShadowEffect(filter, filterManager) {
   var filterSize = filterManager.container.globalData.renderConfig.filterSize;
   filter.setAttribute('x', filterSize.x);

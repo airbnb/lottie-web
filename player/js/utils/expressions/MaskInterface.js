@@ -1,3 +1,6 @@
+/* global createSizedArray */
+/* exported MaskManagerInterface */
+
 var MaskManagerInterface = (function () {
   function MaskInterface(mask, data) {
     this._mask = mask;
@@ -20,9 +23,7 @@ var MaskManagerInterface = (function () {
     },
   });
 
-  var MaskManager = function (maskManager, elem) {
-    var _maskManager = maskManager;
-    var _elem = elem;
+  var MaskManager = function (maskManager) {
     var _masksInterfaces = createSizedArray(maskManager.viewData.length);
     var i;
     var len = maskManager.viewData.length;

@@ -1,3 +1,6 @@
+/* global extendPrototype, BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
+RenderableElement, SVGShapeElement, IImageElement, createTag */
+
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
   this.img = globalData.imageLoader.getImage(this.assetData);
@@ -34,7 +37,7 @@ CVImageElement.prototype.createContent = function () {
   }
 };
 
-CVImageElement.prototype.renderInnerContent = function (parentMatrix) {
+CVImageElement.prototype.renderInnerContent = function () {
   this.canvasContext.drawImage(this.img, 0, 0);
 };
 

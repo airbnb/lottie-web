@@ -1,3 +1,6 @@
+/* global FontManager, initialDefaultFrame */
+/* exported TextProperty */
+
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
   this.pv = '';
@@ -100,7 +103,6 @@ TextProperty.prototype.getValue = function (_finalValue) {
   }
   this.lock = true;
   this._mdf = false;
-  var multipliedValue;
   var i;
   var len = this.effectsSequence.length;
   var finalValue = _finalValue || this.data.d.k[this.keysIndex].s;
@@ -123,12 +125,10 @@ TextProperty.prototype.getValue = function (_finalValue) {
 
 TextProperty.prototype.getKeyframeValue = function () {
   var textKeys = this.data.d.k;
-  var textDocumentData;
   var frameNum = this.elem.comp.renderedFrame;
   var i = 0;
   var len = textKeys.length;
   while (i <= len - 1) {
-    textDocumentData = textKeys[i].s;
     if (i === len - 1 || textKeys[i + 1].t > frameNum) {
       break;
     }

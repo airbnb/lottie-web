@@ -1,3 +1,6 @@
+/* global PropertyFactory */
+/* exported SliderEffect, AngleEffect, ColorEffect, PointEffect, LayerIndexEffect, MaskIndexEffect, CheckboxEffect, NoValueEffect */
+
 function SliderEffect(data, elem, container) {
   this.p = PropertyFactory.getProp(elem, data.v, 0, 0, container);
 }

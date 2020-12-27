@@ -1,3 +1,5 @@
+/* global Matrix, createTypedArray */
+
 function CVContextData() {
   this.saved = [];
   this.cArrPos = 0;

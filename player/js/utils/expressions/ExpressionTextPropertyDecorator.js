@@ -1,3 +1,5 @@
+/* global ExpressionManager, TextProperty */
+
 (function addDecorator() {
   function searchExpressions() {
     if (this.data.d.x) {

@@ -1,3 +1,5 @@
+/* global dataManager */
+
 dataManager.completeData = function (animationData, fontManager) {
   if (animationData.__complete) {
     return;

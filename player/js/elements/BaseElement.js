@@ -1,3 +1,6 @@
+/* global LayerExpressionInterface, EffectsExpressionInterface, CompExpressionInterface, ShapeExpressionInterface,
+TextExpressionInterface, getBlendMode,createElementID, EffectsManager */
+
 function BaseElement() {
 }
 

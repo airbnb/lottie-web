@@ -1,3 +1,6 @@
+/* global ExpressionPropertyInterface, PropertyInterface, propertyGroupFactory, ShapePathInterface */
+/* exported ShapeExpressionInterface */
+
 var ShapeExpressionInterface = (function () {
   function iterateElements(shapes, view, propertyGroup) {
     var arr = [];

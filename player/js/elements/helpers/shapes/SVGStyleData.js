@@ -1,3 +1,5 @@
+/* global createNS */
+
 function SVGStyleData(data, level) {
   this.data = data;
   this.type = data.ty;

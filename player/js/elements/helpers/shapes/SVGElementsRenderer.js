@@ -1,3 +1,6 @@
+/* global Matrix, buildShapeString, bmFloor */
+/* exported SVGElementsRenderer */
+
 var SVGElementsRenderer = (function () {
   var _identityMatrix = new Matrix();
   var _matrixHelper = new Matrix();
@@ -7,7 +10,6 @@ var SVGElementsRenderer = (function () {
   };
 
   function createRenderFunction(data) {
-    var ty = data.ty;
     switch (data.ty) {
       case 'fl':
         return renderFill;

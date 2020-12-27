@@ -1,3 +1,5 @@
+/* global TextProperty, TextAnimatorProperty, buildShapeString, LetterProps */
+
 function ITextElement() {
 }
 
@@ -32,8 +34,6 @@ ITextElement.prototype.prepareFrame = function (num) {
 ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
   var j;
   var jLen = shapes.length;
-  var k;
-  var kLen;
   var pathNodes;
   var shapeStr = '';
   for (j = 0; j < jLen; j += 1) {

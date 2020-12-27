@@ -1,3 +1,5 @@
+/* exported buildShapeString */
+
 var buildShapeString = function (pathNodes, length, closed, mat) {
   if (length === 0) {
     return '';

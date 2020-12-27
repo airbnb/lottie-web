@@ -1,3 +1,6 @@
+/* global extendPrototype, BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement,
+SVGShapeElement, IImageElement */
+
 function CVSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
 }

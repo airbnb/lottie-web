@@ -1,3 +1,5 @@
+/* global PropertyFactory, DashProperty, extendPrototype, SVGGradientFillStyleData, DynamicPropertyContainer */
+
 function SVGGradientStrokeStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
   this.getValue = this.iterateDynamicProperties;

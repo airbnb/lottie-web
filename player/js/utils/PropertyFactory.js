@@ -1,3 +1,6 @@
+/* global initialDefaultFrame, BezierFactory, degToRads, bez, createTypedArray */
+/* exported PropertyFactory */
+
 var PropertyFactory = (function () {
   var initFrame = initialDefaultFrame;
   var mathAbs = Math.abs;
@@ -296,7 +299,6 @@ var PropertyFactory = (function () {
     }
     this.lock = true;
     this._mdf = this._isFirstFrame;
-    var multipliedValue;
     var i;
     var len = this.effectsSequence.length;
     var finalValue = this.kf ? this.pv : this.data.k;
@@ -349,7 +351,6 @@ var PropertyFactory = (function () {
     var len = data.k.length;
     this.v = createTypedArray('float32', len);
     this.pv = createTypedArray('float32', len);
-    var arr = createTypedArray('float32', len);
     this.vel = createTypedArray('float32', len);
     for (i = 0; i < len; i += 1) {
       this.v[i] = data.k[i] * this.mult;

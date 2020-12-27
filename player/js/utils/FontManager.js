@@ -1,3 +1,6 @@
+/* global createNS, createTag */
+/* exported FontManager */
+
 var FontManager = (function () {
   var maxWaitingTime = 5000;
   var emptyChar = {

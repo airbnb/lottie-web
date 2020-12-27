@@ -1,3 +1,6 @@
+/* global createNS, extendPrototype, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
+HierarchyElement, FrameElement, RenderableElement, createNS, bmMin, bmSqrt, bmMin, bmMax, bmPow */
+
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements
   this.shapes = [];
@@ -66,7 +69,6 @@ HShapeElement.prototype.calculateShapeBoundingBox = function (item, boundingBox)
   var oPoint;
   var nextIPoint;
   var nextVPoint;
-  var bounds;
   if (len <= 1) {
     return;
   }
@@ -159,7 +161,6 @@ HShapeElement.prototype.calculateF = function (t, p0, p1, p2, p3, i) {
 HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox) {
   var i;
   var len = itemsData.length;
-  var path;
   for (i = 0; i < len; i += 1) {
     if (itemsData[i] && itemsData[i].sh) {
       this.calculateShapeBoundingBox(itemsData[i], boundingBox);

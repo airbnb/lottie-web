@@ -1,3 +1,5 @@
+/* exported createTypedArray, createSizedArray */
+
 var createTypedArray = (function () {
   function createRegularArray(type, len) {
     var i = 0;

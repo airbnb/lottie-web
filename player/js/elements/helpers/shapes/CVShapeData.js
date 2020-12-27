@@ -1,3 +1,5 @@
+/* global ShapePropertyFactory, SVGShapeData */
+
 function CVShapeData(element, data, styles, transformsManager) {
   this.styledShapes = [];
   this.tr = [0, 0, 0, 0, 0, 0];

@@ -1,3 +1,5 @@
+/* global PropertyFactory, extendPrototype, DynamicPropertyContainer */
+
 function SVGFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
   this.getValue = this.iterateDynamicProperties;

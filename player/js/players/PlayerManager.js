@@ -1,3 +1,6 @@
+/* global BasicPlayer, createElement */
+/* exported playerManager */
+
 function PlayerManager() {}
 
 PlayerManager.prototype.createPlayer = function (type) {

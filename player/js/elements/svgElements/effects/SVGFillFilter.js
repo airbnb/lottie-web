@@ -1,3 +1,5 @@
+/* global createNS */
+
 function SVGFillFilter(filter, filterManager) {
   this.filterManager = filterManager;
   var feColorMatrix = createNS('feColorMatrix');

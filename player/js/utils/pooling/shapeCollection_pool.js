@@ -1,3 +1,6 @@
+/* global createSizedArray, ShapeCollection, shapePool, pooling */
+/* exported shapeCollectionPool */
+
 var shapeCollectionPool = (function () {
   var ob = {
     newShapeCollection: newShapeCollection,

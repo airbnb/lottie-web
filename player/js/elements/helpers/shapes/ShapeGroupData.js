@@ -1,3 +1,6 @@
+/* global createNS */
+/* exported ShapeGroupData */
+
 function ShapeGroupData() {
   this.it = [];
   this.prevViewData = [];

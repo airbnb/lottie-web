@@ -1,3 +1,5 @@
+/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, createNS */
+
 function IImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
   this.initElement(data, globalData, comp);

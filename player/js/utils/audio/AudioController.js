@@ -1,3 +1,6 @@
+/* global Howl */
+/* exported audioControllerFactory */
+
 var audioControllerFactory = (function () {
   function AudioController(audioFactory) {
     this.audios = [];
@@ -63,7 +66,7 @@ var audioControllerFactory = (function () {
       this._isMuted = false;
       this._updateVolume();
     },
-    getVolume: function (value) {
+    getVolume: function () {
       return this._volume;
     },
     _updateVolume: function () {

@@ -1,3 +1,6 @@
+/* global Matrix, degToRads, PropertyFactory, extendPrototype, DynamicPropertyContainer */
+/* exported TransformPropertyFactory */
+
 var TransformPropertyFactory = (function () {
   var defaultVector = [0, 0];
 

@@ -1,3 +1,6 @@
+/* global extendPrototype, BezierFactory, PropertyFactory, DynamicPropertyContainer */
+/* exported TextSelectorProp */
+
 var TextSelectorProp = (function () {
   var max = Math.max;
   var min = Math.min;

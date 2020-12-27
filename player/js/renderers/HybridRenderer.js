@@ -1,3 +1,7 @@
+/* global extendPrototype, BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
+HTextElement, HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
+HSolidElement, styleDiv, createTag, createNS */
+
 function HybridRenderer(animationItem, config) {
   this.animationItem = animationItem;
   this.layers = null;
@@ -82,7 +86,7 @@ HybridRenderer.prototype.createShape = function (data) {
 
 HybridRenderer.prototype.createText = function (data) {
   if (!this.supports3d) {
-    return new SVGTextElement(data, this.globalData, this);
+    return new SVGTextLottieElement(data, this.globalData, this);
   }
   return new HTextElement(data, this.globalData, this);
 };

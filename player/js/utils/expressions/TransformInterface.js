@@ -1,3 +1,6 @@
+/* global ExpressionPropertyInterface */
+/* exported TransformExpressionInterface */
+
 var TransformExpressionInterface = (function () {
   return function (transform) {
     function _thisFunction(name) {

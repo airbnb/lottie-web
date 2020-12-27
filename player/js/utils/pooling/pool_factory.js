@@ -1,5 +1,8 @@
+/* global createSizedArray, pooling */
+/* exported poolFactory */
+
 var poolFactory = (function () {
-  return function (initialLength, _create, _release, _clone) {
+  return function (initialLength, _create, _release) {
     var _length = 0;
     var _maxLength = initialLength;
     var pool = createSizedArray(_maxLength);
@@ -30,11 +33,6 @@ var poolFactory = (function () {
       }
       pool[_length] = element;
       _length += 1;
-    }
-
-    function clone() {
-      var clonedElement = newElement();
-      return _clone(clonedElement);
     }
 
     return ob;

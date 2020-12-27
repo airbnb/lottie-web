@@ -1,3 +1,5 @@
+/* global Matrix */
+
 function ShapeTransformManager() {
   this.sequences = {};
   this.sequenceList = [];

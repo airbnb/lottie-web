@@ -1,3 +1,5 @@
+/* global AudioElement, FontManager */
+
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
   var i;

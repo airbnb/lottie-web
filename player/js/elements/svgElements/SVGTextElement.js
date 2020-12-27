@@ -1,18 +1,21 @@
-function SVGTextElement(data, globalData, comp) {
+/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
+RenderableDOMElement, ITextElement, createSizedArray, createNS */
+
+function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];
   this.renderType = 'svg';
   this.initElement(data, globalData, comp);
 }
 
-extendPrototype([BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], SVGTextElement);
+extendPrototype([BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, ITextElement], SVGTextLottieElement);
 
-SVGTextElement.prototype.createContent = function () {
+SVGTextLottieElement.prototype.createContent = function () {
   if (this.data.singleShape && !this.globalData.fontManager.chars) {
     this.textContainer = createNS('text');
   }
 };
 
-SVGTextElement.prototype.buildTextContents = function (textArray) {
+SVGTextLottieElement.prototype.buildTextContents = function (textArray) {
   var i = 0;
   var len = textArray.length;
   var textContents = [];
@@ -30,7 +33,7 @@ SVGTextElement.prototype.buildTextContents = function (textArray) {
   return textContents;
 };
 
-SVGTextElement.prototype.buildNewText = function () {
+SVGTextLottieElement.prototype.buildNewText = function () {
   var i;
   var len;
 
@@ -163,7 +166,7 @@ SVGTextElement.prototype.buildNewText = function () {
   this._sizeChanged = true;
 };
 
-SVGTextElement.prototype.sourceRectAtTime = function (time) {
+SVGTextLottieElement.prototype.sourceRectAtTime = function () {
   this.prepareFrame(this.comp.renderedFrame - this.data.st);
   this.renderInnerContent();
   if (this._sizeChanged) {
@@ -179,7 +182,7 @@ SVGTextElement.prototype.sourceRectAtTime = function (time) {
   return this.bbox;
 };
 
-SVGTextElement.prototype.renderInnerContent = function () {
+SVGTextLottieElement.prototype.renderInnerContent = function () {
   if (!this.data.singleShape) {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if (this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {

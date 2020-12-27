@@ -1,3 +1,5 @@
+/* global filtersFactory, featureSupport, filtersFactory, createElementID, createNS, MaskElement, SVGEffects, locationHref */
+
 function SVGBaseElement() {
 }
 

@@ -1,3 +1,5 @@
+/* global ProcessedElement */
+
 function IShapeElement() {
 }
 

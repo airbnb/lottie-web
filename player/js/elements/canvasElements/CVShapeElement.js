@@ -1,3 +1,7 @@
+/* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
+HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, degToRads, GradientProperty,
+DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor */
+
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];
   this.shapesData = data.shapes;
@@ -71,7 +75,7 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   return elementData;
 };
 
-CVShapeElement.prototype.createGroupElement = function (data) {
+CVShapeElement.prototype.createGroupElement = function () {
   var elementData = {
     it: [],
     prevViewData: [],
@@ -139,8 +143,6 @@ CVShapeElement.prototype.removeTransformFromStyleList = function () {
 CVShapeElement.prototype.closeStyles = function (styles) {
   var i;
   var len = styles.length;
-  var j;
-  var jLen;
   for (i = 0; i < len; i += 1) {
     styles[i].closed = true;
   }
@@ -236,8 +238,6 @@ CVShapeElement.prototype.renderInnerContent = function () {
 };
 
 CVShapeElement.prototype.renderShapeTransform = function (parentTransform, groupTransform) {
-  var props;
-  var groupMatrix;
   if (parentTransform._opMdf || groupTransform.op._mdf || this._isFirstFrame) {
     groupTransform.opacity = parentTransform.opacity;
     groupTransform.opacity *= groupTransform.op.v;

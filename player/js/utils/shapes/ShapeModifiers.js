@@ -1,3 +1,6 @@
+/* global shapeCollectionPool, initialDefaultFrame, extendPrototype, DynamicPropertyContainer */
+/* exported ShapeModifiers */
+
 var ShapeModifiers = (function () {
   var ob = {};
   var modifiers = {};

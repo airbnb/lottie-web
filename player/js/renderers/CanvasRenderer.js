@@ -1,3 +1,6 @@
+/* global CVContextData, Matrix, extendPrototype, BaseRenderer, CVShapeElement, CVTextElement,
+CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
+
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;
   this.renderConfig = {

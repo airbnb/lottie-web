@@ -1,3 +1,5 @@
+/* global createNS */
+
 function SVGTritoneFilter(filter, filterManager) {
   this.filterManager = filterManager;
   var feColorMatrix = createNS('feColorMatrix');

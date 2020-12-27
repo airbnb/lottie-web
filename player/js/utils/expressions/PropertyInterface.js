@@ -1,3 +1,5 @@
+/* exported PropertyInterface */
+
 var PropertyInterface = (function () {
   return function (propertyName, propertyGroup) {
     var interfaceFunction = {

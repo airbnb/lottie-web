@@ -1,3 +1,6 @@
+/* global Matrix, MaskManagerInterface, TransformExpressionInterface, getDescriptor */
+/* exported LayerExpressionInterface */
+
 var LayerExpressionInterface = (function () {
   function getMatrix(time) {
     var toWorldMat = new Matrix();

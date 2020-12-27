@@ -1,3 +1,6 @@
+/* global createElementID, filtersFactory, SVGTintFilter, SVGFillFilter, SVGStrokeEffect, SVGTritoneFilter,
+SVGProLevelsFilter, SVGDropShadowEffect, SVGMatte3Effect, SVGGaussianBlurEffect, locationHref */
+
 function SVGEffects(elem) {
   var i;
   var len = elem.data.ef ? elem.data.ef.length : 0;

@@ -1,3 +1,5 @@
+/* exported getBlendMode */
+
 var getBlendMode = (function () {
   var blendModeEnums = {
     0: 'source-over',

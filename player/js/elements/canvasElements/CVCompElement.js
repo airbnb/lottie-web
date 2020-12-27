@@ -1,3 +1,5 @@
+/* global createSizedArray, PropertyFactory, extendPrototype, CanvasRenderer, ICompElement, CVBaseElement */
+
 function CVCompElement(data, globalData, comp) {
   this.completeLayers = false;
   this.layers = data.layers;

@@ -1,3 +1,5 @@
+/* global createSizedArray, createElementID, PropertyFactory, ShapePropertyFactory, createNS, locationHref */
+
 function MaskElement(data, element, globalData) {
   this.data = data;
   this.element = element;

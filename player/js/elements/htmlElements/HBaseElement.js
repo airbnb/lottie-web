@@ -1,4 +1,6 @@
-function HBaseElement(data, globalData, comp) {}
+/* global createTag, createNS, styleDiv, CVEffects, MaskElement, SVGBaseElement, HybridRenderer */
+
+function HBaseElement() {}
 HBaseElement.prototype = {
   checkBlendMode: function () {},
   initRendererElement: function () {

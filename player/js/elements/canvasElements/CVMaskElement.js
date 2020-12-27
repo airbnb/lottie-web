@@ -1,3 +1,5 @@
+/* global createSizedArray, ShapePropertyFactory, MaskElement */
+
 function CVMaskElement(data, element) {
   this.data = data;
   this.element = element;

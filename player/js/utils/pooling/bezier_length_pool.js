@@ -1,3 +1,6 @@
+/* global createTypedArray, defaultCurveSegments, poolFactory */
+/* exported bezierLengthPool */
+
 var bezierLengthPool = (function () {
   function create() {
     return {

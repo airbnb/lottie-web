@@ -1,3 +1,5 @@
+/* global createSizedArray, PropertyFactory, extendPrototype, HybridRenderer, ICompElement, HBaseElement */
+
 function HCompElement(data, globalData, comp) {
   this.layers = data.layers;
   this.supports3d = !data.hasMask;

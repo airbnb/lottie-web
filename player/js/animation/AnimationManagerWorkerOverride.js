@@ -1,4 +1,7 @@
-animationManager = (function () {
+/* global AnimationItem */
+/* exported animationManager */
+
+var animationManager = (function () {
   var moduleOb = {};
   var registeredAnimations = [];
   var initTime = 0;
@@ -148,7 +151,7 @@ animationManager = (function () {
     }
   }
 
-  function searchAnimations(animationData, standalone, renderer) {
+  function searchAnimations() {
     throw new Error('Cannot access DOM from worker thread');
   }
 

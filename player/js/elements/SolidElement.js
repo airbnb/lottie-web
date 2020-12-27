@@ -1,3 +1,5 @@
+/* global extendPrototype, IImageElement, createNS */
+
 function ISolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
 }

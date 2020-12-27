@@ -1,3 +1,7 @@
+/* global extendPrototype, roundCorner, BezierFactory, shapePool, degToRads,
+  shapeCollectionPool, PropertyFactory, bmMin, DynamicPropertyContainer */
+/* exported ShapePropertyFactory */
+
 var ShapePropertyFactory = (function () {
   var initFrame = -999999;
 
@@ -197,9 +201,7 @@ var ShapePropertyFactory = (function () {
     this.keyframes = type === 3 ? data.pt.k : data.ks.k;
     this.k = true;
     this.kf = true;
-    var i;
     var len = this.keyframes[0].s[0].i.length;
-    var jLen = this.keyframes[0].s[0].i[0].length;
     this.v = shapePool.newElement();
     this.v.setPathData(this.keyframes[0].s[0].c, len);
     this.pv = shapePool.clone(this.v);
@@ -479,7 +481,7 @@ var ShapePropertyFactory = (function () {
           }
         }
       },
-      getValue: function (frameNum) {
+      getValue: function () {
         if (this.elem.globalData.frameId === this.frameId) {
           return;
         }

@@ -1,3 +1,6 @@
+/* global createElementID, extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
+IImageElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
+
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
   this.layers = null;
@@ -69,7 +72,7 @@ SVGRenderer.prototype.createShape = function (data) {
 };
 
 SVGRenderer.prototype.createText = function (data) {
-  return new SVGTextElement(data, this.globalData, this);
+  return new SVGTextLottieElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createImage = function (data) {

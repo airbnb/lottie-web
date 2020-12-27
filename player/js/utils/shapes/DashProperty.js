@@ -1,3 +1,5 @@
+/* global createSizedArray, createTypedArray, PropertyFactory, extendPrototype, DynamicPropertyContainer */
+
 function DashProperty(elem, data, renderer, container) {
   this.elem = elem;
   this.frameId = -1;

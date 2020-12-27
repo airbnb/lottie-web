@@ -1,6 +1,8 @@
+/* global createTag, animationManager */
+
 function BasicPlayer() {}
 
-BasicPlayer.prototype.setAnimationItem = function (item) {
+BasicPlayer.prototype.setAnimationItem = function () {
 };
 
 BasicPlayer.prototype.playStarted = function () {
@@ -58,7 +60,7 @@ BasicPlayer.prototype.buildControls = function (item, wrapper) {
     var width = self.scrollBar.clientWidth;
     self.scrollAnimation(mousePos / width);
   });
-  this.scrollBarThumb.addEventListener('mousedown', function (ev) {
+  this.scrollBarThumb.addEventListener('mousedown', function () {
     self.scrollAnimation();
   });
 

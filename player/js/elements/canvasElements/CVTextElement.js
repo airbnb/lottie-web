@@ -1,3 +1,6 @@
+/* global extendPrototype, BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
+RenderableElement, ITextElement, createTag, createSizedArray */
+
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];
   this.yOffset = 0;
@@ -110,7 +113,6 @@ CVTextElement.prototype.buildNewText = function () {
 
 CVTextElement.prototype.renderInnerContent = function () {
   var ctx = this.canvasContext;
-  var finalMat = this.finalTransform.mat.props;
   ctx.font = this.values.fValue;
   ctx.lineCap = 'butt';
   ctx.lineJoin = 'miter';

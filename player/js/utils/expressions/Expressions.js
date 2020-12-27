@@ -1,3 +1,6 @@
+/* global CompExpressionInterface, expressionsPlugin: writable */
+/* exported expressionsPlugin */
+
 var Expressions = (function () {
   var ob = {};
   ob.initExpressions = initExpressions;

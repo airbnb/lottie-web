@@ -1,3 +1,6 @@
+/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
+RenderableDOMElement, createNS, createTag */
+
 function HSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
 }

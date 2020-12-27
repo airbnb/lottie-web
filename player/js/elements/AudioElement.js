@@ -1,3 +1,5 @@
+/* global PropertyFactory, extendPrototype, RenderableElement, BaseElement, FrameElement */
+
 function AudioElement(data, globalData, comp) {
   this.initFrame();
   this.initRenderable();

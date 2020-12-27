@@ -1,3 +1,6 @@
+/* global propertyGroupFactory, PropertyInterface */
+/* exported ShapePathInterface */
+
 var ShapePathInterface = (
 
   function () {

@@ -1,3 +1,6 @@
+/* global createNS */
+/* exported filtersFactory */
+
 var filtersFactory = (function () {
   var ob = {};
   ob.createFilter = createFilter;

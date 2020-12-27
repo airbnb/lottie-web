@@ -1,3 +1,5 @@
+/* exported extendPrototype, getDescriptor, createProxyFunction */
+
 function extendPrototype(sources, destination) {
   var i;
   var len = sources.length;

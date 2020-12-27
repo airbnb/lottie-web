@@ -1,3 +1,5 @@
+/* global CVEffects, getBlendMode, CVMaskElement, Matrix */
+
 function CVBaseElement() {
 }
 

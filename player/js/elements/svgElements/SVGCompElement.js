@@ -1,3 +1,5 @@
+/* global createSizedArray, PropertyFactory, extendPrototype, SVGRenderer, ICompElement, SVGBaseElement */
+
 function SVGCompElement(data, globalData, comp) {
   this.layers = data.layers;
   this.supports3d = true;

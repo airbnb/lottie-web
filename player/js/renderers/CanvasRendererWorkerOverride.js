@@ -1,3 +1,5 @@
+/* global CanvasRenderer, createTag, createSizedArray */
+
 CanvasRenderer.prototype.configAnimation = function (animData) {
   if (this.animationItem.wrapper) {
     this.animationItem.container = createTag('canvas');

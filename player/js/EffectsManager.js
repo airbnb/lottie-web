@@ -1,3 +1,6 @@
+/* global extendPrototype, SliderEffect, AngleEffect, ColorEffect, PointEffect, CheckboxEffect, LayerIndexEffect,
+MaskIndexEffect, NoValueEffect, DynamicPropertyContainer */
+
 function EffectsManager(data, element) {
   var effects = data.ef || [];
   this.effectElements = [];

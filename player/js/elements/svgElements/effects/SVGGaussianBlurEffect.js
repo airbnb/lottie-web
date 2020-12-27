@@ -1,3 +1,5 @@
+/* global createNS */
+
 function SVGGaussianBlurEffect(filter, filterManager) {
   // Outset the filter region by 100% on all sides to accommodate blur expansion.
   filter.setAttribute('x', '-100%');

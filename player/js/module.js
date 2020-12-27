@@ -1,9 +1,11 @@
+/* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix */
+/* exported locationHref, subframeEnabled, expressionsPlugin */
+
 'use strict';
 
 /* <%= contents %> */
 var lottie = {};
-
-var _isFrozen = false;
 
 function setLocationHref(href) {
   locationHref = href;

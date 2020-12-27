@@ -1,3 +1,5 @@
+/* global createElementID, createNS */
+
 var _svgMatteSymbols = [];
 
 function SVGMatte3Effect(filterElem, filterManager, elem) {

@@ -1,7 +1,9 @@
+/* global createTypedArray */
+/* exported ExpressionValue */
+
 function ExpressionValue(elementProp, mult, type) {
   mult = mult || 1;
   var expressionValue;
-  var arrayValue;
 
   if (elementProp.k) {
     elementProp.getValue();

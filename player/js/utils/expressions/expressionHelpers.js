@@ -1,3 +1,6 @@
+/* global ExpressionManager, createTypedArray */
+/* exported expressionHelpers */
+
 var expressionHelpers = (function () {
   function searchExpressions(elem, data, prop) {
     if (data.x) {

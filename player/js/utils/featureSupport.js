@@ -1,3 +1,5 @@
+/* exported featureSupport */
+
 var featureSupport = (function () {
   var ob = {
     maskType: true,

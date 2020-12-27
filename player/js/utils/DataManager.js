@@ -1,10 +1,10 @@
+/* exported dataManager */
+
 function dataFunctionManager() {
   // var tCanvasHelper = createTag('canvas').getContext('2d');
 
   function completeLayers(layers, comps, fontManager) {
     var layerData;
-    var animArray;
-    var lastFrame;
     var i;
     var len = layers.length;
     var j;
@@ -18,8 +18,6 @@ function dataFunctionManager() {
         if (layerData.tt) {
           layers[i - 1].td = layerData.tt;
         }
-        animArray = [];
-        lastFrame = -1;
         if (layerData.hasMask) {
           var maskProps = layerData.masksProperties;
           jLen = maskProps.length;
@@ -72,7 +70,6 @@ function dataFunctionManager() {
     var len = arr.length;
     var j;
     var jLen;
-    var hasPaths = false;
     for (i = len - 1; i >= 0; i -= 1) {
       if (arr[i].ty === 'sh') {
         if (arr[i].ks.k.i) {
@@ -88,23 +85,10 @@ function dataFunctionManager() {
             }
           }
         }
-        hasPaths = true;
       } else if (arr[i].ty === 'gr') {
         completeShapes(arr[i].it);
       }
     }
-    /* if(hasPaths){
-            //mx: distance
-            //ss: sensitivity
-            //dc: decay
-            arr.splice(arr.length-1,0,{
-                "ty": "ms",
-                "mx":20,
-                "ss":10,
-                 "dc":0.001,
-                "maxDist":200
-            });
-        } */
   }
 
   function convertPathsToAbsoluteValues(path) {
@@ -187,8 +171,6 @@ function dataFunctionManager() {
         var len = animationData.chars.length;
         var j;
         var jLen;
-        var k;
-        var kLen;
         var pathData;
         var paths;
         for (i = 0; i < len; i += 1) {
@@ -281,7 +263,6 @@ function dataFunctionManager() {
       var len = arr.length;
       var j;
       var jLen;
-      var hasPaths = false;
       for (i = len - 1; i >= 0; i -= 1) {
         if (arr[i].ty === 'sh') {
           if (arr[i].ks.k.i) {
@@ -297,7 +278,6 @@ function dataFunctionManager() {
               }
             }
           }
-          hasPaths = true;
         } else if (arr[i].ty === 'gr') {
           completeClosingShapes(arr[i].it);
         }
@@ -365,10 +345,9 @@ function dataFunctionManager() {
     checkShapes(animationData);
     completeLayers(animationData.layers, animationData.assets, fontManager);
     animationData.__complete = true;
-    // blitAnimation(animationData, animationData.assets, fontManager);
   }
 
-  function completeText(data, fontManager) {
+  function completeText(data) {
     if (data.t.a.length === 0 && !('m' in data.t.p)) {
       data.singleShape = true;
     }

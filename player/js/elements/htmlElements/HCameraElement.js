@@ -1,3 +1,5 @@
+/* global PropertyFactory, degToRads, Matrix, extendPrototype, BaseElement, FrameElement, HierarchyElement */
+
 function HCameraElement(data, globalData, comp) {
   this.initFrame();
   this.initBaseData(data, globalData, comp);
@@ -84,7 +86,6 @@ HCameraElement.prototype.renderFrame = function () {
     this.mat.reset();
 
     if (this.hierarchy) {
-      var mat;
       len = this.hierarchy.length - 1;
       for (i = len; i >= 0; i -= 1) {
         var mTransf = this.hierarchy[i].finalTransform.mProp;

@@ -1,3 +1,5 @@
+/* global createTypedArray */
+
 /*!
  Transformation Matrix v2.0
  (c) Epistemex 2014-2015

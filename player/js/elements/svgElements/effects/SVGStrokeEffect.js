@@ -1,3 +1,5 @@
+/* global createNS, createElementID, locationHref, bmFloor */
+
 function SVGStrokeEffect(elem, filterManager) {
   this.initialized = false;
   this.filterManager = filterManager;

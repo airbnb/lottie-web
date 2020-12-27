@@ -1,3 +1,6 @@
+/* global createTag, createNS, isSafari */
+/* exported ImagePreloader */
+
 var ImagePreloader = (function () {
   var proxyImage = (function () {
     var canvas = createTag('canvas');
@@ -136,7 +139,7 @@ var ImagePreloader = (function () {
     }
   }
 
-  function ImagePreloaderFactory(type) {
+  function ImagePreloaderFactory() {
     this._imageLoaded = imageLoaded.bind(this);
     this.testImageLoaded = testImageLoaded.bind(this);
     this.assetsPath = '';

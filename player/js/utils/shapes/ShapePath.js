@@ -1,3 +1,5 @@
+/* global createSizedArray, createSizedArray, pointPool */
+
 function ShapePath() {
   this.c = false;
   this._length = 0;

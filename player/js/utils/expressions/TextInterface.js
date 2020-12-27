@@ -1,3 +1,5 @@
+/* exported TextExpressionInterface */
+
 var TextExpressionInterface = (function () {
   return function (elem) {
     var _prevValue;

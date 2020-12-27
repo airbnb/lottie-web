@@ -1,3 +1,5 @@
+/* exported propertyGroupFactory */
+
 var propertyGroupFactory = (function () {
   return function (interfaceFunction, parentPropertyGroup) {
     return function (val) {

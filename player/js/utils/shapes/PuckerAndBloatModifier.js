@@ -1,3 +1,5 @@
+/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, ShapeModifiers */
+
 function PuckerAndBloatModifier() {}
 extendPrototype([ShapeModifier], PuckerAndBloatModifier);
 PuckerAndBloatModifier.prototype.initModifierProperties = function (elem, data) {
@@ -47,11 +49,9 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
 
   if (amount !== 0) {
     var shapeData;
-    var newPaths;
     var localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
-      newPaths = shapeData.shape.paths;
       localShapeCollection = shapeData.localShapeCollection;
       if (!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)) {
         localShapeCollection.releaseShapes();

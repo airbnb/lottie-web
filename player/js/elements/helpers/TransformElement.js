@@ -1,3 +1,5 @@
+/* global TransformPropertyFactory, Matrix */
+
 function TransformElement() {}
 
 TransformElement.prototype = {

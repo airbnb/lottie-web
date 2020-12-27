@@ -1,3 +1,5 @@
+/* global extendPrototype, ShapeModifier, TransformPropertyFactory, PropertyFactory, Matrix, ShapeModifiers */
+
 function RepeaterModifier() {}
 extendPrototype([ShapeModifier], RepeaterModifier);
 
@@ -44,12 +46,10 @@ RepeaterModifier.prototype.init = function (elem, arr, pos, elemsData) {
   this.frameId = -1;
   this.initDynamicPropertyContainer(elem);
   this.initModifierProperties(elem, arr[pos]);
-  var cont = 0;
   while (pos > 0) {
     pos -= 1;
     // this._elements.unshift(arr.splice(pos,1)[0]);
     this._elements.unshift(arr[pos]);
-    cont += 1;
   }
   if (this.dynamicProperties.length) {
     this.k = true;
@@ -70,8 +70,6 @@ RepeaterModifier.prototype.resetElements = function (elements) {
 };
 
 RepeaterModifier.prototype.cloneElements = function (elements) {
-  var i;
-  var len = elements.length;
   var newElements = JSON.parse(JSON.stringify(elements));
   this.resetElements(newElements);
   return newElements;
@@ -127,8 +125,6 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
     var offset = this.o.v;
     var offsetModulo = offset % 1;
     var roundOffset = offset > 0 ? Math.floor(offset) : Math.ceil(offset);
-    var k;
-    var tMat = this.tr.v.props;
     var pProps = this.pMatrix.props;
     var rProps = this.rMatrix.props;
     var sProps = this.sMatrix.props;

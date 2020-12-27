@@ -1,3 +1,6 @@
+/* global PropertyFactory, degToRads, TextSelectorProp */
+/* exported TextAnimatorDataProperty */
+
 function TextAnimatorDataProperty(elem, animatorProps, container) {
   var defaultData = { propType: false };
   var getProp = PropertyFactory.getProp;

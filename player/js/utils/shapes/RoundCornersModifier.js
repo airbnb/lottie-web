@@ -1,3 +1,5 @@
+/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, roundCorner, ShapeModifiers */
+
 function RoundCornersModifier() {}
 extendPrototype([ShapeModifier], RoundCornersModifier);
 RoundCornersModifier.prototype.initModifierProperties = function (elem, data) {
@@ -15,9 +17,6 @@ RoundCornersModifier.prototype.processPath = function (path, round) {
   var currentI;
   var currentO;
   var closerV;
-  var newV;
-  var newO;
-  var newI;
   var distance;
   var newPosPerc;
   var index = 0;
@@ -89,11 +88,9 @@ RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
 
   if (rd !== 0) {
     var shapeData;
-    var newPaths;
     var localShapeCollection;
     for (i = 0; i < len; i += 1) {
       shapeData = this.shapes[i];
-      newPaths = shapeData.shape.paths;
       localShapeCollection = shapeData.localShapeCollection;
       if (!(!shapeData.shape._mdf && !this._mdf && !_isFirstFrame)) {
         localShapeCollection.releaseShapes();

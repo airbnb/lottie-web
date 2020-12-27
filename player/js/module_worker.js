@@ -1,10 +1,10 @@
-var lottiejs = (function (window) {
+/* global defaultCurveSegments:writable, roundValues, lottie, animationManager */
+
+var lottiejs = (function () {
   'use strict';
 
   /* <%= contents %> */
   var lottiejsLibrary = {};
-
-  var _isFrozen = false;
 
   function loadAnimation(params) {
     return animationManager.loadAnimation(params);
@@ -54,15 +54,13 @@ var lottiejs = (function (window) {
   lottiejsLibrary.getRegisteredAnimations = animationManager.getRegisteredAnimations;
   lottiejsLibrary.version = '[[BM_VERSION]]';
 
-  var renderer = '';
   return lottiejsLibrary;
 }({}));
 
 var animations = [];
 
-var onmessage = function (evt) {
+var onmessage = function (evt) { // eslint-disable-line  no-unused-vars, no-redeclare
   var canvas = evt.data.canvas;
-  var params = evt.data.params;
   var ctx = canvas.getContext('2d');
   var animation = lottiejs.loadAnimation({
     renderer: 'canvas',

@@ -1,3 +1,5 @@
+/* global createSizedArray, shapePool */
+
 function ShapeCollection() {
   this._length = 0;
   this._maxLength = 4;

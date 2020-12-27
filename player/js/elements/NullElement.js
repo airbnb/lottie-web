@@ -1,3 +1,5 @@
+/* global extendPrototype, BaseElement, TransformElement, HierarchyElement, FrameElement */
+
 function NullElement(data, globalData, comp) {
   this.initFrame();
   this.initBaseData(data, globalData, comp);

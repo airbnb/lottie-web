@@ -1,3 +1,8 @@
+/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
+FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
+SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
+TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers */
+
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
   this.shapes = [];
@@ -44,7 +49,6 @@ SVGShapeElement.prototype.filterUniqueShapes = function () {
   var j;
   var jLen = this.stylesList.length;
   var style;
-  var count = 0;
   var tempShapes = [];
   var areAnimated = false;
   for (j = 0; j < jLen; j += 1) {
@@ -209,7 +213,6 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
   var jLen;
   var ownStyles = [];
   var ownModifiers = [];
-  var styleOb;
   var currentTransform;
   var modifier;
   var processedPos;

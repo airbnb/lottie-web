@@ -1,4 +1,5 @@
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, no-unused-vars */
+/* global BMMath, BezierFactory, createTypedArray, degToRads, shapePool */
 
 var ExpressionManager = (function () {
   'use strict';

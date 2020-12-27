@@ -1,3 +1,5 @@
+/* global extendPrototype, RenderableElement, createProxyFunction */
+
 function RenderableDOMElement() {}
 
 (function () {

@@ -1,3 +1,5 @@
+/* exported SVGTransformData */
+
 function SVGTransformData(mProps, op, container) {
   this.transform = {
     mProps: mProps,

@@ -1,3 +1,5 @@
+/* exported assetLoader */
+
 var assetLoader = (function () {
   function formatResponse(xhr) {
     if (xhr.response && typeof xhr.response === 'object') {

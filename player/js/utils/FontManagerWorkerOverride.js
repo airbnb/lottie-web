@@ -1,3 +1,6 @@
+/* global FontManager:writable */
+/* exported FontManager */
+
 FontManager = (function () {
   var Font = function () {
     this.fonts = [];

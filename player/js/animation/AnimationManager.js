@@ -1,3 +1,6 @@
+/* global createTag, AnimationItem */
+/* exported animationManager */
+
 var animationManager = (function () {
   var moduleOb = {};
   var registeredAnimations = [];

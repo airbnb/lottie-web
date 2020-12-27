@@ -1,3 +1,6 @@
+/* global createSizedArray, PropertyFactory, TextAnimatorDataProperty, bez, addHueToRGB,
+  addSaturationToRGB, addBrightnessToRGB, LetterProps, Matrix, extendPrototype, DynamicPropertyContainer */
+
 function TextAnimatorProperty(textData, renderType, elem) {
   this._isFirstFrame = true;
   this._hasMaskedPath = false;
@@ -50,7 +53,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   var matrixHelper = this.mHelper;
   var renderType = this._renderType;
   var renderedLettersCount = this.renderedLetters.length;
-  var data = this.data;
   var xPos;
   var yPos;
   var i;
@@ -150,7 +152,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   var letterValue;
 
   jLen = animators.length;
-  var lastLetter;
 
   var mult;
   var ind = -1;
@@ -166,7 +167,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   var sw;
   var fc;
   var k;
-  var lineLength = 0;
   var letterSw;
   var letterSc;
   var letterFc;
@@ -231,7 +231,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       yPos += firstLine ? 1 : 0;
       currentLength = initPathPos;
       firstLine = false;
-      lineLength = 0;
       if (this._hasMaskedPath) {
         segmentInd = initSegmentInd;
         pointInd = initPointInd;
@@ -335,7 +334,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         matrixHelper.translate((-alignment[0] * letters[i].an) * 0.005, (-alignment[1] * yOff) * 0.01, 0);
       }
 
-      lineLength += letters[i].l / 2;
       for (j = 0; j < jLen; j += 1) {
         animatorProps = animators[j].a;
         if (animatorProps.t.propType) {
@@ -357,7 +355,6 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
       }
-      lineLength += letters[i].l / 2;
       if (documentData.strokeWidthAnim) {
         sw = documentData.sw || 0;
       }

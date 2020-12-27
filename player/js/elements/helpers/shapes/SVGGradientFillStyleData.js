@@ -1,3 +1,6 @@
+/* global PropertyFactory, degToRads, GradientProperty, createElementID, createNS, locationHref,
+extendPrototype, DynamicPropertyContainer */
+
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
   this.getValue = this.iterateDynamicProperties;

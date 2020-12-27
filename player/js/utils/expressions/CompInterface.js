@@ -1,3 +1,5 @@
+/* exported CompExpressionInterface */
+
 var CompExpressionInterface = (function () {
   return function (comp) {
     function _thisLayerFunction(name) {

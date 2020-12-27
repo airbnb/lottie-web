@@ -1,5 +1,8 @@
+/* global expressionHelpers, TextSelectorProp, ExpressionManager */
+/* exported TextExpressionSelectorProp */
+
 (function () {
-  var TextExpressionSelectorProp = (function () {
+  var TextExpressionSelectorProp = (function () { // eslint-disable-line no-unused-vars
     function getValueProxy(index, total) {
       this.textIndex = index + 1;
       this.textTotal = total;
@@ -33,7 +36,7 @@
   var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
   TextSelectorProp.getTextSelectorProp = function (elem, data, arr) {
     if (data.t === 1) {
-      return new TextExpressionSelectorPropFactory(elem, data, arr);
+      return new TextExpressionSelectorPropFactory(elem, data, arr); // eslint-disable-line no-undef
     }
     return propertyGetTextProp(elem, data, arr);
   };

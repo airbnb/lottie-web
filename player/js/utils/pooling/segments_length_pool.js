@@ -1,3 +1,6 @@
+/* global poolFactory, bezierLengthPool */
+/* exported segmentsLengthPool */
+
 var segmentsLengthPool = (function () {
   function create() {
     return {

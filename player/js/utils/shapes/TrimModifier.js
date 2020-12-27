@@ -1,3 +1,5 @@
+/* global extendPrototype, ShapeModifier, PropertyFactory, segmentsLengthPool, bez, shapePool, ShapeModifiers */
+
 function TrimModifier() {
 }
 extendPrototype([ShapeModifier], TrimModifier);

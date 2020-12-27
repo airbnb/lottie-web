@@ -1,3 +1,6 @@
+/* global propertyGroupFactory, ExpressionPropertyInterface, PropertyInterface */
+/* exported EffectsExpressionInterface */
+
 var EffectsExpressionInterface = (function () {
   var ob = {
     createEffectsInterface: createEffectsInterface,

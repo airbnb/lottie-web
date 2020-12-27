@@ -1,3 +1,5 @@
+/* global extendPrototype, ShapeModifiers */
+
 function MouseModifier() {}
 extendPrototype([ShapeModifier], MouseModifier);
 MouseModifier.prototype.processKeys = function (forceRender) {
@@ -17,7 +19,6 @@ MouseModifier.prototype.processPath = function (path, mouseCoords, positions) {
   var vValues = [];
   var oValues = [];
   var iValues = [];
-  var dist;
   var theta;
   var x;
   var y;

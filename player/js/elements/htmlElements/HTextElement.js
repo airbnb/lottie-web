@@ -1,3 +1,6 @@
+/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
+RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS */
+
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];
   this.textPaths = [];

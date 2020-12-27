@@ -1,3 +1,5 @@
+/* global CanvasRenderer, dataManager, expressionsPlugin, AnimationItem */
+
 AnimationItem.prototype.setParams = function (params) {
   if (params.context) {
     this.context = params.context;
@@ -39,7 +41,7 @@ AnimationItem.prototype.setParams = function (params) {
   }
 };
 
-AnimationItem.prototype.setData = function (wrapper, animationData) {
+AnimationItem.prototype.setData = function () {
   throw new Error('Cannot set data on wrapper for canvas worker renderer');
 };
 
