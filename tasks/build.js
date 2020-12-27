@@ -73,6 +73,10 @@ const scripts = [
 		builds: ['canvas_worker']
 	},
 	{
+		src: 'js/utils/getFontProperties.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/utils/FontManager.js',
 		builds: defaultBuilds
 	},
