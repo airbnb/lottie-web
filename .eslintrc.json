@@ -40,7 +40,7 @@
         "no-underscore-dangle": "off",
         "no-param-reassign": "off",
         "vars-on-top": "off",
-        "-------": "off",
-        "no-use-before-define": "off"
+        "no-use-before-define": "off",
+        "-------": "off"
     }
 }
