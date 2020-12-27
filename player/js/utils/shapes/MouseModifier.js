@@ -1,4 +1,4 @@
-/* global extendPrototype, ShapeModifiers */
+/* global extendPrototype, ShapeModifiers, ShapeModifier */
 
 function MouseModifier() {}
 extendPrototype([ShapeModifier], MouseModifier);

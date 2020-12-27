@@ -1,4 +1,4 @@
-/* global createNS, createTag */
+/* global createNS, createTag, getFontProperties */
 /* exported FontManager */
 
 var FontManager = (function () {
@@ -96,9 +96,11 @@ var FontManager = (function () {
     var tHelper = createNS('text');
     tHelper.style.fontSize = '100px';
     // tHelper.style.fontFamily = fontData.fFamily;
+
+    var fontProps = getFontProperties(fontData);
     tHelper.setAttribute('font-family', fontData.fFamily);
-    tHelper.setAttribute('font-style', fontData.fStyle);
-    tHelper.setAttribute('font-weight', fontData.fWeight);
+    tHelper.setAttribute('font-style', fontProps.style);
+    tHelper.setAttribute('font-weight', fontProps.weight);
     tHelper.textContent = '1';
     if (fontData.fClass) {
       tHelper.style.fontFamily = 'inherit';
