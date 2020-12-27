@@ -8,7 +8,9 @@
     "url": "https://github.com/airbnb/lottie-web.git"
   },
   "scripts": {
-    "build": "node tasks/build.js"
+    "build": "npx eslint ./player/js/**/* && node tasks/build.js",
+    "lint": "npx eslint ./player/js/**/*",
+    "lint:fix": "npx eslint ./player/js/**/* --fix"
   },
   "keywords": [
     "animation",
