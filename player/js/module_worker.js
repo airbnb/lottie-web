@@ -58,7 +58,7 @@ var lottie = (function(window) {
 
 var animations = [];
 
-var onmessage = function(evt) {
+onmessage = function(evt) {
     var canvas = evt.data.canvas;
     var params = evt.data.params;
     var ctx = canvas.getContext("2d");
