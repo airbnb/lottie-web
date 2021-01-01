@@ -9,8 +9,8 @@
         root.lottie = factory(root);
         root.bodymovin = root.lottie;
     }
-}((window || {}), function(window) {
-	var lottiejs = (function(window) {
+}((self || {}), function(window) {
+	var lottie = (function(window) {
     "use strict";
     var svgNS = "http://www.w3.org/2000/svg";
 
@@ -1822,6 +1822,43 @@ dataManager.completeData = function(animationData, fontManager) {
         animationData.__complete = true;
 }
 
+function getFontProperties(fontData) {
+	var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
+
+	var fWeight = 'normal', fStyle = 'normal';
+	var len = styles.length;
+	var styleName;
+	for (var i = 0; i < len; i += 1) {
+		styleName = styles[i].toLowerCase();
+		switch (styleName) {
+			case 'italic':
+				fStyle = 'italic';
+				break;
+			case 'bold':
+				fWeight = '700';
+				break;
+			case 'black':
+				fWeight = '900';
+				break;
+			case 'medium':
+				fWeight = '500';
+				break;
+			case 'regular':
+			case 'normal':
+				fWeight = '400';
+				break;
+			case 'light':
+			case 'thin':
+				fWeight = '200';
+				break;
+		}
+	}
+
+	return {
+		style: fStyle,
+		weight: fontData.fWeight || fWeight
+	};
+}
 var FontManager = (function(){
 
     var maxWaitingTime = 5000;
@@ -1918,9 +1955,11 @@ var FontManager = (function(){
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
         //tHelper.style.fontFamily = fontData.fFamily;
+
+        var fontProps = getFontProperties(fontData);
         tHelper.setAttribute('font-family', fontData.fFamily);
-        tHelper.setAttribute('font-style', fontData.fStyle);
-        tHelper.setAttribute('font-weight', fontData.fWeight);
+        tHelper.setAttribute('font-style', fontProps.style);
+        tHelper.setAttribute('font-weight', fontProps.weight);
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
@@ -5301,38 +5340,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var j, jLen;
     var fontData = fontManager.getFontByName(documentData.f);
     var charData, cLength = 0;
-    var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
-    var fWeight = 'normal', fStyle = 'normal';
-    len = styles.length;
-    var styleName;
-    for(i=0;i<len;i+=1){
-        styleName = styles[i].toLowerCase();
-        switch(styleName) {
-            case 'italic':
-            fStyle = 'italic';
-            break;
-            case 'bold':
-            fWeight = '700';
-            break;
-            case 'black':
-            fWeight = '900';
-            break;
-            case 'medium':
-            fWeight = '500';
-            break;
-            case 'regular':
-            case 'normal':
-            fWeight = '400';
-            break;
-            case 'light':
-            case 'thin':
-            fWeight = '200';
-            break;
-        }
-    }
-    documentData.fWeight = fontData.fWeight || fWeight;
-    documentData.fStyle = fStyle;
+    var fontProps = getFontProperties(fontData);
+    documentData.fWeight = fontProps.weight;
+    documentData.fStyle = fontProps.style;
     documentData.finalSize = documentData.s;
     documentData.finalText = this.buildFinalText(documentData.t);
     len = documentData.finalText.length;
@@ -12739,9 +12750,9 @@ GroupEffect.prototype.init = function(data,element){
     lottiejs.setQuality = setQuality;
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
-    lottie.setVolume = animationManager.setVolume;
-    lottie.mute = animationManager.mute;
-    lottie.unmute = animationManager.unmute;
+    lottiejs.setVolume = animationManager.setVolume;
+    lottiejs.mute = animationManager.mute;
+    lottiejs.unmute = animationManager.unmute;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.version = '5.7.5';
 
@@ -12751,11 +12762,11 @@ GroupEffect.prototype.init = function(data,element){
 
 var animations = [];
 
-var onmessage = function(evt) {
+onmessage = function(evt) {
     var canvas = evt.data.canvas;
     var params = evt.data.params;
     var ctx = canvas.getContext("2d");
-    var animation = lottiejs.loadAnimation({
+    var animation = lottie.loadAnimation({
         renderer: 'canvas',
         loop: evt.data.loop,
         autoplay: true,
