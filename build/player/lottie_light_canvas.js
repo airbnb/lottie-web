@@ -1810,6 +1810,43 @@ function dataFunctionManager(){
 
 var dataManager = dataFunctionManager();
 
+function getFontProperties(fontData) {
+	var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
+
+	var fWeight = 'normal', fStyle = 'normal';
+	var len = styles.length;
+	var styleName;
+	for (var i = 0; i < len; i += 1) {
+		styleName = styles[i].toLowerCase();
+		switch (styleName) {
+			case 'italic':
+				fStyle = 'italic';
+				break;
+			case 'bold':
+				fWeight = '700';
+				break;
+			case 'black':
+				fWeight = '900';
+				break;
+			case 'medium':
+				fWeight = '500';
+				break;
+			case 'regular':
+			case 'normal':
+				fWeight = '400';
+				break;
+			case 'light':
+			case 'thin':
+				fWeight = '200';
+				break;
+		}
+	}
+
+	return {
+		style: fStyle,
+		weight: fontData.fWeight || fWeight
+	};
+}
 var FontManager = (function(){
 
     var maxWaitingTime = 5000;
@@ -1906,9 +1943,11 @@ var FontManager = (function(){
         var tHelper = createNS('text');
         tHelper.style.fontSize = '100px';
         //tHelper.style.fontFamily = fontData.fFamily;
+
+        var fontProps = getFontProperties(fontData);
         tHelper.setAttribute('font-family', fontData.fFamily);
-        tHelper.setAttribute('font-style', fontData.fStyle);
-        tHelper.setAttribute('font-weight', fontData.fWeight);
+        tHelper.setAttribute('font-style', fontProps.style);
+        tHelper.setAttribute('font-weight', fontProps.weight);
         tHelper.textContent = '1';
         if(fontData.fClass){
             tHelper.style.fontFamily = 'inherit';
@@ -5436,38 +5475,10 @@ TextProperty.prototype.completeTextData = function(documentData) {
     var j, jLen;
     var fontData = fontManager.getFontByName(documentData.f);
     var charData, cLength = 0;
-    var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
-    var fWeight = 'normal', fStyle = 'normal';
-    len = styles.length;
-    var styleName;
-    for(i=0;i<len;i+=1){
-        styleName = styles[i].toLowerCase();
-        switch(styleName) {
-            case 'italic':
-            fStyle = 'italic';
-            break;
-            case 'bold':
-            fWeight = '700';
-            break;
-            case 'black':
-            fWeight = '900';
-            break;
-            case 'medium':
-            fWeight = '500';
-            break;
-            case 'regular':
-            case 'normal':
-            fWeight = '400';
-            break;
-            case 'light':
-            case 'thin':
-            fWeight = '200';
-            break;
-        }
-    }
-    documentData.fWeight = fontData.fWeight || fWeight;
-    documentData.fStyle = fStyle;
+    var fontProps = getFontProperties(fontData);
+    documentData.fWeight = fontProps.weight;
+    documentData.fStyle = fontProps.style;
     documentData.finalSize = documentData.s;
     documentData.finalText = this.buildFinalText(documentData.t);
     len = documentData.finalText.length;
