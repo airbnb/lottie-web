@@ -676,7 +676,8 @@ function uglifyCode(code) {
 	})
 }
 
-async function modularizeCode(code) {
+async function modularizeCode(code, build) {
+	const globalScope = (build =='canvas_worker') ? 'self' : 'window'
 	return `(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
@@ -688,7 +689,7 @@ async function modularizeCode(code) {
         root.lottie = factory(root);
         root.bodymovin = root.lottie;
     }
-}((window || {}), function(window) {
+}((${globalScope} || {}), function(window) {
 	${code}
 return lottie;
 }));`
@@ -698,7 +699,7 @@ async function buildVersion(scripts, version) {
 	const code = await concatScripts(scripts, version.build)
 	const wrappedCode = await wrapScriptWithModule(code, version.build)
 	const processedCode = await version.process(wrappedCode)
-	const modularizedCode = await modularizeCode(processedCode)
+	const modularizedCode = await modularizeCode(processedCode, version.build)
 	const saved = await save(modularizedCode, version.fileName)
 	return true
 }

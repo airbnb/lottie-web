@@ -1,4 +1,4 @@
-var lottiejs = (function(window) {
+var lottie = (function(window) {
     "use strict";
     /*<%= contents %>*/
     var lottiejs = {};
@@ -46,9 +46,9 @@ var lottiejs = (function(window) {
     lottiejs.setQuality = setQuality;
     lottiejs.freeze = animationManager.freeze;
     lottiejs.unfreeze = animationManager.unfreeze;
-    lottie.setVolume = animationManager.setVolume;
-    lottie.mute = animationManager.mute;
-    lottie.unmute = animationManager.unmute;
+    lottiejs.setVolume = animationManager.setVolume;
+    lottiejs.mute = animationManager.mute;
+    lottiejs.unmute = animationManager.unmute;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.version = '[[BM_VERSION]]';
 
@@ -58,11 +58,11 @@ var lottiejs = (function(window) {
 
 var animations = [];
 
-var onmessage = function(evt) {
+onmessage = function(evt) {
     var canvas = evt.data.canvas;
     var params = evt.data.params;
     var ctx = canvas.getContext("2d");
-    var animation = lottiejs.loadAnimation({
+    var animation = lottie.loadAnimation({
         renderer: 'canvas',
         loop: evt.data.loop,
         autoplay: true,
