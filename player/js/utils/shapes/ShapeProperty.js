@@ -133,7 +133,8 @@ var ShapePropertyFactory = (function(){
         var finalValue = this.kf ? this.pv : this.data.ks ? this.data.ks.k : this.data.pt.k;
         var i, len = this.effectsSequence.length;
         for(i = 0; i < len; i += 1) {
-            finalValue = this.effectsSequence[i](finalValue);
+            var expressionResult = this.effectsSequence[i](finalValue)
+            finalValue = expressionResult === null ? finalValue : expressionResult;
         }
         this.setVValue(finalValue);
         this.lock = false;

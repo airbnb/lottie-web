@@ -647,7 +647,13 @@ var ExpressionManager = (function(){
             if (needsVelocity) {
                 velocity = velocityAtTime(time);
             }
-            expression_function();
+
+            try {
+              expression_function();
+            } catch(e) {
+              return null;
+            }
+
             this.frameExpressionId = elem.globalData.frameId;
 
             //TODO: Check if it's possible to return on ShapeInterface the .v value
