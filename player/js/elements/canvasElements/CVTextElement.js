@@ -19,8 +19,6 @@ function CVTextElement(data, globalData, comp){
 }
 extendPrototype([BaseElement,TransformElement,CVBaseElement,HierarchyElement,FrameElement,RenderableElement,ITextElement], CVTextElement);
 
-CVTextElement.prototype.tHelper = createTag('canvas').getContext('2d');
-
 CVTextElement.prototype.buildNewText = function(){
     var documentData = this.textProperty.currentData;
     this.renderedLetters = createSizedArray(documentData.l ? documentData.l.length : 0);
@@ -46,7 +44,6 @@ CVTextElement.prototype.buildNewText = function(){
     this.stroke = hasStroke;
     this.values.fValue = documentData.finalSize + 'px '+ this.globalData.fontManager.getFontByName(documentData.f).fFamily;
     len = documentData.finalText.length;
-    //this.tHelper.font = this.values.fValue;
     var charData, shapeData, k, kLen, shapes, j, jLen, pathNodes, commands, pathArr, singleShape = this.data.singleShape;
     var trackingOffset = documentData.tr/1000*documentData.finalSize;
     var xPos = 0, yPos = 0, firstLine = true;
