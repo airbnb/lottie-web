@@ -1,10 +1,9 @@
-/* global defaultCurveSegments:writable, roundValues, lottie, animationManager */
-
-var lottiejs = (function () {
+/* global defaultCurveSegments:writable, roundValues, animationManager */
+var lottie = (function () {
   'use strict';
 
   /* <%= contents %> */
-  var lottiejsLibrary = {};
+  var lottiejs = {};
 
   function loadAnimation(params) {
     return animationManager.loadAnimation(params);
@@ -16,11 +15,11 @@ var lottiejs = (function () {
         case 'high':
           defaultCurveSegments = 200;
           break;
-        default:
         case 'medium':
           defaultCurveSegments = 50;
           break;
         case 'low':
+        default:
           defaultCurveSegments = 10;
           break;
       }
@@ -34,35 +33,35 @@ var lottiejs = (function () {
     }
   }
 
-  lottiejsLibrary.play = animationManager.play;
-  lottiejsLibrary.pause = animationManager.pause;
-  lottiejsLibrary.togglePause = animationManager.togglePause;
-  lottiejsLibrary.setSpeed = animationManager.setSpeed;
-  lottiejsLibrary.setDirection = animationManager.setDirection;
-  lottiejsLibrary.stop = animationManager.stop;
-  lottiejsLibrary.registerAnimation = animationManager.registerAnimation;
-  lottiejsLibrary.loadAnimation = loadAnimation;
-  lottiejsLibrary.resize = animationManager.resize;
-  lottiejsLibrary.goToAndStop = animationManager.goToAndStop;
-  lottiejsLibrary.destroy = animationManager.destroy;
-  lottiejsLibrary.setQuality = setQuality;
-  lottiejsLibrary.freeze = animationManager.freeze;
-  lottiejsLibrary.unfreeze = animationManager.unfreeze;
-  lottie.setVolume = animationManager.setVolume;
-  lottie.mute = animationManager.mute;
-  lottie.unmute = animationManager.unmute;
-  lottiejsLibrary.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-  lottiejsLibrary.version = '[[BM_VERSION]]';
+  lottiejs.play = animationManager.play;
+  lottiejs.pause = animationManager.pause;
+  lottiejs.togglePause = animationManager.togglePause;
+  lottiejs.setSpeed = animationManager.setSpeed;
+  lottiejs.setDirection = animationManager.setDirection;
+  lottiejs.stop = animationManager.stop;
+  lottiejs.registerAnimation = animationManager.registerAnimation;
+  lottiejs.loadAnimation = loadAnimation;
+  lottiejs.resize = animationManager.resize;
+  lottiejs.goToAndStop = animationManager.goToAndStop;
+  lottiejs.destroy = animationManager.destroy;
+  lottiejs.setQuality = setQuality;
+  lottiejs.freeze = animationManager.freeze;
+  lottiejs.unfreeze = animationManager.unfreeze;
+  lottiejs.setVolume = animationManager.setVolume;
+  lottiejs.mute = animationManager.mute;
+  lottiejs.unmute = animationManager.unmute;
+  lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+  lottiejs.version = '[[BM_VERSION]]';
 
-  return lottiejsLibrary;
+  return lottiejs;
 }({}));
 
 var animations = [];
 
-var onmessage = function (evt) { // eslint-disable-line  no-unused-vars, no-redeclare
+onmessage = function (evt) {
   var canvas = evt.data.canvas;
   var ctx = canvas.getContext('2d');
-  var animation = lottiejs.loadAnimation({
+  var animation = lottie.loadAnimation({
     renderer: 'canvas',
     loop: evt.data.loop,
     autoplay: true,
