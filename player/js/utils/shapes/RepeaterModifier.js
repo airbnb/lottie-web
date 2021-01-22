@@ -92,6 +92,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
   var i;
   var dir;
   var cont;
+  var hasReloaded = false;
   if (this._mdf || _isFirstFrame) {
     var copies = Math.ceil(this.c.v);
     if (this._groups.length < copies) {
@@ -109,6 +110,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
         this._currentCopies += 1;
       }
       this.elem.reloadShapes();
+      hasReloaded = true;
     }
     cont = 0;
     var renderFlag;
@@ -201,6 +203,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       i += dir;
     }
   }
+  return hasReloaded;
 };
 
 RepeaterModifier.prototype.addShape = function () {};

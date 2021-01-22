@@ -32,8 +32,14 @@ IShapeElement.prototype = {
     }
 
     len = this.shapeModifiers.length;
+    var shouldBreakProcess;
     for (i = len - 1; i >= 0; i -= 1) {
-      this.shapeModifiers[i].processShapes(this._isFirstFrame);
+      shouldBreakProcess = this.shapeModifiers[i].processShapes(this._isFirstFrame);
+      // workaround to fix cases where a repeater resets the shape so the following processes get called twice
+      // TODO: find a better solution for this
+      if (shouldBreakProcess) {
+        break;
+      }
     }
   },
   lcEnum: {
