@@ -13581,7 +13581,7 @@ var ExpressionManager = (function () {
 
     var active = !this.data || this.data.hd !== true;
 
-    var wiggle = function wiggle(freq, amp) {
+    function wiggle(freq, amp) {
       var iWiggle;
       var j;
       var lenWiggle = this.pv.length ? this.pv.length : 1;
@@ -13611,7 +13611,8 @@ var ExpressionManager = (function () {
         return arr;
       }
       return this.pv + addedAmps[0] + (-amp + amp * 2 * BMMath.random()) * perc;
-    }.bind(this);
+    }
+    wiggle.bind(this);
 
     if (thisProperty.loopIn) {
       loopIn = thisProperty.loopIn.bind(thisProperty);
