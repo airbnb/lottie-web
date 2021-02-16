@@ -64,7 +64,11 @@ var ImagePreloader = (function () {
       this._imageLoaded();
     }.bind(this), false);
     img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
-    this._elementHelper.append(img);
+    if (this._elementHelper.append) {
+      this._elementHelper.append(img);
+    } else {
+      this._elementHelper.appendChild(img);
+    }
     var ob = {
       img: img,
       assetData: assetData,
