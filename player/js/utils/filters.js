@@ -6,10 +6,10 @@ var filtersFactory = (function () {
   ob.createFilter = createFilter;
   ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
-  function createFilter(filId, skipCoordinates){
+  function createFilter(filId, skipCoordinates) {
     var fil = createNS('filter');
     fil.setAttribute('id', filId);
-    if (skipCoordinates != true) {
+    if (skipCoordinates !== true) {
       fil.setAttribute('filterUnits', 'objectBoundingBox');
       fil.setAttribute('x', '0%');
       fil.setAttribute('y', '0%');
