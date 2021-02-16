@@ -1,1 +1,3 @@
-var ImagePreloader = function() {};
+/* exported ImagePreloader */
+
+var ImagePreloader = function () {};

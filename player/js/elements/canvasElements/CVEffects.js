@@ -1,4 +1,4 @@
 function CVEffects() {
 
 }
-CVEffects.prototype.renderFrame = function(){};
+CVEffects.prototype.renderFrame = function () {};

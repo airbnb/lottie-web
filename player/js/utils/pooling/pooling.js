@@ -1,10 +1,12 @@
-var pooling = (function(){
+/* global createSizedArray */
+/* exported pooling */
 
-	function double(arr){
-		return arr.concat(createSizedArray(arr.length));
-	}
+var pooling = (function () {
+  function double(arr) {
+    return arr.concat(createSizedArray(arr.length));
+  }
 
-	return {
-		double: double
-	};
+  return {
+    double: double,
+  };
 }());

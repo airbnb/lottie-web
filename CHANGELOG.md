@@ -1,3 +1,9 @@
+## V 5.7.6
+- FIX: es6 support on export
+- IMPROVEMENT: added linting rules
+- FIX: seedrandom and main fix
+- FIX: image export fix
+
 ## V 5.7.5
 - FIX: Enable HImageElement to use preloaded images thanks @dbettini
 - FIX: lottie-light effects breaking on destroy

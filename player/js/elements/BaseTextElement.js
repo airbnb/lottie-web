@@ -1,3 +1,4 @@
-var BaseTextElement = function (){
-};
+/* exported BaseTextElement */
 
+var BaseTextElement = function () {
+};

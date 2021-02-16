@@ -1,19 +1,22 @@
-var segments_length_pool = (function(){
+/* global poolFactory, bezierLengthPool */
+/* exported segmentsLengthPool */
 
-	function create() {
-		return {
-			lengths: [],
-			totalLength: 0
-		};
-	}
+var segmentsLengthPool = (function () {
+  function create() {
+    return {
+      lengths: [],
+      totalLength: 0,
+    };
+  }
 
-	function release(element) {
-		var i, len = element.lengths.length;
-		for(i=0;i<len;i+=1) {
-			bezier_length_pool.release(element.lengths[i]);
-		}
-		element.lengths.length = 0;
-	}
+  function release(element) {
+    var i;
+    var len = element.lengths.length;
+    for (i = 0; i < len; i += 1) {
+      bezierLengthPool.release(element.lengths[i]);
+    }
+    element.lengths.length = 0;
+  }
 
-	return pool_factory(8, create, release);
+  return poolFactory(8, create, release);
 }());
