@@ -1,6 +1,6 @@
 {
   "name": "lottie-web",
-  "version": "5.7.5",
+  "version": "5.7.6",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
   "main": "./build/player/lottie.js",
   "repository": {
@@ -8,7 +8,9 @@
     "url": "https://github.com/airbnb/lottie-web.git"
   },
   "scripts": {
-    "build": "node tasks/build.js"
+    "build": "npx eslint ./player/js/**/* && node tasks/build.js",
+    "lint": "npx eslint ./player/js/**/*",
+    "lint:fix": "npx eslint ./player/js/**/* --fix"
   },
   "keywords": [
     "animation",
@@ -20,6 +22,9 @@
   ],
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
+    "eslint": "^7.16.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
     "uglify-js": "^3.4.9",
     "watch": "^1.0.2"
   },

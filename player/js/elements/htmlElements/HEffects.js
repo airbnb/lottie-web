@@ -1,3 +1,3 @@
 function HEffects() {
 }
-HEffects.prototype.renderFrame = function(){};
+HEffects.prototype.renderFrame = function () {};

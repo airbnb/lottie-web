@@ -1,9 +1,8 @@
 const fs = require('fs');
-const cheerio = require('cheerio');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.7.5';
+const bm_version = '5.7.6';
 const buildReducedVersion = process.argv[2] === 'reduced'
 const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
 
@@ -71,6 +70,10 @@ const scripts = [
 	{
 		src: 'js/utils/DataManagerWorkerOverrides.js',
 		builds: ['canvas_worker']
+	},
+	{
+		src: 'js/utils/getFontProperties.js',
+		builds: defaultBuilds
 	},
 	{
 		src: 'js/utils/FontManager.js',
@@ -558,63 +561,6 @@ const scripts = [
 	}
 ]
 
-function loadIndex() {
-	return new Promise((resolve, reject)=>{
-
-		function onLoad(err, result) {
-			if(err) {
-				reject(err);
-			} else {
-				resolve(result);
-			}
-		}
-		fs.readFile(`${rootFolder}index.html`, 'utf8', onLoad);
-	})
-}
-
-function parseHTML(html) {
-	return new Promise((resolve, reject)=> {
-		try {
-			const $ = cheerio.load(html);
-			resolve($);
-		} catch(err) {
-			reject(err);
-		}
-	})
-}
-
-function getScripts($) {
-	return new Promise((resolve, reject)=> {
-		try {
-			const scriptNodes = []
-			let shouldAddToScripts = false;
-			$("head").contents().each((index, node) => {
-				if(node.nodeType === 8 && node.data.indexOf('build:js') !== -1) {
-					shouldAddToScripts = true;
-				} else if(shouldAddToScripts) {
-					if(node.type === 'script') {
-
-						scriptNodes.push(node)
-					} else if(node.nodeType === 8 && node.data.indexOf('endbuild') !== -1) {
-						shouldAddToScripts = false;
-					}
-				}
-			})
-			const scripts = scriptNodes.map((node)=>{
-				const builds = node.attribs['data-builds'] ? node.attribs['data-builds'].split(',') : defaultBuilds
-				return {
-					src: node.attribs.src,
-					builds: builds,
-				}
-			})
-			resolve(scripts);
-		} catch(err) {
-			reject(err);
-		}
-
-	})
-}
-
 function concatScripts(scripts, build) {
 	return new Promise((resolve, reject)=>{
 		// Concatenating scripts
@@ -639,7 +585,7 @@ function wrapScriptWithModule(code, build) {
 			// Wrapping with module
 			let moduleFileName = (build =='canvas_worker') ? 'module_worker' : 'module';
 			let wrappedCode = fs.readFileSync(`${rootFolder}js/${moduleFileName}.js`, "utf8");
-			wrappedCode = wrappedCode.replace('/*<%= contents %>*/',code);
+			wrappedCode = wrappedCode.replace('/* <%= contents %> */',code);
 			wrappedCode = wrappedCode.replace('[[BM_VERSION]]',bm_version);
 			resolve(wrappedCode);
 		} catch(err) {
@@ -672,7 +618,8 @@ function uglifyCode(code) {
 	})
 }
 
-async function modularizeCode(code) {
+async function modularizeCode(code, build) {
+	const globalScope = (build =='canvas_worker') ? 'self' : 'window'
 	return `(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
@@ -684,7 +631,7 @@ async function modularizeCode(code) {
         root.lottie = factory(root);
         root.bodymovin = root.lottie;
     }
-}((window || {}), function(window) {
+}((${globalScope} || {}), function(window) {
 	${code}
 return lottie;
 }));`
@@ -694,9 +641,9 @@ async function buildVersion(scripts, version) {
 	const code = await concatScripts(scripts, version.build)
 	const wrappedCode = await wrapScriptWithModule(code, version.build)
 	const processedCode = await version.process(wrappedCode)
-	const modularizedCode = await modularizeCode(processedCode)
+	const modularizedCode = await modularizeCode(processedCode, version.build)
 	const saved = await save(modularizedCode, version.fileName)
-	return true
+	return saved
 }
 
 function save(code, fileName) {
@@ -705,7 +652,7 @@ function save(code, fileName) {
 			if (err) {
 				reject(err)
 			} else {
-				resolve('File Saved')
+				resolve(true)
 			}
 		});
 	})
@@ -822,11 +769,7 @@ function handleError(err) {
 
 async function build() {
 	try {
-		const htmlData = await loadIndex();
-		const parsedData = await parseHTML(htmlData);
-		// const scripts = await getScripts(parsedData);
 		const result = await buildVersions(scripts);
-		console.log(result);
 
 	} catch(err) {
 		handleError(err);

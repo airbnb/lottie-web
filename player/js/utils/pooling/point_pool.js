@@ -1,7 +1,9 @@
-var point_pool = (function(){
+/* global createTypedArray, poolFactory */
+/* exported pointPool */
 
-	function create() {
-		return createTypedArray('float32', 2);
-	}
-	return pool_factory(8, create);
+var pointPool = (function () {
+  function create() {
+    return createTypedArray('float32', 2);
+  }
+  return poolFactory(8, create);
 }());

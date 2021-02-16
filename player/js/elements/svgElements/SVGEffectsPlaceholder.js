@@ -1,1 +1,3 @@
-function SVGEffects(){}
+/* exported SVGEffects */
+
+function SVGEffects() {}

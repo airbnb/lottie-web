@@ -1,11 +1,13 @@
-var bezier_length_pool = (function(){
+/* global createTypedArray, defaultCurveSegments, poolFactory */
+/* exported bezierLengthPool */
 
-	function create() {
-		return {
-            addedLength: 0,
-            percents: createTypedArray('float32', defaultCurveSegments),
-            lengths: createTypedArray('float32', defaultCurveSegments),
-        };
-	}
-	return pool_factory(8, create);
+var bezierLengthPool = (function () {
+  function create() {
+    return {
+      addedLength: 0,
+      percents: createTypedArray('float32', defaultCurveSegments),
+      lengths: createTypedArray('float32', defaultCurveSegments),
+    };
+  }
+  return poolFactory(8, create);
 }());
