@@ -35,7 +35,7 @@ var TransformPropertyFactory = (function () {
     }
   }
   function processKeys(forceRender) {
-    if (this.elem.globalData.frameId === this.frameId) {
+    if (this.elem.globalData.frameId === this.frameId && !this.elem._isFirstFrame) {
       return;
     }
     if (this._isDirty) {
