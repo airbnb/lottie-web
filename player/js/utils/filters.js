@@ -6,14 +6,16 @@ var filtersFactory = (function () {
   ob.createFilter = createFilter;
   ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
-  function createFilter(filId) {
+  function createFilter(filId, skipCoordinates) {
     var fil = createNS('filter');
     fil.setAttribute('id', filId);
-    fil.setAttribute('filterUnits', 'objectBoundingBox');
-    fil.setAttribute('x', '0%');
-    fil.setAttribute('y', '0%');
-    fil.setAttribute('width', '100%');
-    fil.setAttribute('height', '100%');
+    if (skipCoordinates !== true) {
+      fil.setAttribute('filterUnits', 'objectBoundingBox');
+      fil.setAttribute('x', '0%');
+      fil.setAttribute('y', '0%');
+      fil.setAttribute('width', '100%');
+      fil.setAttribute('height', '100%');
+    }
     return fil;
   }
 
