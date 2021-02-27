@@ -21,7 +21,6 @@ var assetLoader = (function () {
       // This crashes on Android WebView prior to KitKat
       xhr.responseType = 'json';
     } catch (err) {} // eslint-disable-line no-empty
-    xhr.send();
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
@@ -39,6 +38,7 @@ var assetLoader = (function () {
         }
       }
     };
+    xhr.send();
   }
   return {
     load: loadAsset,
