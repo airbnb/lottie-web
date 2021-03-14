@@ -334,7 +334,7 @@ AnimationItem.prototype.gotoFrame = function () {
 };
 
 AnimationItem.prototype.renderFrame = function () {
-  if (this.isLoaded === false) {
+  if (this.isLoaded === false || !this.renderer) {
     return;
   }
   try {
