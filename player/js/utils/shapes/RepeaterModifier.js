@@ -118,6 +118,16 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       renderFlag = cont < copies;
       this._groups[i]._render = renderFlag;
       this.changeGroupRender(this._groups[i].it, renderFlag);
+      if (!renderFlag) {
+        var elems = this.elemsData[i].it;
+        var transformData = elems[elems.length - 1];
+        if (transformData.transform.op.v !== 0) {
+          transformData.transform.op._mdf = true;
+          transformData.transform.op.v = 0;
+        } else {
+          transformData.transform.op._mdf = false;
+        }
+      }
       cont += 1;
     }
 
@@ -167,7 +177,10 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       jLen = itemsTransform.length;
       items[items.length - 1].transform.mProps._mdf = true;
       items[items.length - 1].transform.op._mdf = true;
-      items[items.length - 1].transform.op.v = this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
+      items[items.length - 1].transform.op.v = this._currentCopies === 1
+        ? this.so.v
+        : this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
+
       if (iteration !== 0) {
         if ((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)) {
           this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
