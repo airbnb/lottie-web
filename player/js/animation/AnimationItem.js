@@ -1,7 +1,7 @@
 /* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
 CanvasRenderer, SVGRenderer, HybridRenderer, assetLoader, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
 BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
-BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent */
+BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
 
 var AnimationItem = function () {
   this._cbs = [];
@@ -34,6 +34,7 @@ var AnimationItem = function () {
   this.projectInterface = ProjectInterface();
   this.imagePreloader = new ImagePreloader();
   this.audioController = audioControllerFactory();
+  this.markers = [];
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -270,6 +271,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.frameMult = this.animationData.fr / 1000;
     this.renderer.searchExtraCompositions(animData.assets);
+    this.markers = markerParser(animData.markers || []);
     this.trigger('config_ready');
     this.preloadImages();
     this.loadSegments();
@@ -391,11 +393,28 @@ AnimationItem.prototype.stop = function (name) {
   this.setCurrentRawFrameValue(0);
 };
 
+AnimationItem.prototype.getMarkerData = function (markerName) {
+  var marker;
+  for (var i = 0; i < this.markers.length; i += 1) {
+    marker = this.markers[i];
+    if (marker.payload && marker.payload.name === markerName) {
+      return marker;
+    }
+  }
+  return null;
+};
+
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
   if (name && this.name !== name) {
     return;
   }
-  if (isFrame) {
+  var numValue = Number(value);
+  if (isNaN(numValue)) {
+    var marker = this.getMarkerData(value);
+    if (marker) {
+      this.goToAndStop(marker.time, true);
+    }
+  } else if (isFrame) {
     this.setCurrentRawFrameValue(value);
   } else {
     this.setCurrentRawFrameValue(value * this.frameModifier);
@@ -404,7 +423,22 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
-  this.goToAndStop(value, isFrame, name);
+  if (name && this.name !== name) {
+    return;
+  }
+  var numValue = Number(value);
+  if (isNaN(numValue)) {
+    var marker = this.getMarkerData(value);
+    if (marker) {
+      if (!marker.duration) {
+        this.goToAndStop(marker.time, true);
+      } else {
+        this.playSegments([marker.time, marker.time + marker.duration], true);
+      }
+    }
+  } else {
+    this.goToAndStop(numValue, isFrame, name);
+  }
   this.play();
 };
 

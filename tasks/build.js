@@ -212,6 +212,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/utils/markers/markerParser.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/renderers/BaseRenderer.js',
 		builds: defaultBuilds
 	},
