@@ -5,7 +5,7 @@ function SVGEffects(elem) {
   var i;
   var len = elem.data.ef ? elem.data.ef.length : 0;
   var filId = createElementID();
-  var fil = filtersFactory.createFilter(filId);
+  var fil = filtersFactory.createFilter(filId, true);
   var count = 0;
   this.filters = [];
   var filterManager;
