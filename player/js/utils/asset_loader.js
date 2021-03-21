@@ -15,7 +15,6 @@ var assetLoader = (function () {
   function loadAsset(path, callback, errorCallback) {
     var response;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', path, true);
     // set responseType after calling open or IE will break.
     try {
       // This crashes on Android WebView prior to KitKat
@@ -38,6 +37,7 @@ var assetLoader = (function () {
         }
       }
     };
+    xhr.open('GET', path, true);
     xhr.send();
   }
   return {
