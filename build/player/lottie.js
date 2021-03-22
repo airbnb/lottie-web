@@ -4285,6 +4285,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
   var i;
   var dir;
   var cont;
+  var hasReloaded = false;
   if (this._mdf || _isFirstFrame) {
     var copies = Math.ceil(this.c.v);
     if (this._groups.length < copies) {
@@ -4302,6 +4303,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
         this._currentCopies += 1;
       }
       this.elem.reloadShapes();
+      hasReloaded = true;
     }
     cont = 0;
     var renderFlag;
@@ -4309,6 +4311,16 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       renderFlag = cont < copies;
       this._groups[i]._render = renderFlag;
       this.changeGroupRender(this._groups[i].it, renderFlag);
+      if (!renderFlag) {
+        var elems = this.elemsData[i].it;
+        var transformData = elems[elems.length - 1];
+        if (transformData.transform.op.v !== 0) {
+          transformData.transform.op._mdf = true;
+          transformData.transform.op.v = 0;
+        } else {
+          transformData.transform.op._mdf = false;
+        }
+      }
       cont += 1;
     }
 
@@ -4358,7 +4370,10 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       jLen = itemsTransform.length;
       items[items.length - 1].transform.mProps._mdf = true;
       items[items.length - 1].transform.op._mdf = true;
-      items[items.length - 1].transform.op.v = this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
+      items[items.length - 1].transform.op.v = this._currentCopies === 1
+        ? this.so.v
+        : this.so.v + (this.eo.v - this.so.v) * (i / (this._currentCopies - 1));
+
       if (iteration !== 0) {
         if ((i !== 0 && dir === 1) || (i !== this._currentCopies - 1 && dir === -1)) {
           this.applyTransforms(this.pMatrix, this.rMatrix, this.sMatrix, this.tr, 1, false);
@@ -4394,6 +4409,7 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
       i += dir;
     }
   }
+  return hasReloaded;
 };
 
 RepeaterModifier.prototype.addShape = function () {};
@@ -4735,7 +4751,11 @@ var ImagePreloader = (function () {
       this._imageLoaded();
     }.bind(this), false);
     img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
-    this._elementHelper.append(img);
+    if (this._elementHelper.append) {
+      this._elementHelper.append(img);
+    } else {
+      this._elementHelper.appendChild(img);
+    }
     var ob = {
       img: img,
       assetData: assetData,
@@ -4857,14 +4877,16 @@ var filtersFactory = (function () {
   ob.createFilter = createFilter;
   ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
 
-  function createFilter(filId) {
+  function createFilter(filId, skipCoordinates) {
     var fil = createNS('filter');
     fil.setAttribute('id', filId);
-    fil.setAttribute('filterUnits', 'objectBoundingBox');
-    fil.setAttribute('x', '0%');
-    fil.setAttribute('y', '0%');
-    fil.setAttribute('width', '100%');
-    fil.setAttribute('height', '100%');
+    if (skipCoordinates !== true) {
+      fil.setAttribute('filterUnits', 'objectBoundingBox');
+      fil.setAttribute('x', '0%');
+      fil.setAttribute('y', '0%');
+      fil.setAttribute('width', '100%');
+      fil.setAttribute('height', '100%');
+    }
     return fil;
   }
 
@@ -4896,13 +4918,11 @@ var assetLoader = (function () {
   function loadAsset(path, callback, errorCallback) {
     var response;
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', path, true);
     // set responseType after calling open or IE will break.
     try {
       // This crashes on Android WebView prior to KitKat
       xhr.responseType = 'json';
     } catch (err) {} // eslint-disable-line no-empty
-    xhr.send();
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
         if (xhr.status === 200) {
@@ -4920,6 +4940,8 @@ var assetLoader = (function () {
         }
       }
     };
+    xhr.open('GET', path, true);
+    xhr.send();
   }
   return {
     load: loadAsset,
@@ -6361,6 +6383,54 @@ var bezierLengthPool = (function () {
   }
   return poolFactory(8, create);
 }());
+
+/* exported markerParser */
+
+var markerParser = (
+
+  function () {
+    function parsePayloadLines(payload) {
+      var lines = payload.split('\r\n');
+      var keys = {};
+      var line;
+      var keysCount = 0;
+      for (var i = 0; i < lines.length; i += 1) {
+        line = lines[i].split(':');
+        if (line.length === 2) {
+          keys[line[0]] = line[1].trim();
+          keysCount += 1;
+        }
+      }
+      if (keysCount === 0) {
+        throw new Error();
+      }
+      return keys;
+    }
+
+    return function (_markers) {
+      var markers = [];
+      for (var i = 0; i < _markers.length; i += 1) {
+        var _marker = _markers[i];
+        var markerData = {
+          time: _marker.tm,
+          duration: _marker.dr,
+        };
+        try {
+          markerData.payload = JSON.parse(_markers[i].cm);
+        } catch (_) {
+          try {
+            markerData.payload = parsePayloadLines(_markers[i].cm);
+          } catch (__) {
+            markerData.payload = {
+              name: _markers[i],
+            };
+          }
+        }
+        markers.push(markerData);
+      }
+      return markers;
+    };
+  }());
 
 /* global AudioElement, FontManager */
 
@@ -8818,8 +8888,14 @@ IShapeElement.prototype = {
     }
 
     len = this.shapeModifiers.length;
+    var shouldBreakProcess;
     for (i = len - 1; i >= 0; i -= 1) {
-      this.shapeModifiers[i].processShapes(this._isFirstFrame);
+      shouldBreakProcess = this.shapeModifiers[i].processShapes(this._isFirstFrame);
+      // workaround to fix cases where a repeater resets the shape so the following processes get called twice
+      // TODO: find a better solution for this
+      if (shouldBreakProcess) {
+        break;
+      }
     }
   },
   lcEnum: {
@@ -10293,7 +10369,7 @@ function SVGEffects(elem) {
   var i;
   var len = elem.data.ef ? elem.data.ef.length : 0;
   var filId = createElementID();
-  var fil = filtersFactory.createFilter(filId);
+  var fil = filtersFactory.createFilter(filId, true);
   var count = 0;
   this.filters = [];
   var filterManager;
@@ -12410,7 +12486,7 @@ var animationManager = (function () {
 /* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
 CanvasRenderer, SVGRenderer, HybridRenderer, assetLoader, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
 BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
-BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent */
+BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
 
 var AnimationItem = function () {
   this._cbs = [];
@@ -12443,6 +12519,7 @@ var AnimationItem = function () {
   this.projectInterface = ProjectInterface();
   this.imagePreloader = new ImagePreloader();
   this.audioController = audioControllerFactory();
+  this.markers = [];
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -12679,6 +12756,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     this.frameRate = this.animationData.fr;
     this.frameMult = this.animationData.fr / 1000;
     this.renderer.searchExtraCompositions(animData.assets);
+    this.markers = markerParser(animData.markers || []);
     this.trigger('config_ready');
     this.preloadImages();
     this.loadSegments();
@@ -12743,7 +12821,7 @@ AnimationItem.prototype.gotoFrame = function () {
 };
 
 AnimationItem.prototype.renderFrame = function () {
-  if (this.isLoaded === false) {
+  if (this.isLoaded === false || !this.renderer) {
     return;
   }
   try {
@@ -12800,11 +12878,28 @@ AnimationItem.prototype.stop = function (name) {
   this.setCurrentRawFrameValue(0);
 };
 
+AnimationItem.prototype.getMarkerData = function (markerName) {
+  var marker;
+  for (var i = 0; i < this.markers.length; i += 1) {
+    marker = this.markers[i];
+    if (marker.payload && marker.payload.name === markerName) {
+      return marker;
+    }
+  }
+  return null;
+};
+
 AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
   if (name && this.name !== name) {
     return;
   }
-  if (isFrame) {
+  var numValue = Number(value);
+  if (isNaN(numValue)) {
+    var marker = this.getMarkerData(value);
+    if (marker) {
+      this.goToAndStop(marker.time, true);
+    }
+  } else if (isFrame) {
     this.setCurrentRawFrameValue(value);
   } else {
     this.setCurrentRawFrameValue(value * this.frameModifier);
@@ -12813,7 +12908,22 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
 };
 
 AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
-  this.goToAndStop(value, isFrame, name);
+  if (name && this.name !== name) {
+    return;
+  }
+  var numValue = Number(value);
+  if (isNaN(numValue)) {
+    var marker = this.getMarkerData(value);
+    if (marker) {
+      if (!marker.duration) {
+        this.goToAndStop(marker.time, true);
+      } else {
+        this.playSegments([marker.time, marker.time + marker.duration], true);
+      }
+    }
+  } else {
+    this.goToAndStop(numValue, isFrame, name);
+  }
   this.play();
 };
 
@@ -15903,7 +16013,7 @@ lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.6';
+lottie.version = '5.7.7';
 
 function checkReady() {
   if (document.readyState === 'complete') {

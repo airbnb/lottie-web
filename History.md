@@ -1,3 +1,11 @@
+## V 5.7.7
+- FIX: xhr open order
+- FEATURE: added markers support
+- FIX: repeaters with reduced copies
+- FIX: unintentional stroke clipping on shapes with large stroke-width (thanks Manan Jadhav)
+- FIX: ie11 append missing
+- FIX: repeater calling trim twice
+
 ## V 5.7.6
 - FIX: es6 support on export
 - IMPROVEMENT: added linting rules
