@@ -29,6 +29,8 @@ var FontManager = (function () {
 
   function setUpNode(font, family) {
     var parentNode = createTag('span');
+    // Node is invisible to screen readers.
+    parentNode.setAttribute('aria-hidden', true);
     parentNode.style.fontFamily = family;
     var node = createTag('span');
     // Characters that vary significantly among different fonts
