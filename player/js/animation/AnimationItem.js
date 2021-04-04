@@ -299,7 +299,8 @@ AnimationItem.prototype.waitForFontsLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded
         && this.renderer.globalData.fontManager.isLoaded
-        && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedImages() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
     dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);

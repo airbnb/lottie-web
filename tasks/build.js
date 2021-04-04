@@ -344,6 +344,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/elements/FootageElement.js',
+		builds: ['full','svg','canvas','html','canvas_worker'],
+	},
+	{
 		src: 'js/elements/svgElements/SVGCompElement.js',
 		builds: ['full','svg','svg_light','html','html_light']
 	},
@@ -521,6 +525,10 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/expressions/LayerInterface.js',
+		builds: ['full','svg','canvas','html','canvas_worker']
+	},
+	{
+		src: 'js/utils/expressions/FootageInterface.js',
 		builds: ['full','svg','canvas','html','canvas_worker']
 	},
 	{

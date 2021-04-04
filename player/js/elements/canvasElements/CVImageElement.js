@@ -3,7 +3,7 @@ RenderableElement, SVGShapeElement, IImageElement, createTag */
 
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
-  this.img = globalData.imageLoader.getImage(this.assetData);
+  this.img = globalData.imageLoader.getAsset(this.assetData);
   this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);

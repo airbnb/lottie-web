@@ -1,4 +1,4 @@
-/* global AudioElement, FontManager */
+/* global AudioElement, FootageElement, FontManager */
 
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
@@ -36,6 +36,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createAudio(layer);
     case 13:
       return this.createCamera(layer);
+    case 15:
+      return this.createFootage(layer);
     default:
       return this.createNull(layer);
   }
@@ -47,6 +49,10 @@ BaseRenderer.prototype.createCamera = function () {
 
 BaseRenderer.prototype.createAudio = function (data) {
   return new AudioElement(data, this.globalData, this);
+};
+
+BaseRenderer.prototype.createFootage = function (data) {
+  return new FootageElement(data, this.globalData, this);
 };
 
 BaseRenderer.prototype.buildAllItems = function () {

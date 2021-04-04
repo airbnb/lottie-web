@@ -108,6 +108,7 @@
     <script src="js/elements/ImageElement.js"></script>
     <script src="js/elements/SolidElement.js"></script>
     <script src="js/elements/AudioElement.js"></script>
+    <script src="js/elements/FootageElement.js"></script>
     <script src="js/elements/svgElements/SVGCompElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGTextElement.js" data-builds="full,svg,svg_light,html,html_light"></script>
     <script src="js/elements/svgElements/SVGShapeElement.js"></script>
@@ -154,6 +155,7 @@
     <script src="js/utils/expressions/shapes/ShapePathInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/TextInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/LayerInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
+    <script src="js/utils/expressions/FootageInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/CompInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/TransformInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
     <script src="js/utils/expressions/ProjectInterface.js" data-builds="full,svg,canvas,html,canvas_worker"></script>
@@ -181,9 +183,9 @@
     var elem = document.getElementById('lottie');
     var animData = {
         container: elem,
-        renderer: 'svg',
+        renderer: 'canvas',
         loop: true,
-        autoplay: true,
+        autoplay: false,
         rendererSettings: {
             progressiveLoad:false,
             preserveAspectRatio: 'xMidYMid meet',
