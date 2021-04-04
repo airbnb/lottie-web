@@ -1957,6 +1957,8 @@ var FontManager = (function () {
 
   function setUpNode(font, family) {
     var parentNode = createTag('span');
+    // Node is invisible to screen readers.
+    parentNode.setAttribute('aria-hidden', true);
     parentNode.style.fontFamily = family;
     var node = createTag('span');
     // Characters that vary significantly among different fonts
@@ -6285,7 +6287,7 @@ var markerParser = (
     };
   }());
 
-/* global AudioElement, FontManager */
+/* global AudioElement, FootageElement, FontManager */
 
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
@@ -6323,6 +6325,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createAudio(layer);
     case 13:
       return this.createCamera(layer);
+    case 15:
+      return this.createFootage(layer);
     default:
       return this.createNull(layer);
   }
@@ -6334,6 +6338,10 @@ BaseRenderer.prototype.createCamera = function () {
 
 BaseRenderer.prototype.createAudio = function (data) {
   return new AudioElement(data, this.globalData, this);
+};
+
+BaseRenderer.prototype.createFootage = function (data) {
+  return new FootageElement(data, this.globalData, this);
 };
 
 BaseRenderer.prototype.buildAllItems = function () {
@@ -8438,6 +8446,39 @@ AudioElement.prototype.sourceRectAtTime = function () {
 AudioElement.prototype.initExpressions = function () {
 };
 
+/* global extendPrototype, RenderableElement, BaseElement, FrameElement, FootageInterface */
+
+function FootageElement(data, globalData, comp) {
+  this.initFrame();
+  this.initRenderable();
+  this.assetData = globalData.getAssetData(data.refId);
+  this.footageData = globalData.imageLoader.getAsset(this.assetData);
+  this.initBaseData(data, globalData, comp);
+}
+
+FootageElement.prototype.prepareFrame = function () {
+};
+
+extendPrototype([RenderableElement, BaseElement, FrameElement], FootageElement);
+
+FootageElement.prototype.getBaseElement = function () {
+  return null;
+};
+
+FootageElement.prototype.renderFrame = function () {
+};
+
+FootageElement.prototype.destroy = function () {
+};
+
+FootageElement.prototype.initExpressions = function () {
+  this.layerInterface = FootageInterface(this);
+};
+
+FootageElement.prototype.getFootageData = function () {
+  return this.footageData;
+};
+
 /* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
@@ -10242,7 +10283,8 @@ AnimationItem.prototype.waitForFontsLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded
         && this.renderer.globalData.fontManager.isLoaded
-        && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedImages() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
     dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
@@ -12937,6 +12979,68 @@ var LayerExpressionInterface = (function () {
   };
 }());
 
+/* global */
+/* exported FootageInterface */
+
+var FootageInterface = (function () {
+  var outlineInterfaceFactory = (function (elem) {
+    var currentPropertyName = '';
+    var currentProperty = elem.getFootageData();
+    function init() {
+      currentPropertyName = '';
+      currentProperty = elem.getFootageData();
+      return searchProperty;
+    }
+    function searchProperty(value) {
+      if (currentProperty[value]) {
+        currentPropertyName = value;
+        currentProperty = currentProperty[value];
+        if (typeof currentProperty === 'object') {
+          return searchProperty;
+        }
+        return currentProperty;
+      }
+      var propertyNameIndex = value.indexOf(currentPropertyName);
+      if (propertyNameIndex !== -1) {
+        var index = parseInt(value.substr(propertyNameIndex + currentPropertyName.length), 10);
+        currentProperty = currentProperty[index];
+        if (typeof currentProperty === 'object') {
+          return searchProperty;
+        }
+        return currentProperty;
+      }
+      return '';
+    }
+    return init;
+  });
+
+  var dataInterfaceFactory = function (elem) {
+    function interfaceFunction(value) {
+      if (value === 'Outline') {
+        return interfaceFunction.outlineInterface();
+      }
+      return null;
+    }
+
+    interfaceFunction._name = 'Outline';
+    interfaceFunction.outlineInterface = outlineInterfaceFactory(elem);
+    return interfaceFunction;
+  };
+
+  return function (elem) {
+    function _interfaceFunction(value) {
+      if (value === 'Data') {
+        return _interfaceFunction.dataInterface;
+      }
+      return null;
+    }
+
+    _interfaceFunction._name = 'Data';
+    _interfaceFunction.dataInterface = dataInterfaceFactory(elem);
+    return _interfaceFunction;
+  };
+}());
+
 /* exported CompExpressionInterface */
 
 var CompExpressionInterface = (function () {
@@ -13571,7 +13675,7 @@ GroupEffect.prototype.init = function (data, element) {
   lottiejs.mute = animationManager.mute;
   lottiejs.unmute = animationManager.unmute;
   lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-  lottiejs.version = '5.7.7';
+  lottiejs.version = '5.7.8';
 
   return lottiejs;
 }({}));

@@ -1946,6 +1946,8 @@ var FontManager = (function () {
 
   function setUpNode(font, family) {
     var parentNode = createTag('span');
+    // Node is invisible to screen readers.
+    parentNode.setAttribute('aria-hidden', true);
     parentNode.style.fontFamily = family;
     var node = createTag('span');
     // Characters that vary significantly among different fonts
@@ -4677,7 +4679,7 @@ var audioControllerFactory = (function () {
   };
 }());
 
-/* global createTag, createNS, isSafari */
+/* global createTag, createNS, isSafari, assetLoader */
 /* exported ImagePreloader */
 
 var ImagePreloader = (function () {
@@ -4693,7 +4695,15 @@ var ImagePreloader = (function () {
 
   function imageLoaded() {
     this.loadedAssets += 1;
-    if (this.loadedAssets === this.totalImages) {
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
+      if (this.imagesLoadedCb) {
+        this.imagesLoadedCb(null);
+      }
+    }
+  }
+  function footageLoaded() {
+    this.loadedFootagesCount += 1;
+    if (this.loadedAssets === this.totalImages && this.loadedFootagesCount === this.totalFootages) {
       if (this.imagesLoadedCb) {
         this.imagesLoadedCb(null);
       }
@@ -4772,14 +4782,34 @@ var ImagePreloader = (function () {
     return ob;
   }
 
+  function createFootageData(data) {
+    var ob = {
+      assetData: data,
+    };
+    var path = getAssetsPath(data, this.assetsPath, this.path);
+    assetLoader.load(path, function (footageData) {
+      ob.img = footageData;
+      this._footageLoaded();
+    }.bind(this), function () {
+      ob.img = {};
+      this._footageLoaded();
+    }.bind(this));
+    return ob;
+  }
+
   function loadAssets(assets, cb) {
     this.imagesLoadedCb = cb;
     var i;
     var len = assets.length;
     for (i = 0; i < len; i += 1) {
       if (!assets[i].layers) {
-        this.totalImages += 1;
-        this.images.push(this._createImageData(assets[i]));
+        if (!assets[i].t) {
+          this.totalImages += 1;
+          this.images.push(this._createImageData(assets[i]));
+        } else if (assets[i].t === 3) {
+          this.totalFootages += 1;
+          this.images.push(this.createFootageData(assets[i]));
+        }
       }
     }
   }
@@ -4792,7 +4822,7 @@ var ImagePreloader = (function () {
     this.assetsPath = path || '';
   }
 
-  function getImage(assetData) {
+  function getAsset(assetData) {
     var i = 0;
     var len = this.images.length;
     while (i < len) {
@@ -4809,8 +4839,12 @@ var ImagePreloader = (function () {
     this.images.length = 0;
   }
 
-  function loaded() {
+  function loadedImages() {
     return this.totalImages === this.loadedAssets;
+  }
+
+  function loadedFootages() {
+    return this.totalFootages === this.loadedFootagesCount;
   }
 
   function setCacheType(type, elementHelper) {
@@ -4824,11 +4858,15 @@ var ImagePreloader = (function () {
 
   function ImagePreloaderFactory() {
     this._imageLoaded = imageLoaded.bind(this);
+    this._footageLoaded = footageLoaded.bind(this);
     this.testImageLoaded = testImageLoaded.bind(this);
+    this.createFootageData = createFootageData.bind(this);
     this.assetsPath = '';
     this.path = '';
     this.totalImages = 0;
+    this.totalFootages = 0;
     this.loadedAssets = 0;
+    this.loadedFootagesCount = 0;
     this.imagesLoadedCb = null;
     this.images = [];
   }
@@ -4837,12 +4875,14 @@ var ImagePreloader = (function () {
     loadAssets: loadAssets,
     setAssetsPath: setAssetsPath,
     setPath: setPath,
-    loaded: loaded,
+    loadedImages: loadedImages,
+    loadedFootages: loadedFootages,
     destroy: destroy,
-    getImage: getImage,
+    getAsset: getAsset,
     createImgData: createImgData,
     createImageData: createImageData,
     imageLoaded: imageLoaded,
+    footageLoaded: footageLoaded,
     setCacheType: setCacheType,
   };
 
@@ -6424,7 +6464,7 @@ var markerParser = (
     };
   }());
 
-/* global AudioElement, FontManager */
+/* global AudioElement, FootageElement, FontManager */
 
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
@@ -6462,6 +6502,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createAudio(layer);
     case 13:
       return this.createCamera(layer);
+    case 15:
+      return this.createFootage(layer);
     default:
       return this.createNull(layer);
   }
@@ -6473,6 +6515,10 @@ BaseRenderer.prototype.createCamera = function () {
 
 BaseRenderer.prototype.createAudio = function (data) {
   return new AudioElement(data, this.globalData, this);
+};
+
+BaseRenderer.prototype.createFootage = function (data) {
+  return new FootageElement(data, this.globalData, this);
 };
 
 BaseRenderer.prototype.buildAllItems = function () {
@@ -8969,7 +9015,7 @@ RenderableElement, SVGShapeElement, IImageElement, createTag */
 
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
-  this.img = globalData.imageLoader.getImage(this.assetData);
+  this.img = globalData.imageLoader.getAsset(this.assetData);
   this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVImageElement);
@@ -10394,7 +10440,8 @@ AnimationItem.prototype.waitForFontsLoaded = function () {
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded
         && this.renderer.globalData.fontManager.isLoaded
-        && (this.imagePreloader.loaded() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedImages() || this.renderer.rendererType !== 'canvas')
+        && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
     dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
@@ -10934,7 +10981,7 @@ lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.7';
+lottie.version = '5.7.8';
 
 function checkReady() {
   if (document.readyState === 'complete') {

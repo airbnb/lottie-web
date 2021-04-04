@@ -1,3 +1,7 @@
+## V 5.7.8
+- FIX: disable screen reader visibility of created font-nodes (thanks @)
+- FEATURE: added FootageElement that supports json data layer types with expressions
+
 ## V 5.7.7
 - FIX: xhr open order
 - FEATURE: added markers support
