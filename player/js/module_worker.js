@@ -56,22 +56,86 @@ var lottie = (function () {
   return lottiejs;
 }({}));
 
-var animations = [];
+var currentAnimation = null;
 
-onmessage = function (evt) {
-  var canvas = evt.data.canvas;
-  var ctx = canvas.getContext('2d');
-  var animation = lottie.loadAnimation({
+function initAnimation(data, params, canvas) {
+  if (!data || !params) {
+    return;
+  }
+
+  var context = canvas.getContext('2d');
+
+  currentAnimation = lottie.loadAnimation({
     renderer: 'canvas',
-    loop: evt.data.loop,
-    autoplay: true,
-    animationData: evt.data.animationData,
+    loop: params.loop,
+    autoplay: params.autoplay,
+    animationData: data,
     rendererSettings: {
-      context: ctx,
-      scaleMode: 'noScale',
-      clearCanvas: true,
+      context: context,
+      clearCanvas: params.rendererSettings.clearCanvas,
+      preserveAspectRatio: params.rendererSettings.preserveAspectRatio,
     },
   });
-  animations.push(animation);
-  animation.play();
+
+  if (params.autoplay) {
+    currentAnimation.play();
+  }
+}
+
+function updateCanvasSize(canvas, size) {
+  if (!size || !canvas) {
+    return;
+  }
+
+  if (size.height > 0 && size.width > 0) {
+    canvas.height = size.height;
+    canvas.width = size.width;
+  }
+
+  if (currentAnimation) {
+    currentAnimation.resize();
+  }
+}
+
+function updateAnimationState(control, canvas) {
+  if (!control || !currentAnimation) {
+    return;
+  }
+
+  if (control.stop) {
+    currentAnimation.stop();
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  if (control.play && currentAnimation.isPaused) {
+    currentAnimation.play();
+  } else if (!control.play && !currentAnimation.isPaused) {
+    currentAnimation.pause();
+  }
+}
+
+onmessage = function (evt) {
+  if (!evt || !evt.data) {
+    return;
+  }
+
+  var canvas = null;
+
+  if (currentAnimation) {
+    canvas = currentAnimation.renderer.canvasContext.canvas;
+  } else if (evt.data.canvas) {
+    canvas = evt.data.canvas;
+  } else {
+    return;
+  }
+
+  if (currentAnimation && evt.data.animationData) {
+    currentAnimation.stop();
+    currentAnimation = null;
+  }
+
+  updateCanvasSize(canvas, evt.data.drawSize);
+  initAnimation(evt.data.animationData, evt.data.params, canvas);
+  updateAnimationState(evt.data.control, canvas);
 };
