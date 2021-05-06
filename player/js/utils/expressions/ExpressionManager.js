@@ -410,6 +410,8 @@ var ExpressionManager = (function () {
     var velocityAtTime;
 
     var scoped_bm_rt;
+    val = val.replace(/"((http)(s)?(:\/))?\/.*?"/g, "\"\""); // deter potential network calls
+    val = val.replace(/'((http)(s)?(:\/))?\/.*?'/g, "\'\'"); // deter potential network calls
     var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
     var numKeys = property.kf ? data.k.length : 0;
 
