@@ -122,7 +122,7 @@ var ImagePreloader = (function () {
     var len = assets.length;
     for (i = 0; i < len; i += 1) {
       if (!assets[i].layers) {
-        if (!assets[i].t) {
+        if (!assets[i].t || assets[i].t === 'seq') {
           this.totalImages += 1;
           this.images.push(this._createImageData(assets[i]));
         } else if (assets[i].t === 3) {
