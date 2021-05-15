@@ -29,6 +29,10 @@ var ShapeExpressionInterface = (function () {
         arr.push(roundedInterfaceFactory(shapes[i], view[i], propertyGroup));
       } else if (shapes[i].ty === 'rp') {
         arr.push(repeaterInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else if (shapes[i].ty === 'gf') {
+        arr.push(gradientFillInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else {
+        arr.push(defaultInterfaceFactory(shapes[i], view[i], propertyGroup));
       }
     }
     return arr;
@@ -116,6 +120,51 @@ var ShapeExpressionInterface = (function () {
 
     view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
     view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+
+  function gradientFillInterfaceFactory(shape, view, propertyGroup) {
+    function interfaceFunction(val) {
+      if (val === 'Start Point' || val === 'start point') {
+        return interfaceFunction.startPoint;
+      }
+      if (val === 'End Point' || val === 'end point') {
+        return interfaceFunction.endPoint;
+      }
+      if (val === 'Opacity' || val === 'opacity') {
+        return interfaceFunction.opacity;
+      }
+      return null;
+    }
+    Object.defineProperties(interfaceFunction, {
+      startPoint: {
+        get: ExpressionPropertyInterface(view.s),
+      },
+      endPoint: {
+        get: ExpressionPropertyInterface(view.e),
+      },
+      opacity: {
+        get: ExpressionPropertyInterface(view.o),
+      },
+      type: {
+        get: function() {
+          console.log('asdasdasdadPASO');
+          return 'a';
+        },
+      },
+      _name: { value: shape.nm },
+      mn: { value: shape.mn },
+    });
+
+    view.s.setGroupProperty(PropertyInterface('Start Point', propertyGroup));
+    view.e.setGroupProperty(PropertyInterface('End Point', propertyGroup));
+    view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+  function defaultInterfaceFactory(shape, view, propertyGroup) {
+    function interfaceFunction(val) {
+      return null;
+    }
     return interfaceFunction;
   }
 
@@ -234,7 +283,6 @@ var ShapeExpressionInterface = (function () {
       }
       return null;
     }
-
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
     view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
     view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
