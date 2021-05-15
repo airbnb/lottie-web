@@ -5,6 +5,7 @@ BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent
 addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
 
 var subframeEnabled = true;
+var idPrefix = '';
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -120,7 +121,7 @@ var createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
-    return '__lottie_element_' + _count;
+    return idPrefix + '__lottie_element_' + _count;
   };
 }());
 

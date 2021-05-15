@@ -1,6 +1,6 @@
 /* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix */
-/* exported locationHref, subframeEnabled, expressionsPlugin */
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable */
+/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix */
 
 'use strict';
 
@@ -21,6 +21,10 @@ function searchAnimations() {
 
 function setSubframeRendering(flag) {
   subframeEnabled = flag;
+}
+
+function setIDPrefix(prefix) {
+  idPrefix = prefix;
 }
 
 function loadAnimation(params) {
@@ -101,6 +105,7 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';
 

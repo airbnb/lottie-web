@@ -1,4 +1,5 @@
-/* global defaultCurveSegments:writable, roundValues, animationManager */
+/* global defaultCurveSegments:writable, roundValues, animationManager, idPrefix:writable */
+/* exported idPrefix */
 var lottie = (function () {
   'use strict';
 
@@ -33,6 +34,10 @@ var lottie = (function () {
     }
   }
 
+  function setIDPrefix(prefix) {
+    idPrefix = prefix;
+  }
+
   lottiejs.play = animationManager.play;
   lottiejs.pause = animationManager.pause;
   lottiejs.togglePause = animationManager.togglePause;
@@ -51,6 +56,7 @@ var lottie = (function () {
   lottiejs.mute = animationManager.mute;
   lottiejs.unmute = animationManager.unmute;
   lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+  lottie.setIDPrefix = setIDPrefix;
   lottiejs.version = '[[BM_VERSION]]';
 
   return lottiejs;
