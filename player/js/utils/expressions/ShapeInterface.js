@@ -147,8 +147,7 @@ var ShapeExpressionInterface = (function () {
         get: ExpressionPropertyInterface(view.o),
       },
       type: {
-        get: function() {
-          console.log('asdasdasdadPASO');
+        get: function () {
           return 'a';
         },
       },
@@ -161,8 +160,8 @@ var ShapeExpressionInterface = (function () {
     view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
     return interfaceFunction;
   }
-  function defaultInterfaceFactory(shape, view, propertyGroup) {
-    function interfaceFunction(val) {
+  function defaultInterfaceFactory() {
+    function interfaceFunction() {
       return null;
     }
     return interfaceFunction;

@@ -10,7 +10,8 @@
         root.bodymovin = root.lottie;
     }
 }((self || {}), function(window) {
-	/* global defaultCurveSegments:writable, roundValues, animationManager */
+	/* global defaultCurveSegments:writable, roundValues, animationManager, idPrefix:writable */
+/* exported idPrefix */
 var lottie = (function () {
   'use strict';
 
@@ -29,6 +30,7 @@ BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent
 addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
 
 var subframeEnabled = true;
+var idPrefix = '';
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -144,7 +146,7 @@ var createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
-    return '__lottie_element_' + _count;
+    return idPrefix + '__lottie_element_' + _count;
   };
 }());
 
@@ -10933,6 +10935,8 @@ var ExpressionManager = (function () {
   var Math = BMMath;
   var window = null;
   var document = null;
+  var XMLHttpRequest = null;
+  var fetch = null;
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -11335,6 +11339,7 @@ var ExpressionManager = (function () {
     var velocityAtTime;
 
     var scoped_bm_rt;
+    // val = val.replace(/(\\?"|')((http)(s)?(:\/))?\/.*?(\\?"|')/g, "\"\""); // deter potential network calls
     var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
     var numKeys = property.kf ? data.k.length : 0;
 
@@ -12312,6 +12317,10 @@ var ShapeExpressionInterface = (function () {
         arr.push(roundedInterfaceFactory(shapes[i], view[i], propertyGroup));
       } else if (shapes[i].ty === 'rp') {
         arr.push(repeaterInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else if (shapes[i].ty === 'gf') {
+        arr.push(gradientFillInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else {
+        arr.push(defaultInterfaceFactory(shapes[i], view[i], propertyGroup));
       }
     }
     return arr;
@@ -12399,6 +12408,50 @@ var ShapeExpressionInterface = (function () {
 
     view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
     view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+
+  function gradientFillInterfaceFactory(shape, view, propertyGroup) {
+    function interfaceFunction(val) {
+      if (val === 'Start Point' || val === 'start point') {
+        return interfaceFunction.startPoint;
+      }
+      if (val === 'End Point' || val === 'end point') {
+        return interfaceFunction.endPoint;
+      }
+      if (val === 'Opacity' || val === 'opacity') {
+        return interfaceFunction.opacity;
+      }
+      return null;
+    }
+    Object.defineProperties(interfaceFunction, {
+      startPoint: {
+        get: ExpressionPropertyInterface(view.s),
+      },
+      endPoint: {
+        get: ExpressionPropertyInterface(view.e),
+      },
+      opacity: {
+        get: ExpressionPropertyInterface(view.o),
+      },
+      type: {
+        get: function () {
+          return 'a';
+        },
+      },
+      _name: { value: shape.nm },
+      mn: { value: shape.mn },
+    });
+
+    view.s.setGroupProperty(PropertyInterface('Start Point', propertyGroup));
+    view.e.setGroupProperty(PropertyInterface('End Point', propertyGroup));
+    view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+  function defaultInterfaceFactory() {
+    function interfaceFunction() {
+      return null;
+    }
     return interfaceFunction;
   }
 
@@ -12517,7 +12570,6 @@ var ShapeExpressionInterface = (function () {
       }
       return null;
     }
-
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
     view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
     view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
@@ -13657,6 +13709,10 @@ GroupEffect.prototype.init = function (data, element) {
     }
   }
 
+  function setIDPrefix(prefix) {
+    idPrefix = prefix;
+  }
+
   lottiejs.play = animationManager.play;
   lottiejs.pause = animationManager.pause;
   lottiejs.togglePause = animationManager.togglePause;
@@ -13675,7 +13731,8 @@ GroupEffect.prototype.init = function (data, element) {
   lottiejs.mute = animationManager.mute;
   lottiejs.unmute = animationManager.unmute;
   lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-  lottiejs.version = '5.7.8';
+  lottie.setIDPrefix = setIDPrefix;
+  lottiejs.version = '5.7.9';
 
   return lottiejs;
 }({}));

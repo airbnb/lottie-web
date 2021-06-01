@@ -11,8 +11,8 @@
     }
 }((window || {}), function(window) {
 	/* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix */
-/* exported locationHref, subframeEnabled, expressionsPlugin */
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable */
+/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix */
 
 'use strict';
 
@@ -31,6 +31,7 @@ BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent
 addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
 
 var subframeEnabled = true;
+var idPrefix = '';
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -146,7 +147,7 @@ var createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
-    return '__lottie_element_' + _count;
+    return idPrefix + '__lottie_element_' + _count;
   };
 }());
 
@@ -4811,7 +4812,7 @@ var ImagePreloader = (function () {
     var len = assets.length;
     for (i = 0; i < len; i += 1) {
       if (!assets[i].layers) {
-        if (!assets[i].t) {
+        if (!assets[i].t || assets[i].t === 'seq') {
           this.totalImages += 1;
           this.images.push(this._createImageData(assets[i]));
         } else if (assets[i].t === 3) {
@@ -12012,6 +12013,8 @@ var ExpressionManager = (function () {
   var Math = BMMath;
   var window = null;
   var document = null;
+  var XMLHttpRequest = null;
+  var fetch = null;
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -12414,6 +12417,7 @@ var ExpressionManager = (function () {
     var velocityAtTime;
 
     var scoped_bm_rt;
+    // val = val.replace(/(\\?"|')((http)(s)?(:\/))?\/.*?(\\?"|')/g, "\"\""); // deter potential network calls
     var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
     var numKeys = property.kf ? data.k.length : 0;
 
@@ -13391,6 +13395,10 @@ var ShapeExpressionInterface = (function () {
         arr.push(roundedInterfaceFactory(shapes[i], view[i], propertyGroup));
       } else if (shapes[i].ty === 'rp') {
         arr.push(repeaterInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else if (shapes[i].ty === 'gf') {
+        arr.push(gradientFillInterfaceFactory(shapes[i], view[i], propertyGroup));
+      } else {
+        arr.push(defaultInterfaceFactory(shapes[i], view[i], propertyGroup));
       }
     }
     return arr;
@@ -13478,6 +13486,50 @@ var ShapeExpressionInterface = (function () {
 
     view.c.setGroupProperty(PropertyInterface('Color', propertyGroup));
     view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+
+  function gradientFillInterfaceFactory(shape, view, propertyGroup) {
+    function interfaceFunction(val) {
+      if (val === 'Start Point' || val === 'start point') {
+        return interfaceFunction.startPoint;
+      }
+      if (val === 'End Point' || val === 'end point') {
+        return interfaceFunction.endPoint;
+      }
+      if (val === 'Opacity' || val === 'opacity') {
+        return interfaceFunction.opacity;
+      }
+      return null;
+    }
+    Object.defineProperties(interfaceFunction, {
+      startPoint: {
+        get: ExpressionPropertyInterface(view.s),
+      },
+      endPoint: {
+        get: ExpressionPropertyInterface(view.e),
+      },
+      opacity: {
+        get: ExpressionPropertyInterface(view.o),
+      },
+      type: {
+        get: function () {
+          return 'a';
+        },
+      },
+      _name: { value: shape.nm },
+      mn: { value: shape.mn },
+    });
+
+    view.s.setGroupProperty(PropertyInterface('Start Point', propertyGroup));
+    view.e.setGroupProperty(PropertyInterface('End Point', propertyGroup));
+    view.o.setGroupProperty(PropertyInterface('Opacity', propertyGroup));
+    return interfaceFunction;
+  }
+  function defaultInterfaceFactory() {
+    function interfaceFunction() {
+      return null;
+    }
     return interfaceFunction;
   }
 
@@ -13596,7 +13648,6 @@ var ShapeExpressionInterface = (function () {
       }
       return null;
     }
-
     var _propertyGroup = propertyGroupFactory(interfaceFunction, propertyGroup);
     view.transform.mProps.o.setGroupProperty(PropertyInterface('Opacity', _propertyGroup));
     view.transform.mProps.p.setGroupProperty(PropertyInterface('Position', _propertyGroup));
@@ -14724,6 +14775,10 @@ function setSubframeRendering(flag) {
   subframeEnabled = flag;
 }
 
+function setIDPrefix(prefix) {
+  idPrefix = prefix;
+}
+
 function loadAnimation(params) {
   if (standalone === true) {
     params.animationData = JSON.parse(animationData);
@@ -14802,8 +14857,9 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.8';
+lottie.version = '5.7.9';
 
 function checkReady() {
   if (document.readyState === 'complete') {

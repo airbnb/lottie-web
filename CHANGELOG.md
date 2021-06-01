@@ -1,3 +1,9 @@
+## V 5.7.9
+- FEATURE: added support for prefixig ids
+- FEATURE: security updates
+- FIX: fix image sequencing preloading
+- FEATURE: added support for gradient fill expressions
+
 ## V 5.7.8
 - FIX: disable screen reader visibility of created font-nodes (thanks @)
 - FEATURE: added FootageElement that supports json data layer types with expressions

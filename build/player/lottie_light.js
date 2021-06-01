@@ -11,8 +11,8 @@
     }
 }((window || {}), function(window) {
 	/* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix */
-/* exported locationHref, subframeEnabled, expressionsPlugin */
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable */
+/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix */
 
 'use strict';
 
@@ -31,6 +31,7 @@ BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent
 addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
 
 var subframeEnabled = true;
+var idPrefix = '';
 var expressionsPlugin;
 var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 var cachedColors = {};
@@ -146,7 +147,7 @@ var createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
-    return '__lottie_element_' + _count;
+    return idPrefix + '__lottie_element_' + _count;
   };
 }());
 
@@ -4811,7 +4812,7 @@ var ImagePreloader = (function () {
     var len = assets.length;
     for (i = 0; i < len; i += 1) {
       if (!assets[i].layers) {
-        if (!assets[i].t) {
+        if (!assets[i].t || assets[i].t === 'seq') {
           this.totalImages += 1;
           this.images.push(this._createImageData(assets[i]));
         } else if (assets[i].t === 3) {
@@ -10722,6 +10723,10 @@ function setSubframeRendering(flag) {
   subframeEnabled = flag;
 }
 
+function setIDPrefix(prefix) {
+  idPrefix = prefix;
+}
+
 function loadAnimation(params) {
   if (standalone === true) {
     params.animationData = JSON.parse(animationData);
@@ -10800,8 +10805,9 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.8';
+lottie.version = '5.7.9';
 
 function checkReady() {
   if (document.readyState === 'complete') {
