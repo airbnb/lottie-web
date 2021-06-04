@@ -1,3 +1,6 @@
+## V 5.7.10
+- FIX: exporter fix
+
 ## V 5.7.9
 - FEATURE: added support for prefixig ids
 - FEATURE: security updates

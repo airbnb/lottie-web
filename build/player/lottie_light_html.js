@@ -11977,7 +11977,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.9';
+lottie.version = '5.7.10';
 
 function checkReady() {
   if (document.readyState === 'complete') {

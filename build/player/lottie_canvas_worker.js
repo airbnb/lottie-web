@@ -13732,7 +13732,7 @@ GroupEffect.prototype.init = function (data, element) {
   lottiejs.unmute = animationManager.unmute;
   lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
   lottie.setIDPrefix = setIDPrefix;
-  lottiejs.version = '5.7.9';
+  lottiejs.version = '5.7.10';
 
   return lottiejs;
 }({}));
