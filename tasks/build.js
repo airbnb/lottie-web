@@ -40,6 +40,10 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
+		src: 'js/utils/helpers/shapeEnums.js',
+		builds: defaultBuilds
+	},
+	{
 		src: 'js/3rd_party/transformation-matrix.js',
 		builds: defaultBuilds
 	},

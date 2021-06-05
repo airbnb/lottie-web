@@ -1,6 +1,6 @@
 /* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
 HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, degToRads, GradientProperty,
-DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor */
+DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];
@@ -50,8 +50,8 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   }
   elementData.o = PropertyFactory.getProp(this, data.o, 0, 0.01, this);
   if (data.ty === 'st' || data.ty === 'gs') {
-    styleElem.lc = this.lcEnum[data.lc] || 'round';
-    styleElem.lj = this.ljEnum[data.lj] || 'round';
+    styleElem.lc = lineCapEnum[data.lc || 2];
+    styleElem.lj = lineJoinEnum[data.lj || 2];
     if (data.lj == 1) { // eslint-disable-line eqeqeq
       styleElem.ml = data.ml;
     }

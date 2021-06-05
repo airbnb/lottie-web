@@ -1,5 +1,5 @@
 /* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS */
+RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -76,8 +76,8 @@ HTextElement.prototype.buildNewText = function () {
     if (this.globalData.fontManager.chars) {
       if (!this.textPaths[cnt]) {
         tSpan = createNS('path');
-        tSpan.setAttribute('stroke-linecap', 'butt');
-        tSpan.setAttribute('stroke-linejoin', 'round');
+        tSpan.setAttribute('stroke-linecap', lineCapEnum[1]);
+        tSpan.setAttribute('stroke-linejoin', lineJoinEnum[2]);
         tSpan.setAttribute('stroke-miterlimit', '4');
       } else {
         tSpan = this.textPaths[cnt];
