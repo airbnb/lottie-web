@@ -2,9 +2,10 @@ function BaseEvent() {}
 BaseEvent.prototype = {
   triggerEvent: function (eventName, args) {
     if (this._cbs[eventName]) {
-      var len = this._cbs[eventName].length;
+      var cbs = this._cbs[eventName].slice(0);
+      var len = cbs.length;
       for (var i = 0; i < len; i += 1) {
-        this._cbs[eventName][i](args);
+        cbs[i](args);
       }
     }
   },
