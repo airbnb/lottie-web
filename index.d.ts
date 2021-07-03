@@ -76,15 +76,26 @@ export type HTMLRendererConfig = BaseRendererConfig & {
     hideOnTransparent?: boolean;
 };
 
-export type AnimationConfig = {
+export type AnimationConfig<T extends 'svg' | 'canvas' | 'html' = 'svg'> = {
     container: Element;
-    renderer?: 'svg' | 'canvas' | 'html';
+    renderer?: T;
     loop?: boolean | number;
     autoplay?: boolean;
     initialSegment?: AnimationSegment;
     name?: string;
     assetsPath?: string;
-    rendererSettings?: SVGRendererConfig | CanvasRendererConfig | HTMLRendererConfig;
+    rendererSettings?: {
+        svg: SVGRendererConfig;
+        canvas: CanvasRendererConfig;
+        html: HTMLRendererConfig;
+    }[T]
+    audioFactory?(assetPath: string): {
+        play(): void
+        seek(): void
+        playing(): void
+        rate(): void
+        setVolume(): void
+    }
 }
 
 export type AnimationConfigWithPath = AnimationConfig & {
