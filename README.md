@@ -123,10 +123,10 @@ You can call lottie.loadAnimation() to start an animation.
 It takes an object as a unique param with:
 - animationData: an Object with the exported animation data. **Note:** If your animation contains repeaters and you plan to call loadAnimation multiple times with the same animation, please deep clone the object before passing it (see [#1159](https://github.com/airbnb/lottie-web/issues/1159) and [#2151](https://github.com/airbnb/lottie-web/issues/2151).)
 - path: the relative path to the animation object. (animationData and path are mutually exclusive)
-- loop: true / false / number
-- autoplay: true / false it will start playing as soon as it is ready
+- loop: true / false / number how to loop the last segment played (default true)
+- autoplay: true / false it will start playing as soon as it is ready (default true)
 - name: animation name for future reference
-- renderer: 'svg' / 'canvas' / 'html' to set the renderer
+- renderer: 'svg' / 'canvas' / 'html' to set the renderer (default 'svg')
 - container: the dom element on which to render the animation
 
 
@@ -162,13 +162,13 @@ Animation instances have these main methods:
 
 ***
 ### goToAndStop(value, isFrame)
-- `value`: numeric value.
-- `isFrame`: defines if first argument is a time based value or a frame based (default false).
+- `value`: numeric value relative to the start of the current segment.
+- `isFrame`: defines if first argument is seconds-based or frame-based (default false).
 
 ***
 ### goToAndPlay(value, isFrame)
-- `value`: numeric value.
-- `isFrame`: defines if first argument is a time based value or a frame based (default false).
+- `value`: numeric value relative to the start of the current segment.
+- `isFrame`: defines if first argument is seconds-based or frame-based (default false).
 
 ***
 ### setDirection(direction)
