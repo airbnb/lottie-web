@@ -262,9 +262,9 @@ function BaseEvent() {}
 BaseEvent.prototype = {
   triggerEvent: function (eventName, args) {
     if (this._cbs[eventName]) {
-      var len = this._cbs[eventName].length;
-      for (var i = 0; i < len; i += 1) {
-        this._cbs[eventName][i](args);
+      var callbacks = this._cbs[eventName];
+      for (var i = 0; i < callbacks.length; i += 1) {
+        callbacks[i](args);
       }
     }
   },
@@ -401,6 +401,20 @@ var getBlendMode = (function () {
     return blendModeEnums[mode] || '';
   };
 }());
+
+/* exported lineCapEnum, lineJoinEnum */
+
+var lineCapEnum = {
+  1: 'butt',
+  2: 'round',
+  3: 'square',
+};
+
+var lineJoinEnum = {
+  1: 'miter',
+  2: 'round',
+  3: 'bevel',
+};
 
 /* global createTypedArray */
 
@@ -8223,16 +8237,7 @@ IShapeElement.prototype = {
       }
     }
   },
-  lcEnum: {
-    1: 'butt',
-    2: 'round',
-    3: 'square',
-  },
-  ljEnum: {
-    1: 'miter',
-    2: 'round',
-    3: 'bevel',
-  },
+
   searchProcessedElement: function (elem) {
     var elements = this.processedElements;
     var i = 0;
@@ -8579,7 +8584,8 @@ AudioElement.prototype.initExpressions = function () {
 /* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers */
+TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
+lineCapEnum, lineJoinEnum */
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -8676,8 +8682,8 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
   }
 
   if (data.ty === 'st' || data.ty === 'gs') {
-    pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
-    pathElement.setAttribute('stroke-linejoin', this.ljEnum[data.lj] || 'round');
+    pathElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
+    pathElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
     pathElement.setAttribute('fill-opacity', '0');
     if (data.lj === 1) {
       pathElement.setAttribute('stroke-miterlimit', data.ml);
@@ -9169,7 +9175,7 @@ CVMaskElement.prototype.destroy = function () {
 
 /* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
 HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, degToRads, GradientProperty,
-DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor */
+DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];
@@ -9219,8 +9225,8 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   }
   elementData.o = PropertyFactory.getProp(this, data.o, 0, 0.01, this);
   if (data.ty === 'st' || data.ty === 'gs') {
-    styleElem.lc = this.lcEnum[data.lc] || 'round';
-    styleElem.lj = this.ljEnum[data.lj] || 'round';
+    styleElem.lc = lineCapEnum[data.lc || 2];
+    styleElem.lj = lineJoinEnum[data.lj || 2];
     if (data.lj == 1) { // eslint-disable-line eqeqeq
       styleElem.ml = data.ml;
     }
@@ -10987,7 +10993,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.11';
+lottie.version = '5.7.12';
 
 function checkReady() {
   if (document.readyState === 'complete') {

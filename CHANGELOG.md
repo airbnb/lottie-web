@@ -1,3 +1,9 @@
+## V 5.7.12
+- FEATURE: added support for masked strokes line cap and line join
+- FIX: callbacks list executing beyond index list
+- FIX: missing TextExpressionSelectorPropFactor
+- FEATURE: exporter improvements
+
 ## V 5.7.11
 - FIX: another exporter fix
 

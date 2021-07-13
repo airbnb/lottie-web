@@ -262,9 +262,9 @@ function BaseEvent() {}
 BaseEvent.prototype = {
   triggerEvent: function (eventName, args) {
     if (this._cbs[eventName]) {
-      var len = this._cbs[eventName].length;
-      for (var i = 0; i < len; i += 1) {
-        this._cbs[eventName][i](args);
+      var callbacks = this._cbs[eventName];
+      for (var i = 0; i < callbacks.length; i += 1) {
+        callbacks[i](args);
       }
     }
   },
@@ -409,6 +409,20 @@ var getBlendMode = (function () {
     return blendModeEnums[mode] || '';
   };
 }());
+
+/* exported lineCapEnum, lineJoinEnum */
+
+var lineCapEnum = {
+  1: 'butt',
+  2: 'round',
+  3: 'square',
+};
+
+var lineJoinEnum = {
+  1: 'miter',
+  2: 'round',
+  3: 'bevel',
+};
 
 /* global createTypedArray */
 
@@ -7544,7 +7558,7 @@ function SVGFillStyleData(elem, data, styleOb) {
 extendPrototype([DynamicPropertyContainer], SVGFillStyleData);
 
 /* global PropertyFactory, degToRads, GradientProperty, createElementID, createNS, locationHref,
-extendPrototype, DynamicPropertyContainer */
+extendPrototype, DynamicPropertyContainer, lineCapEnum, lineJoinEnum */
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
@@ -7583,7 +7597,6 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
     stops.push(stop);
   }
   pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
-
   this.gf = gfill;
   this.cst = stops;
 };
@@ -7612,6 +7625,13 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
       stops.push(stop);
     }
     maskElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
+    if (data.ty === 'gs') {
+      maskElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
+      maskElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
+      if (data.lj === 1) {
+        maskElement.setAttribute('stroke-miterlimit', data.ml);
+      }
+    }
     this.of = opFill;
     this.ms = mask;
     this.ost = stops;
@@ -8239,16 +8259,7 @@ IShapeElement.prototype = {
       }
     }
   },
-  lcEnum: {
-    1: 'butt',
-    2: 'round',
-    3: 'square',
-  },
-  ljEnum: {
-    1: 'miter',
-    2: 'round',
-    3: 'bevel',
-  },
+
   searchProcessedElement: function (elem) {
     var elements = this.processedElements;
     var i = 0;
@@ -8833,7 +8844,8 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
 /* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers */
+TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
+lineCapEnum, lineJoinEnum */
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -8930,8 +8942,8 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
   }
 
   if (data.ty === 'st' || data.ty === 'gs') {
-    pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
-    pathElement.setAttribute('stroke-linejoin', this.ljEnum[data.lj] || 'round');
+    pathElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
+    pathElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
     pathElement.setAttribute('fill-opacity', '0');
     if (data.lj === 1) {
       pathElement.setAttribute('stroke-miterlimit', data.ml);
@@ -10807,7 +10819,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.11';
+lottie.version = '5.7.12';
 
 function checkReady() {
   if (document.readyState === 'complete') {

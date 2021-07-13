@@ -262,9 +262,9 @@ function BaseEvent() {}
 BaseEvent.prototype = {
   triggerEvent: function (eventName, args) {
     if (this._cbs[eventName]) {
-      var len = this._cbs[eventName].length;
-      for (var i = 0; i < len; i += 1) {
-        this._cbs[eventName][i](args);
+      var callbacks = this._cbs[eventName];
+      for (var i = 0; i < callbacks.length; i += 1) {
+        callbacks[i](args);
       }
     }
   },
@@ -409,6 +409,20 @@ var getBlendMode = (function () {
     return blendModeEnums[mode] || '';
   };
 }());
+
+/* exported lineCapEnum, lineJoinEnum */
+
+var lineCapEnum = {
+  1: 'butt',
+  2: 'round',
+  3: 'square',
+};
+
+var lineJoinEnum = {
+  1: 'miter',
+  2: 'round',
+  3: 'bevel',
+};
 
 /* global createTypedArray */
 
@@ -8219,7 +8233,7 @@ function SVGFillStyleData(elem, data, styleOb) {
 extendPrototype([DynamicPropertyContainer], SVGFillStyleData);
 
 /* global PropertyFactory, degToRads, GradientProperty, createElementID, createNS, locationHref,
-extendPrototype, DynamicPropertyContainer */
+extendPrototype, DynamicPropertyContainer, lineCapEnum, lineJoinEnum */
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
@@ -8258,7 +8272,6 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
     stops.push(stop);
   }
   pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
-
   this.gf = gfill;
   this.cst = stops;
 };
@@ -8287,6 +8300,13 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
       stops.push(stop);
     }
     maskElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
+    if (data.ty === 'gs') {
+      maskElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
+      maskElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
+      if (data.lj === 1) {
+        maskElement.setAttribute('stroke-miterlimit', data.ml);
+      }
+    }
     this.of = opFill;
     this.ms = mask;
     this.ost = stops;
@@ -8945,16 +8965,7 @@ IShapeElement.prototype = {
       }
     }
   },
-  lcEnum: {
-    1: 'butt',
-    2: 'round',
-    3: 'square',
-  },
-  ljEnum: {
-    1: 'miter',
-    2: 'round',
-    3: 'bevel',
-  },
+
   searchProcessedElement: function (elem) {
     var elements = this.processedElements;
     var i = 0;
@@ -9572,7 +9583,8 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
 /* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers */
+TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
+lineCapEnum, lineJoinEnum */
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -9669,8 +9681,8 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
   }
 
   if (data.ty === 'st' || data.ty === 'gs') {
-    pathElement.setAttribute('stroke-linecap', this.lcEnum[data.lc] || 'round');
-    pathElement.setAttribute('stroke-linejoin', this.ljEnum[data.lj] || 'round');
+    pathElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
+    pathElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
     pathElement.setAttribute('fill-opacity', '0');
     if (data.lj === 1) {
       pathElement.setAttribute('stroke-miterlimit', data.ml);
@@ -10759,7 +10771,7 @@ CVMaskElement.prototype.destroy = function () {
 
 /* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
 HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, degToRads, GradientProperty,
-DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor */
+DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];
@@ -10809,8 +10821,8 @@ CVShapeElement.prototype.createStyleElement = function (data, transforms) {
   }
   elementData.o = PropertyFactory.getProp(this, data.o, 0, 0.01, this);
   if (data.ty === 'st' || data.ty === 'gs') {
-    styleElem.lc = this.lcEnum[data.lc] || 'round';
-    styleElem.lj = this.ljEnum[data.lj] || 'round';
+    styleElem.lc = lineCapEnum[data.lc || 2];
+    styleElem.lj = lineJoinEnum[data.lj || 2];
     if (data.lj == 1) { // eslint-disable-line eqeqeq
       styleElem.ml = data.ml;
     }
@@ -11854,7 +11866,7 @@ HShapeElement.prototype.renderInnerContent = function () {
 };
 
 /* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS */
+RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -11931,8 +11943,8 @@ HTextElement.prototype.buildNewText = function () {
     if (this.globalData.fontManager.chars) {
       if (!this.textPaths[cnt]) {
         tSpan = createNS('path');
-        tSpan.setAttribute('stroke-linecap', 'butt');
-        tSpan.setAttribute('stroke-linejoin', 'round');
+        tSpan.setAttribute('stroke-linecap', lineCapEnum[1]);
+        tSpan.setAttribute('stroke-linejoin', lineJoinEnum[2]);
         tSpan.setAttribute('stroke-miterlimit', '4');
       } else {
         tSpan = this.textPaths[cnt];
@@ -15967,48 +15979,46 @@ var ExpressionPropertyInterface = (function () {
 }());
 
 /* global expressionHelpers, TextSelectorProp, ExpressionManager */
-/* exported TextExpressionSelectorProp */
+/* exported TextExpressionSelectorPropFactory */
 
-(function () {
-  var TextExpressionSelectorProp = (function () { // eslint-disable-line no-unused-vars
-    function getValueProxy(index, total) {
-      this.textIndex = index + 1;
-      this.textTotal = total;
-      this.v = this.getValue() * this.mult;
-      return this.v;
+var TextExpressionSelectorPropFactory = (function () { // eslint-disable-line no-unused-vars
+  function getValueProxy(index, total) {
+    this.textIndex = index + 1;
+    this.textTotal = total;
+    this.v = this.getValue() * this.mult;
+    return this.v;
+  }
+
+  return function (elem, data) {
+    this.pv = 1;
+    this.comp = elem.comp;
+    this.elem = elem;
+    this.mult = 0.01;
+    this.propType = 'textSelector';
+    this.textTotal = data.totalChars;
+    this.selectorValue = 100;
+    this.lastValue = [1, 1, 1];
+    this.k = true;
+    this.x = true;
+    this.getValue = ExpressionManager.initiateExpression.bind(this)(elem, data, this);
+    this.getMult = getValueProxy;
+    this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
+    if (this.kf) {
+      this.getValueAtTime = expressionHelpers.getValueAtTime.bind(this);
+    } else {
+      this.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(this);
     }
-
-    return function TextExpressionSelectorPropFactory(elem, data) {
-      this.pv = 1;
-      this.comp = elem.comp;
-      this.elem = elem;
-      this.mult = 0.01;
-      this.propType = 'textSelector';
-      this.textTotal = data.totalChars;
-      this.selectorValue = 100;
-      this.lastValue = [1, 1, 1];
-      this.k = true;
-      this.x = true;
-      this.getValue = ExpressionManager.initiateExpression.bind(this)(elem, data, this);
-      this.getMult = getValueProxy;
-      this.getVelocityAtTime = expressionHelpers.getVelocityAtTime;
-      if (this.kf) {
-        this.getValueAtTime = expressionHelpers.getValueAtTime.bind(this);
-      } else {
-        this.getValueAtTime = expressionHelpers.getStaticValueAtTime.bind(this);
-      }
-      this.setGroupProperty = expressionHelpers.setGroupProperty;
-    };
-  }());
-
-  var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
-  TextSelectorProp.getTextSelectorProp = function (elem, data, arr) {
-    if (data.t === 1) {
-      return new TextExpressionSelectorPropFactory(elem, data, arr); // eslint-disable-line no-undef
-    }
-    return propertyGetTextProp(elem, data, arr);
+    this.setGroupProperty = expressionHelpers.setGroupProperty;
   };
 }());
+
+var propertyGetTextProp = TextSelectorProp.getTextSelectorProp;
+TextSelectorProp.getTextSelectorProp = function (elem, data, arr) {
+  if (data.t === 1) {
+    return new TextExpressionSelectorPropFactory(elem, data, arr); // eslint-disable-line no-undef
+  }
+  return propertyGetTextProp(elem, data, arr);
+};
 
 /* global PropertyFactory */
 /* exported SliderEffect, AngleEffect, ColorEffect, PointEffect, LayerIndexEffect, MaskIndexEffect, CheckboxEffect, NoValueEffect */
@@ -16211,7 +16221,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.11';
+lottie.version = '5.7.12';
 
 function checkReady() {
   if (document.readyState === 'complete') {
