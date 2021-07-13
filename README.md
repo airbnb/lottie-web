@@ -121,7 +121,7 @@ Or get it directly from the AE plugin clicking on Get Player
 ```
 You can call lottie.loadAnimation() to start an animation.
 It takes an object as a unique param with:
-- animationData: an Object with the exported animation data.
+- animationData: an Object with the exported animation data. **Note:** If your animation contains repeaters and you plan to call loadAnimation multiple times with the same animation, please deep clone the object before passing it (see [#1159](https://github.com/airbnb/lottie-web/issues/1159) and [#2151](https://github.com/airbnb/lottie-web/issues/2151).)
 - path: the relative path to the animation object. (animationData and path are mutually exclusive)
 - loop: true / false / number
 - autoplay: true / false it will start playing as soon as it is ready
@@ -238,6 +238,8 @@ lottie.loadAnimation({
   loop: true,
   autoplay: true,
   animationData: animationData, // the animation data
+  // ...or if your animation contains repeaters:
+  // animationData: cloneDeep(animationData), // e.g. lodash.clonedeep
   rendererSettings: {
     context: canvasContext, // the canvas context, only support "2d" context
     preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
