@@ -76,7 +76,14 @@ export type HTMLRendererConfig = BaseRendererConfig & {
     hideOnTransparent?: boolean;
 };
 
-export type AnimationConfig<T extends 'svg' | 'canvas' | 'html' = 'svg'> = {
+export type AnimationConfig<T extends "svg" | "canvas" | "html"> = (
+    | {
+        path?: string;
+    }
+    | {
+        animationData?: any;
+    }
+) & {
     container: Element;
     renderer?: T;
     loop?: boolean | number;
@@ -88,23 +95,15 @@ export type AnimationConfig<T extends 'svg' | 'canvas' | 'html' = 'svg'> = {
         svg: SVGRendererConfig;
         canvas: CanvasRendererConfig;
         html: HTMLRendererConfig;
-    }[T]
+    }[T];
     audioFactory?(assetPath: string): {
-        play(): void
-        seek(): void
-        playing(): void
-        rate(): void
-        setVolume(): void
-    }
-}
-
-export type AnimationConfigWithPath = AnimationConfig & {
-    path?: string;
-}
-
-export type AnimationConfigWithData = AnimationConfig & {
-    animationData?: any;
-}
+        play(): void;
+        seek(): void;
+        playing(): void;
+        rate(): void;
+        setVolume(): void;
+    };
+};
 
 export type FilterSizeConfig = {
     width: string;
@@ -120,7 +119,7 @@ export type LottiePlayer = {
     setSpeed(speed: number, name?: string): void;
     setDirection(direction: AnimationDirection, name?: string): void;
     searchAnimations(animationData?: any, standalone?: boolean, renderer?: string): void;
-    loadAnimation(params: AnimationConfigWithPath | AnimationConfigWithData): AnimationItem;
+    loadAnimation<T extends 'svg' | 'canvas' | 'html' = 'svg'>(params: AnimationConfig<T>): AnimationItem;
     destroy(name?: string): void;
     registerAnimation(element: Element, animationData?: any): void;
     setQuality(quality: string | number): void;
