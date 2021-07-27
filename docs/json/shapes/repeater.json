@@ -23,7 +23,7 @@
       "description": "Number of Copies",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
@@ -37,7 +37,7 @@
       "description": "Offset of Copies",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
