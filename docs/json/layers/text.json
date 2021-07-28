@@ -11,43 +11,27 @@
     "ks": {
       "title": "Transform",
       "description": "Transform properties",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/transform"
-        }
-      ],
+      "$ref": "#/helpers/transform",
       "type": "object"
     },
     "ao": {
       "title": "Auto-Orient",
       "description": "Auto-Orient along path AE property.",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "type": "number",
       "default": 0
     },
     "bm": {
       "title": "Blend Mode",
       "description": "Blend Mode",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/blendMode"
-        }
-      ],
+      "$ref": "#/helpers/blendMode",
       "type": "number",
       "default": 0
     },
     "ddd": {
       "title": "3d Layer",
       "description": "3d layer flag",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "type": "number",
       "default": 0
     },
@@ -95,11 +79,7 @@
       "title": "Masks Properties",
       "description": "List of Masks",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/helpers/mask"
-          }
-        ],
+        "$ref": "#/helpers/mask",
         "type": "object"
       },
       "type": "array"
@@ -107,11 +87,7 @@
     "ef": {
       "title": "Effects",
       "description": "Auto-Orient along path AE property.",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "type": "number"
     },
     "sr": {
@@ -374,31 +350,19 @@
                   {
                     "title": "Randomize",
                     "description": "Selector Randomize Order",
-                    "oneOf": [
-                      {
-                        "$ref": "#/helpers/boolean"
-                      }
-                    ],
+                    "$ref": "#/helpers/boolean",
                     "type": "number"
                   },
                   {
                     "title": "Shape",
                     "description": "Selector Shape",
-                    "oneOf": [
-                      {
-                        "$ref": "#/helpers/textShape"
-                      }
-                    ],
+                    "$ref": "#/helpers/textShape",
                     "type": "number"
                   },
                   {
                     "title": "Based On",
                     "description": "Selector Based On",
-                    "oneOf": [
-                      {
-                        "$ref": "#/helpers/textBased"
-                      }
-                    ],
+                    "$ref": "#/helpers/textBased",
                     "type": "number"
                   },
                   {
@@ -460,11 +424,7 @@
             {
               "title": "Anchor Point Grouping",
               "description": "Text Anchor Point Grouping",
-              "oneOf": [
-                {
-                  "$ref": "#/helpers/textGrouping"
-                }
-              ],
+              "$ref": "#/helpers/textGrouping",
               "type": "number"
             },
             {

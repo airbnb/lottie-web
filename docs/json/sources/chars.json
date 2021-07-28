@@ -43,11 +43,7 @@
                   {
                     "title": "keys",
                     "description": "Character Items Keys",
-                    "oneOf": [
-                      {
-                        "$ref": "#/properties/shape"
-                      }
-                    ],
+                    "$ref": "#/properties/shape",
                     "type": "object"
                   }
                 ],

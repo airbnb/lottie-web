@@ -119,21 +119,13 @@
     "lc": {
       "title": "Line Cap",
       "description": "Gradient Stroke Line Cap",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/lineCap"
-        }
-      ],
+      "$ref": "#/helpers/lineCap",
       "type": "number"
     },
     "lj": {
       "title": "Line Join",
       "description": "Gradient Stroke Line Join",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/lineJoin"
-        }
-      ],
+      "$ref": "#/helpers/lineJoin",
       "type": "number"
     },
     "ml": {

@@ -27,11 +27,7 @@
       "title": "Effects",
       "description": "Effect List of properties.",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/effects/index"
-          }
-        ],
+        "$ref": "#/effects/index",
         "type": "object"
       },
       "type": "array"

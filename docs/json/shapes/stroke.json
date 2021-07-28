@@ -21,21 +21,13 @@
     "lc": {
       "title": "Line Cap",
       "description": "Stroke Line Cap",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/lineCap"
-        }
-      ],
+      "$ref": "#/helpers/lineCap",
       "type": "number"
     },
     "lj": {
       "title": "Line Join",
       "description": "Stroke Line Join",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/lineJoin"
-        }
-      ],
+      "$ref": "#/helpers/lineJoin",
       "type": "number"
     },
     "ml": {
