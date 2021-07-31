@@ -11,32 +11,20 @@
     "ks": {
       "title": "Transform",
       "description": "Transform properties",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/transform"
-        }
-      ],
+      "$ref": "#/helpers/transform",
       "type": "object"
     },
     "ao": {
       "title": "Auto-Orient",
       "description": "Auto-Orient along path AE property.",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "bm": {
       "title": "Blend Mode",
       "description": "Blend Mode",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/blendMode"
-        }
-      ],
+      "$ref": "#/helpers/blendMode",
       "type": "number",
       "default": 0
     },
@@ -44,11 +32,7 @@
       "title": "3d Layer",
       "description": "3d layer flag",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "ind": {
@@ -95,11 +79,7 @@
       "title": "Masks Properties",
       "description": "List of Masks",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/helpers/mask"
-          }
-        ],
+        "$ref": "#/helpers/mask",
         "type": "object"
       },
       "type": "array"
@@ -108,11 +88,7 @@
       "title": "Effects",
       "description": "Auto-Orient along path AE property.",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ]
+      "$ref": "#/helpers/boolean"
     },
     "sr": {
       "title": "Stretch",

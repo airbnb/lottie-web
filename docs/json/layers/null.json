@@ -11,33 +11,21 @@
     "ks": {
       "title": "Transform",
       "description": "Transform properties",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/transform"
-        }
-      ],
+      "$ref": "#/helpers/transform",
       "type": "object"
     },
     "ao": {
       "title": "Auto-Orient",
       "description": "Auto-Orient along path AE property.",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "ddd": {
       "title": "3d Layer",
       "description": "3d layer flag",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "ind": {
@@ -79,11 +67,7 @@
       "title": "Effects",
       "description": "List of Effects",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/effects/index"
-          }
-        ],
+        "$ref": "#/effects/index",
         "type": "object"
       },
       "type": "array"

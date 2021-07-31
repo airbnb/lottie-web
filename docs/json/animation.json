@@ -25,8 +25,9 @@
     "ddd": {
       "title": "3-D",
       "description": "Composition has 3-D layers",
-      "enum": [0, 1],
-      "type": "number"
+      "type": "number",
+      "$ref": "#/helpers/boolean",
+      "default": 0
     },
     "h": {
       "title": "Height",
@@ -91,11 +92,7 @@
       "title": "Chars",
       "description": "source chars for text layers",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/sources/chars"
-          }
-        ],
+        "$ref": "#/sources/chars",
         "type": "object"
       },
       "type": "array"
