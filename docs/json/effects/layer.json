@@ -26,11 +26,7 @@
     "v": {
       "title": "Value",
       "description": "Effect value.",
-      "oneOf": [
-        {
-          "$ref": "#/properties/value"
-        }
-      ],
+      "$ref": "#/properties/value",
       "type": "object"
     }
   }

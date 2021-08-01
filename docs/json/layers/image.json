@@ -11,44 +11,28 @@
     "ks": {
       "title": "Transform",
       "description": "Transform properties",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/transform"
-        }
-      ],
+      "$ref": "#/helpers/transform",
       "type": "object"
     },
     "ao": {
       "title": "Auto-Orient",
       "description": "Auto-Orient along path AE property.",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "bm": {
       "title": "Blend Mode",
       "description": "Blend Mode",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/blendMode"
-        }
-      ],
+      "$ref": "#/helpers/blendMode",
       "default": 0
     },
     "ddd": {
       "title": "3d Layer",
       "description": "3d layer flag",
       "type": "number",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/boolean"
-        }
-      ],
+      "$ref": "#/helpers/boolean",
       "default": 0
     },
     "ind": {
@@ -95,11 +79,7 @@
       "title": "Masks Properties",
       "description": "List of Masks",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/helpers/mask"
-          }
-        ],
+        "$ref": "#/helpers/mask",
         "type": "object"
       },
       "type": "array"
@@ -108,11 +88,7 @@
       "title": "Effects",
       "description": "List of Effects",
       "items": {
-        "oneOf": [
-          {
-            "$ref": "#/effects/index"
-          }
-        ],
+        "$ref": "#/effects/index",
         "type": "object"
       },
       "type": "array"

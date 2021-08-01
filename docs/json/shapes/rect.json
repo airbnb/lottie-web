@@ -54,7 +54,7 @@
       "description": "Rect's rounded corners",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"

@@ -23,7 +23,7 @@
       "description": "Fill Opacity",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
@@ -77,7 +77,7 @@
       "description": "Gradient Highlight Length. Only if type is Radial",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
@@ -90,7 +90,7 @@
       "description": "Highlight Angle. Only if type is Radial",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"

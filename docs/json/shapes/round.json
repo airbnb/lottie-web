@@ -23,7 +23,7 @@
       "description": "Rounded Corner Radius",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"

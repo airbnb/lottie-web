@@ -23,7 +23,7 @@
       "description": "Number of Copies",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
@@ -37,7 +37,7 @@
       "description": "Offset of Copies",
       "oneOf": [
         {
-          "$ref": "#/properties/Value"
+          "$ref": "#/properties/value"
         },
         {
           "$ref": "#/properties/valueKeyframed"
@@ -49,22 +49,14 @@
     "m": {
       "title": "Composite",
       "description": "Composite of copies",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/composite"
-        }
-      ],
+      "$ref": "#/helpers/composite",
       "type": "number",
       "default": 1
     },
     "tr": {
       "title": "Transform",
       "description": "Transform values for each repeater copy",
-      "oneOf": [
-        {
-          "$ref": "#/helpers/transform"
-        }
-      ],
+      "$ref": "#/helpers/transform",
       "type": "object"
     }
   }

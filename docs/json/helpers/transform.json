@@ -11,7 +11,7 @@
         },
         {
           "$ref": "#/properties/multiDimensionalKeyframed"
-        },
+        }
       ],
       "default": {"a":0, "k":[0, 0, 0]},
       "type": "object"
