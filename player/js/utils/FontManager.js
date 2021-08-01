@@ -14,6 +14,16 @@ var FontManager = (function () {
     2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379,
     2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
+  var surrogateModifiers = [
+    'd83cdffb',
+    'd83cdffc',
+    'd83cdffd',
+    'd83cdffe',
+    'd83cdfff',
+  ];
+
+  var zeroWidthJoiner = [65039, 8205];
+
   function trimFontOptions(font) {
     var familyArray = font.split(',');
     var i;
@@ -292,8 +302,20 @@ var FontManager = (function () {
     return this.fonts[0];
   }
 
-  function getCombinedCharacterCodes() {
-    return combinedCharacters;
+  function isModifier(firstCharCode, secondCharCode) {
+    var sum = firstCharCode.toString(16) + secondCharCode.toString(16);
+    return surrogateModifiers.indexOf(sum) !== -1;
+  }
+
+  function isZeroWidthJoiner(firstCharCode, secondCharCode) {
+    if (!secondCharCode) {
+      return firstCharCode === zeroWidthJoiner[1];
+    }
+    return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
+  }
+
+  function isCombinedCharacter(char) {
+    return combinedCharacters.indexOf(char) !== -1;
   }
 
   function setIsLoaded() {
@@ -310,8 +332,9 @@ var FontManager = (function () {
     this.setIsLoadedBinded = this.setIsLoaded.bind(this);
     this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this);
   };
-    // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it.
-  Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
+  Font.isModifier = isModifier;
+  Font.isZeroWidthJoiner = isZeroWidthJoiner;
+  Font.isCombinedCharacter = isCombinedCharacter;
 
   var fontPrototype = {
     addChars: addChars,

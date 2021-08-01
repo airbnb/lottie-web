@@ -141,23 +141,41 @@ TextProperty.prototype.getKeyframeValue = function () {
 };
 
 TextProperty.prototype.buildFinalText = function (text) {
-  var combinedCharacters = FontManager.getCombinedCharacterCodes();
   var charactersArray = [];
-  var i = 0; var
-    len = text.length;
+  var i = 0;
+  var len = text.length;
   var charCode;
+  var secondCharCode;
+  var shouldCombine = false;
   while (i < len) {
     charCode = text.charCodeAt(i);
-    if (combinedCharacters.indexOf(charCode) !== -1) {
+    if (FontManager.isCombinedCharacter(charCode)) {
       charactersArray[charactersArray.length - 1] += text.charAt(i);
     } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-      charCode = text.charCodeAt(i + 1);
-      if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
-        charactersArray.push(text.substr(i, 2));
+      secondCharCode = text.charCodeAt(i + 1);
+      if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
+        if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
+          charactersArray[charactersArray.length - 1] += text.substr(i, 2);
+          shouldCombine = false;
+        } else {
+          charactersArray.push(text.substr(i, 2));
+        }
         i += 1;
       } else {
         charactersArray.push(text.charAt(i));
       }
+    } else if (charCode > 0xDBFF) {
+      secondCharCode = text.charCodeAt(i + 1);
+      if (FontManager.isZeroWidthJoiner(charCode, secondCharCode)) {
+        shouldCombine = true;
+        charactersArray[charactersArray.length - 1] += text.substr(i, 2);
+        i += 1;
+      } else {
+        charactersArray.push(text.charAt(i));
+      }
+    } else if (FontManager.isZeroWidthJoiner(charCode)) {
+      charactersArray[charactersArray.length - 1] += text.charAt(i);
+      shouldCombine = true;
     } else {
       charactersArray.push(text.charAt(i));
     }
