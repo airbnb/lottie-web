@@ -1954,6 +1954,16 @@ var FontManager = (function () {
     2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379,
     2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
+  var surrogateModifiers = [
+    'd83cdffb',
+    'd83cdffc',
+    'd83cdffd',
+    'd83cdffe',
+    'd83cdfff',
+  ];
+
+  var zeroWidthJoiner = [65039, 8205];
+
   function trimFontOptions(font) {
     var familyArray = font.split(',');
     var i;
@@ -2232,8 +2242,20 @@ var FontManager = (function () {
     return this.fonts[0];
   }
 
-  function getCombinedCharacterCodes() {
-    return combinedCharacters;
+  function isModifier(firstCharCode, secondCharCode) {
+    var sum = firstCharCode.toString(16) + secondCharCode.toString(16);
+    return surrogateModifiers.indexOf(sum) !== -1;
+  }
+
+  function isZeroWidthJoiner(firstCharCode, secondCharCode) {
+    if (!secondCharCode) {
+      return firstCharCode === zeroWidthJoiner[1];
+    }
+    return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
+  }
+
+  function isCombinedCharacter(char) {
+    return combinedCharacters.indexOf(char) !== -1;
   }
 
   function setIsLoaded() {
@@ -2250,8 +2272,9 @@ var FontManager = (function () {
     this.setIsLoadedBinded = this.setIsLoaded.bind(this);
     this.checkLoadedFontsBinded = this.checkLoadedFonts.bind(this);
   };
-    // TODO: for now I'm adding these methods to the Class and not the prototype. Think of a better way to implement it.
-  Font.getCombinedCharacterCodes = getCombinedCharacterCodes;
+  Font.isModifier = isModifier;
+  Font.isZeroWidthJoiner = isZeroWidthJoiner;
+  Font.isCombinedCharacter = isCombinedCharacter;
 
   var fontPrototype = {
     addChars: addChars,
@@ -5822,23 +5845,41 @@ TextProperty.prototype.getKeyframeValue = function () {
 };
 
 TextProperty.prototype.buildFinalText = function (text) {
-  var combinedCharacters = FontManager.getCombinedCharacterCodes();
   var charactersArray = [];
-  var i = 0; var
-    len = text.length;
+  var i = 0;
+  var len = text.length;
   var charCode;
+  var secondCharCode;
+  var shouldCombine = false;
   while (i < len) {
     charCode = text.charCodeAt(i);
-    if (combinedCharacters.indexOf(charCode) !== -1) {
+    if (FontManager.isCombinedCharacter(charCode)) {
       charactersArray[charactersArray.length - 1] += text.charAt(i);
     } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-      charCode = text.charCodeAt(i + 1);
-      if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
-        charactersArray.push(text.substr(i, 2));
+      secondCharCode = text.charCodeAt(i + 1);
+      if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
+        if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
+          charactersArray[charactersArray.length - 1] += text.substr(i, 2);
+          shouldCombine = false;
+        } else {
+          charactersArray.push(text.substr(i, 2));
+        }
         i += 1;
       } else {
         charactersArray.push(text.charAt(i));
       }
+    } else if (charCode > 0xDBFF) {
+      secondCharCode = text.charCodeAt(i + 1);
+      if (FontManager.isZeroWidthJoiner(charCode, secondCharCode)) {
+        shouldCombine = true;
+        charactersArray[charactersArray.length - 1] += text.substr(i, 2);
+        i += 1;
+      } else {
+        charactersArray.push(text.charAt(i));
+      }
+    } else if (FontManager.isZeroWidthJoiner(charCode)) {
+      charactersArray[charactersArray.length - 1] += text.charAt(i);
+      shouldCombine = true;
     } else {
       charactersArray.push(text.charAt(i));
     }
@@ -13699,7 +13740,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.12';
+lottie.version = '5.7.13';
 
 function checkReady() {
   if (document.readyState === 'complete') {

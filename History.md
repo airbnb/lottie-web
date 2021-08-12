@@ -1,3 +1,7 @@
+## V 5.7.13
+- FEATURE: added support for emoji modifiers and sequences
+- FEATURE: added support for metadata export on json files
+
 ## V 5.7.12
 - FEATURE: added support for masked strokes line cap and line join
 - FIX: callbacks list executing beyond index list
