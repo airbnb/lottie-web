@@ -121,7 +121,7 @@ export type LottiePlayer = {
     setSpeed(speed: number, name?: string): void;
     setDirection(direction: AnimationDirection, name?: string): void;
     searchAnimations(animationData?: any, standalone?: boolean, renderer?: string): void;
-    loadAnimation<T extends AnimationRenderer = AnimationRenderer>(params: AnimationConfigWithPath<T> | AnimationConfigWithData<T>): AnimationItem;
+    loadAnimation<T extends AnimationRenderer = 'svg'>(params: AnimationConfigWithPath<T> | AnimationConfigWithData<T>): AnimationItem;
     destroy(name?: string): void;
     registerAnimation(element: Element, animationData?: any): void;
     setQuality(quality: string | number): void;
