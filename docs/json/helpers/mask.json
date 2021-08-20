@@ -32,10 +32,10 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "#/properties/const"
+          "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/constKeyframed"
+          "$ref": "#/properties/valueKeyframed"
         }
       ],
       "default": {"a":0, "k":100}

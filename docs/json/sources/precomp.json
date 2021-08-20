@@ -19,7 +19,7 @@
             "$ref": "#/layers/solid"
           },
           {
-            "$ref": "#/layers/comp"
+            "$ref": "#/layers/preComp"
           },
           {
             "$ref": "#/layers/image"

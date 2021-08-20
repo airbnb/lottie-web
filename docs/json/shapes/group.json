@@ -73,7 +73,7 @@
             "value": "gr"
           },
           {
-            "$ref": "#/shapes/roundedCorners",
+            "$ref": "#/shapes/round",
             "value": "rd"
           },
           {
