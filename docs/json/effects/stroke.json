@@ -32,10 +32,7 @@
           "$ref": "#/effects/color"
         },
         {
-          "$ref": "#/effects/checkbox"
-        },
-        {
-          "$ref": "#/effects/checkbox"
+          "$ref": "#/effects/checkBox"
         },
         {
           "$ref": "#/effects/color"

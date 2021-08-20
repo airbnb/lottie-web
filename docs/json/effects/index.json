@@ -15,7 +15,7 @@
       "$ref": "#/effects/point"
     },
     {
-      "$ref": "#/effects/checkbox"
+      "$ref": "#/effects/checkBox"
     },
     {
       "$ref": "#/effects/group"
@@ -30,7 +30,7 @@
       "$ref": "#/effects/customValue"
     },
     {
-      "$ref": "#/effects/layerIndex"
+      "$ref": "#/effects/layer"
     },
     {
       "$ref": "#/effects/tint"
