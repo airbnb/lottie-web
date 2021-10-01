@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "k": {
+      "description": "Property Value keyframes",
+      "extended_name": "Keyframes",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "$ref": "#/properties/offsetSpatialKeyframe"
+      }
+    },
+    "x": {
+      "description": "Property Expression. An AE expression that modifies the value.",
+      "extended_name": "Expression",
+      "type": "string"
+    },
+    "ix": {
+      "description": "Property Index. Used for expressions.",
+      "extended_name": "Property Index",
+      "type": "number"
+    },
+    "ti": {
+      "description": "In Spatial Tangent. Only for spatial properties. Array of numbers.",
+      "extended_name": "In Tangent",
+      "type": "array"
+    },
+    "to": {
+      "description": "Out Spatial Tangent. Only for spatial properties. Array of numbers.",
+      "extended_name": "Out Tangent",
+      "type": "array"
+    }
+  }
+}
