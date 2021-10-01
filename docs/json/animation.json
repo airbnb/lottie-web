@@ -97,5 +97,6 @@
       },
       "type": "array"
     }
-  }
+  },
+  "required": ["ip", "op","fr","w","h","layers"]
 }

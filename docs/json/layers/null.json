@@ -61,7 +61,7 @@
     "nm": {
       "title": "Name",
       "description": "After Effects Layer Name. Used for expressions.",
-      "type": "number"
+      "type": "string"
     },
     "ef": {
       "title": "Effects",

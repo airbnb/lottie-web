@@ -52,7 +52,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "default": {"a":0, "k":0},

@@ -19,7 +19,7 @@
     "ix": {
       "description": "Property Index. Used for expressions.",
       "extended_name": "Property Index",
-      "type": "string"
+      "type": "number"
     }
   }
 }
