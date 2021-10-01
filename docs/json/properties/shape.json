@@ -23,5 +23,6 @@
       "extended_name": "Animated",
       "type": "number"
     }
-  }
+  },
+  "required": ["k"]
 }

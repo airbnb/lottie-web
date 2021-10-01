@@ -23,12 +23,12 @@
         "x": {
           "description": "bezier x axis. Array of numbers.",
           "extended_name": "X axis",
-          "type": "array"
+          "type": "number"
         },
         "y": {
           "description": "bezier y axis. Array of numbers.",
           "extended_name": "Y axis",
-          "type": "array"
+          "type": "number"
         }
       },
       "type": "object"
@@ -40,15 +40,16 @@
         "x": {
           "description": "bezier x axis. Array of numbers.",
           "extended_name": "X axis",
-          "type": "array"
+          "type": "number"
         },
         "y": {
           "description": "bezier y axis. Array of numbers.",
           "extended_name": "Y axis",
-          "type": "array"
+          "type": "number"
         }
       },
       "type": "object"
     }
-  }
+  },
+  "required": ["t","s"]
 }

@@ -36,5 +36,6 @@
       ],
       "type": "object"
     }
-  }
+  },
+  "required": ["ks", "ty"]
 }

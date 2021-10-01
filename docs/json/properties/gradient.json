@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "p": {
+      "description": "Number of gradient stops",
+      "extended_name": "Stops",
+      "type": "integer"
+    },
+    "k": {
+      "description": "Gradient colors",
+      "extended_name": "Gradient colors",
+      "oneOf": [
+        {
+          "$ref": "#/properties/multiDimensional"
+        },
+        {
+          "$ref": "#/properties/multiDimensionalSpatialKeyframed"
+        }
+      ]
+    },
+    "ix": {
+      "description": "Property Index. Used for expressions.",
+      "extended_name": "Property Index",
+      "type": "number"
+    },
+    "a": {
+      "description": "Defines if property is animated",
+      "extended_name": "Animated",
+      "type": "number"
+    }
+  },
+  "required": ["k", "p"]
+}

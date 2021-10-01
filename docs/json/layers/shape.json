@@ -104,7 +104,7 @@
       "description": "Layer Parent. Uses ind of parent.",
       "type": "number"
     },
-    "it": {
+    "shapes": {
       "title": "Items",
       "description": "Shape list of items",
       "items": {
@@ -147,6 +147,9 @@
           },
           {
             "$ref": "#/shapes/repeater"
+          },
+          {
+            "$ref": "#/shapes/transform"
           }
         ],
         "type": "object"

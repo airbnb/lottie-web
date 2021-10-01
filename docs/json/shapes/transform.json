@@ -97,6 +97,12 @@
         }
       ],
       "type": "object"
+    },
+    "ty": {
+      "title": "Type",
+      "description": "Tranform type.",
+      "type": "string",
+      "const": "tr"
     }
   }
 }

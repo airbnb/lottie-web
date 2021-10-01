@@ -20,16 +20,7 @@
       "description": "Property Index. Used for expressions.",
       "extended_name": "Property Index",
       "type": "number"
-    },
-    "ti": {
-      "description": "In Spatial Tangent. Only for spatial properties. Array of numbers.",
-      "extended_name": "In Tangent",
-      "type": "array"
-    },
-    "to": {
-      "description": "Out Spatial Tangent. Only for spatial properties. Array of numbers.",
-      "extended_name": "Out Tangent",
-      "type": "array"
     }
-  }
+  },
+  "required": ["k"]
 }

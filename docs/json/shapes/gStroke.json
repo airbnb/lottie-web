@@ -20,13 +20,13 @@
     },
     "o": {
       "title": "Opacity",
-      "description": "Stroke Opacity",
+      "description": "Fill Opacity",
       "oneOf": [
         {
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -39,7 +39,7 @@
           "$ref": "#/properties/multiDimensional"
         },
         {
-          "$ref": "#/properties/multiDimensionalKeyframed"
+          "$ref": "#/properties/multiDimensionalSpatialKeyframed"
         }
       ],
       "type": "object"
@@ -52,7 +52,7 @@
           "$ref": "#/properties/multiDimensional"
         },
         {
-          "$ref": "#/properties/multiDimensionalKeyframed"
+          "$ref": "#/properties/multiDimensionalSpatialKeyframed"
         }
       ],
       "type": "object"
@@ -63,14 +63,14 @@
       "oneOf": [
         {
           "standsFor": "Linear",
-          "value": 1
+          "const": 1
         },
         {
           "standsFor": "Radial",
-          "value": 2
+          "const": 2
         }
       ],
-      "type": "object"
+      "type": "number"
     },
     "h": {
       "title": "Highlight Length",
@@ -80,7 +80,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -93,7 +93,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -101,7 +101,7 @@
     "g": {
       "title": "Gradient Colors",
       "description": "Gradient Colors",
-      "type": "object"
+      "$ref": "#/properties/gradient"
     },
     "w": {
       "title": "Stroke Width",
@@ -111,7 +111,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -120,18 +120,33 @@
       "title": "Line Cap",
       "description": "Gradient Stroke Line Cap",
       "$ref": "#/helpers/lineCap",
-      "type": "number"
+      "type": "integer"
     },
     "lj": {
       "title": "Line Join",
       "description": "Gradient Stroke Line Join",
       "$ref": "#/helpers/lineJoin",
-      "type": "number"
+      "type": "integer"
     },
     "ml": {
       "title": "Miter Limit",
       "description": "Gradient Stroke Miter Limit. Only if Line Join is set to Miter.",
       "type": "number"
     }
-  }
+  },
+  "anyOf": [
+    {
+      "properties": {
+        "t": { "const": 2 }
+      },
+      "required": ["h", "a"]
+    },
+    {
+      "properties": {
+        "t": { "const": 1 }
+      },
+      "required": []
+    }
+  ],
+  "required": ["s", "e", "o", "t", "ty"]
 }

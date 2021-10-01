@@ -26,7 +26,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -44,5 +44,6 @@
       ],
       "type": "object"
     }
-  }
+  },
+  "required": ["ty", "o", "c"]
 }
