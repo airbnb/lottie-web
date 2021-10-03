@@ -31,7 +31,7 @@
           "$ref": "#/properties/multiDimensional"
         },
         {
-          "$ref": "#/properties/multiDimensionalKeyframed"
+          "$ref": "#/properties/multiDimensionalSpatialKeyframed"
         }
       ],
       "type": "object"
@@ -44,7 +44,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -57,7 +57,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -70,7 +70,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -83,7 +83,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -96,7 +96,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -109,7 +109,7 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
@@ -117,17 +117,32 @@
     "sy": {
       "title": "Star Type",
       "description": "Star's type. Polygon or Star.",
-      "type": "object",
+      "type": "number",
       "oneOf": [
         {
           "standsFor": "Star",
-          "value": 1
+          "const": 1
         },
         {
           "standsFor": "Polygon",
-          "value": 2
+          "const": 2
         }
       ]
     }
-  }
+  },
+  "anyOf": [
+    {
+      "properties": {
+        "sy": { "const": 2 }
+      },
+      "required": []
+    },
+    {
+      "properties": {
+        "sy": { "const": 1 }
+      },
+      "required": ["ir", "is"]
+    }
+  ],
+  "required": ["p", "pt", "r", "os", "or", "ty"]
 }

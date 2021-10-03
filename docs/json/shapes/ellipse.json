@@ -32,7 +32,7 @@
           "$ref": "#/properties/multiDimensional"
         },
         {
-          "$ref": "#/properties/multiDimensionalKeyframed"
+          "$ref": "#/properties/multiDimensionalSpatialKeyframed"
         }
       ],
       "type": "object"
@@ -50,5 +50,6 @@
       ],
       "type": "object"
     }
-  }
+  },
+  "required": ["p", "s", "ty"]
 }

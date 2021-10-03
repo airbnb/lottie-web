@@ -26,10 +26,11 @@
           "$ref": "#/properties/value"
         },
         {
-          "$ref": "#/properties/valueKeyframed"
+          "$ref": "#/properties/multiDimensionalKeyframed"
         }
       ],
       "type": "object"
     }
-  }
+  },
+  "required": ["r", "ty"]
 }
