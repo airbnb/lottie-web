@@ -156,5 +156,6 @@
       },
       "type": "array"
     }
-  }
+  },
+  "required": ["ty", "ks", "ip", "op", "shapes"]
 }

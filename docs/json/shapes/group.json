@@ -29,61 +29,52 @@
       "items": {
         "oneOf": [
           {
-            "$ref": "#/shapes/shape",
-            "value": "sh"
+            "$ref": "#/shapes/shape"
           },
           {
-            "$ref": "#/shapes/rect",
-            "value": "rc"
+            "$ref": "#/shapes/rect"
           },
           {
-            "$ref": "#/shapes/ellipse",
-            "value": "el"
+            "$ref": "#/shapes/ellipse"
           },
           {
-            "$ref": "#/shapes/star",
-            "value": "sr"
+            "$ref": "#/shapes/star"
           },
           {
-            "$ref": "#/shapes/fill",
-            "value": "fl"
+            "$ref": "#/shapes/fill"
           },
           {
-            "$ref": "#/shapes/gFill",
-            "value": "gf"
+            "$ref": "#/shapes/gFill"
           },
           {
-            "$ref": "#/shapes/gStroke",
-            "value": "gs"
+            "$ref": "#/shapes/gStroke"
           },
           {
-            "$ref": "#/shapes/stroke",
-            "value": "st"
+            "$ref": "#/shapes/stroke"
           },
           {
-            "$ref": "#/shapes/merge",
-            "value": "mm"
+            "$ref": "#/shapes/merge"
           },
           {
-            "$ref": "#/shapes/trim",
-            "value": "tm"
+            "$ref": "#/shapes/trim"
           },
           {
-            "$ref": "#/shapes/group",
-            "value": "gr"
+            "$ref": "#/shapes/group"
           },
           {
-            "$ref": "#/shapes/round",
-            "value": "rd"
+            "$ref": "#/shapes/round"
           },
           {
-            "$ref": "#/shapes/transform",
-            "value": "tr"
+            "$ref": "#/shapes/repeater"
+          },
+          {
+            "$ref": "#/shapes/transform"
           }
         ],
         "type": "object"
       },
       "type": "array"
     }
-  }
+  },
+  "required": ["it", "ty"]
 }
