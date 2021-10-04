@@ -112,7 +112,8 @@
       "title": "Time Remapping",
       "description": "Comp's Time remapping",
       "type": "number",
-      "$ref": "#/properties/valueKeyframed"
+      "$ref": "#/properties/multiDimensionalKeyframed"
     }
-  }
+  },
+  "required": ["ty", "ks", "ip", "op", "refId"]
 }

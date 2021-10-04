@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "number",
+  "oneOf": [
+    {
+      "standsFor": "Regular",
+      "const": 0
+    },
+    {
+      "standsFor": "All Caps",
+      "const": 1
+    },
+    {
+      "standsFor": "Small Caps",
+      "const": 2
+    }
+  ],
+  "default": 0
+}

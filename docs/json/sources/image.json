@@ -27,5 +27,6 @@
       "description": "Image path",
       "type": "string"
     }
-  }
+  },
+  "required": ["p"]
 }

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "number",
+  "oneOf": [
+    {
+      "standsFor": "Left Justify",
+      "const": 0
+    },
+    {
+      "standsFor": "Right Justify",
+      "const": 1
+    },
+    {
+      "standsFor": "Center Justify",
+      "const": 2
+    },
+    {
+      "standsFor": "Full Justify Last Line Left",
+      "const": 3
+    },
+    {
+      "standsFor": "Full Justify Last Line Right",
+      "const": 4
+    },
+    {
+      "standsFor": "Full Justify Last Line Center",
+      "const": 5
+    },
+    {
+      "standsFor": "Full Justify Last Line Full",
+      "const": 6
+    }
+  ],
+  "default": 0
+}

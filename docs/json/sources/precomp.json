@@ -35,5 +35,6 @@
       },
       "type": "array"
     }
-  }
+  },
+  "required": ["layers"]
 }

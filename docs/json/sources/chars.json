@@ -15,7 +15,7 @@
     "size": {
       "title": "Font Size",
       "description": "Character Font Size",
-      "type": "string"
+      "type": "number"
     },
     "style": {
       "title": "Font Style",
@@ -30,32 +30,18 @@
     "data": {
       "title": "Character Data",
       "description": "Character Data",
-      "properties": [
-        {
-          "title": "Character Shapes",
-          "description": "Character Composing Shapes",
+      "properties": {
+        "shapes": {
+          "title": "Shapes",
+          "description": "List of Shapes",
           "items": {
-            "properties": [
-              {
-                "title": "Items",
-                "description": "Character Items",
-                "properties": [
-                  {
-                    "title": "keys",
-                    "description": "Character Items Keys",
-                    "$ref": "#/properties/shape",
-                    "type": "object"
-                  }
-                ],
-                "type": "object"
-              }
-            ],
-            "type": "object"
+            "$ref": "#/shapes/group"
           },
           "type": "array"
         }
-      ],
+      },
       "type": "object"
     }
-  }
+  },
+  "required": ["ch", "fFamily", "size", "style", "w", "data"]
 }

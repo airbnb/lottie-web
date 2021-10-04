@@ -116,5 +116,6 @@
       "description": "Width of the solid.",
       "type": "number"
     }
-  }
+  },
+  "required": ["ty", "ks", "ip", "op", "sc", "sh", "sw"]
 }

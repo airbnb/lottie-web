@@ -104,7 +104,82 @@
     "t": {
       "title": "Text Data",
       "description": "Text Data",
-      "properties": [
+      "properties": {
+        "d": {
+          "title": "Text Document",
+          "description": "Text Document",
+          "properties": {
+            "k": {
+              "title": "Text Document Keyframes",
+              "description": "Text Document Keyframes",
+              "type": "array",
+              "items": {
+                "title": "Text Document Keyframe",
+                "description": "Text Document Keyframe",
+                "properties": {
+                  "t": {
+                    "title": "Time",
+                    "description": "Keyframe Time",
+                    "type": "number"
+                  },
+                  "s": {
+                    "title": "Text Properties",
+                    "description": "Text Properties",
+                    "type": "object",
+                    "properties": {
+                      "s": {
+                        "title": "Size",
+                        "description": "Text Font Size",
+                        "type": "number"
+                      },
+                      "f": {
+                        "title": "Font",
+                        "description": "Text Font",
+                        "type": "string"
+                      },
+                      "t": {
+                        "title": "Text",
+                        "description": "Text String Value",
+                        "type": "string"
+                      },
+                      "j": {
+                        "title": "Justification",
+                        "description": "Text Justification",
+                        "$ref": "#/helpers/textJustification"
+                      },
+                      "lh": {
+                        "title": "Line Height",
+                        "description": "Text Line Height",
+                        "type": "number"
+                      },
+                      "tr": {
+                        "title": "Tracking",
+                        "description": "Text Tracking",
+                        "type": "number"
+                      },
+                      "fc": {
+                        "title": "Font Color",
+                        "description": "Text Font Color",
+                        "type": "array"
+                      },
+                      "ca": {
+                        "title": "Text Caps",
+                        "description": "Text Caps",
+                        "$ref": "#/helpers/textCaps"
+                      }
+                    },
+                    "required": ["s", "f", "t", "j", "lh", "tr", "fc"]
+                  }
+                },
+                "type": "object",
+                "required": ["t"]
+              }
+            }
+          },
+          "type": "object"
+        }
+      },
+      "properties2": [
         {
           "title": "Animators",
           "description": "Text animators",
@@ -447,77 +522,10 @@
           "title": "Text Path",
           "description": "Text Path",
           "type": "number"
-        },
-        {
-          "title": "Document",
-          "description": "Text Document Data",
-          "properties": [
-            {
-              "title": "Keyframes",
-              "description": "Text Document Data Keyframes",
-              "items": {
-                "oneOf": [
-                  {
-                    "properties": [
-                      {
-                        "title": "Time",
-                        "description": "Keyframe Time",
-                        "type": "number"
-                      },
-                      {
-                        "title": "Text Properties",
-                        "description": "Text Properties",
-                        "type": "object",
-                        "properties": [
-                          {
-                            "title": "Font",
-                            "description": "Text Font",
-                            "type": "string"
-                          },
-                          {
-                            "title": "Font Color",
-                            "description": "Text Font Color",
-                            "type": "array"
-                          },
-                          {
-                            "title": "Justificaiton",
-                            "description": "Text Justification",
-                            "type": "string"
-                          },
-                          {
-                            "title": "Line Height",
-                            "description": "Text Line Height",
-                            "type": "number"
-                          },
-                          {
-                            "title": "Size",
-                            "description": "Text Font Size",
-                            "type": "number"
-                          },
-                          {
-                            "title": "Text",
-                            "description": "Text String Value",
-                            "type": "string"
-                          },
-                          {
-                            "title": "Tracking",
-                            "description": "Text Tracking",
-                            "type": "number"
-                          }
-                        ]
-                      }
-                    ]
-                  }
-                ],
-                "type": "object"
-              },
-              "type": "array"
-            }
-          ],
-          "type": "object"
         }
       ],
       "type": "object"
     }
-  }
+  },
+  "required": ["ty", "ks", "ip", "op", "t"]
 }

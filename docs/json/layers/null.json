@@ -83,5 +83,6 @@
       "description": "Layer Parent. Uses ind of parent.",
       "type": "number"
     }
-  }
+  },
+  "required": ["ty", "ks", "ip", "op"]
 }
