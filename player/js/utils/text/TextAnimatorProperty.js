@@ -29,9 +29,11 @@ TextAnimatorProperty.prototype.searchProperties = function () {
   }
   if (this._textData.p && 'm' in this._textData.p) {
     this._pathData = {
+      a: getProp(this._elem, this._textData.p.a, 0, 0, this),
       f: getProp(this._elem, this._textData.p.f, 0, 0, this),
       l: getProp(this._elem, this._textData.p.l, 0, 0, this),
-      r: this._textData.p.r,
+      r: getProp(this._elem, this._textData.p.r, 0, 0, this),
+      p: getProp(this._elem, this._textData.p.p, 0, 0, this),
       m: this._elem.maskManager.getMaskProperty(this._textData.p.m),
     };
     this._hasMaskedPath = true;
@@ -77,7 +79,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
     mask = this._pathData.m;
     if (!this._pathData.n || this._pathData._mdf) {
       var paths = mask.v;
-      if (this._pathData.r) {
+      if (this._pathData.r.v) {
         paths = paths.reverse();
       }
       // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
@@ -291,6 +293,11 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
         flag = true;
+        // Force alignment only works with a single line for now
+        if (this._pathData.a.v) {
+          currentLength = letters[0].an * 0.5 + ((totalLength - this._pathData.f.v - letters[0].an * 0.5 - letters[letters.length - 1].an * 0.5) * ind) / (len - 1);
+          currentLength += this._pathData.f.v;
+        }
         while (flag) {
           if (segmentLength + partialLength >= currentLength + animatorOffset || !points) {
             perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
@@ -515,7 +522,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         matrixHelper.translate(0, -documentData.ls);
 
         matrixHelper.translate(0, (alignment[1] * yOff) * 0.01 + yPos, 0);
-        if (textData.p.p) {
+        if (this._pathData.p.v) {
           tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
           var rot = (Math.atan(tanAngle) * 180) / Math.PI;
           if (currentPoint.point[0] < prevPoint.point[0]) {

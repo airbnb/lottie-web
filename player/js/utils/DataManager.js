@@ -191,6 +191,57 @@ function dataFunctionManager() {
     };
   }());
 
+  var checkPathProperties = (function () {
+    var minimumVersion = [5, 7, 15];
+
+    function updateTextLayer(textLayer) {
+      var pathData = textLayer.t.p;
+      if (typeof pathData.a === 'number') {
+        pathData.a = {
+          a: 0,
+          k: pathData.a,
+        };
+      }
+      if (typeof pathData.p === 'number') {
+        pathData.p = {
+          a: 0,
+          k: pathData.p,
+        };
+      }
+      if (typeof pathData.r === 'number') {
+        pathData.r = {
+          a: 0,
+          k: pathData.r,
+        };
+      }
+    }
+
+    function iterateLayers(layers) {
+      var i;
+      var len = layers.length;
+      for (i = 0; i < len; i += 1) {
+        if (layers[i].ty === 5) {
+          updateTextLayer(layers[i]);
+        }
+      }
+    }
+
+    return function (animationData) {
+      if (checkVersion(minimumVersion, animationData.v)) {
+        iterateLayers(animationData.layers);
+        if (animationData.assets) {
+          var i;
+          var len = animationData.assets.length;
+          for (i = 0; i < len; i += 1) {
+            if (animationData.assets[i].layers) {
+              iterateLayers(animationData.assets[i].layers);
+            }
+          }
+        }
+      }
+    };
+  }());
+
   var checkColors = (function () {
     var minimumVersion = [4, 1, 9];
 
@@ -342,6 +393,7 @@ function dataFunctionManager() {
     checkColors(animationData);
     checkText(animationData);
     checkChars(animationData);
+    checkPathProperties(animationData);
     checkShapes(animationData);
     completeLayers(animationData.layers, animationData.assets, fontManager);
     animationData.__complete = true;
@@ -357,6 +409,7 @@ function dataFunctionManager() {
   moduleOb.completeData = completeData;
   moduleOb.checkColors = checkColors;
   moduleOb.checkChars = checkChars;
+  moduleOb.checkPathProperties = checkPathProperties;
   moduleOb.checkShapes = checkShapes;
   moduleOb.completeLayers = completeLayers;
 
