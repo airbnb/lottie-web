@@ -1721,6 +1721,57 @@ function dataFunctionManager() {
     };
   }());
 
+  var checkPathProperties = (function () {
+    var minimumVersion = [5, 7, 15];
+
+    function updateTextLayer(textLayer) {
+      var pathData = textLayer.t.p;
+      if (typeof pathData.a === 'number') {
+        pathData.a = {
+          a: 0,
+          k: pathData.a,
+        };
+      }
+      if (typeof pathData.p === 'number') {
+        pathData.p = {
+          a: 0,
+          k: pathData.p,
+        };
+      }
+      if (typeof pathData.r === 'number') {
+        pathData.r = {
+          a: 0,
+          k: pathData.r,
+        };
+      }
+    }
+
+    function iterateLayers(layers) {
+      var i;
+      var len = layers.length;
+      for (i = 0; i < len; i += 1) {
+        if (layers[i].ty === 5) {
+          updateTextLayer(layers[i]);
+        }
+      }
+    }
+
+    return function (animationData) {
+      if (checkVersion(minimumVersion, animationData.v)) {
+        iterateLayers(animationData.layers);
+        if (animationData.assets) {
+          var i;
+          var len = animationData.assets.length;
+          for (i = 0; i < len; i += 1) {
+            if (animationData.assets[i].layers) {
+              iterateLayers(animationData.assets[i].layers);
+            }
+          }
+        }
+      }
+    };
+  }());
+
   var checkColors = (function () {
     var minimumVersion = [4, 1, 9];
 
@@ -1872,6 +1923,7 @@ function dataFunctionManager() {
     checkColors(animationData);
     checkText(animationData);
     checkChars(animationData);
+    checkPathProperties(animationData);
     checkShapes(animationData);
     completeLayers(animationData.layers, animationData.assets, fontManager);
     animationData.__complete = true;
@@ -1887,6 +1939,7 @@ function dataFunctionManager() {
   moduleOb.completeData = completeData;
   moduleOb.checkColors = checkColors;
   moduleOb.checkChars = checkChars;
+  moduleOb.checkPathProperties = checkPathProperties;
   moduleOb.checkShapes = checkShapes;
   moduleOb.completeLayers = completeLayers;
 
@@ -5057,9 +5110,11 @@ TextAnimatorProperty.prototype.searchProperties = function () {
   }
   if (this._textData.p && 'm' in this._textData.p) {
     this._pathData = {
+      a: getProp(this._elem, this._textData.p.a, 0, 0, this),
       f: getProp(this._elem, this._textData.p.f, 0, 0, this),
       l: getProp(this._elem, this._textData.p.l, 0, 0, this),
-      r: this._textData.p.r,
+      r: getProp(this._elem, this._textData.p.r, 0, 0, this),
+      p: getProp(this._elem, this._textData.p.p, 0, 0, this),
       m: this._elem.maskManager.getMaskProperty(this._textData.p.m),
     };
     this._hasMaskedPath = true;
@@ -5105,7 +5160,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
     mask = this._pathData.m;
     if (!this._pathData.n || this._pathData._mdf) {
       var paths = mask.v;
-      if (this._pathData.r) {
+      if (this._pathData.r.v) {
         paths = paths.reverse();
       }
       // TODO: release bezier data cached from previous pathInfo: this._pathData.pi
@@ -5319,6 +5374,11 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
           }
         }
         flag = true;
+        // Force alignment only works with a single line for now
+        if (this._pathData.a.v) {
+          currentLength = letters[0].an * 0.5 + ((totalLength - this._pathData.f.v - letters[0].an * 0.5 - letters[letters.length - 1].an * 0.5) * ind) / (len - 1);
+          currentLength += this._pathData.f.v;
+        }
         while (flag) {
           if (segmentLength + partialLength >= currentLength + animatorOffset || !points) {
             perc = (currentLength + animatorOffset - segmentLength) / currentPoint.partialLength;
@@ -5543,7 +5603,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         matrixHelper.translate(0, -documentData.ls);
 
         matrixHelper.translate(0, (alignment[1] * yOff) * 0.01 + yPos, 0);
-        if (textData.p.p) {
+        if (this._pathData.p.v) {
           tanAngle = (currentPoint.point[1] - prevPoint.point[1]) / (currentPoint.point[0] - prevPoint.point[0]);
           var rot = (Math.atan(tanAngle) * 180) / Math.PI;
           if (currentPoint.point[0] < prevPoint.point[0]) {
@@ -6171,6 +6231,7 @@ var TextSelectorProp = (function () {
     this.o = PropertyFactory.getProp(elem, data.o || { k: 0 }, 0, 0, this);
     this.xe = PropertyFactory.getProp(elem, data.xe || { k: 0 }, 0, 0, this);
     this.ne = PropertyFactory.getProp(elem, data.ne || { k: 0 }, 0, 0, this);
+    this.sm = PropertyFactory.getProp(elem, data.sm || { k: 100 }, 0, 0, this);
     this.a = PropertyFactory.getProp(elem, data.a, 0, 0.01, this);
     if (!this.dynamicProperties.length) {
       this.getValue();
@@ -6260,6 +6321,31 @@ var TextSelectorProp = (function () {
           }
         }
         mult = easer(mult);
+      }
+      // Smoothness implementation.
+      // The smoothness represents a reduced range of the original [0; 1] range.
+      // if smoothness is 25%, the new range will be [0.375; 0.625]
+      // Steps are:
+      // - find the lower value of the new range (threshold)
+      // - if multiplier is smaller than that value, floor it to 0
+      // - if it is larger,
+      //     - subtract the threshold
+      //     - divide it by the smoothness (this will return the range to [0; 1])
+      // Note: If it doesn't work on some scenarios, consider applying it before the easer.
+      if (this.sm.v !== 100) {
+        var smoothness = this.sm.v * 0.01;
+        if (smoothness === 0) {
+          smoothness = 0.00000001;
+        }
+        var threshold = 0.5 - smoothness * 0.5;
+        if (mult < threshold) {
+          mult = 0;
+        } else {
+          mult = (mult - threshold) / smoothness;
+          if (mult > 1) {
+            mult = 1;
+          }
+        }
       }
       return mult * this.a.v;
     },
@@ -10860,7 +10946,7 @@ lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.13';
+lottie.version = '5.7.14';
 
 function checkReady() {
   if (document.readyState === 'complete') {

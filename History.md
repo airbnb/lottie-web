@@ -1,3 +1,10 @@
+## V 5.7.14
+- FEATURE: added support for Smoothness property on animated texts
+- FEATURE: added support for animated text path properties
+- FEATURE: added support for exporting source names as ids
+- FEATURE: added clear cache button
+- FIX: fixed importer with last keyframe
+
 ## V 5.7.13
 - FEATURE: added support for emoji modifiers and sequences
 - FEATURE: added support for metadata export on json files
