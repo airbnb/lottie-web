@@ -24,6 +24,7 @@ var TextSelectorProp = (function () {
     this.o = PropertyFactory.getProp(elem, data.o || { k: 0 }, 0, 0, this);
     this.xe = PropertyFactory.getProp(elem, data.xe || { k: 0 }, 0, 0, this);
     this.ne = PropertyFactory.getProp(elem, data.ne || { k: 0 }, 0, 0, this);
+    this.sm = PropertyFactory.getProp(elem, data.sm || { k: 100 }, 0, 0, this);
     this.a = PropertyFactory.getProp(elem, data.a, 0, 0.01, this);
     if (!this.dynamicProperties.length) {
       this.getValue();
@@ -113,6 +114,31 @@ var TextSelectorProp = (function () {
           }
         }
         mult = easer(mult);
+      }
+      // Smoothness implementation.
+      // The smoothness represents a reduced range of the original [0; 1] range.
+      // if smoothness is 25%, the new range will be [0.375; 0.625]
+      // Steps are:
+      // - find the lower value of the new range (threshold)
+      // - if multiplier is smaller than that value, floor it to 0
+      // - if it is larger,
+      //     - subtract the threshold
+      //     - divide it by the smoothness (this will return the range to [0; 1])
+      // Note: If it doesn't work on some scenarios, consider applying it before the easer.
+      if (this.sm.v !== 100) {
+        var smoothness = this.sm.v * 0.01;
+        if (smoothness === 0) {
+          smoothness = 0.00000001;
+        }
+        var threshold = 0.5 - smoothness * 0.5;
+        if (mult < threshold) {
+          mult = 0;
+        } else {
+          mult = (mult - threshold) / smoothness;
+          if (mult > 1) {
+            mult = 1;
+          }
+        }
       }
       return mult * this.a.v;
     },
