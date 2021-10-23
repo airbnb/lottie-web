@@ -152,6 +152,7 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
     containerStyle.mozTransformOrigin = origin;
     containerStyle.webkitTransformOrigin = origin;
     containerStyle['-webkit-transform'] = origin;
+    containerStyle.contentVisibility = 'auto';
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.canvasContext = this.animationItem.container.getContext('2d');
     if (this.renderConfig.className) {
