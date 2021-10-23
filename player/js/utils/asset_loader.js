@@ -2,6 +2,12 @@
 
 var assetLoader = (function () {
   function formatResponse(xhr) {
+    // using typeof doubles the time of execution of this method,
+    // so if available, it's better to use the header to validate the type
+    var contentTypeHeader = xhr.getResponseHeader('content-type');
+    if (contentTypeHeader && xhr.responseType === 'json' && contentTypeHeader.indexOf('json') !== -1) {
+      return xhr.response;
+    }
     if (xhr.response && typeof xhr.response === 'object') {
       return xhr.response;
     } if (xhr.response && typeof xhr.response === 'string') {
