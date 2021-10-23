@@ -3,7 +3,7 @@
 function dataFunctionManager() {
   // var tCanvasHelper = createTag('canvas').getContext('2d');
 
-  function completeLayers(layers, comps, fontManager) {
+  function completeLayers(layers, comps) {
     var layerData;
     var i;
     var len = layers.length;
@@ -39,11 +39,11 @@ function dataFunctionManager() {
         }
         if (layerData.ty === 0) {
           layerData.layers = findCompLayers(layerData.refId, comps);
-          completeLayers(layerData.layers, comps, fontManager);
+          completeLayers(layerData.layers, comps);
         } else if (layerData.ty === 4) {
           completeShapes(layerData.shapes);
         } else if (layerData.ty === 5) {
-          completeText(layerData, fontManager);
+          completeText(layerData);
         }
       }
     }
@@ -386,7 +386,7 @@ function dataFunctionManager() {
     };
   }());
 
-  function completeData(animationData, fontManager) {
+  function completeData(animationData) {
     if (animationData.__complete) {
       return;
     }
@@ -395,7 +395,7 @@ function dataFunctionManager() {
     checkChars(animationData);
     checkPathProperties(animationData);
     checkShapes(animationData);
-    completeLayers(animationData.layers, animationData.assets, fontManager);
+    completeLayers(animationData.layers, animationData.assets);
     animationData.__complete = true;
   }
 

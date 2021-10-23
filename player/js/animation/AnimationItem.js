@@ -205,7 +205,7 @@ AnimationItem.prototype.includeLayers = function (data) {
     }
   }
   this.animationData.__complete = false;
-  dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
+  dataManager.completeData(this.animationData);
   this.renderer.includeLayers(data.layers);
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
@@ -303,7 +303,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
-    dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
+    dataManager.completeData(this.animationData);
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }

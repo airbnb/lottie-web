@@ -1,6 +1,6 @@
 /* global dataManager */
 
-dataManager.completeData = function (animationData, fontManager) {
+dataManager.completeData = function (animationData) {
   if (animationData.__complete) {
     return;
   }
@@ -8,6 +8,6 @@ dataManager.completeData = function (animationData, fontManager) {
   this.checkChars(animationData);
   this.checkPathProperties(animationData);
   this.checkShapes(animationData);
-  this.completeLayers(animationData.layers, animationData.assets, fontManager);
+  this.completeLayers(animationData.layers, animationData.assets);
   animationData.__complete = true;
 };
