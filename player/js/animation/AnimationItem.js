@@ -91,10 +91,13 @@ AnimationItem.prototype.setParams = function (params) {
     }
     this.fileName = params.path.substr(params.path.lastIndexOf('/') + 1);
     this.fileName = this.fileName.substr(0, this.fileName.lastIndexOf('.json'));
-
-    assetLoader.load(params.path, this.configAnimation.bind(this), function () {
-      this.trigger('data_failed');
-    }.bind(this));
+    dataWorker.onmessage = function (e) {
+      this.configAnimation(e.data, true);
+    }.bind(this);
+    dataWorker.postMessage(params.path);
+    // assetLoader.load(params.path, this.configAnimation.bind(this), function () {
+    //   this.trigger('data_failed');
+    // }.bind(this));
   }
 };
 
@@ -248,13 +251,17 @@ AnimationItem.prototype.preloadImages = function () {
   this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
 };
 
-AnimationItem.prototype.configAnimation = function (animData) {
+AnimationItem.prototype.configAnimation = function (animData, isComplete) {
   if (!this.renderer) {
     return;
   }
   try {
+    // console.log('dataWorkerdataWorker', dataWorker)
+    if (!isComplete) {
+      dataManager.completeData(animData);
+    }
     this.animationData = animData;
-
+    // this.animationData = animData;
     if (this.initialSegment) {
       this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
       this.firstFrame = Math.round(this.initialSegment[0]);
@@ -303,7 +310,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
-    dataManager.completeData(this.animationData);
+    // dataManager.completeData(this.animationData);
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }
