@@ -35,7 +35,10 @@ AnimationItem.prototype.setParams = function (params) {
   this.autoloadSegments = Object.prototype.hasOwnProperty.call(params, 'autoloadSegments') ? params.autoloadSegments : true;
   this.assetsPath = null;
   if (params.animationData) {
-    this.configAnimation(params.animationData);
+    dataManager.completeAnimation(
+      params.animationData,
+      this.configAnimation
+    );
   } else if (params.path) {
     throw new Error('Canvas worker renderer cannot load animation from url');
   }
@@ -67,7 +70,7 @@ AnimationItem.prototype.includeLayers = function (data) {
     }
   }
   this.animationData.__complete = false;
-  dataManager.completeData(this.animationData);
+  dataManager.completeAnimation(this.animationData);
   this.renderer.includeLayers(data.layers);
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
@@ -122,7 +125,6 @@ AnimationItem.prototype.waitForFontsLoaded = null;
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded) {
     this.isLoaded = true;
-    dataManager.completeData(this.animationData);
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }

@@ -56,7 +56,7 @@ var lottie = (function () {
   lottiejs.mute = animationManager.mute;
   lottiejs.unmute = animationManager.unmute;
   lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-  lottie.setIDPrefix = setIDPrefix;
+  lottiejs.setIDPrefix = setIDPrefix;
   lottiejs.version = '[[BM_VERSION]]';
 
   return lottiejs;

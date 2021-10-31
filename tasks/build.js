@@ -72,7 +72,7 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/utils/DataManagerWorkerOverrides.js',
+		src: 'js/utils/DataManager.js',
 		builds: ['canvas_worker']
 	},
 	{
