@@ -224,12 +224,6 @@ AnimationItem.prototype.includeLayers = function (data) {
     this.animationData,
     this.onSegmentComplete
   );
-  // dataManager.completeData(this.animationData);
-  // this.renderer.includeLayers(data.layers);
-  // if (expressionsPlugin) {
-  //   expressionsPlugin.initExpressions(this);
-  // }
-  // this.loadNextSegment();
 };
 
 AnimationItem.prototype.onSegmentComplete = function (data) {
@@ -280,12 +274,7 @@ AnimationItem.prototype.configAnimation = function (animData) {
     return;
   }
   try {
-    // console.log('dataWorkerdataWorker', dataWorker)
-    // if (!isComplete) {
-    //   dataManager.completeData(animData);
-    // }
     this.animationData = animData;
-    // this.animationData = animData;
     if (this.initialSegment) {
       this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
       this.firstFrame = Math.round(this.initialSegment[0]);
@@ -592,7 +581,6 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
 AnimationItem.prototype.resetSegments = function (forceFlag) {
   this.segments.length = 0;
   this.segments.push([this.animationData.ip, this.animationData.op]);
-  // this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
   if (forceFlag) {
     this.checkSegments(0);
   }
