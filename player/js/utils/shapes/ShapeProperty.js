@@ -35,6 +35,7 @@ var ShapePropertyFactory = (function () {
       var flag = true;
       var keyData;
       var nextKeyData;
+      var keyframeMetadata;
       while (flag) {
         keyData = kf[i];
         nextKeyData = kf[i + 1];
@@ -47,6 +48,7 @@ var ShapePropertyFactory = (function () {
           flag = false;
         }
       }
+      keyframeMetadata = this.keyframesMetadata[i] || {};
       isHold = keyData.h === 1;
       iterationIndex = i;
       if (!isHold) {
@@ -56,11 +58,11 @@ var ShapePropertyFactory = (function () {
           perc = 0;
         } else {
           var fnc;
-          if (keyData.__fnct) {
-            fnc = keyData.__fnct;
+          if (keyframeMetadata.__fnct) {
+            fnc = keyframeMetadata.__fnct;
           } else {
             fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y).get;
-            keyData.__fnct = fnc;
+            keyframeMetadata.__fnct = fnc;
           }
           perc = fnc((frameNum - (keyData.t - this.offsetTime)) / ((nextKeyData.t - this.offsetTime) - (keyData.t - this.offsetTime)));
         }
@@ -199,6 +201,7 @@ var ShapePropertyFactory = (function () {
     this.container = elem;
     this.offsetTime = elem.data.st;
     this.keyframes = type === 3 ? data.pt.k : data.ks.k;
+    this.keyframesMetadata = [];
     this.k = true;
     this.kf = true;
     var len = this.keyframes[0].s[0].i.length;

@@ -1,4 +1,4 @@
-/* global createTag, createNS, isSafari, assetLoader */
+/* global createTag, createNS, isSafari, dataManager */
 /* exported ImagePreloader */
 
 var ImagePreloader = (function () {
@@ -106,7 +106,7 @@ var ImagePreloader = (function () {
       assetData: data,
     };
     var path = getAssetsPath(data, this.assetsPath, this.path);
-    assetLoader.load(path, function (footageData) {
+    dataManager.loadData(path, function (footageData) {
       ob.img = footageData;
       this._footageLoaded();
     }.bind(this), function () {

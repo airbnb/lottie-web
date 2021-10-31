@@ -35,6 +35,9 @@ var AnimationItem = function () {
   this.imagePreloader = new ImagePreloader();
   this.audioController = audioControllerFactory();
   this.markers = [];
+  this.configAnimation = this.configAnimation.bind(this);
+  this.onSetupError = this.onSetupError.bind(this);
+  this.onSegmentComplete = this.onSegmentComplete.bind(this);
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -82,7 +85,7 @@ AnimationItem.prototype.setParams = function (params) {
     this.audioController.setAudioFactory(params.audioFactory);
   }
   if (params.animationData) {
-    this.configAnimation(params.animationData);
+    this.setupAnimation(params.animationData);
   } else if (params.path) {
     if (params.path.lastIndexOf('\\') !== -1) {
       this.path = params.path.substr(0, params.path.lastIndexOf('\\') + 1);
@@ -91,14 +94,23 @@ AnimationItem.prototype.setParams = function (params) {
     }
     this.fileName = params.path.substr(params.path.lastIndexOf('/') + 1);
     this.fileName = this.fileName.substr(0, this.fileName.lastIndexOf('.json'));
-    dataWorker.onmessage = function (e) {
-      this.configAnimation(e.data, true);
-    }.bind(this);
-    dataWorker.postMessage(params.path);
-    // assetLoader.load(params.path, this.configAnimation.bind(this), function () {
-    //   this.trigger('data_failed');
-    // }.bind(this));
+    dataManager.loadAnimation(
+      params.path,
+      this.configAnimation,
+      this.onSetupError
+    );
   }
+};
+
+AnimationItem.prototype.onSetupError = function () {
+  this.trigger('data_failed');
+};
+
+AnimationItem.prototype.setupAnimation = function (data) {
+  dataManager.completeAnimation(
+    data,
+    this.configAnimation
+  );
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -208,8 +220,20 @@ AnimationItem.prototype.includeLayers = function (data) {
     }
   }
   this.animationData.__complete = false;
-  dataManager.completeData(this.animationData);
-  this.renderer.includeLayers(data.layers);
+  dataManager.completeAnimation(
+    this.animationData,
+    this.onSegmentComplete
+  );
+  // dataManager.completeData(this.animationData);
+  // this.renderer.includeLayers(data.layers);
+  // if (expressionsPlugin) {
+  //   expressionsPlugin.initExpressions(this);
+  // }
+  // this.loadNextSegment();
+};
+
+AnimationItem.prototype.onSegmentComplete = function (data) {
+  this.animationData = data;
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
@@ -251,15 +275,15 @@ AnimationItem.prototype.preloadImages = function () {
   this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
 };
 
-AnimationItem.prototype.configAnimation = function (animData, isComplete) {
+AnimationItem.prototype.configAnimation = function (animData) {
   if (!this.renderer) {
     return;
   }
   try {
     // console.log('dataWorkerdataWorker', dataWorker)
-    if (!isComplete) {
-      dataManager.completeData(animData);
-    }
+    // if (!isComplete) {
+    //   dataManager.completeData(animData);
+    // }
     this.animationData = animData;
     // this.animationData = animData;
     if (this.initialSegment) {
@@ -310,7 +334,6 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
-    // dataManager.completeData(this.animationData);
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }

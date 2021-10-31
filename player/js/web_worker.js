@@ -1,4 +1,6 @@
-var dataWorker = (function () {
+var dataManager = (function () {
+  var _counterId = 1;
+  var processes = [];
   var workerFn;
   var workerProxy = {
     onmessage: function () {
@@ -28,7 +30,7 @@ var dataWorker = (function () {
     return workerProxy;
   }
 
-  return createWorker(function workerStart(e) {
+  var workerInstance = createWorker(function workerStart(e) {
     /* exported dataManager */
 
     function dataFunctionManager() {
@@ -470,7 +472,7 @@ var dataWorker = (function () {
           return null;
         }
 
-        function loadAsset(path, callback, errorCallback) {
+        function loadAsset(path, fullPath, callback, errorCallback) {
           var response;
           var xhr = new XMLHttpRequest();
           // set responseType after calling open or IE will break.
@@ -495,7 +497,11 @@ var dataWorker = (function () {
               }
             }
           };
-          xhr.open('GET', 'http://bodymovin.localhost.com:8080/player/' + path, true);
+          try {
+            xhr.open('GET', path, true);
+          } catch (error) {
+            xhr.open('GET', fullPath + '/' + path, true);
+          }
           xhr.send();
         }
         return {
@@ -503,10 +509,114 @@ var dataWorker = (function () {
         };
       }());
     }
-    _workerSelf.assetLoader.load(e.data, function (data) {
-      // console.log('datadatadata: ', data);
-      _workerSelf.dataManager.completeData(data);
-      _workerSelf.postMessage(data);
-    });
+
+    if (e.data.type === 'loadAnimation') {
+      _workerSelf.assetLoader.load(
+        e.data.path,
+        e.data.fullPath,
+        function (data) {
+          _workerSelf.dataManager.completeData(data);
+          _workerSelf.postMessage({
+            id: e.data.id,
+            payload: data,
+            status: 'success',
+          });
+        },
+        function () {
+          _workerSelf.postMessage({
+            id: e.data.id,
+            status: 'error',
+          });
+        }
+      );
+    } else if (e.data.type === 'complete') {
+      var animation = e.data.animation;
+      _workerSelf.dataManager.completeData(animation);
+      _workerSelf.postMessage({
+        id: e.data.id,
+        payload: animation,
+        status: 'success',
+      });
+    } else if (e.data.type === 'loadData') {
+      _workerSelf.assetLoader.load(
+        e.data.path,
+        e.data.fullPath,
+        function (data) {
+          _workerSelf.postMessage({
+            id: e.data.id,
+            payload: data,
+            status: 'success',
+          });
+        },
+        function () {
+          _workerSelf.postMessage({
+            id: e.data.id,
+            status: 'error',
+          });
+        }
+      );
+    }
   });
+
+  workerInstance.onmessage = function (event) {
+    var data = event.data;
+    var id = data.id;
+    var process = processes[id];
+    processes[id] = null;
+    if (data.status === 'success') {
+      process.onComplete(data.payload);
+    } else if (process.onError) {
+      process.onError();
+    }
+  };
+
+  function loadAnimation(path, onComplete, onError) {
+    _counterId += 1;
+    var id = 'processId_' + _counterId;
+    processes[id] = {
+      onComplete: onComplete,
+      onError: onError,
+    };
+    workerInstance.postMessage({
+      type: 'loadAnimation',
+      path: path,
+      fullPath: window.location.origin + window.location.pathname,
+      id: id,
+    });
+  }
+
+  function loadData(path, onComplete, onError) {
+    _counterId += 1;
+    var id = 'processId_' + _counterId;
+    processes[id] = {
+      onComplete: onComplete,
+      onError: onError,
+    };
+    workerInstance.postMessage({
+      type: 'loadData',
+      path: path,
+      fullPath: window.location.origin + window.location.pathname,
+      id: id,
+    });
+  }
+
+  function completeAnimation(anim, onComplete, onError) {
+    _counterId += 1;
+    var id = 'processId_' + _counterId;
+    processes[id] = {
+      onComplete: onComplete,
+      onError: onError,
+    };
+    workerInstance.postMessage({
+      type: 'complete',
+      animation: anim,
+      id: id,
+    });
+  }
+
+  return {
+    loadAnimation: loadAnimation,
+    loadData: loadData,
+    completeAnimation: completeAnimation,
+  };
 }());

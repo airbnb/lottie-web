@@ -17,6 +17,7 @@ var PropertyFactory = (function () {
     var flag = true;
     var keyData;
     var nextKeyData;
+    var keyframeMetadata;
 
     while (flag) {
       keyData = this.keyframes[i];
@@ -39,6 +40,7 @@ var PropertyFactory = (function () {
         flag = false;
       }
     }
+    keyframeMetadata = this.keyframesMetadata[i] || {};
 
     var k;
     var kLen;
@@ -50,10 +52,10 @@ var PropertyFactory = (function () {
     var keyTime = keyData.t - offsetTime;
     var endValue;
     if (keyData.to) {
-      if (!keyData.bezierData) {
-        keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
+      if (!keyframeMetadata.bezierData) {
+        keyframeMetadata.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
       }
-      var bezierData = keyData.bezierData;
+      var bezierData = keyframeMetadata.bezierData;
       if (frameNum >= nextKeyTime || frameNum < keyTime) {
         var ind = frameNum >= nextKeyTime ? bezierData.points.length - 1 : 0;
         kLen = bezierData.points[ind].point.length;
@@ -62,11 +64,11 @@ var PropertyFactory = (function () {
         }
         // caching._lastKeyframeIndex = -1;
       } else {
-        if (keyData.__fnct) {
-          fnc = keyData.__fnct;
+        if (keyframeMetadata.__fnct) {
+          fnc = keyframeMetadata.__fnct;
         } else {
           fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y, keyData.n).get;
-          keyData.__fnct = fnc;
+          keyframeMetadata.__fnct = fnc;
         }
         perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
         var distanceInLine = bezierData.segmentLength * perc;
@@ -134,28 +136,28 @@ var PropertyFactory = (function () {
               perc = 0;
             } else {
               if (keyData.o.x.constructor === Array) {
-                if (!keyData.__fnct) {
-                  keyData.__fnct = [];
+                if (!keyframeMetadata.__fnct) {
+                  keyframeMetadata.__fnct = [];
                 }
-                if (!keyData.__fnct[i]) {
-                  outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
-                  outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
-                  inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
-                  inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
+                if (!keyframeMetadata.__fnct[i]) {
+                  outX = keyData.o.x[i] === undefined ? keyData.o.x[0] : keyData.o.x[i];
+                  outY = keyData.o.y[i] === undefined ? keyData.o.y[0] : keyData.o.y[i];
+                  inX = keyData.i.x[i] === undefined ? keyData.i.x[0] : keyData.i.x[i];
+                  inY = keyData.i.y[i] === undefined ? keyData.i.y[0] : keyData.i.y[i];
                   fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
-                  keyData.__fnct[i] = fnc;
+                  keyframeMetadata.__fnct[i] = fnc;
                 } else {
-                  fnc = keyData.__fnct[i];
+                  fnc = keyframeMetadata.__fnct[i];
                 }
-              } else if (!keyData.__fnct) {
+              } else if (!keyframeMetadata.__fnct) {
                 outX = keyData.o.x;
                 outY = keyData.o.y;
                 inX = keyData.i.x;
                 inY = keyData.i.y;
                 fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
-                keyData.__fnct = fnc;
+                keyData.keyframeMetadata = fnc;
               } else {
-                fnc = keyData.__fnct;
+                fnc = keyframeMetadata.__fnct;
               }
               perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
             }
@@ -366,6 +368,7 @@ var PropertyFactory = (function () {
   function KeyframedValueProperty(elem, data, mult, container) {
     this.propType = 'unidimensional';
     this.keyframes = data.k;
+    this.keyframesMetadata = [];
     this.offsetTime = elem.data.st;
     this.frameId = -1;
     this._caching = {
@@ -417,6 +420,7 @@ var PropertyFactory = (function () {
     this.effectsSequence = [getValueAtCurrentTime.bind(this)];
     this.data = data;
     this.keyframes = data.k;
+    this.keyframesMetadata = [];
     this.offsetTime = elem.data.st;
     this.k = true;
     this.kf = true;

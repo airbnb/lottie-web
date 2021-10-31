@@ -160,14 +160,6 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/utils/asset_loader.js',
-		builds: defaultBuilds
-	},
-	{
-		src: 'js/utils/asset_loader_worker_override.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/utils/text/TextAnimatorProperty.js',
 		builds: defaultBuilds
 	},

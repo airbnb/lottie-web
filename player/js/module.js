@@ -1,6 +1,6 @@
 /* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable */
-/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix */
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable, _useWebWorker:writable */
+/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix, _useWebWorker */
 
 'use strict';
 
@@ -105,6 +105,9 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.useWebWorker = function (flag) {
+  _useWebWorker = flag;
+};
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';
