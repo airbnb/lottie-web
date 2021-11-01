@@ -245,7 +245,7 @@ AnimationItem.prototype.loadNextSegment = function () {
   this.timeCompleted = segment.time * this.frameRate;
   var segmentPath = this.path + this.fileName + '_' + this.segmentPos + '.json';
   this.segmentPos += 1;
-  assetLoader.load(segmentPath, this.includeLayers.bind(this), function () {
+  dataManager.loadData(segmentPath, this.includeLayers.bind(this), function () {
     this.trigger('data_failed');
   }.bind(this));
 };
