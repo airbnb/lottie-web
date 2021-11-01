@@ -9,6 +9,7 @@ function CanvasRenderer(animationItem, config) {
     progressiveLoad: (config && config.progressiveLoad) || false,
     preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
     imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
+    contentVisibility: (config && config.contentVisibility) || 'visible',
     className: (config && config.className) || '',
     id: (config && config.id) || '',
   };
@@ -152,7 +153,7 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
     containerStyle.mozTransformOrigin = origin;
     containerStyle.webkitTransformOrigin = origin;
     containerStyle['-webkit-transform'] = origin;
-    containerStyle.contentVisibility = 'auto';
+    containerStyle.contentVisibility = this.renderConfig.contentVisibility;
     this.animationItem.wrapper.appendChild(this.animationItem.container);
     this.canvasContext = this.animationItem.container.getContext('2d');
     if (this.renderConfig.className) {

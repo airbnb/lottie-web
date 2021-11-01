@@ -34,6 +34,7 @@ function SVGRenderer(animationItem, config) {
   this.renderConfig = {
     preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
     imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
+    contentVisibility: (config && config.contentVisibility) || 'visible',
     progressiveLoad: (config && config.progressiveLoad) || false,
     hideOnTransparent: !((config && config.hideOnTransparent === false)),
     viewBoxOnly: (config && config.viewBoxOnly) || false,
@@ -101,7 +102,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
     this.svgElement.style.width = '100%';
     this.svgElement.style.height = '100%';
     this.svgElement.style.transform = 'translate3d(0,0,0)';
-    this.svgElement.style.contentVisibility = 'auto';
+    this.svgElement.style.contentVisibility = this.renderConfig.contentVisibility;
   }
   if (this.renderConfig.className) {
     this.svgElement.setAttribute('class', this.renderConfig.className);

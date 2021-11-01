@@ -147,7 +147,6 @@ HybridRenderer.prototype.createThreeDContainer = function (pos, type) {
     style.mozTransformOrigin = center;
     style.transformOrigin = center;
     containerStyle = container.style;
-    containerStyle.contentVisibility = 'auto';
     var matrix = 'matrix3d(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)';
     containerStyle.transform = matrix;
     containerStyle.webkitTransform = matrix;
