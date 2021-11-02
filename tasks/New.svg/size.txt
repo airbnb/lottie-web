@@ -1,0 +1,1 @@
+I exported single assets as .svg files from AI, replaced the .png in the folder
