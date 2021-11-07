@@ -51,6 +51,7 @@ function workerContent() {
       },
       style: style,
       appendChild: function (child) {
+        child.parentNode = this;
         this.children.push(child);
         this._isDirty = true;
         this._changedElements.push([child, this.attributes.id]);
@@ -306,6 +307,19 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].setSubframe(payload.value);
       }
+    } else if (type === 'addEventListener') {
+      if (animations[payload.id]) {
+        animations[payload.id].addEventListener(payload.eventName, function () {
+          self.postMessage({
+            type: 'event',
+            payload: {
+              id: payload.id,
+              callbackId: payload.callbackId,
+              argument: arguments[0],
+            },
+          });
+        });
+      }
     } else if (type === 'destroy') {
       if (animations[payload.id]) {
         animations[payload.id].destroy();
@@ -326,6 +340,7 @@ var lottie = (function () {
 
   var workerInstance = createWorker(workerContent);
   var animationIdCounter = 0;
+  var eventsIdCounter = 0;
 
   function createTree(data, container, map, afterElement) {
     var elem;
@@ -418,11 +433,23 @@ var lottie = (function () {
     }
   }
 
+  function handleEvent(payload) {
+    var animation = animations[payload.id];
+    if (animation) {
+      var callbacks = animation.callbacks;
+      if (callbacks[payload.callbackId]) {
+        callbacks[payload.callbackId](payload.argument);
+      }
+    }
+  }
+
   workerInstance.onmessage = function (event) {
     if (event.data.type === 'loaded') {
       handleAnimationLoaded(event.data.payload);
     } else if (event.data.type === 'updated') {
       handleAnimationUpdate(event.data.payload);
+    } else if (event.data.type === 'event') {
+      handleEvent(event.data.payload);
     }
   };
 
@@ -453,6 +480,7 @@ var lottie = (function () {
     var animationId = 'lottie_animationId_' + animationIdCounter;
     var animation = {
       elements: {},
+      callbacks: {},
     };
     var animInstance = {
       id: animationId,
@@ -516,6 +544,19 @@ var lottie = (function () {
           payload: {
             id: animationId,
             value: value,
+          },
+        });
+      },
+      addEventListener: function (eventName, callback) {
+        eventsIdCounter += 1;
+        var callbackId = 'callback_' + eventsIdCounter;
+        animation.callbacks[callbackId] = callback;
+        workerInstance.postMessage({
+          type: 'addEventListener',
+          payload: {
+            id: animationId,
+            callbackId: callbackId,
+            eventName: eventName,
           },
         });
       },

@@ -231,7 +231,9 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
         itemsData[i].style.closed = false;
       }
       if (arr[i]._render) {
-        container.appendChild(itemsData[i].style.pElem);
+        if (itemsData[i].style.pElem.parentNode !== container) {
+          container.appendChild(itemsData[i].style.pElem);
+        }
       }
       ownStyles.push(itemsData[i].style);
     } else if (arr[i].ty === 'gr') {
@@ -245,7 +247,9 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
       }
       this.searchShapes(arr[i].it, itemsData[i].it, itemsData[i].prevViewData, itemsData[i].gr, level + 1, ownTransformers, render);
       if (arr[i]._render) {
-        container.appendChild(itemsData[i].gr);
+        if (itemsData[i].gr.parentNode !== container) {
+          container.appendChild(itemsData[i].gr);
+        }
       }
     } else if (arr[i].ty === 'tr') {
       if (!processedPos) {
