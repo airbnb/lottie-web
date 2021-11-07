@@ -3,7 +3,7 @@
 
 function workerContent() {
   var localIdCounter = 0;
-  var animations = [];
+  var animations = {};
 
   var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility'];
   function createElement(namespace, type) {
@@ -42,19 +42,26 @@ function workerContent() {
       _isDirty: false,
       _changedStyles: [],
       _changedAttributes: [],
+      _changedElements: [],
       type: type,
       namespace: namespace,
       children: [],
       attributes: {
-        id: 'defaultId_' + localIdCounter,
+        id: 'l_d_' + localIdCounter,
       },
       style: style,
-      appendChild: function (child) { this.children.push(child); },
+      appendChild: function (child) {
+        this.children.push(child);
+        this._isDirty = true;
+        this._changedElements.push([child, this.attributes.id]);
+      },
       insertBefore: function (newElement, nextElement) {
         var children = this.children;
         for (var i = 0; i < children.length; i += 1) {
           if (children[i] === nextElement) {
             children.splice(i, 0, newElement);
+            this._isDirty = true;
+            this._changedElements.push([newElement, this.attributes.id, nextElement.attributes.id]);
             return;
           }
         }
@@ -99,6 +106,51 @@ function workerContent() {
     /* <%= contents %> */
     var lottiejs = {};
 
+    function addElementToList(element, list) {
+      list.push(element);
+      element._isDirty = false;
+      element._changedStyles.length = 0;
+      element._changedAttributes.length = 0;
+      element._changedElements.length = 0;
+      element.children.forEach(function (child) {
+        addElementToList(child, list);
+      });
+    }
+
+    function addChangedAttributes(element) {
+      var changedAttributes = element._changedAttributes;
+      var attributes = [];
+      var attribute;
+      for (var i = 0; i < changedAttributes.length; i += 1) {
+        attribute = changedAttributes[i];
+        attributes.push([attribute, element.attributes[attribute]]);
+      }
+      return attributes;
+    }
+
+    function addChangedStyles(element) {
+      var changedStyles = element._changedStyles;
+      var styles = [];
+      var style;
+      for (var i = 0; i < changedStyles.length; i += 1) {
+        style = changedStyles[i];
+        styles.push([style, element.style[style]]);
+      }
+      return styles;
+    }
+
+    function addChangedElements(element, elements) {
+      var changedElements = element._changedElements;
+      var elementsList = [];
+      var elementData;
+      for (var i = 0; i < changedElements.length; i += 1) {
+        elementData = changedElements[i];
+        elementsList.push([elementData[0].serialize(), elementData[1], elementData[2]]);
+        addElementToList(elementData[0], elements);
+      }
+      return elementsList;
+    }
+
     function loadAnimation(payload) {
       var params = payload.params;
       var wrapper;
@@ -113,20 +165,12 @@ function workerContent() {
         params.rendererSettings.context = ctx;
       }
       animation = animationManager.loadAnimation(params);
-      animation.setSubframe(false);
       animation.addEventListener('error', function (error) {
         console.log(error); // eslint-disable-line
       });
       animation.onError = function (error) {
         console.log('ERRORO', error); // eslint-disable-line
       };
-      function addElementToList(element, list) {
-        list.push(element);
-        element._isDirty = false;
-        element.children.forEach(function (child) {
-          addElementToList(child, list);
-        });
-      }
       if (params.renderer === 'svg') {
         animation.addEventListener('DOMLoaded', function () {
           var serialized = wrapper.serialize();
@@ -136,10 +180,12 @@ function workerContent() {
             payload: {
               id: payload.id,
               tree: serialized.children[0],
+              totalFrames: animation.totalFrames,
+              frameRate: animation.frameRate,
             },
           });
         });
-        animation.addEventListener('enterFrame', function () {
+        animation.addEventListener('enterFrame', function (event) {
           var changedElements = [];
           var element;
           for (var i = 0; i < elements.length; i += 1) {
@@ -147,22 +193,15 @@ function workerContent() {
             if (element._isDirty) {
               var changedElement = {
                 id: element.attributes.id,
-                styles: [],
-                attributes: [],
+                styles: addChangedStyles(element),
+                attributes: addChangedAttributes(element),
+                elements: addChangedElements(element, elements),
               };
-              /*eslint-disable */
-              element._changedAttributes.forEach(function(attribute) {
-                changedElement.attributes.push([attribute, element.attributes[attribute]]);
-              });
-              element._changedStyles.forEach(function(style) {
-                changedElement.styles.push([style, element.style[style]]);
-              });
-              
-              /*eslint-enabled */
               changedElements.push(changedElement);
               element._isDirty = false;
               element._changedAttributes.length = 0;
               element._changedStyles.length = 0;
+              element._changedElements.length = 0;
             }
           }
           self.postMessage({
@@ -170,11 +209,12 @@ function workerContent() {
             payload: {
               elements: changedElements,
               id: payload.id,
+              currentTime: event.currentTime,
             },
           });
         });
       }
-      animations.push(animation);
+      animations[payload.id] = animation;
     }
 
     function setQuality(value) {
@@ -229,69 +269,147 @@ function workerContent() {
     return lottiejs;
   }({}));
   onmessage = function (evt) {
-    if (evt.data.type === 'load') {
-      lottieInternal.loadAnimation(evt.data.payload);
+    var data = evt.data;
+    var type = data.type;
+    var payload = data.payload;
+    if (type === 'load') {
+      lottieInternal.loadAnimation(payload);
+    } else if (type === 'pause') {
+      if (animations[payload.id]) {
+        animations[payload.id].pause();
+      }
+    } else if (type === 'play') {
+      if (animations[payload.id]) {
+        animations[payload.id].play();
+      }
+    } else if (type === 'setSpeed') {
+      if (animations[payload.id]) {
+        animations[payload.id].setSpeed(payload.value);
+      }
+    } else if (type === 'setDirection') {
+      if (animations[payload.id]) {
+        animations[payload.id].setDirection(payload.value);
+      }
+    } else if (type === 'setDirection') {
+      if (animations[payload.id]) {
+        animations[payload.id].setDirection(payload.value);
+      }
+    } else if (type === 'goToAndPlay') {
+      if (animations[payload.id]) {
+        animations[payload.id].goToAndPlay(payload.value, payload.isFrame);
+      }
+    } else if (type === 'goToAndStop') {
+      if (animations[payload.id]) {
+        animations[payload.id].goToAndStop(payload.value, payload.isFrame);
+      }
+    } else if (type === 'setSubframe') {
+      if (animations[payload.id]) {
+        animations[payload.id].setSubframe(payload.value);
+      }
     }
-    // animation.play();
   };
 }
 
 function createWorker(fn) {
-  var blob = new Blob(['(' + fn.toString()+ '())'], { type: 'text/javascript' });
+  var blob = new Blob(['(' + fn.toString() + '())'], { type: 'text/javascript' });
   var url = URL.createObjectURL(blob);
   return new Worker(url);
 }
+// eslint-disable-next-line no-unused-vars
 var lottie = (function () {
   'use strict';
 
   var workerInstance = createWorker(workerContent);
+  var animationIdCounter = 0;
 
-  var handleAnimationLoaded = (function(payload) {
-    function createTree(data, container, map) {
-      var elem;
-      if (data.type === 'div') {
-          elem = document.createElement('div');
-      } else {
-          elem = document.createElementNS(data.namespace, data.type);
-      }
-      for (var s in data.attributes) {
-          elem.setAttribute(s, data.attributes[s]);
-          if (s === 'id') {
-              map[data.attributes[s]] = elem;
-          }
-      }
-      for (var s in data.style) {
-          elem.style[s] = data.style[s];
-      }
-      data.children.forEach(function(element) {
-          createTree(element, elem, map);
-      });
-      container.appendChild(elem);
+  function createTree(data, container, map, afterElement) {
+    var elem;
+    if (data.type === 'div') {
+      elem = document.createElement('div');
+    } else {
+      elem = document.createElementNS(data.namespace, data.type);
     }
-    return function(payload) {
+    for (var attr in data.attributes) {
+      if (Object.prototype.hasOwnProperty.call(data.attributes, attr)) {
+        elem.setAttribute(attr, data.attributes[attr]);
+        if (attr === 'id') {
+          map[data.attributes[attr]] = elem;
+        }
+      }
+    }
+    for (var style in data.style) {
+      if (Object.prototype.hasOwnProperty.call(data.style, style)) {
+        elem.style[style] = data.style[style];
+      }
+    }
+    data.children.forEach(function (element) {
+      createTree(element, elem, map);
+    });
+    if (!afterElement) {
+      container.appendChild(elem);
+    } else {
+      container.insertBefore(elem, afterElement);
+    }
+  }
+
+  var handleAnimationLoaded = (function () {
+    return function (payload) {
       var animation = animations[payload.id];
+      animation.animInstance.totalFrames = payload.totalFrames;
+      animation.animInstance.frameRate = payload.frameRate;
       var container = animation.container;
       var elements = animation.elements;
       createTree(payload.tree, container, elements);
-    }
+    };
   }());
+
+  function addNewElements(newElements, elements) {
+    var element;
+    for (var i = 0; i < newElements.length; i += 1) {
+      element = newElements[i];
+      var parent = elements[element[1]];
+      if (parent) {
+        var sibling;
+        if (element[2]) {
+          sibling = elements[element[2]];
+        }
+        createTree(element[0], parent, elements, sibling);
+        newElements.splice(i, 1);
+        i -= 1;
+      }
+    }
+  }
+
+  function updateElementStyles(element, styles) {
+    var style;
+    for (var i = 0; i < styles.length; i += 1) {
+      style = styles[i];
+      element.style[style[0]] = style[1];
+    }
+  }
+
+  function updateElementAttributes(element, attributes) {
+    var attribute;
+    for (var i = 0; i < attributes.length; i += 1) {
+      attribute = attributes[i];
+      element.setAttribute(attribute[0], attribute[1]);
+    }
+  }
 
   function handleAnimationUpdate(payload) {
     var changedElements = payload.elements;
     var animation = animations[payload.id];
     var elements = animation.elements;
-    changedElements.forEach(function(elementData) {
-        var element = elements[elementData.id];
-        elementData.styles.forEach(function(style) {
-            element.style[style[0]] = style[1];
-        })
-        elementData.attributes.forEach(function(attribute) {
-            element.setAttribute(attribute[0], attribute[1]);
-        })
-    })
+    var elementData;
+    for (var i = 0; i < changedElements.length; i += 1) {
+      elementData = changedElements[i];
+      var element = elements[elementData.id];
+      addNewElements(elementData.elements, elements);
+      updateElementStyles(element, elementData.styles);
+      updateElementAttributes(element, elementData.attributes);
+    }
+    animation.animInstance.currentTime = payload.currentTime;
   }
-
-  
 
   workerInstance.onmessage = function(event) {
     if (event.data.type === 'loaded') {
@@ -299,50 +417,119 @@ var lottie = (function () {
     } else if (event.data.type === 'updated') {
       handleAnimationUpdate(event.data.payload);
     }
-}
+  };
 
-  var animations = {}
+  var animations = {};
 
   function resolveAnimationData(params) {
-    return new Promise(function(resolve, reject){
+    return new Promise(function (resolve, reject) {
       if (params.animationData) {
         resolve(params);
       } else if (params.path) {
         fetch(params.path)
-        .then(function (response) {
+          .then(function (response) {
             return response.json();
-        })
-        .then(function(animationData) {
-          params.animationData = animationData;
-          delete params.path;
-          resolve(params);
-        })
+          })
+          .then(function (animationData) {
+            params.animationData = animationData;
+            delete params.path;
+            resolve(params);
+          });
       } else {
-        reject()
+        reject();
       }
-    })
-    
-  }
-  function loadAnimation(params) {
-    resolveAnimationData(params)
-    .then(function(params) {
-      var animationId = Math.random().toString();
-      var animation = {
-        elements: {},
-      }
-      if (params.container) {
-        animation.container = params.container;
-        delete params.container;
-      }
-      animations[animationId] = animation;
-      workerInstance.postMessage({
-        type: 'load',
-        payload: {
-          params: params,
-          id: animationId,
-        }
-      })
     });
+  }
+
+  function loadAnimation(params) {
+    animationIdCounter += 1;
+    var animationId = 'lottie_animationId_' + animationIdCounter;
+    var animInstance = {
+      id: animationId,
+      pause: function () {
+        workerInstance.postMessage({
+          type: 'pause',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
+      play: function () {
+        workerInstance.postMessage({
+          type: 'play',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
+      setSpeed: function (value) {
+        workerInstance.postMessage({
+          type: 'setSpeed',
+          payload: {
+            id: animationId,
+            value: value,
+          },
+        });
+      },
+      setDirection: function (value) {
+        workerInstance.postMessage({
+          type: 'setDirection',
+          payload: {
+            id: animationId,
+            value: value,
+          },
+        });
+      },
+      goToAndStop: function (value, isFrame) {
+        workerInstance.postMessage({
+          type: 'goToAndStop',
+          payload: {
+            id: animationId,
+            value: value,
+            isFrame: isFrame,
+          },
+        });
+      },
+      goToAndPlay: function (value, isFrame) {
+        workerInstance.postMessage({
+          type: 'goToAndPlay',
+          payload: {
+            id: animationId,
+            value: value,
+            isFrame: isFrame,
+          },
+        });
+      },
+      setSubframe: function (value) {
+        workerInstance.postMessage({
+          type: 'setSubframe',
+          payload: {
+            id: animationId,
+            value: value,
+          },
+        });
+      },
+    };
+    resolveAnimationData(params)
+      .then(function (animationParams) {
+        var animation = {
+          elements: {},
+          animInstance: animInstance,
+        };
+        if (animationParams.container) {
+          animation.container = animationParams.container;
+          delete animationParams.container;
+        }
+        animations[animationId] = animation;
+        workerInstance.postMessage({
+          type: 'load',
+          payload: {
+            params: animationParams,
+            id: animationId,
+          },
+        });
+      });
+    return animInstance;
   }
 
   var lottiejs = {
