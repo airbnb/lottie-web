@@ -306,6 +306,11 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].setSubframe(payload.value);
       }
+    } else if (type === 'destroy') {
+      if (animations[payload.id]) {
+        animations[payload.id].destroy();
+        animations[payload.id] = null;
+      }
     }
   };
 }
@@ -399,19 +404,21 @@ var lottie = (function () {
   function handleAnimationUpdate(payload) {
     var changedElements = payload.elements;
     var animation = animations[payload.id];
-    var elements = animation.elements;
-    var elementData;
-    for (var i = 0; i < changedElements.length; i += 1) {
-      elementData = changedElements[i];
-      var element = elements[elementData.id];
-      addNewElements(elementData.elements, elements);
-      updateElementStyles(element, elementData.styles);
-      updateElementAttributes(element, elementData.attributes);
+    if (animation) {
+      var elements = animation.elements;
+      var elementData;
+      for (var i = 0; i < changedElements.length; i += 1) {
+        elementData = changedElements[i];
+        var element = elements[elementData.id];
+        addNewElements(elementData.elements, elements);
+        updateElementStyles(element, elementData.styles);
+        updateElementAttributes(element, elementData.attributes);
+      }
+      animation.animInstance.currentTime = payload.currentTime;
     }
-    animation.animInstance.currentTime = payload.currentTime;
   }
 
-  workerInstance.onmessage = function(event) {
+  workerInstance.onmessage = function (event) {
     if (event.data.type === 'loaded') {
       handleAnimationLoaded(event.data.payload);
     } else if (event.data.type === 'updated') {
@@ -444,6 +451,9 @@ var lottie = (function () {
   function loadAnimation(params) {
     animationIdCounter += 1;
     var animationId = 'lottie_animationId_' + animationIdCounter;
+    var animation = {
+      elements: {},
+    };
     var animInstance = {
       id: animationId,
       pause: function () {
@@ -509,13 +519,22 @@ var lottie = (function () {
           },
         });
       },
+      destroy: function () {
+        animations[animationId] = null;
+        if (animation.container) {
+          animation.container.innerHTML = '';
+        }
+        workerInstance.postMessage({
+          type: 'destroy',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
     };
+    animation.animInstance = animInstance;
     resolveAnimationData(params)
       .then(function (animationParams) {
-        var animation = {
-          elements: {},
-          animInstance: animInstance,
-        };
         if (animationParams.container) {
           animation.container = animationParams.container;
           delete animationParams.container;
