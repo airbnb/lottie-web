@@ -353,6 +353,7 @@ AnimationItem.prototype.gotoFrame = function () {
   }
   this.trigger('enterFrame');
   this.renderFrame();
+  this.trigger('drawnFrame');
 };
 
 AnimationItem.prototype.renderFrame = function () {
@@ -707,6 +708,7 @@ AnimationItem.prototype.trigger = function (name) {
   if (this._cbs && this._cbs[name]) {
     switch (name) {
       case 'enterFrame':
+      case 'drawnFrame':
         this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
         break;
       case 'loopComplete':

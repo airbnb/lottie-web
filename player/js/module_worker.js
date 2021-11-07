@@ -85,6 +85,16 @@ function workerContent() {
         };
       },
       getContext: function () { return { fillRect: function () {} }; },
+      addEventListener: function (_, callback) {
+        setTimeout(callback, 1);
+      },
+      setAttributeNS: function (_, attribute, value) {
+        this.attributes[attribute] = value;
+        if (!element._isDirty) {
+          element._isDirty = true;
+        }
+        element._changedAttributes.push(attribute);
+      },
     };
     element.style = style;
     return element;
@@ -186,7 +196,7 @@ function workerContent() {
             },
           });
         });
-        animation.addEventListener('enterFrame', function (event) {
+        animation.addEventListener('drawnFrame', function (event) {
           var changedElements = [];
           var element;
           for (var i = 0; i < elements.length; i += 1) {
@@ -351,7 +361,11 @@ var lottie = (function () {
     }
     for (var attr in data.attributes) {
       if (Object.prototype.hasOwnProperty.call(data.attributes, attr)) {
-        elem.setAttribute(attr, data.attributes[attr]);
+        if (attr === 'href') {
+          elem.setAttributeNS('http://www.w3.org/1999/xlink', attr, data.attributes[attr]);
+        } else {
+          elem.setAttribute(attr, data.attributes[attr]);
+        }
         if (attr === 'id') {
           map[data.attributes[attr]] = elem;
         }
@@ -375,6 +389,14 @@ var lottie = (function () {
   var handleAnimationLoaded = (function () {
     return function (payload) {
       var animation = animations[payload.id];
+      animation._loaded = true;
+      // if callbacks have been added before the animation has loaded
+      animation.pendingCallbacks.forEach(function (callbackData) {
+        animation.animInstance.addEventListener(callbackData.eventName, callbackData.callback);
+        if (callbackData.eventName === 'DOMLoaded') {
+          callbackData.callback();
+        }
+      });
       animation.animInstance.totalFrames = payload.totalFrames;
       animation.animInstance.frameRate = payload.frameRate;
       var container = animation.container;
@@ -481,6 +503,7 @@ var lottie = (function () {
     var animation = {
       elements: {},
       callbacks: {},
+      pendingCallbacks: [],
     };
     var animInstance = {
       id: animationId,
@@ -548,17 +571,24 @@ var lottie = (function () {
         });
       },
       addEventListener: function (eventName, callback) {
-        eventsIdCounter += 1;
-        var callbackId = 'callback_' + eventsIdCounter;
-        animation.callbacks[callbackId] = callback;
-        workerInstance.postMessage({
-          type: 'addEventListener',
-          payload: {
-            id: animationId,
-            callbackId: callbackId,
+        if (!animation._loaded) {
+          animation.pendingCallbacks.push({
             eventName: eventName,
-          },
-        });
+            callback: callback,
+          });
+        } else {
+          eventsIdCounter += 1;
+          var callbackId = 'callback_' + eventsIdCounter;
+          animation.callbacks[callbackId] = callback;
+          workerInstance.postMessage({
+            type: 'addEventListener',
+            payload: {
+              id: animationId,
+              callbackId: callbackId,
+              eventName: eventName,
+            },
+          });
+        }
       },
       destroy: function () {
         animations[animationId] = null;
