@@ -171,7 +171,7 @@ function workerContent() {
         wrapper = document.createElement('div');
         params.container = wrapper;
       } else {
-        var canvas = params.canvas;
+        var canvas = params.rendererSettings.canvas;
         var ctx = canvas.getContext('2d');
         params.rendererSettings.context = ctx;
       }
@@ -334,6 +334,10 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].destroy();
         animations[payload.id] = null;
+      }
+    } else if (type === 'resize') {
+      if (animations[payload.id]) {
+        animations[payload.id].resize();
       }
     }
   };
@@ -602,13 +606,33 @@ var lottie = (function () {
           },
         });
       },
+      resize: function () {
+        workerInstance.postMessage({
+          type: 'resize',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
     };
     animation.animInstance = animInstance;
     resolveAnimationData(params)
       .then(function (animationParams) {
+        var transferedObjects = [];
         if (animationParams.container) {
           animation.container = animationParams.container;
           delete animationParams.container;
+        }
+        if (animationParams.renderer === 'canvas' && !animationParams.rendererSettings.canvas) {
+          var canvas = document.createElement('canvas');
+          animation.container.appendChild(canvas);
+          canvas.width = animationParams.animationData.w;
+          canvas.height = animationParams.animationData.h;
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+          var offscreen = canvas.transferControlToOffscreen();
+          transferedObjects.push(offscreen);
+          animationParams.rendererSettings.canvas = offscreen;
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
@@ -617,7 +641,7 @@ var lottie = (function () {
             params: animationParams,
             id: animationId,
           },
-        });
+        }, transferedObjects);
       });
     return animInstance;
   }
