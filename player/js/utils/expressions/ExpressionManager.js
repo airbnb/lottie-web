@@ -656,9 +656,6 @@ var ExpressionManager = (function () {
     function executeExpression(_value) {
       // globalData.pushExpression();
       value = _value;
-      if (_needsRandom) {
-        seedRandom(randSeed);
-      }
       if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
         return value;
       }
@@ -700,6 +697,9 @@ var ExpressionManager = (function () {
         parent = elem.hierarchy[0].layerInterface;
       }
       time = this.comp.renderedFrame / this.comp.globalData.frameRate;
+      if (_needsRandom) {
+        seedRandom(randSeed + time);
+      }
       if (needsVelocity) {
         velocity = velocityAtTime(time);
       }
