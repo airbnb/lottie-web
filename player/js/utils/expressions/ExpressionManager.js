@@ -10,6 +10,7 @@ var ExpressionManager = (function () {
   var document = null;
   var XMLHttpRequest = null;
   var fetch = null;
+  var frames = null;
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -591,11 +592,11 @@ var ExpressionManager = (function () {
       return obKey;
     }
 
-    function framesToTime(frames, fps) {
+    function framesToTime(fr, fps) {
       if (!fps) {
         fps = elem.comp.globalData.frameRate;
       }
-      return frames / fps;
+      return fr / fps;
     }
 
     function timeToFrames(t, fps) {
