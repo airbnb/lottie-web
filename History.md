@@ -1,3 +1,11 @@
+## V 5.8.0
+- FEATURE: lottie player as a worker support
+- FEATURE: added content-visibility prop support
+- FEATURE: added header check for json type (improves initial parsing specially on large files)
+- FEATURE: added lottie.useWebWorker method to support loading file on a separate web worker (different than the first feature)
+- FEATURE: added frame rate to comp on export (not supported by payers yet)
+- FIX: random seed expression fix
+
 ## V 5.7.14
 - FEATURE: added support for Smoothness property on animated texts
 - FEATURE: added support for animated text path properties

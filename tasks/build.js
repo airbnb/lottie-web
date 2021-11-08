@@ -2,9 +2,9 @@ const fs = require('fs');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.7.14';
+const bm_version = '5.8.0';
 const buildReducedVersion = process.argv[2] === 'reduced'
-const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker']
+const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker', 'lottie_worker']
 
 const scripts = [
 	{
@@ -25,7 +25,7 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/helpers/svg_elements.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light','lottie_worker']
 	},
 	{
 		src: 'js/utils/helpers/html_elements.js',
@@ -72,20 +72,12 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/utils/DataManager.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/utils/getFontProperties.js',
 		builds: defaultBuilds
 	},
 	{
 		src: 'js/utils/FontManager.js',
 		builds: defaultBuilds
-	},
-	{
-		src: 'js/utils/FontManagerWorkerOverride.js',
-		builds: ['canvas_worker']
 	},
 	{
 		src: 'js/utils/PropertyFactory.js',
@@ -145,11 +137,7 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/imagePreloader.js',
-		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light']
-	},
-	{
-		src: 'js/utils/imagePreloaderWorkerOverride.js',
-		builds: ['canvas_worker']
+		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light','lottie_worker', 'canvas_worker']
 	},
 	{
 		src: 'js/utils/featureSupport.js',
@@ -221,11 +209,7 @@ const scripts = [
 	},
 	{
 		src: 'js/renderers/CanvasRenderer.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
-	},
-	{
-		src: 'js/renderers/CanvasRendererWorkerOverride.js',
-		builds: ['canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/renderers/HybridRenderer.js',
@@ -261,7 +245,7 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGStyleData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGShapeData.js',
@@ -269,23 +253,23 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGTransformData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGStrokeStyleData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGFillStyleData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGGradientFillStyleData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGGradientStrokeStyleData.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/ShapeGroupData.js',
@@ -293,7 +277,7 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/helpers/shapes/SVGElementsRenderer.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/helpers/shapes/ShapeTransformManager.js',
@@ -301,7 +285,7 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/helpers/shapes/CVShapeData.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/BaseElement.js',
@@ -341,15 +325,15 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/FootageElement.js',
-		builds: ['full','svg','canvas','html','canvas_worker'],
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker'],
 	},
 	{
 		src: 'js/elements/svgElements/SVGCompElement.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/SVGTextElement.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/SVGShapeElement.js',
@@ -357,39 +341,39 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGTintEffect.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGFillFilter.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGGaussianBlurEffect.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGStrokeEffect.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGTritoneFilter.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGProLevelsFilter.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGDropShadowEffect.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/effects/SVGMatte3Effect.js',
-		builds: ['full','svg','svg_light','html','html_light']
+		builds: ['full','svg','svg_light','html','html_light', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/SVGEffects.js',
-		builds: ['full','svg','html']
+		builds: ['full','svg','html', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/svgElements/SVGEffectsPlaceholder.js',
@@ -397,11 +381,11 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/canvasElements/CVContextData.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVBaseElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVImageElement.js',
@@ -409,19 +393,19 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/canvasElements/CVCompElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVMaskElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVShapeElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVSolidElement.js',
-		builds: ['full','canvas','canvas_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/canvasElements/CVTextElement.js',
@@ -429,7 +413,7 @@ const scripts = [
 	},
 	{
 		src: 'js/elements/canvasElements/CVEffects.js',
-		builds: ['full','canvas','canvas_light','html','html_light','canvas_worker']
+		builds: ['full','canvas','canvas_light','html','html_light','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/elements/htmlElements/HBaseElement.js',
@@ -468,96 +452,88 @@ const scripts = [
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/animation/AnimationManagerWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/animation/AnimationItem.js',
 		builds: defaultBuilds
 	},
 	{
-		src: 'js/animation/AnimationItemWorkerOverride.js',
-		builds: ['canvas_worker']
-	},
-	{
 		src: 'js/utils/expressions/Expressions.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ExpressionManager.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/expressionHelpers.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ExpressionPropertyDecorator.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ExpressionTextPropertyDecorator.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/shapes/ShapePathInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/PropertyGroupFactory.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/PropertyInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ShapeInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/TextInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/LayerInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/FootageInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/CompInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/TransformInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ProjectInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/EffectInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/MaskInterface.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/ExpressionValueFactory.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/utils/expressions/TextSelectorPropertyDecorator.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/effects/SliderEffect.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
 		src: 'js/effects/EffectsManagerPlaceholder.js',
@@ -565,7 +541,7 @@ const scripts = [
 	},
 	{
 		src: 'js/EffectsManager.js',
-		builds: ['full','svg','canvas','html','canvas_worker']
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	}
 ]
 
@@ -591,7 +567,7 @@ function wrapScriptWithModule(code, build) {
 	return new Promise((resolve, reject)=>{
 		try {
 			// Wrapping with module
-			let moduleFileName = (build =='canvas_worker') ? 'module_worker' : 'module';
+			let moduleFileName = (build =='canvas_worker' || build =='lottie_worker') ? 'module_worker' : 'module';
 			let wrappedCode = fs.readFileSync(`${rootFolder}js/${moduleFileName}.js`, "utf8");
 			wrappedCode = wrappedCode.replace('/* <%= contents %> */',code);
 			wrappedCode = wrappedCode.replace('[[BM_VERSION]]',bm_version);
@@ -627,7 +603,7 @@ function uglifyCode(code) {
 }
 
 async function modularizeCode(code, build) {
-	const globalScope = (build =='canvas_worker') ? 'self' : 'window'
+	const globalScope = (build =='canvas_worker' || build =='lottie_worker') ? 'self' : 'window'
 	return `(typeof navigator !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
@@ -731,6 +707,16 @@ function buildVersions(scripts) {
 		{
 			fileName: 'lottie_canvas_worker.min.js',
 			build: 'canvas_worker',
+			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_worker.js',
+			build: 'lottie_worker',
+			process: noop
+		},
+		{
+			fileName: 'lottie_worker.min.js',
+			build: 'lottie_worker',
 			process: uglifyCode
 		},
 		{

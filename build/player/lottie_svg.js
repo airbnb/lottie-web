@@ -11,18 +11,20 @@
     }
 }((window || {}), function(window) {
 	/* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable */
-/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix */
+expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable, _useWebWorker:writable */
+/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix, _useWebWorker */
 
 'use strict';
 
-/* exported svgNS, locationHref, initialDefaultFrame */
+/* exported svgNS, locationHref, initialDefaultFrame, _useWebWorker */
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
 var locationHref = '';
 
 var initialDefaultFrame = -999999;
+
+var _useWebWorker = false;
 
 /* global createSizedArray */
 /* exported subframeEnabled, expressionsPlugin, isSafari, cachedColors, bmPow, bmSqrt, bmFloor, bmMax, bmMin, ProjectInterface,
@@ -1528,425 +1530,633 @@ function bezFunction() {
 
 var bez = bezFunction();
 
-/* exported dataManager */
+/* global _useWebWorker */
 
-function dataFunctionManager() {
-  // var tCanvasHelper = createTag('canvas').getContext('2d');
+var dataManager = (function () {
+  var _counterId = 1;
+  var processes = [];
+  var workerFn;
+  var workerInstance;
+  var workerProxy = {
+    onmessage: function () {
 
-  function completeLayers(layers, comps, fontManager) {
-    var layerData;
-    var i;
-    var len = layers.length;
-    var j;
-    var jLen;
-    var k;
-    var kLen;
-    for (i = 0; i < len; i += 1) {
-      layerData = layers[i];
-      if (('ks' in layerData) && !layerData.completed) {
-        layerData.completed = true;
-        if (layerData.tt) {
-          layers[i - 1].td = layerData.tt;
-        }
-        if (layerData.hasMask) {
-          var maskProps = layerData.masksProperties;
-          jLen = maskProps.length;
-          for (j = 0; j < jLen; j += 1) {
-            if (maskProps[j].pt.k.i) {
-              convertPathsToAbsoluteValues(maskProps[j].pt.k);
-            } else {
-              kLen = maskProps[j].pt.k.length;
-              for (k = 0; k < kLen; k += 1) {
-                if (maskProps[j].pt.k[k].s) {
-                  convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
+    },
+    postMessage: function (path) {
+      workerFn({
+        data: path,
+      });
+    },
+  };
+  var _workerSelf = {
+    postMessage: function (data) {
+      workerProxy.onmessage({
+        data: data,
+      });
+    },
+  };
+  function createWorker(fn) {
+    if (window.Worker && window.Blob && _useWebWorker) {
+      var blob = new Blob(['var _workerSelf = self; self.onmessage = ', fn.toString()], { type: 'text/javascript' });
+      // var blob = new Blob(['self.onmessage = ', fn.toString()], { type: 'text/javascript' });
+      var url = URL.createObjectURL(blob);
+      return new Worker(url);
+    }
+    workerFn = fn;
+    return workerProxy;
+  }
+
+  function setupWorker() {
+    if (!workerInstance) {
+      workerInstance = createWorker(function workerStart(e) {
+        /* exported dataManager */
+
+        function dataFunctionManager() {
+          // var tCanvasHelper = createTag('canvas').getContext('2d');
+
+          function completeLayers(layers, comps) {
+            var layerData;
+            var i;
+            var len = layers.length;
+            var j;
+            var jLen;
+            var k;
+            var kLen;
+            for (i = 0; i < len; i += 1) {
+              layerData = layers[i];
+              if (('ks' in layerData) && !layerData.completed) {
+                layerData.completed = true;
+                if (layerData.tt) {
+                  layers[i - 1].td = layerData.tt;
                 }
-                if (maskProps[j].pt.k[k].e) {
-                  convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
+                if (layerData.hasMask) {
+                  var maskProps = layerData.masksProperties;
+                  jLen = maskProps.length;
+                  for (j = 0; j < jLen; j += 1) {
+                    if (maskProps[j].pt.k.i) {
+                      convertPathsToAbsoluteValues(maskProps[j].pt.k);
+                    } else {
+                      kLen = maskProps[j].pt.k.length;
+                      for (k = 0; k < kLen; k += 1) {
+                        if (maskProps[j].pt.k[k].s) {
+                          convertPathsToAbsoluteValues(maskProps[j].pt.k[k].s[0]);
+                        }
+                        if (maskProps[j].pt.k[k].e) {
+                          convertPathsToAbsoluteValues(maskProps[j].pt.k[k].e[0]);
+                        }
+                      }
+                    }
+                  }
+                }
+                if (layerData.ty === 0) {
+                  layerData.layers = findCompLayers(layerData.refId, comps);
+                  completeLayers(layerData.layers, comps);
+                } else if (layerData.ty === 4) {
+                  completeShapes(layerData.shapes);
+                } else if (layerData.ty === 5) {
+                  completeText(layerData);
                 }
               }
             }
           }
-        }
-        if (layerData.ty === 0) {
-          layerData.layers = findCompLayers(layerData.refId, comps);
-          completeLayers(layerData.layers, comps, fontManager);
-        } else if (layerData.ty === 4) {
-          completeShapes(layerData.shapes);
-        } else if (layerData.ty === 5) {
-          completeText(layerData, fontManager);
-        }
-      }
-    }
-  }
 
-  function findCompLayers(id, comps) {
-    var i = 0;
-    var len = comps.length;
-    while (i < len) {
-      if (comps[i].id === id) {
-        if (!comps[i].layers.__used) {
-          comps[i].layers.__used = true;
-          return comps[i].layers;
-        }
-        return JSON.parse(JSON.stringify(comps[i].layers));
-      }
-      i += 1;
-    }
-    return null;
-  }
-
-  function completeShapes(arr) {
-    var i;
-    var len = arr.length;
-    var j;
-    var jLen;
-    for (i = len - 1; i >= 0; i -= 1) {
-      if (arr[i].ty === 'sh') {
-        if (arr[i].ks.k.i) {
-          convertPathsToAbsoluteValues(arr[i].ks.k);
-        } else {
-          jLen = arr[i].ks.k.length;
-          for (j = 0; j < jLen; j += 1) {
-            if (arr[i].ks.k[j].s) {
-              convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
+          function findCompLayers(id, comps) {
+            var i = 0;
+            var len = comps.length;
+            while (i < len) {
+              if (comps[i].id === id) {
+                if (!comps[i].layers.__used) {
+                  comps[i].layers.__used = true;
+                  return comps[i].layers;
+                }
+                return JSON.parse(JSON.stringify(comps[i].layers));
+              }
+              i += 1;
             }
-            if (arr[i].ks.k[j].e) {
-              convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
+            return null;
+          }
+
+          function completeShapes(arr) {
+            var i;
+            var len = arr.length;
+            var j;
+            var jLen;
+            for (i = len - 1; i >= 0; i -= 1) {
+              if (arr[i].ty === 'sh') {
+                if (arr[i].ks.k.i) {
+                  convertPathsToAbsoluteValues(arr[i].ks.k);
+                } else {
+                  jLen = arr[i].ks.k.length;
+                  for (j = 0; j < jLen; j += 1) {
+                    if (arr[i].ks.k[j].s) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].s[0]);
+                    }
+                    if (arr[i].ks.k[j].e) {
+                      convertPathsToAbsoluteValues(arr[i].ks.k[j].e[0]);
+                    }
+                  }
+                }
+              } else if (arr[i].ty === 'gr') {
+                completeShapes(arr[i].it);
+              }
             }
           }
+
+          function convertPathsToAbsoluteValues(path) {
+            var i;
+            var len = path.i.length;
+            for (i = 0; i < len; i += 1) {
+              path.i[i][0] += path.v[i][0];
+              path.i[i][1] += path.v[i][1];
+              path.o[i][0] += path.v[i][0];
+              path.o[i][1] += path.v[i][1];
+            }
+          }
+
+          function checkVersion(minimum, animVersionString) {
+            var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
+            if (minimum[0] > animVersion[0]) {
+              return true;
+            } if (animVersion[0] > minimum[0]) {
+              return false;
+            }
+            if (minimum[1] > animVersion[1]) {
+              return true;
+            } if (animVersion[1] > minimum[1]) {
+              return false;
+            }
+            if (minimum[2] > animVersion[2]) {
+              return true;
+            } if (animVersion[2] > minimum[2]) {
+              return false;
+            }
+            return null;
+          }
+
+          var checkText = (function () {
+            var minimumVersion = [4, 4, 14];
+
+            function updateTextLayer(textLayer) {
+              var documentData = textLayer.t.d;
+              textLayer.t.d = {
+                k: [
+                  {
+                    s: documentData,
+                    t: 0,
+                  },
+                ],
+              };
+            }
+
+            function iterateLayers(layers) {
+              var i;
+              var len = layers.length;
+              for (i = 0; i < len; i += 1) {
+                if (layers[i].ty === 5) {
+                  updateTextLayer(layers[i]);
+                }
+              }
+            }
+
+            return function (animationData) {
+              if (checkVersion(minimumVersion, animationData.v)) {
+                iterateLayers(animationData.layers);
+                if (animationData.assets) {
+                  var i;
+                  var len = animationData.assets.length;
+                  for (i = 0; i < len; i += 1) {
+                    if (animationData.assets[i].layers) {
+                      iterateLayers(animationData.assets[i].layers);
+                    }
+                  }
+                }
+              }
+            };
+          }());
+
+          var checkChars = (function () {
+            var minimumVersion = [4, 7, 99];
+            return function (animationData) {
+              if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
+                var i;
+                var len = animationData.chars.length;
+                var j;
+                var jLen;
+                var pathData;
+                var paths;
+                for (i = 0; i < len; i += 1) {
+                  if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
+                    paths = animationData.chars[i].data.shapes[0].it;
+                    jLen = paths.length;
+
+                    for (j = 0; j < jLen; j += 1) {
+                      pathData = paths[j].ks.k;
+                      if (!pathData.__converted) {
+                        convertPathsToAbsoluteValues(paths[j].ks.k);
+                        pathData.__converted = true;
+                      }
+                    }
+                  }
+                }
+              }
+            };
+          }());
+
+          var checkPathProperties = (function () {
+            var minimumVersion = [5, 7, 15];
+
+            function updateTextLayer(textLayer) {
+              var pathData = textLayer.t.p;
+              if (typeof pathData.a === 'number') {
+                pathData.a = {
+                  a: 0,
+                  k: pathData.a,
+                };
+              }
+              if (typeof pathData.p === 'number') {
+                pathData.p = {
+                  a: 0,
+                  k: pathData.p,
+                };
+              }
+              if (typeof pathData.r === 'number') {
+                pathData.r = {
+                  a: 0,
+                  k: pathData.r,
+                };
+              }
+            }
+
+            function iterateLayers(layers) {
+              var i;
+              var len = layers.length;
+              for (i = 0; i < len; i += 1) {
+                if (layers[i].ty === 5) {
+                  updateTextLayer(layers[i]);
+                }
+              }
+            }
+
+            return function (animationData) {
+              if (checkVersion(minimumVersion, animationData.v)) {
+                iterateLayers(animationData.layers);
+                if (animationData.assets) {
+                  var i;
+                  var len = animationData.assets.length;
+                  for (i = 0; i < len; i += 1) {
+                    if (animationData.assets[i].layers) {
+                      iterateLayers(animationData.assets[i].layers);
+                    }
+                  }
+                }
+              }
+            };
+          }());
+
+          var checkColors = (function () {
+            var minimumVersion = [4, 1, 9];
+
+            function iterateShapes(shapes) {
+              var i;
+              var len = shapes.length;
+              var j;
+              var jLen;
+              for (i = 0; i < len; i += 1) {
+                if (shapes[i].ty === 'gr') {
+                  iterateShapes(shapes[i].it);
+                } else if (shapes[i].ty === 'fl' || shapes[i].ty === 'st') {
+                  if (shapes[i].c.k && shapes[i].c.k[0].i) {
+                    jLen = shapes[i].c.k.length;
+                    for (j = 0; j < jLen; j += 1) {
+                      if (shapes[i].c.k[j].s) {
+                        shapes[i].c.k[j].s[0] /= 255;
+                        shapes[i].c.k[j].s[1] /= 255;
+                        shapes[i].c.k[j].s[2] /= 255;
+                        shapes[i].c.k[j].s[3] /= 255;
+                      }
+                      if (shapes[i].c.k[j].e) {
+                        shapes[i].c.k[j].e[0] /= 255;
+                        shapes[i].c.k[j].e[1] /= 255;
+                        shapes[i].c.k[j].e[2] /= 255;
+                        shapes[i].c.k[j].e[3] /= 255;
+                      }
+                    }
+                  } else {
+                    shapes[i].c.k[0] /= 255;
+                    shapes[i].c.k[1] /= 255;
+                    shapes[i].c.k[2] /= 255;
+                    shapes[i].c.k[3] /= 255;
+                  }
+                }
+              }
+            }
+
+            function iterateLayers(layers) {
+              var i;
+              var len = layers.length;
+              for (i = 0; i < len; i += 1) {
+                if (layers[i].ty === 4) {
+                  iterateShapes(layers[i].shapes);
+                }
+              }
+            }
+
+            return function (animationData) {
+              if (checkVersion(minimumVersion, animationData.v)) {
+                iterateLayers(animationData.layers);
+                if (animationData.assets) {
+                  var i;
+                  var len = animationData.assets.length;
+                  for (i = 0; i < len; i += 1) {
+                    if (animationData.assets[i].layers) {
+                      iterateLayers(animationData.assets[i].layers);
+                    }
+                  }
+                }
+              }
+            };
+          }());
+
+          var checkShapes = (function () {
+            var minimumVersion = [4, 4, 18];
+
+            function completeClosingShapes(arr) {
+              var i;
+              var len = arr.length;
+              var j;
+              var jLen;
+              for (i = len - 1; i >= 0; i -= 1) {
+                if (arr[i].ty === 'sh') {
+                  if (arr[i].ks.k.i) {
+                    arr[i].ks.k.c = arr[i].closed;
+                  } else {
+                    jLen = arr[i].ks.k.length;
+                    for (j = 0; j < jLen; j += 1) {
+                      if (arr[i].ks.k[j].s) {
+                        arr[i].ks.k[j].s[0].c = arr[i].closed;
+                      }
+                      if (arr[i].ks.k[j].e) {
+                        arr[i].ks.k[j].e[0].c = arr[i].closed;
+                      }
+                    }
+                  }
+                } else if (arr[i].ty === 'gr') {
+                  completeClosingShapes(arr[i].it);
+                }
+              }
+            }
+
+            function iterateLayers(layers) {
+              var layerData;
+              var i;
+              var len = layers.length;
+              var j;
+              var jLen;
+              var k;
+              var kLen;
+              for (i = 0; i < len; i += 1) {
+                layerData = layers[i];
+                if (layerData.hasMask) {
+                  var maskProps = layerData.masksProperties;
+                  jLen = maskProps.length;
+                  for (j = 0; j < jLen; j += 1) {
+                    if (maskProps[j].pt.k.i) {
+                      maskProps[j].pt.k.c = maskProps[j].cl;
+                    } else {
+                      kLen = maskProps[j].pt.k.length;
+                      for (k = 0; k < kLen; k += 1) {
+                        if (maskProps[j].pt.k[k].s) {
+                          maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
+                        }
+                        if (maskProps[j].pt.k[k].e) {
+                          maskProps[j].pt.k[k].e[0].c = maskProps[j].cl;
+                        }
+                      }
+                    }
+                  }
+                }
+                if (layerData.ty === 4) {
+                  completeClosingShapes(layerData.shapes);
+                }
+              }
+            }
+
+            return function (animationData) {
+              if (checkVersion(minimumVersion, animationData.v)) {
+                iterateLayers(animationData.layers);
+                if (animationData.assets) {
+                  var i;
+                  var len = animationData.assets.length;
+                  for (i = 0; i < len; i += 1) {
+                    if (animationData.assets[i].layers) {
+                      iterateLayers(animationData.assets[i].layers);
+                    }
+                  }
+                }
+              }
+            };
+          }());
+
+          function completeData(animationData) {
+            if (animationData.__complete) {
+              return;
+            }
+            checkColors(animationData);
+            checkText(animationData);
+            checkChars(animationData);
+            checkPathProperties(animationData);
+            checkShapes(animationData);
+            completeLayers(animationData.layers, animationData.assets);
+            animationData.__complete = true;
+          }
+
+          function completeText(data) {
+            if (data.t.a.length === 0 && !('m' in data.t.p)) {
+              data.singleShape = true;
+            }
+          }
+
+          var moduleOb = {};
+          moduleOb.completeData = completeData;
+          moduleOb.checkColors = checkColors;
+          moduleOb.checkChars = checkChars;
+          moduleOb.checkPathProperties = checkPathProperties;
+          moduleOb.checkShapes = checkShapes;
+          moduleOb.completeLayers = completeLayers;
+
+          return moduleOb;
         }
-      } else if (arr[i].ty === 'gr') {
-        completeShapes(arr[i].it);
-      }
-    }
-  }
+        if (!_workerSelf.dataManager) {
+          _workerSelf.dataManager = dataFunctionManager();
+        }
 
-  function convertPathsToAbsoluteValues(path) {
-    var i;
-    var len = path.i.length;
-    for (i = 0; i < len; i += 1) {
-      path.i[i][0] += path.v[i][0];
-      path.i[i][1] += path.v[i][1];
-      path.o[i][0] += path.v[i][0];
-      path.o[i][1] += path.v[i][1];
-    }
-  }
+        /* exported assetLoader */
+        if (!_workerSelf.assetLoader) {
+          _workerSelf.assetLoader = (function () {
+            function formatResponse(xhr) {
+              // using typeof doubles the time of execution of this method,
+              // so if available, it's better to use the header to validate the type
+              var contentTypeHeader = xhr.getResponseHeader('content-type');
+              if (contentTypeHeader && xhr.responseType === 'json' && contentTypeHeader.indexOf('json') !== -1) {
+                return xhr.response;
+              }
+              if (xhr.response && typeof xhr.response === 'object') {
+                return xhr.response;
+              } if (xhr.response && typeof xhr.response === 'string') {
+                return JSON.parse(xhr.response);
+              } if (xhr.responseText) {
+                return JSON.parse(xhr.responseText);
+              }
+              return null;
+            }
 
-  function checkVersion(minimum, animVersionString) {
-    var animVersion = animVersionString ? animVersionString.split('.') : [100, 100, 100];
-    if (minimum[0] > animVersion[0]) {
-      return true;
-    } if (animVersion[0] > minimum[0]) {
-      return false;
-    }
-    if (minimum[1] > animVersion[1]) {
-      return true;
-    } if (animVersion[1] > minimum[1]) {
-      return false;
-    }
-    if (minimum[2] > animVersion[2]) {
-      return true;
-    } if (animVersion[2] > minimum[2]) {
-      return false;
-    }
-    return null;
-  }
+            function loadAsset(path, fullPath, callback, errorCallback) {
+              var response;
+              var xhr = new XMLHttpRequest();
+              // set responseType after calling open or IE will break.
+              try {
+                // This crashes on Android WebView prior to KitKat
+                xhr.responseType = 'json';
+              } catch (err) {} // eslint-disable-line no-empty
+              xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                  if (xhr.status === 200) {
+                    response = formatResponse(xhr);
+                    callback(response);
+                  } else {
+                    try {
+                      response = formatResponse(xhr);
+                      callback(response);
+                    } catch (err) {
+                      if (errorCallback) {
+                        errorCallback(err);
+                      }
+                    }
+                  }
+                }
+              };
+              try {
+                xhr.open('GET', path, true);
+              } catch (error) {
+                xhr.open('GET', fullPath + '/' + path, true);
+              }
+              xhr.send();
+            }
+            return {
+              load: loadAsset,
+            };
+          }());
+        }
 
-  var checkText = (function () {
-    var minimumVersion = [4, 4, 14];
+        if (e.data.type === 'loadAnimation') {
+          _workerSelf.assetLoader.load(
+            e.data.path,
+            e.data.fullPath,
+            function (data) {
+              _workerSelf.dataManager.completeData(data);
+              _workerSelf.postMessage({
+                id: e.data.id,
+                payload: data,
+                status: 'success',
+              });
+            },
+            function () {
+              _workerSelf.postMessage({
+                id: e.data.id,
+                status: 'error',
+              });
+            }
+          );
+        } else if (e.data.type === 'complete') {
+          var animation = e.data.animation;
+          _workerSelf.dataManager.completeData(animation);
+          _workerSelf.postMessage({
+            id: e.data.id,
+            payload: animation,
+            status: 'success',
+          });
+        } else if (e.data.type === 'loadData') {
+          _workerSelf.assetLoader.load(
+            e.data.path,
+            e.data.fullPath,
+            function (data) {
+              _workerSelf.postMessage({
+                id: e.data.id,
+                payload: data,
+                status: 'success',
+              });
+            },
+            function () {
+              _workerSelf.postMessage({
+                id: e.data.id,
+                status: 'error',
+              });
+            }
+          );
+        }
+      });
 
-    function updateTextLayer(textLayer) {
-      var documentData = textLayer.t.d;
-      textLayer.t.d = {
-        k: [
-          {
-            s: documentData,
-            t: 0,
-          },
-        ],
+      workerInstance.onmessage = function (event) {
+        var data = event.data;
+        var id = data.id;
+        var process = processes[id];
+        processes[id] = null;
+        if (data.status === 'success') {
+          process.onComplete(data.payload);
+        } else if (process.onError) {
+          process.onError();
+        }
       };
     }
-
-    function iterateLayers(layers) {
-      var i;
-      var len = layers.length;
-      for (i = 0; i < len; i += 1) {
-        if (layers[i].ty === 5) {
-          updateTextLayer(layers[i]);
-        }
-      }
-    }
-
-    return function (animationData) {
-      if (checkVersion(minimumVersion, animationData.v)) {
-        iterateLayers(animationData.layers);
-        if (animationData.assets) {
-          var i;
-          var len = animationData.assets.length;
-          for (i = 0; i < len; i += 1) {
-            if (animationData.assets[i].layers) {
-              iterateLayers(animationData.assets[i].layers);
-            }
-          }
-        }
-      }
-    };
-  }());
-
-  var checkChars = (function () {
-    var minimumVersion = [4, 7, 99];
-    return function (animationData) {
-      if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
-        var i;
-        var len = animationData.chars.length;
-        var j;
-        var jLen;
-        var pathData;
-        var paths;
-        for (i = 0; i < len; i += 1) {
-          if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
-            paths = animationData.chars[i].data.shapes[0].it;
-            jLen = paths.length;
-
-            for (j = 0; j < jLen; j += 1) {
-              pathData = paths[j].ks.k;
-              if (!pathData.__converted) {
-                convertPathsToAbsoluteValues(paths[j].ks.k);
-                pathData.__converted = true;
-              }
-            }
-          }
-        }
-      }
-    };
-  }());
-
-  var checkPathProperties = (function () {
-    var minimumVersion = [5, 7, 15];
-
-    function updateTextLayer(textLayer) {
-      var pathData = textLayer.t.p;
-      if (typeof pathData.a === 'number') {
-        pathData.a = {
-          a: 0,
-          k: pathData.a,
-        };
-      }
-      if (typeof pathData.p === 'number') {
-        pathData.p = {
-          a: 0,
-          k: pathData.p,
-        };
-      }
-      if (typeof pathData.r === 'number') {
-        pathData.r = {
-          a: 0,
-          k: pathData.r,
-        };
-      }
-    }
-
-    function iterateLayers(layers) {
-      var i;
-      var len = layers.length;
-      for (i = 0; i < len; i += 1) {
-        if (layers[i].ty === 5) {
-          updateTextLayer(layers[i]);
-        }
-      }
-    }
-
-    return function (animationData) {
-      if (checkVersion(minimumVersion, animationData.v)) {
-        iterateLayers(animationData.layers);
-        if (animationData.assets) {
-          var i;
-          var len = animationData.assets.length;
-          for (i = 0; i < len; i += 1) {
-            if (animationData.assets[i].layers) {
-              iterateLayers(animationData.assets[i].layers);
-            }
-          }
-        }
-      }
-    };
-  }());
-
-  var checkColors = (function () {
-    var minimumVersion = [4, 1, 9];
-
-    function iterateShapes(shapes) {
-      var i;
-      var len = shapes.length;
-      var j;
-      var jLen;
-      for (i = 0; i < len; i += 1) {
-        if (shapes[i].ty === 'gr') {
-          iterateShapes(shapes[i].it);
-        } else if (shapes[i].ty === 'fl' || shapes[i].ty === 'st') {
-          if (shapes[i].c.k && shapes[i].c.k[0].i) {
-            jLen = shapes[i].c.k.length;
-            for (j = 0; j < jLen; j += 1) {
-              if (shapes[i].c.k[j].s) {
-                shapes[i].c.k[j].s[0] /= 255;
-                shapes[i].c.k[j].s[1] /= 255;
-                shapes[i].c.k[j].s[2] /= 255;
-                shapes[i].c.k[j].s[3] /= 255;
-              }
-              if (shapes[i].c.k[j].e) {
-                shapes[i].c.k[j].e[0] /= 255;
-                shapes[i].c.k[j].e[1] /= 255;
-                shapes[i].c.k[j].e[2] /= 255;
-                shapes[i].c.k[j].e[3] /= 255;
-              }
-            }
-          } else {
-            shapes[i].c.k[0] /= 255;
-            shapes[i].c.k[1] /= 255;
-            shapes[i].c.k[2] /= 255;
-            shapes[i].c.k[3] /= 255;
-          }
-        }
-      }
-    }
-
-    function iterateLayers(layers) {
-      var i;
-      var len = layers.length;
-      for (i = 0; i < len; i += 1) {
-        if (layers[i].ty === 4) {
-          iterateShapes(layers[i].shapes);
-        }
-      }
-    }
-
-    return function (animationData) {
-      if (checkVersion(minimumVersion, animationData.v)) {
-        iterateLayers(animationData.layers);
-        if (animationData.assets) {
-          var i;
-          var len = animationData.assets.length;
-          for (i = 0; i < len; i += 1) {
-            if (animationData.assets[i].layers) {
-              iterateLayers(animationData.assets[i].layers);
-            }
-          }
-        }
-      }
-    };
-  }());
-
-  var checkShapes = (function () {
-    var minimumVersion = [4, 4, 18];
-
-    function completeClosingShapes(arr) {
-      var i;
-      var len = arr.length;
-      var j;
-      var jLen;
-      for (i = len - 1; i >= 0; i -= 1) {
-        if (arr[i].ty === 'sh') {
-          if (arr[i].ks.k.i) {
-            arr[i].ks.k.c = arr[i].closed;
-          } else {
-            jLen = arr[i].ks.k.length;
-            for (j = 0; j < jLen; j += 1) {
-              if (arr[i].ks.k[j].s) {
-                arr[i].ks.k[j].s[0].c = arr[i].closed;
-              }
-              if (arr[i].ks.k[j].e) {
-                arr[i].ks.k[j].e[0].c = arr[i].closed;
-              }
-            }
-          }
-        } else if (arr[i].ty === 'gr') {
-          completeClosingShapes(arr[i].it);
-        }
-      }
-    }
-
-    function iterateLayers(layers) {
-      var layerData;
-      var i;
-      var len = layers.length;
-      var j;
-      var jLen;
-      var k;
-      var kLen;
-      for (i = 0; i < len; i += 1) {
-        layerData = layers[i];
-        if (layerData.hasMask) {
-          var maskProps = layerData.masksProperties;
-          jLen = maskProps.length;
-          for (j = 0; j < jLen; j += 1) {
-            if (maskProps[j].pt.k.i) {
-              maskProps[j].pt.k.c = maskProps[j].cl;
-            } else {
-              kLen = maskProps[j].pt.k.length;
-              for (k = 0; k < kLen; k += 1) {
-                if (maskProps[j].pt.k[k].s) {
-                  maskProps[j].pt.k[k].s[0].c = maskProps[j].cl;
-                }
-                if (maskProps[j].pt.k[k].e) {
-                  maskProps[j].pt.k[k].e[0].c = maskProps[j].cl;
-                }
-              }
-            }
-          }
-        }
-        if (layerData.ty === 4) {
-          completeClosingShapes(layerData.shapes);
-        }
-      }
-    }
-
-    return function (animationData) {
-      if (checkVersion(minimumVersion, animationData.v)) {
-        iterateLayers(animationData.layers);
-        if (animationData.assets) {
-          var i;
-          var len = animationData.assets.length;
-          for (i = 0; i < len; i += 1) {
-            if (animationData.assets[i].layers) {
-              iterateLayers(animationData.assets[i].layers);
-            }
-          }
-        }
-      }
-    };
-  }());
-
-  function completeData(animationData, fontManager) {
-    if (animationData.__complete) {
-      return;
-    }
-    checkColors(animationData);
-    checkText(animationData);
-    checkChars(animationData);
-    checkPathProperties(animationData);
-    checkShapes(animationData);
-    completeLayers(animationData.layers, animationData.assets, fontManager);
-    animationData.__complete = true;
   }
 
-  function completeText(data) {
-    if (data.t.a.length === 0 && !('m' in data.t.p)) {
-      data.singleShape = true;
-    }
+  function createProcess(onComplete, onError) {
+    _counterId += 1;
+    var id = 'processId_' + _counterId;
+    processes[id] = {
+      onComplete: onComplete,
+      onError: onError,
+    };
+    return id;
   }
 
-  var moduleOb = {};
-  moduleOb.completeData = completeData;
-  moduleOb.checkColors = checkColors;
-  moduleOb.checkChars = checkChars;
-  moduleOb.checkPathProperties = checkPathProperties;
-  moduleOb.checkShapes = checkShapes;
-  moduleOb.completeLayers = completeLayers;
+  function loadAnimation(path, onComplete, onError) {
+    setupWorker();
+    var processId = createProcess(onComplete, onError);
+    workerInstance.postMessage({
+      type: 'loadAnimation',
+      path: path,
+      fullPath: window.location.origin + window.location.pathname,
+      id: processId,
+    });
+  }
 
-  return moduleOb;
-}
+  function loadData(path, onComplete, onError) {
+    setupWorker();
+    var processId = createProcess(onComplete, onError);
+    workerInstance.postMessage({
+      type: 'loadData',
+      path: path,
+      fullPath: window.location.origin + window.location.pathname,
+      id: processId,
+    });
+  }
 
-var dataManager = dataFunctionManager();
+  function completeAnimation(anim, onComplete, onError) {
+    setupWorker();
+    var processId = createProcess(onComplete, onError);
+    workerInstance.postMessage({
+      type: 'complete',
+      animation: anim,
+      id: processId,
+    });
+  }
+
+  return {
+    loadAnimation: loadAnimation,
+    loadData: loadData,
+    completeAnimation: completeAnimation,
+  };
+}());
 
 /* exported getFontProperties */
 
@@ -2363,6 +2573,7 @@ var PropertyFactory = (function () {
     var flag = true;
     var keyData;
     var nextKeyData;
+    var keyframeMetadata;
 
     while (flag) {
       keyData = this.keyframes[i];
@@ -2385,6 +2596,7 @@ var PropertyFactory = (function () {
         flag = false;
       }
     }
+    keyframeMetadata = this.keyframesMetadata[i] || {};
 
     var k;
     var kLen;
@@ -2396,10 +2608,10 @@ var PropertyFactory = (function () {
     var keyTime = keyData.t - offsetTime;
     var endValue;
     if (keyData.to) {
-      if (!keyData.bezierData) {
-        keyData.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
+      if (!keyframeMetadata.bezierData) {
+        keyframeMetadata.bezierData = bez.buildBezierData(keyData.s, nextKeyData.s || keyData.e, keyData.to, keyData.ti);
       }
-      var bezierData = keyData.bezierData;
+      var bezierData = keyframeMetadata.bezierData;
       if (frameNum >= nextKeyTime || frameNum < keyTime) {
         var ind = frameNum >= nextKeyTime ? bezierData.points.length - 1 : 0;
         kLen = bezierData.points[ind].point.length;
@@ -2408,11 +2620,11 @@ var PropertyFactory = (function () {
         }
         // caching._lastKeyframeIndex = -1;
       } else {
-        if (keyData.__fnct) {
-          fnc = keyData.__fnct;
+        if (keyframeMetadata.__fnct) {
+          fnc = keyframeMetadata.__fnct;
         } else {
           fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y, keyData.n).get;
-          keyData.__fnct = fnc;
+          keyframeMetadata.__fnct = fnc;
         }
         perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
         var distanceInLine = bezierData.segmentLength * perc;
@@ -2480,28 +2692,28 @@ var PropertyFactory = (function () {
               perc = 0;
             } else {
               if (keyData.o.x.constructor === Array) {
-                if (!keyData.__fnct) {
-                  keyData.__fnct = [];
+                if (!keyframeMetadata.__fnct) {
+                  keyframeMetadata.__fnct = [];
                 }
-                if (!keyData.__fnct[i]) {
-                  outX = (typeof keyData.o.x[i] === 'undefined') ? keyData.o.x[0] : keyData.o.x[i];
-                  outY = (typeof keyData.o.y[i] === 'undefined') ? keyData.o.y[0] : keyData.o.y[i];
-                  inX = (typeof keyData.i.x[i] === 'undefined') ? keyData.i.x[0] : keyData.i.x[i];
-                  inY = (typeof keyData.i.y[i] === 'undefined') ? keyData.i.y[0] : keyData.i.y[i];
+                if (!keyframeMetadata.__fnct[i]) {
+                  outX = keyData.o.x[i] === undefined ? keyData.o.x[0] : keyData.o.x[i];
+                  outY = keyData.o.y[i] === undefined ? keyData.o.y[0] : keyData.o.y[i];
+                  inX = keyData.i.x[i] === undefined ? keyData.i.x[0] : keyData.i.x[i];
+                  inY = keyData.i.y[i] === undefined ? keyData.i.y[0] : keyData.i.y[i];
                   fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
-                  keyData.__fnct[i] = fnc;
+                  keyframeMetadata.__fnct[i] = fnc;
                 } else {
-                  fnc = keyData.__fnct[i];
+                  fnc = keyframeMetadata.__fnct[i];
                 }
-              } else if (!keyData.__fnct) {
+              } else if (!keyframeMetadata.__fnct) {
                 outX = keyData.o.x;
                 outY = keyData.o.y;
                 inX = keyData.i.x;
                 inY = keyData.i.y;
                 fnc = BezierFactory.getBezierEasing(outX, outY, inX, inY).get;
-                keyData.__fnct = fnc;
+                keyData.keyframeMetadata = fnc;
               } else {
-                fnc = keyData.__fnct;
+                fnc = keyframeMetadata.__fnct;
               }
               perc = fnc((frameNum - keyTime) / (nextKeyTime - keyTime));
             }
@@ -2712,6 +2924,7 @@ var PropertyFactory = (function () {
   function KeyframedValueProperty(elem, data, mult, container) {
     this.propType = 'unidimensional';
     this.keyframes = data.k;
+    this.keyframesMetadata = [];
     this.offsetTime = elem.data.st;
     this.frameId = -1;
     this._caching = {
@@ -2763,6 +2976,7 @@ var PropertyFactory = (function () {
     this.effectsSequence = [getValueAtCurrentTime.bind(this)];
     this.data = data;
     this.keyframes = data.k;
+    this.keyframesMetadata = [];
     this.offsetTime = elem.data.st;
     this.k = true;
     this.kf = true;
@@ -3185,6 +3399,7 @@ var ShapePropertyFactory = (function () {
       var flag = true;
       var keyData;
       var nextKeyData;
+      var keyframeMetadata;
       while (flag) {
         keyData = kf[i];
         nextKeyData = kf[i + 1];
@@ -3197,6 +3412,7 @@ var ShapePropertyFactory = (function () {
           flag = false;
         }
       }
+      keyframeMetadata = this.keyframesMetadata[i] || {};
       isHold = keyData.h === 1;
       iterationIndex = i;
       if (!isHold) {
@@ -3206,11 +3422,11 @@ var ShapePropertyFactory = (function () {
           perc = 0;
         } else {
           var fnc;
-          if (keyData.__fnct) {
-            fnc = keyData.__fnct;
+          if (keyframeMetadata.__fnct) {
+            fnc = keyframeMetadata.__fnct;
           } else {
             fnc = BezierFactory.getBezierEasing(keyData.o.x, keyData.o.y, keyData.i.x, keyData.i.y).get;
-            keyData.__fnct = fnc;
+            keyframeMetadata.__fnct = fnc;
           }
           perc = fnc((frameNum - (keyData.t - this.offsetTime)) / ((nextKeyData.t - this.offsetTime) - (keyData.t - this.offsetTime)));
         }
@@ -3349,6 +3565,7 @@ var ShapePropertyFactory = (function () {
     this.container = elem;
     this.offsetTime = elem.data.st;
     this.keyframes = type === 3 ? data.pt.k : data.ks.k;
+    this.keyframesMetadata = [];
     this.k = true;
     this.kf = true;
     var len = this.keyframes[0].s[0].i.length;
@@ -4778,7 +4995,7 @@ var audioControllerFactory = (function () {
   };
 }());
 
-/* global createTag, createNS, isSafari, assetLoader */
+/* global createTag, createNS, isSafari, dataManager */
 /* exported ImagePreloader */
 
 var ImagePreloader = (function () {
@@ -4886,7 +5103,7 @@ var ImagePreloader = (function () {
       assetData: data,
     };
     var path = getAssetsPath(data, this.assetsPath, this.path);
-    assetLoader.load(path, function (footageData) {
+    dataManager.loadData(path, function (footageData) {
       ob.img = footageData;
       this._footageLoaded();
     }.bind(this), function () {
@@ -5030,53 +5247,6 @@ var filtersFactory = (function () {
   }
 
   return ob;
-}());
-
-/* exported assetLoader */
-
-var assetLoader = (function () {
-  function formatResponse(xhr) {
-    if (xhr.response && typeof xhr.response === 'object') {
-      return xhr.response;
-    } if (xhr.response && typeof xhr.response === 'string') {
-      return JSON.parse(xhr.response);
-    } if (xhr.responseText) {
-      return JSON.parse(xhr.responseText);
-    }
-    return null;
-  }
-
-  function loadAsset(path, callback, errorCallback) {
-    var response;
-    var xhr = new XMLHttpRequest();
-    // set responseType after calling open or IE will break.
-    try {
-      // This crashes on Android WebView prior to KitKat
-      xhr.responseType = 'json';
-    } catch (err) {} // eslint-disable-line no-empty
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        if (xhr.status === 200) {
-          response = formatResponse(xhr);
-          callback(response);
-        } else {
-          try {
-            response = formatResponse(xhr);
-            callback(response);
-          } catch (err) {
-            if (errorCallback) {
-              errorCallback(err);
-            }
-          }
-        }
-      }
-    };
-    xhr.open('GET', path, true);
-    xhr.send();
-  }
-  return {
-    load: loadAsset,
-  };
 }());
 
 /* global createSizedArray, PropertyFactory, TextAnimatorDataProperty, bez, addHueToRGB,
@@ -6800,6 +6970,7 @@ function SVGRenderer(animationItem, config) {
   this.renderConfig = {
     preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
     imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
+    contentVisibility: (config && config.contentVisibility) || 'visible',
     progressiveLoad: (config && config.progressiveLoad) || false,
     hideOnTransparent: !((config && config.hideOnTransparent === false)),
     viewBoxOnly: (config && config.viewBoxOnly) || false,
@@ -6867,6 +7038,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
     this.svgElement.style.width = '100%';
     this.svgElement.style.height = '100%';
     this.svgElement.style.transform = 'translate3d(0,0,0)';
+    this.svgElement.style.contentVisibility = this.renderConfig.contentVisibility;
   }
   if (this.renderConfig.className) {
     this.svgElement.setAttribute('class', this.renderConfig.className);
@@ -9234,7 +9406,9 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
         itemsData[i].style.closed = false;
       }
       if (arr[i]._render) {
-        container.appendChild(itemsData[i].style.pElem);
+        if (itemsData[i].style.pElem.parentNode !== container) {
+          container.appendChild(itemsData[i].style.pElem);
+        }
       }
       ownStyles.push(itemsData[i].style);
     } else if (arr[i].ty === 'gr') {
@@ -9248,7 +9422,9 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
       }
       this.searchShapes(arr[i].it, itemsData[i].it, itemsData[i].prevViewData, itemsData[i].gr, level + 1, ownTransformers, render);
       if (arr[i]._render) {
-        container.appendChild(itemsData[i].gr);
+        if (itemsData[i].gr.parentNode !== container) {
+          container.appendChild(itemsData[i].gr);
+        }
       }
     } else if (arr[i].ty === 'tr') {
       if (!processedPos) {
@@ -10181,7 +10357,7 @@ var animationManager = (function () {
 }());
 
 /* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
-CanvasRenderer, SVGRenderer, HybridRenderer, assetLoader, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
+CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
 BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
 BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
 
@@ -10217,6 +10393,9 @@ var AnimationItem = function () {
   this.imagePreloader = new ImagePreloader();
   this.audioController = audioControllerFactory();
   this.markers = [];
+  this.configAnimation = this.configAnimation.bind(this);
+  this.onSetupError = this.onSetupError.bind(this);
+  this.onSegmentComplete = this.onSegmentComplete.bind(this);
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -10264,7 +10443,7 @@ AnimationItem.prototype.setParams = function (params) {
     this.audioController.setAudioFactory(params.audioFactory);
   }
   if (params.animationData) {
-    this.configAnimation(params.animationData);
+    this.setupAnimation(params.animationData);
   } else if (params.path) {
     if (params.path.lastIndexOf('\\') !== -1) {
       this.path = params.path.substr(0, params.path.lastIndexOf('\\') + 1);
@@ -10273,11 +10452,23 @@ AnimationItem.prototype.setParams = function (params) {
     }
     this.fileName = params.path.substr(params.path.lastIndexOf('/') + 1);
     this.fileName = this.fileName.substr(0, this.fileName.lastIndexOf('.json'));
-
-    assetLoader.load(params.path, this.configAnimation.bind(this), function () {
-      this.trigger('data_failed');
-    }.bind(this));
+    dataManager.loadAnimation(
+      params.path,
+      this.configAnimation,
+      this.onSetupError
+    );
   }
+};
+
+AnimationItem.prototype.onSetupError = function () {
+  this.trigger('data_failed');
+};
+
+AnimationItem.prototype.setupAnimation = function (data) {
+  dataManager.completeAnimation(
+    data,
+    this.configAnimation
+  );
 };
 
 AnimationItem.prototype.setData = function (wrapper, animationData) {
@@ -10387,8 +10578,14 @@ AnimationItem.prototype.includeLayers = function (data) {
     }
   }
   this.animationData.__complete = false;
-  dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
-  this.renderer.includeLayers(data.layers);
+  dataManager.completeAnimation(
+    this.animationData,
+    this.onSegmentComplete
+  );
+};
+
+AnimationItem.prototype.onSegmentComplete = function (data) {
+  this.animationData = data;
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
@@ -10406,7 +10603,7 @@ AnimationItem.prototype.loadNextSegment = function () {
   this.timeCompleted = segment.time * this.frameRate;
   var segmentPath = this.path + this.fileName + '_' + this.segmentPos + '.json';
   this.segmentPos += 1;
-  assetLoader.load(segmentPath, this.includeLayers.bind(this), function () {
+  dataManager.loadData(segmentPath, this.includeLayers.bind(this), function () {
     this.trigger('data_failed');
   }.bind(this));
 };
@@ -10436,7 +10633,6 @@ AnimationItem.prototype.configAnimation = function (animData) {
   }
   try {
     this.animationData = animData;
-
     if (this.initialSegment) {
       this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
       this.firstFrame = Math.round(this.initialSegment[0]);
@@ -10485,7 +10681,6 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
-    dataManager.completeData(this.animationData, this.renderer.globalData.fontManager);
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }
@@ -10516,6 +10711,7 @@ AnimationItem.prototype.gotoFrame = function () {
   }
   this.trigger('enterFrame');
   this.renderFrame();
+  this.trigger('drawnFrame');
 };
 
 AnimationItem.prototype.renderFrame = function () {
@@ -10744,7 +10940,6 @@ AnimationItem.prototype.playSegments = function (arr, forceFlag) {
 AnimationItem.prototype.resetSegments = function (forceFlag) {
   this.segments.length = 0;
   this.segments.push([this.animationData.ip, this.animationData.op]);
-  // this.segments.push([this.animationData.ip*this.frameRate,Math.floor(this.animationData.op - this.animationData.ip+this.animationData.ip*this.frameRate)]);
   if (forceFlag) {
     this.checkSegments(0);
   }
@@ -10871,6 +11066,7 @@ AnimationItem.prototype.trigger = function (name) {
   if (this._cbs && this._cbs[name]) {
     switch (name) {
       case 'enterFrame':
+      case 'drawnFrame':
         this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
         break;
       case 'loopComplete':
@@ -11630,9 +11826,6 @@ var ExpressionManager = (function () {
     function executeExpression(_value) {
       // globalData.pushExpression();
       value = _value;
-      if (_needsRandom) {
-        seedRandom(randSeed);
-      }
       if (this.frameExpressionId === elem.globalData.frameId && this.propType !== 'textSelector') {
         return value;
       }
@@ -11674,6 +11867,9 @@ var ExpressionManager = (function () {
         parent = elem.hierarchy[0].layerInterface;
       }
       time = this.comp.renderedFrame / this.comp.globalData.frameRate;
+      if (_needsRandom) {
+        seedRandom(randSeed + time);
+      }
       if (needsVelocity) {
         velocity = velocityAtTime(time);
       }
@@ -13824,9 +14020,12 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
+lottie.useWebWorker = function (flag) {
+  _useWebWorker = flag;
+};
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.7.14';
+lottie.version = '5.8.0';
 
 function checkReady() {
   if (document.readyState === 'complete') {
