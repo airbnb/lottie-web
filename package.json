@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "npx eslint ./player/js/**/* && node tasks/build.js",
+    "build_test": "node tasks/build.js",
     "lint": "npx eslint ./player/js/**/*",
     "lint:fix": "npx eslint ./player/js/**/* --fix"
   },
