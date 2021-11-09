@@ -221,6 +221,7 @@ function workerContent() {
               elements: changedElements,
               id: payload.id,
               currentTime: event.currentTime,
+              totalFrames: event.totalFrames,
             },
           });
         });
@@ -355,6 +356,10 @@ var lottie = (function () {
   var workerInstance = createWorker(workerContent);
   var animationIdCounter = 0;
   var eventsIdCounter = 0;
+  var animations = {};
+  var defaultSettings = {
+    rendererSettings: {},
+  };
 
   function createTree(data, container, map, afterElement) {
     var elem;
@@ -479,21 +484,29 @@ var lottie = (function () {
     }
   };
 
-  var animations = {};
-
   function resolveAnimationData(params) {
     return new Promise(function (resolve, reject) {
-      if (params.animationData) {
-        resolve(params);
-      } else if (params.path) {
-        fetch(params.path)
+      var paramsCopy = Object.assign({}, defaultSettings, params);
+      if (paramsCopy.animType && !paramsCopy.renderer) {
+        paramsCopy.renderer = paramsCopy.animType;
+      }
+      if (paramsCopy.wrapper) {
+        if (!paramsCopy.container) {
+          paramsCopy.container = paramsCopy.wrapper;
+        }
+        delete paramsCopy.wrapper;
+      }
+      if (paramsCopy.animationData) {
+        resolve(paramsCopy);
+      } else if (paramsCopy.path) {
+        fetch(paramsCopy.path)
           .then(function (response) {
             return response.json();
           })
           .then(function (animationData) {
-            params.animationData = animationData;
-            delete params.path;
-            resolve(params);
+            paramsCopy.animationData = animationData;
+            delete paramsCopy.path;
+            resolve(paramsCopy);
           });
       } else {
         reject();
