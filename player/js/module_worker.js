@@ -461,6 +461,7 @@ var lottie = (function () {
         updateElementAttributes(element, elementData.attributes);
       }
       animation.animInstance.currentTime = payload.currentTime;
+      animation.animInstance.totalFrames = payload.totalFrames;
     }
   }
 
