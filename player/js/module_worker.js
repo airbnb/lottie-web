@@ -221,7 +221,6 @@ function workerContent() {
               elements: changedElements,
               id: payload.id,
               currentTime: event.currentTime,
-              totalFrames: event.totalFrames,
             },
           });
         });
@@ -293,6 +292,10 @@ function workerContent() {
     } else if (type === 'play') {
       if (animations[payload.id]) {
         animations[payload.id].play();
+      }
+    } else if (type === 'stop') {
+      if (animations[payload.id]) {
+        animations[payload.id].stop();
       }
     } else if (type === 'setSpeed') {
       if (animations[payload.id]) {
@@ -460,8 +463,7 @@ var lottie = (function () {
         updateElementStyles(element, elementData.styles);
         updateElementAttributes(element, elementData.attributes);
       }
-      animation.animInstance.currentTime = payload.currentTime;
-      animation.animInstance.totalFrames = payload.totalFrames;
+      animation.animInstance.currentFrame = payload.currentTime;
     }
   }
 
@@ -536,6 +538,14 @@ var lottie = (function () {
       play: function () {
         workerInstance.postMessage({
           type: 'play',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
+      stop: function () {
+        workerInstance.postMessage({
+          type: 'stop',
           payload: {
             id: animationId,
           },
