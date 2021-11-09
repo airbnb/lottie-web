@@ -12387,6 +12387,7 @@ var ExpressionManager = (function () {
   var document = null;
   var XMLHttpRequest = null;
   var fetch = null;
+  var frames = null;
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -12968,11 +12969,11 @@ var ExpressionManager = (function () {
       return obKey;
     }
 
-    function framesToTime(frames, fps) {
+    function framesToTime(fr, fps) {
       if (!fps) {
         fps = elem.comp.globalData.frameRate;
       }
-      return frames / fps;
+      return fr / fps;
     }
 
     function timeToFrames(t, fps) {
@@ -15287,7 +15288,7 @@ GroupEffect.prototype.init = function (data, element) {
     lottiejs.unmute = animationManager.unmute;
     lottiejs.getRegisteredAnimations = animationManager.getRegisteredAnimations;
     lottiejs.setIDPrefix = setIDPrefix;
-    lottiejs.version = '5.8.0';
+    lottiejs.version = '5.8.1';
 
     return lottiejs;
   }({}));
@@ -15304,6 +15305,10 @@ GroupEffect.prototype.init = function (data, element) {
     } else if (type === 'play') {
       if (animations[payload.id]) {
         animations[payload.id].play();
+      }
+    } else if (type === 'stop') {
+      if (animations[payload.id]) {
+        animations[payload.id].stop();
       }
     } else if (type === 'setSpeed') {
       if (animations[payload.id]) {
@@ -15367,6 +15372,10 @@ var lottie = (function () {
   var workerInstance = createWorker(workerContent);
   var animationIdCounter = 0;
   var eventsIdCounter = 0;
+  var animations = {};
+  var defaultSettings = {
+    rendererSettings: {},
+  };
 
   function createTree(data, container, map, afterElement) {
     var elem;
@@ -15467,7 +15476,7 @@ var lottie = (function () {
         updateElementStyles(element, elementData.styles);
         updateElementAttributes(element, elementData.attributes);
       }
-      animation.animInstance.currentTime = payload.currentTime;
+      animation.animInstance.currentFrame = payload.currentTime;
     }
   }
 
@@ -15491,21 +15500,29 @@ var lottie = (function () {
     }
   };
 
-  var animations = {};
-
   function resolveAnimationData(params) {
     return new Promise(function (resolve, reject) {
-      if (params.animationData) {
-        resolve(params);
-      } else if (params.path) {
-        fetch(params.path)
+      var paramsCopy = Object.assign({}, defaultSettings, params);
+      if (paramsCopy.animType && !paramsCopy.renderer) {
+        paramsCopy.renderer = paramsCopy.animType;
+      }
+      if (paramsCopy.wrapper) {
+        if (!paramsCopy.container) {
+          paramsCopy.container = paramsCopy.wrapper;
+        }
+        delete paramsCopy.wrapper;
+      }
+      if (paramsCopy.animationData) {
+        resolve(paramsCopy);
+      } else if (paramsCopy.path) {
+        fetch(paramsCopy.path)
           .then(function (response) {
             return response.json();
           })
           .then(function (animationData) {
-            params.animationData = animationData;
-            delete params.path;
-            resolve(params);
+            paramsCopy.animationData = animationData;
+            delete paramsCopy.path;
+            resolve(paramsCopy);
           });
       } else {
         reject();
@@ -15534,6 +15551,14 @@ var lottie = (function () {
       play: function () {
         workerInstance.postMessage({
           type: 'play',
+          payload: {
+            id: animationId,
+          },
+        });
+      },
+      stop: function () {
+        workerInstance.postMessage({
+          type: 'stop',
           payload: {
             id: animationId,
           },

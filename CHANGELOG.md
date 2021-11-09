@@ -1,3 +1,6 @@
+## V 5.8.1
+- FEATURE: added more methods available for the lottie worker player
+
 ## V 5.8.0
 - FEATURE: lottie player as a worker support
 - FEATURE: added content-visibility prop support

@@ -2,7 +2,7 @@ const fs = require('fs');
 const UglifyJS = require("uglify-js");
 
 const rootFolder = 'player/';
-const bm_version = '5.8.0';
+const bm_version = '5.8.1';
 const buildReducedVersion = process.argv[2] === 'reduced'
 const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker', 'lottie_worker']
 

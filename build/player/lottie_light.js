@@ -11145,7 +11145,7 @@ lottie.useWebWorker = function (flag) {
 };
 lottie.setIDPrefix = setIDPrefix;
 lottie.__getFactory = getFactory;
-lottie.version = '5.8.0';
+lottie.version = '5.8.1';
 
 function checkReady() {
   if (document.readyState === 'complete') {
