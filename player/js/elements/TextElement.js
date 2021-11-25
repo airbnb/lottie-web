@@ -47,8 +47,8 @@ ITextElement.prototype.updateDocumentData = function (newData, index) {
   this.textProperty.updateDocumentData(newData, index);
 };
 
-ITextElement.prototype.canResizeFont = function (_canResize) {
-  this.textProperty.canResizeFont(_canResize);
+ITextElement.prototype.canResizeFont = function (_canResize, _canResizeWidth) {
+  this.textProperty.canResizeFont(_canResize, _canResizeWidth);
 };
 
 ITextElement.prototype.setMinimumFontSize = function (_fontSize) {

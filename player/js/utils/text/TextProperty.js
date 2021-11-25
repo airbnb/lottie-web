@@ -13,6 +13,7 @@ function TextProperty(elem, data) {
   this.comp = this.elem.comp;
   this.keysIndex = 0;
   this.canResize = false;
+  this.canResizeWidth = false;
   this.minimumFontSize = 1;
   this.effectsSequence = [];
   this.currentData = {
@@ -244,7 +245,8 @@ TextProperty.prototype.completeTextData = function (documentData) {
         }
       }
       currentHeight += (fontData.ascent * documentData.finalSize) / 100;
-      if (this.canResize && documentData.finalSize > this.minimumFontSize && (boxHeight < currentHeight || widthExceed)) {
+
+      if (documentData.finalSize > this.minimumFontSize && ((this.canResize && boxHeight < currentHeight) || (this.canResizeWidth && widthExceed))) {
         documentData.finalSize -= 1;
         documentData.finalLineHeight = (documentData.finalSize * documentData.lh) / documentData.s;
       } else {
@@ -413,8 +415,9 @@ TextProperty.prototype.recalculate = function (index) {
   this.getValue(dData);
 };
 
-TextProperty.prototype.canResizeFont = function (_canResize) {
+TextProperty.prototype.canResizeFont = function (_canResize, _canResizeWidth) {
   this.canResize = _canResize;
+  this.canResizeWidth = _canResizeWidth || false;
   this.recalculate(this.keysIndex);
   this.elem.addDynamicProperty(this);
 };
