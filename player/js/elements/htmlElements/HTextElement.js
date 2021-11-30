@@ -1,5 +1,12 @@
-/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
+/* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
+RenderableDOMElement, ITextElement, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -265,3 +272,5 @@ HTextElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default HTextElement;

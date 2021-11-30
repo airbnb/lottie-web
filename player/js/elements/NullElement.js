@@ -1,4 +1,8 @@
-/* global extendPrototype, BaseElement, TransformElement, HierarchyElement, FrameElement */
+/* global BaseElement, TransformElement, HierarchyElement, FrameElement */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 function NullElement(data, globalData, comp) {
   this.initFrame();
@@ -29,3 +33,5 @@ NullElement.prototype.hide = function () {
 };
 
 extendPrototype([BaseElement, TransformElement, HierarchyElement, FrameElement], NullElement);
+
+export default NullElement;

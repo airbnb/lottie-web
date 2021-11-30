@@ -1,5 +1,9 @@
-/* global extendPrototype, BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
+/* global BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
 RenderableElement, SVGShapeElement, IImageElement, createTag */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
@@ -44,3 +48,5 @@ CVImageElement.prototype.renderInnerContent = function () {
 CVImageElement.prototype.destroy = function () {
   this.img = null;
 };
+
+export default CVImageElement;

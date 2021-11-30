@@ -1,4 +1,9 @@
-/* global PropertyFactory, extendPrototype, RenderableElement, BaseElement, FrameElement */
+/* global RenderableElement, BaseElement, FrameElement */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
+import PropertyFactory from '../utils/PropertyFactory';
 
 function AudioElement(data, globalData, comp) {
   this.initFrame();
@@ -80,3 +85,5 @@ AudioElement.prototype.sourceRectAtTime = function () {
 
 AudioElement.prototype.initExpressions = function () {
 };
+
+export default AudioElement;

@@ -1,4 +1,12 @@
-/* global createSizedArray, PropertyFactory, extendPrototype, HybridRenderer, ICompElement, HBaseElement */
+/* global HybridRenderer, ICompElement, HBaseElement */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import PropertyFactory from '../../utils/PropertyFactory';
 
 function HCompElement(data, globalData, comp) {
   this.layers = data.layers;
@@ -40,3 +48,5 @@ HCompElement.prototype.addTo3dContainer = function (elem, pos) {
     this.layerElement.appendChild(elem);
   }
 };
+
+export default HCompElement;

@@ -1,8 +1,12 @@
-/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, ShapeModifiers */
+/* global ShapeModifier, shapePool, ShapeModifiers */
 
 import {
   roundCorner,
 } from '../common';
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import PropertyFactory from '../PropertyFactory';
 
 function RoundCornersModifier() {}
 extendPrototype([ShapeModifier], RoundCornersModifier);

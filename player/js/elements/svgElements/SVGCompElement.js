@@ -1,4 +1,12 @@
-/* global createSizedArray, PropertyFactory, extendPrototype, SVGRenderer, ICompElement, SVGBaseElement */
+/* global SVGRenderer, ICompElement, SVGBaseElement */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import PropertyFactory from '../../utils/PropertyFactory';
 
 function SVGCompElement(data, globalData, comp) {
   this.layers = data.layers;
@@ -12,3 +20,5 @@ function SVGCompElement(data, globalData, comp) {
 }
 
 extendPrototype([SVGRenderer, ICompElement, SVGBaseElement], SVGCompElement);
+
+export default SVGCompElement;

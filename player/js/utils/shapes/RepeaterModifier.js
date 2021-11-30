@@ -1,4 +1,9 @@
-/* global extendPrototype, ShapeModifier, TransformPropertyFactory, PropertyFactory, Matrix, ShapeModifiers */
+/* global ShapeModifier, TransformPropertyFactory, Matrix, ShapeModifiers */
+
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import PropertyFactory from '../PropertyFactory';
 
 function RepeaterModifier() {}
 extendPrototype([ShapeModifier], RepeaterModifier);
@@ -222,3 +227,5 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
 RepeaterModifier.prototype.addShape = function () {};
 
 ShapeModifiers.registerModifier('rp', RepeaterModifier);
+
+export default RepeaterModifier;

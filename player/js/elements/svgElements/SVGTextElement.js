@@ -1,5 +1,12 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createNS */
+/* global BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
+RenderableDOMElement, ITextElement, createNS */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
 
 function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];
@@ -220,3 +227,5 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default SVGTextLottieElement;

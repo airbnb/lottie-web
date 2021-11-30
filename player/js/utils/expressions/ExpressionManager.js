@@ -1,9 +1,13 @@
 /* eslint-disable camelcase, no-unused-vars */
-/* global BMMath, BezierFactory, createTypedArray, shapePool */
+/* global BMMath, shapePool */
 
 import {
   degToRads,
 } from '../common';
+import {
+  createTypedArray,
+} from '../helpers/arrays';
+import BezierFactory from '../../3rd_party/BezierEaser';
 
 const ExpressionManager = (function () {
   'use strict';

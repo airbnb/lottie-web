@@ -1,4 +1,9 @@
-/* global extendPrototype, RenderableElement, createProxyFunction */
+/* global RenderableElement */
+
+import {
+  extendPrototype,
+  createProxyFunction,
+} from '../../utils/functionExtensions';
 
 function RenderableDOMElement() {}
 
@@ -61,3 +66,5 @@ function RenderableDOMElement() {}
   };
   extendPrototype([RenderableElement, createProxyFunction(_prototype)], RenderableDOMElement);
 }());
+
+export default RenderableDOMElement;

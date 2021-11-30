@@ -1,4 +1,12 @@
-/* global createTypedArray, PropertyFactory, extendPrototype, DynamicPropertyContainer */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import {
+  createTypedArray,
+} from '../helpers/arrays';
+import PropertyFactory from '../PropertyFactory';
+
 function GradientProperty(elem, data, container) {
   this.data = data;
   this.c = createTypedArray('uint8c', data.p * 4);
@@ -81,3 +89,5 @@ GradientProperty.prototype.getValue = function (forceRender) {
 };
 
 extendPrototype([DynamicPropertyContainer], GradientProperty);
+
+export default GradientProperty;

@@ -1,5 +1,12 @@
-/* global extendPrototype, BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
-RenderableElement, ITextElement, createTag, createSizedArray */
+/* global BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
+RenderableElement, ITextElement, createTag */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
 
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -212,3 +219,5 @@ CVTextElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default CVTextElement;

@@ -1,4 +1,4 @@
-/* global segmentsLengthPool, createSizedArray, createTypedArray, bezierLengthPool */
+/* global segmentsLengthPool, bezierLengthPool */
 /* exported bez */
 
 import {
@@ -7,6 +7,10 @@ import {
   bmSqrt,
   getDefaultCurveSegments,
 } from './common';
+import {
+  createSizedArray,
+  createTypedArray,
+} from './helpers/arrays';
 
 function bezFunction() {
   var math = Math;

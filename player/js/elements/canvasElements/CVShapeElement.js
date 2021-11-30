@@ -1,10 +1,15 @@
-/* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
-HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, GradientProperty,
+/* global ShapeTransformManager, BaseElement, TransformElement, CVBaseElement, IShapeElement,
+HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, GradientProperty,
 DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
 
 import {
   degToRads,
 } from '../../utils/common';
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import PropertyFactory from '../../utils/PropertyFactory';
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];

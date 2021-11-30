@@ -1,6 +1,10 @@
-/* global ProjectInterface, ImagePreloader, extendPrototype, BaseEvent,
+/* global ProjectInterface, ImagePreloader, BaseEvent,
 CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin,
 markerParser */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 import audioControllerFactory from '../utils/audio/AudioController';
 import {

@@ -1,4 +1,8 @@
-/* global extendPrototype, BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement */
+/* global BaseElement, TransformElement, HierarchyElement, FrameElement, RenderableDOMElement */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 function ICompElement() {}
 
@@ -96,3 +100,5 @@ ICompElement.prototype.destroy = function () {
   this.destroyElements();
   this.destroyBaseElement();
 };
+
+export default ICompElement;

@@ -1,10 +1,14 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
+/* global BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
+TransformPropertyFactory, SVGTransformData, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
 lineCapEnum, lineJoinEnum */
 
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 import { getLocationHref } from '../../main';
+import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -338,3 +342,5 @@ SVGShapeElement.prototype.destroy = function () {
   this.shapesData = null;
   this.itemsData = null;
 };
+
+export default SVGShapeElement;

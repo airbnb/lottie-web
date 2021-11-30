@@ -1,5 +1,9 @@
-/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
+/* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
 RenderableDOMElement, createNS, createTag */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 
 function HSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
@@ -23,3 +27,5 @@ HSolidElement.prototype.createContent = function () {
   }
   this.layerElement.appendChild(rect);
 };
+
+export default HSolidElement;

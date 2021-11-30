@@ -1,7 +1,10 @@
-/* global ExpressionManager, createTypedArray */
-/* exported expressionHelpers */
+/* global ExpressionManager */
 
-var expressionHelpers = (function () {
+import {
+  createTypedArray,
+} from '../helpers/arrays';
+
+const expressionHelpers = (function () {
   function searchExpressions(elem, data, prop) {
     if (data.x) {
       prop.k = true;
@@ -80,3 +83,5 @@ var expressionHelpers = (function () {
     setGroupProperty: setGroupProperty,
   };
 }());
+
+export default expressionHelpers;

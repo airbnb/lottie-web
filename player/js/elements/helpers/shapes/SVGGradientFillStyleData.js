@@ -1,12 +1,16 @@
-/* global PropertyFactory, GradientProperty, createNS,
-extendPrototype, DynamicPropertyContainer, lineCapEnum, lineJoinEnum */
+/* global GradientProperty, createNS,
+lineCapEnum, lineJoinEnum */
 
 import {
   degToRads,
   createElementID,
 } from '../../../utils/common';
-
 import { getLocationHref } from '../../../main';
+import {
+  extendPrototype,
+} from '../../../utils/functionExtensions';
+import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
+import PropertyFactory from '../../../utils/PropertyFactory';
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);

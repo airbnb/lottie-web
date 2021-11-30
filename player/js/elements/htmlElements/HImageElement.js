@@ -1,5 +1,9 @@
-/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement,
+/* global BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement,
 FrameElement, RenderableElement, createNS */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 
 function HImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
@@ -29,3 +33,5 @@ HImageElement.prototype.createContent = function () {
     this.baseElement.setAttribute('id', this.data.ln);
   }
 };
+
+export default HImageElement;

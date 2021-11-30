@@ -1,8 +1,12 @@
-/* global PropertyFactory, Matrix, extendPrototype, BaseElement, FrameElement, HierarchyElement */
+/* global Matrix, BaseElement, FrameElement, HierarchyElement */
 
 import {
   degToRads,
 } from '../../utils/common';
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import PropertyFactory from '../../utils/PropertyFactory';
 
 function HCameraElement(data, globalData, comp) {
   this.initFrame();

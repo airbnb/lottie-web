@@ -1,9 +1,12 @@
-/* global initialDefaultFrame, BezierFactory, bez, createTypedArray */
-/* exported PropertyFactory */
+/* global initialDefaultFrame, bez */
 
 import {
   degToRads,
 } from './common';
+import {
+  createTypedArray,
+} from './helpers/arrays';
+import BezierFactory from '../3rd_party/BezierEaser';
 
 const PropertyFactory = (function () {
   var initFrame = initialDefaultFrame;

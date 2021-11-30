@@ -1,4 +1,9 @@
-/* global extendPrototype, ShapeModifier, PropertyFactory, segmentsLengthPool, bez, shapePool, ShapeModifiers */
+/* global ShapeModifier, segmentsLengthPool, bez, shapePool, ShapeModifiers */
+
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import PropertyFactory from '../PropertyFactory';
 
 function TrimModifier() {
 }
@@ -348,3 +353,5 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
 };
 
 ShapeModifiers.registerModifier('tm', TrimModifier);
+
+export default TrimModifier;

@@ -1,5 +1,9 @@
 /* global CanvasRenderer, createTag, createSizedArray */
 
+import {
+  createSizedArray,
+} from '../utils/helpers/arrays';
+
 CanvasRenderer.prototype.configAnimation = function (animData) {
   if (this.animationItem.wrapper) {
     this.animationItem.container = createTag('canvas');
@@ -45,3 +49,6 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
 
   this.updateContainerSize();
 };
+
+//TODO: review export
+export default CanvasRenderer;

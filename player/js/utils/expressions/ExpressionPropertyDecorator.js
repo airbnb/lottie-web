@@ -1,5 +1,15 @@
-/* global createTypedArray, Matrix, TransformPropertyFactory, expressionHelpers, PropertyFactory, expressionHelpers,
-initialDefaultFrame, shapePool, ShapePropertyFactory, bez, extendPrototype, ExpressionManager, createSizedArray */
+/* global Matrix, TransformPropertyFactory, expressionHelpers, expressionHelpers,
+initialDefaultFrame, shapePool, bez, ExpressionManager */
+
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import {
+  createSizedArray,
+  createTypedArray,
+} from '../helpers/arrays';
+import ShapePropertyFactory from '../shapes/ShapeProperty';
+import PropertyFactory from '../PropertyFactory';
 
 (function addPropertyDecorator() {
   function loopOut(type, duration, durationFlag) {

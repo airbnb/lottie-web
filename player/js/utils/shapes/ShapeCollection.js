@@ -1,4 +1,7 @@
-/* global createSizedArray, shapePool */
+/* global shapePool */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
 
 function ShapeCollection() {
   this._length = 0;
@@ -22,3 +25,5 @@ ShapeCollection.prototype.releaseShapes = function () {
   }
   this._length = 0;
 };
+
+export default ShapeCollection;

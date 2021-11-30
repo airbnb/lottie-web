@@ -1,6 +1,10 @@
-/* global extendPrototype, BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
+/* global BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
 HTextElement, HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
 HSolidElement, styleDiv, createTag, createNS */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 function HybridRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -329,3 +333,5 @@ HybridRenderer.prototype.searchExtraCompositions = function (assets) {
     }
   }
 };
+
+export default HybridRenderer;

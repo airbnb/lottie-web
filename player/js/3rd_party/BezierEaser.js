@@ -1,5 +1,5 @@
 /* eslint-disable */
-var BezierFactory = (function () {
+const BezierFactory = (function () {
   /**
      * BezierEasing - use bezier curve for transition easing function
      * by Gaëtan Renaudeau 2014 - 2015 – MIT License
@@ -154,3 +154,5 @@ var BezierFactory = (function () {
 
   return ob;
 }());
+
+export default BezierFactory;

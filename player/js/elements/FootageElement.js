@@ -1,4 +1,8 @@
-/* global extendPrototype, RenderableElement, BaseElement, FrameElement, FootageInterface */
+/* global RenderableElement, BaseElement, FrameElement, FootageInterface */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 function FootageElement(data, globalData, comp) {
   this.initFrame();
@@ -30,3 +34,5 @@ FootageElement.prototype.initExpressions = function () {
 FootageElement.prototype.getFootageData = function () {
   return this.footageData;
 };
+
+export default FootageElement;

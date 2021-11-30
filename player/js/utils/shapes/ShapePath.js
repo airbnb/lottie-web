@@ -1,4 +1,7 @@
-/* global createSizedArray, createSizedArray, pointPool */
+/* global pointPool */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
 
 function ShapePath() {
   this.c = false;
@@ -89,3 +92,5 @@ ShapePath.prototype.reverse = function () {
   }
   return newPath;
 };
+
+export default ShapePath;

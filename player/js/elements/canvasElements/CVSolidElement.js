@@ -1,5 +1,9 @@
-/* global extendPrototype, BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement,
+/* global BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement,
 SVGShapeElement, IImageElement */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 
 function CVSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
@@ -15,3 +19,5 @@ CVSolidElement.prototype.renderInnerContent = function () {
   ctx.fillRect(0, 0, this.data.sw, this.data.sh);
   //
 };
+
+export default CVSolidElement;

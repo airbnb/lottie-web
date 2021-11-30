@@ -1,7 +1,11 @@
-/* global shapeCollectionPool, initialDefaultFrame, extendPrototype, DynamicPropertyContainer */
-/* exported ShapeModifiers */
+/* global shapeCollectionPool, initialDefaultFrame */
 
-var ShapeModifiers = (function () {
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+
+const ShapeModifiers = (function () {
   var ob = {};
   var modifiers = {};
   ob.registerModifier = registerModifier;
@@ -58,3 +62,8 @@ ShapeModifier.prototype.processKeys = function () {
 };
 
 extendPrototype([DynamicPropertyContainer], ShapeModifier);
+
+export {
+  ShapeModifiers,
+  ShapeModifier,
+};

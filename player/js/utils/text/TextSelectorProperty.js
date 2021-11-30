@@ -1,7 +1,11 @@
-/* global extendPrototype, BezierFactory, PropertyFactory, DynamicPropertyContainer */
-/* exported TextSelectorProp */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import PropertyFactory from '../PropertyFactory';
+import BezierFactory from '../../3rd_party/BezierEaser';
 
-var TextSelectorProp = (function () {
+const TextSelectorProp = (function () {
   var max = Math.max;
   var min = Math.min;
   var floor = Math.floor;
@@ -172,3 +176,5 @@ var TextSelectorProp = (function () {
     getTextSelectorProp: getTextSelectorProp,
   };
 }());
+
+export default TextSelectorProp;

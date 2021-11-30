@@ -1,8 +1,13 @@
-/* global createSizedArray, PropertyFactory, ShapePropertyFactory, createNS */
+/* global createNS */
 import { getLocationHref } from './main';
 import {
   createElementID,
 } from './utils/common';
+import {
+  createSizedArray,
+} from './utils/helpers/arrays';
+import PropertyFactory from './utils/PropertyFactory';
+import ShapePropertyFactory from './utils/shapes/ShapeProperty';
 
 function MaskElement(data, element, globalData) {
   this.data = data;

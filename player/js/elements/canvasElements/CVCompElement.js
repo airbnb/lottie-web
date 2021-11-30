@@ -1,4 +1,12 @@
-/* global createSizedArray, PropertyFactory, extendPrototype, CanvasRenderer, ICompElement, CVBaseElement */
+/* global CanvasRenderer, ICompElement, CVBaseElement */
+
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import PropertyFactory from '../../utils/PropertyFactory';
 
 function CVCompElement(data, globalData, comp) {
   this.completeLayers = false;
@@ -40,3 +48,5 @@ CVCompElement.prototype.destroy = function () {
   this.layers = null;
   this.elements = null;
 };
+
+export default CVCompElement;

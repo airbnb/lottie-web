@@ -1,11 +1,19 @@
-/* global createSizedArray, PropertyFactory, TextAnimatorDataProperty, bez,
-  LetterProps, Matrix, extendPrototype, DynamicPropertyContainer */
+/* global TextAnimatorDataProperty, bez,
+  LetterProps, Matrix */
 
 import {
   addSaturationToRGB,
   addBrightnessToRGB,
   addHueToRGB,
 } from '../common';
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import {
+  createSizedArray,
+} from '../helpers/arrays';
+import PropertyFactory from '../PropertyFactory';
 
 function TextAnimatorProperty(textData, renderType, elem) {
   this._isFirstFrame = true;

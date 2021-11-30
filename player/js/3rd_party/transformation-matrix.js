@@ -1,4 +1,6 @@
-/* global createTypedArray */
+import {
+  createTypedArray,
+} from '../utils/helpers/arrays';
 
 /*!
  Transformation Matrix v2.0

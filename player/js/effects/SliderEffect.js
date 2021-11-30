@@ -1,5 +1,4 @@
-/* global PropertyFactory */
-/* exported SliderEffect, AngleEffect, ColorEffect, PointEffect, LayerIndexEffect, MaskIndexEffect, CheckboxEffect, NoValueEffect */
+import PropertyFactory from '../utils/PropertyFactory';
 
 function SliderEffect(data, elem, container) {
   this.p = PropertyFactory.getProp(elem, data.v, 0, 0, container);
@@ -25,3 +24,14 @@ function CheckboxEffect(data, elem, container) {
 function NoValueEffect() {
   this.p = {};
 }
+
+export {
+  SliderEffect,
+  AngleEffect,
+  ColorEffect,
+  PointEffect,
+  LayerIndexEffect,
+  MaskIndexEffect,
+  CheckboxEffect,
+  NoValueEffect,
+};

@@ -1,5 +1,12 @@
-/* global CVContextData, Matrix, extendPrototype, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
+/* global CVContextData, Matrix, BaseRenderer, CVShapeElement, CVTextElement,
+CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag */
+
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../utils/helpers/arrays';
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -342,3 +349,5 @@ CanvasRenderer.prototype.hide = function () {
 CanvasRenderer.prototype.show = function () {
   this.animationItem.container.style.display = 'block';
 };
+
+export default CanvasRenderer;

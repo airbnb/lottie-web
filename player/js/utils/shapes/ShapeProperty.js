@@ -1,10 +1,16 @@
-/* global extendPrototype, BezierFactory, shapePool,
-  shapeCollectionPool, PropertyFactory, bmMin, DynamicPropertyContainer */
+/* global shapePool,
+  shapeCollectionPool, bmMin */
 
 import {
   degToRads,
   roundCorner,
 } from '../common';
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import PropertyFactory from '../PropertyFactory';
+import BezierFactory from '../../3rd_party/BezierEaser';
 
 const ShapePropertyFactory = (function () {
   var initFrame = -999999;
@@ -229,12 +235,6 @@ const ShapePropertyFactory = (function () {
     var cPoint = roundCorner;
 
     function EllShapePropertyFactory(elem, data) {
-      /* this.v = {
-                v: createSizedArray(4),
-                i: createSizedArray(4),
-                o: createSizedArray(4),
-                c: true
-            }; */
       this.v = shapePool.newElement();
       this.v.setPathData(true, 4);
       this.localShapeCollection = shapeCollectionPool.newShapeCollection();

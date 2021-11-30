@@ -1,5 +1,7 @@
-/* global createSizedArray */
 /* exported ProjectInterface */
+import {
+  createSizedArray,
+} from './helpers/arrays';
 
 let subframeEnabled = true;
 let expressionsPlugin = null;

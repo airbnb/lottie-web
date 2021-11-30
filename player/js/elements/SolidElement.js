@@ -1,4 +1,7 @@
-/* global extendPrototype, IImageElement, createNS */
+/* global IImageElement, createNS */
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
 function ISolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
@@ -15,3 +18,5 @@ ISolidElement.prototype.createContent = function () {
   rect.setAttribute('fill', this.data.sc);
   this.layerElement.appendChild(rect);
 };
+
+export default ISolidElement;

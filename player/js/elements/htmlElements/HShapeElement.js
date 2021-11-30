@@ -1,4 +1,4 @@
-/* global createNS, extendPrototype, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
+/* global createNS, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
 HierarchyElement, FrameElement, RenderableElement, createNS, */
 
 import {
@@ -7,6 +7,9 @@ import {
   bmMin,
   bmSqrt,
 } from '../../utils/common';
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -226,3 +229,5 @@ HShapeElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default HShapeElement;

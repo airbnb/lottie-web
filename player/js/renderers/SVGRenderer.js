@@ -1,10 +1,16 @@
-/* global extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
-IImageElement, SVGCompElement, ISolidElement, createNS, createSizedArray, expressionsPlugin */
+/* global BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
+IImageElement, SVGCompElement, ISolidElement, createNS, expressionsPlugin */
 
 import { getLocationHref } from '../main';
 import {
   createElementID,
 } from '../utils/common';
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../utils/helpers/arrays';
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
