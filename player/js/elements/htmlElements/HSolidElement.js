@@ -1,11 +1,14 @@
-/* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
 import createNS from '../../utils/helpers/svg_elements';
 import createTag from '../../utils/helpers/html_elements';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import HBaseElement from './HBaseElement';
 
 function HSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);

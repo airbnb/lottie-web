@@ -1,10 +1,15 @@
-/* global BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
-RenderableElement, SVGShapeElement, IImageElement */
+/* global CVBaseElement,
+SVGShapeElement, IImageElement */
 
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
 import createTag from '../../utils/helpers/html_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
 
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);

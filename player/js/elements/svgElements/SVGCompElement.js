@@ -1,4 +1,4 @@
-/* global ICompElement, SVGBaseElement */
+/* global ICompElement */
 
 import {
   extendPrototype,
@@ -8,6 +8,7 @@ import {
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
 import SVGRenderer from '../../renderers/SVGRenderer';
+import SVGBaseElement from './SVGBaseElement';
 
 function SVGCompElement(data, globalData, comp) {
   this.layers = data.layers;

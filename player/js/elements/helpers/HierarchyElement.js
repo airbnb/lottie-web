@@ -48,3 +48,5 @@ HierarchyElement.prototype = {
     }
   },
 };
+
+export default HierarchyElement;

@@ -1,4 +1,4 @@
-/* global CVEffects, MaskElement, SVGBaseElement */
+/* global CVEffects, MaskElement */
 
 import {
   styleDiv,
@@ -6,6 +6,7 @@ import {
 import createNS from '../../utils/helpers/svg_elements';
 import createTag from '../../utils/helpers/html_elements';
 import HybridRenderer from '../../renderers/HybridRenderer';
+import SVGBaseElement from '../svgElements/SVGBaseElement';
 
 function HBaseElement() {}
 HBaseElement.prototype = {

@@ -1,10 +1,14 @@
-/* global BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement,
-FrameElement, RenderableElement */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
 import createNS from '../../utils/helpers/svg_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import HBaseElement from './HBaseElement';
+import HSolidElement from './HSolidElement';
 
 function HImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);

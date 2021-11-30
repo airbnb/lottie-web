@@ -82,3 +82,5 @@ ITextElement.prototype.emptyProp = new LetterProps();
 ITextElement.prototype.destroy = function () {
 
 };
+
+export default ITextElement;

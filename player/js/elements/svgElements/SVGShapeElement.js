@@ -1,5 +1,5 @@
-/* global BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
-FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
+/* global IShapeElement,
+Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
 SVGGradientFillStyleData, SVGGradientStrokeStyleData, getBlendMode, ShapeGroupData,
 TransformPropertyFactory, SVGTransformData, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
 lineCapEnum, lineJoinEnum */
@@ -9,6 +9,12 @@ import {
 } from '../../utils/functionExtensions';
 import { getLocationHref } from '../../main';
 import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import SVGBaseElement from './SVGBaseElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements

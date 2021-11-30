@@ -50,3 +50,5 @@ FrameElement.prototype = {
     }
   },
 };
+
+export default FrameElement;

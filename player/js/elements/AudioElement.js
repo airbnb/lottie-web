@@ -1,9 +1,10 @@
-/* global RenderableElement, BaseElement, FrameElement */
-
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
 import PropertyFactory from '../utils/PropertyFactory';
+import RenderableElement from './helpers/RenderableElement';
+import BaseElement from './BaseElement';
+import FrameElement from './helpers/FrameElement';
 
 function AudioElement(data, globalData, comp) {
   this.initFrame();

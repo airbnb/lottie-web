@@ -1,5 +1,4 @@
-/* global BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
-RenderableElement, ITextElement */
+/* global CVBaseElement */
 
 import {
   extendPrototype,
@@ -8,6 +7,12 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import createTag from '../../utils/helpers/html_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import ITextElement from '../TextElement';
 
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];

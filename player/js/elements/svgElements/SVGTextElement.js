@@ -1,6 +1,3 @@
-/* global BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
@@ -8,6 +5,13 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import createNS from '../../utils/helpers/svg_elements';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import SVGBaseElement from './SVGBaseElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import ITextElement from '../TextElement';
 
 function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];

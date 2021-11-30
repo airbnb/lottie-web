@@ -1,5 +1,5 @@
-/* global ShapeTransformManager, BaseElement, TransformElement, CVBaseElement, IShapeElement,
-HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, GradientProperty,
+/* global ShapeTransformManager, CVBaseElement, IShapeElement,
+GradientProperty,
 DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
 
 import {
@@ -10,6 +10,12 @@ import {
   extendPrototype,
 } from '../../utils/functionExtensions';
 import PropertyFactory from '../../utils/PropertyFactory';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];

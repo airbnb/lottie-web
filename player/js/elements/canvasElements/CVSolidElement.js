@@ -1,9 +1,14 @@
-/* global BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement,
+/* global CVBaseElement,
 SVGShapeElement, IImageElement */
 
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
 
 function CVSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);

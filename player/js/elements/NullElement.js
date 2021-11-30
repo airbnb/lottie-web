@@ -1,8 +1,10 @@
-/* global BaseElement, TransformElement, HierarchyElement, FrameElement */
-
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
+import BaseElement from './BaseElement';
+import TransformElement from './helpers/TransformElement';
+import HierarchyElement from './helpers/HierarchyElement';
+import FrameElement from './helpers/FrameElement';
 
 function NullElement(data, globalData, comp) {
   this.initFrame();

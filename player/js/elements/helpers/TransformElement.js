@@ -76,3 +76,5 @@ TransformElement.prototype = {
   },
   mHelper: new Matrix(),
 };
+
+export default TransformElement;

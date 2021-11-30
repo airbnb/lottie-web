@@ -1,5 +1,4 @@
-/* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, styleDiv, lineJoinEnum, lineCapEnum */
+/* global styleDiv, lineJoinEnum, lineCapEnum */
 
 import {
   extendPrototype,
@@ -9,6 +8,13 @@ import {
 } from '../../utils/helpers/arrays';
 import createNS from '../../utils/helpers/svg_elements';
 import createTag from '../../utils/helpers/html_elements';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import ITextElement from '../TextElement';
+import HBaseElement from './HBaseElement';
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];

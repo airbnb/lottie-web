@@ -1,4 +1,4 @@
-/* global ICompElement, HBaseElement */
+/* global ICompElement */
 
 import {
   extendPrototype,
@@ -8,6 +8,7 @@ import {
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
 import HybridRenderer from '../../renderers/HybridRenderer';
+import HBaseElement from './HBaseElement';
 
 function HCompElement(data, globalData, comp) {
   this.layers = data.layers;

@@ -8,6 +8,7 @@ import {
 import createNS from '../utils/helpers/svg_elements';
 import createTag from '../utils/helpers/html_elements';
 import SVGRenderer from './SVGRenderer';
+import HSolidElement from '../elements/htmlElements/HSolidElement';
 
 function HybridRenderer(animationItem, config) {
   this.animationItem = animationItem;
