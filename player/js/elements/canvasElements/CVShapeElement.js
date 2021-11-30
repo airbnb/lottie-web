@@ -1,6 +1,10 @@
 /* global ShapeTransformManager, extendPrototype, BaseElement, TransformElement, CVBaseElement, IShapeElement,
-HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, degToRads, GradientProperty,
+HierarchyElement, FrameElement, RenderableElement, RenderableDOMElement, PropertyFactory, GradientProperty,
 DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
+
+import {
+  degToRads,
+} from '../../utils/common';
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];
@@ -485,3 +489,5 @@ CVShapeElement.prototype.destroy = function () {
   this.stylesList.length = 0;
   this.itemsData.length = 0;
 };
+
+export default CVShapeElement;

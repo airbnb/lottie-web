@@ -1,5 +1,12 @@
-/* global PropertyFactory, degToRads, GradientProperty, createElementID, createNS, locationHref,
+/* global PropertyFactory, GradientProperty, createNS,
 extendPrototype, DynamicPropertyContainer, lineCapEnum, lineJoinEnum */
+
+import {
+  degToRads,
+  createElementID,
+} from '../../../utils/common';
+
+import { getLocationHref } from '../../../main';
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
@@ -37,7 +44,7 @@ SVGGradientFillStyleData.prototype.setGradientData = function (pathElement, data
     gfill.appendChild(stop);
     stops.push(stop);
   }
-  pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + gradientId + ')');
+  pathElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + getLocationHref() + '#' + gradientId + ')');
   this.gf = gfill;
   this.cst = stops;
 };
@@ -65,7 +72,7 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
       opFill.appendChild(stop);
       stops.push(stop);
     }
-    maskElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + locationHref + '#' + opacityId + ')');
+    maskElement.setAttribute(data.ty === 'gf' ? 'fill' : 'stroke', 'url(' + getLocationHref() + '#' + opacityId + ')');
     if (data.ty === 'gs') {
       maskElement.setAttribute('stroke-linecap', lineCapEnum[data.lc || 2]);
       maskElement.setAttribute('stroke-linejoin', lineJoinEnum[data.lj || 2]);
@@ -82,3 +89,5 @@ SVGGradientFillStyleData.prototype.setGradientOpacity = function (data, styleOb)
 };
 
 extendPrototype([DynamicPropertyContainer], SVGGradientFillStyleData);
+
+export default SVGGradientFillStyleData;

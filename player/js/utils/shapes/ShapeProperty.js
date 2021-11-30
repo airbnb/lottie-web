@@ -1,8 +1,12 @@
-/* global extendPrototype, roundCorner, BezierFactory, shapePool, degToRads,
+/* global extendPrototype, BezierFactory, shapePool,
   shapeCollectionPool, PropertyFactory, bmMin, DynamicPropertyContainer */
-/* exported ShapePropertyFactory */
 
-var ShapePropertyFactory = (function () {
+import {
+  degToRads,
+  roundCorner,
+} from '../common';
+
+const ShapePropertyFactory = (function () {
   var initFrame = -999999;
 
   function interpolateShape(frameNum, previousValue, caching) {
@@ -538,3 +542,5 @@ var ShapePropertyFactory = (function () {
   ob.getKeyframedConstructorFunction = getKeyframedConstructorFunction;
   return ob;
 }());
+
+export default ShapePropertyFactory;

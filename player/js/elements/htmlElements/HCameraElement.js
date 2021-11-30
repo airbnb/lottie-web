@@ -1,4 +1,8 @@
-/* global PropertyFactory, degToRads, Matrix, extendPrototype, BaseElement, FrameElement, HierarchyElement */
+/* global PropertyFactory, Matrix, extendPrototype, BaseElement, FrameElement, HierarchyElement */
+
+import {
+  degToRads,
+} from '../../utils/common';
 
 function HCameraElement(data, globalData, comp) {
   this.initFrame();
@@ -156,3 +160,5 @@ HCameraElement.prototype.prepareFrame = function (num) {
 HCameraElement.prototype.destroy = function () {
 };
 HCameraElement.prototype.getBaseElement = function () { return null; };
+
+export default HCameraElement;

@@ -1,6 +1,6 @@
-/* global _useWebWorker */
+import getWebWorker from '../main';
 
-var dataManager = (function () {
+const dataManager = (function () {
   var _counterId = 1;
   var processes = [];
   var workerFn;
@@ -23,7 +23,7 @@ var dataManager = (function () {
     },
   };
   function createWorker(fn) {
-    if (window.Worker && window.Blob && _useWebWorker) {
+    if (window.Worker && window.Blob && getWebWorker()) {
       var blob = new Blob(['var _workerSelf = self; self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       // var blob = new Blob(['self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       var url = URL.createObjectURL(blob);
@@ -625,3 +625,5 @@ var dataManager = (function () {
     completeAnimation: completeAnimation,
   };
 }());
+
+export default dataManager;

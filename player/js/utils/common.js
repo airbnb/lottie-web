@@ -1,20 +1,16 @@
 /* global createSizedArray */
-/* exported subframeEnabled, expressionsPlugin, isSafari, cachedColors, bmPow, bmSqrt, bmFloor, bmMax, bmMin, ProjectInterface,
-defaultCurveSegments, degToRads, roundCorner, bmRnd, styleDiv, BMEnterFrameEvent, BMCompleteEvent, BMCompleteLoopEvent,
-BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, BMAnimationConfigErrorEvent, createElementID,
-addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
+/* exported ProjectInterface */
 
-var subframeEnabled = true;
+let subframeEnabled = true;
+let expressionsPlugin = null;
 var idPrefix = '';
-var expressionsPlugin;
-var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-var cachedColors = {};
-var bmRnd;
-var bmPow = Math.pow;
-var bmSqrt = Math.sqrt;
-var bmFloor = Math.floor;
-var bmMax = Math.max;
-var bmMin = Math.min;
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+let _shouldRoundValues = false;
+const bmPow = Math.pow;
+const bmSqrt = Math.sqrt;
+const bmFloor = Math.floor;
+const bmMax = Math.max;
+const bmMin = Math.min;
 
 var BMMath = {};
 (function () {
@@ -42,20 +38,20 @@ BMMath.abs = function (val) {
   }
   return Math.abs(val);
 };
-var defaultCurveSegments = 150;
-var degToRads = Math.PI / 180;
-var roundCorner = 0.5519;
+let defaultCurveSegments = 150;
+const degToRads = Math.PI / 180;
+const roundCorner = 0.5519;
 
 function roundValues(flag) {
-  if (flag) {
-    bmRnd = Math.round;
-  } else {
-    bmRnd = function (val) {
-      return val;
-    };
-  }
+  _shouldRoundValues = !!flag;
 }
-roundValues(false);
+
+function bmRnd(value) {
+  if (_shouldRoundValues) {
+    return Math.round(value);
+  }
+  return value;
+}
 
 function styleDiv(element) {
   element.style.position = 'absolute';
@@ -117,7 +113,7 @@ function BMAnimationConfigErrorEvent(type, nativeError) {
   this.nativeError = nativeError;
 }
 
-var createElementID = (function () {
+const createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
@@ -209,7 +205,7 @@ function addHueToRGB(color, offset) {
   return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
 }
 
-var rgbToHex = (function () {
+const rgbToHex = (function () {
   var colorMap = [];
   var i;
   var hex;
@@ -231,3 +227,43 @@ var rgbToHex = (function () {
     return '#' + colorMap[r] + colorMap[g] + colorMap[b];
   };
 }());
+
+const setSubframeEnabled = (flag) => { subframeEnabled = !!flag; };
+const getSubframeEnabled = () => subframeEnabled;
+const setExpressionsPlugin = (value) => { expressionsPlugin = value; };
+const getExpressionsPlugin = () => expressionsPlugin;
+const setDefaultCurveSegments = (value) => { defaultCurveSegments = value; };
+const getDefaultCurveSegments = () => defaultCurveSegments;
+
+export {
+  setSubframeEnabled,
+  getSubframeEnabled,
+  setExpressionsPlugin,
+  getExpressionsPlugin,
+  setDefaultCurveSegments,
+  getDefaultCurveSegments,
+  isSafari,
+  bmPow,
+  bmSqrt,
+  bmFloor,
+  bmMax,
+  bmMin,
+  degToRads,
+  roundCorner,
+  styleDiv,
+  bmRnd,
+  roundValues,
+  BMEnterFrameEvent,
+  BMCompleteEvent,
+  BMCompleteLoopEvent,
+  BMSegmentStartEvent,
+  BMDestroyEvent,
+  BMRenderFrameErrorEvent,
+  BMConfigErrorEvent,
+  BMAnimationConfigErrorEvent,
+  createElementID,
+  addSaturationToRGB,
+  addBrightnessToRGB,
+  addHueToRGB,
+  rgbToHex,
+};

@@ -1,7 +1,10 @@
-/* global Matrix, degToRads, PropertyFactory, extendPrototype, DynamicPropertyContainer */
-/* exported TransformPropertyFactory */
+/* global Matrix, PropertyFactory, extendPrototype, DynamicPropertyContainer */
 
-var TransformPropertyFactory = (function () {
+import {
+  degToRads,
+} from './common';
+
+const TransformPropertyFactory = (function () {
   var defaultVector = [0, 0];
 
   function applyToMatrix(mat) {
@@ -237,3 +240,5 @@ var TransformPropertyFactory = (function () {
     getTransformProperty: getTransformProperty,
   };
 }());
+
+export default TransformPropertyFactory;

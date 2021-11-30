@@ -1,5 +1,10 @@
-/* global createElementID, filtersFactory, SVGTintFilter, SVGFillFilter, SVGStrokeEffect, SVGTritoneFilter,
-SVGProLevelsFilter, SVGDropShadowEffect, SVGMatte3Effect, SVGGaussianBlurEffect, locationHref */
+/* global filtersFactory, SVGTintFilter, SVGFillFilter, SVGStrokeEffect, SVGTritoneFilter,
+SVGProLevelsFilter, SVGDropShadowEffect, SVGMatte3Effect, SVGGaussianBlurEffect */
+
+import { getLocationHref } from '../../main';
+import {
+  createElementID,
+} from '../../utils/common';
 
 function SVGEffects(elem) {
   var i;
@@ -41,7 +46,7 @@ function SVGEffects(elem) {
   }
   if (count) {
     elem.globalData.defs.appendChild(fil);
-    elem.layerElement.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
+    elem.layerElement.setAttribute('filter', 'url(' + getLocationHref() + '#' + filId + ')');
   }
   if (this.filters.length) {
     elem.addRenderableComponent(this);
@@ -55,3 +60,5 @@ SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
     this.filters[i].renderFrame(_isFirstFrame);
   }
 };
+
+export default SVGEffects;

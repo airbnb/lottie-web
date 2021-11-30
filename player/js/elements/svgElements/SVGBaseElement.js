@@ -1,4 +1,9 @@
-/* global filtersFactory, featureSupport, filtersFactory, createElementID, createNS, MaskElement, SVGEffects, locationHref */
+/* global filtersFactory, featureSupport, filtersFactory, createNS, MaskElement, SVGEffects */
+
+import { getLocationHref } from '../../main';
+import {
+  createElementID,
+} from '../../utils/common';
 
 function SVGBaseElement() {
 }
@@ -36,7 +41,7 @@ SVGBaseElement.prototype = {
           gg.appendChild(this.layerElement);
           layerElementParent = gg;
           masker.appendChild(gg);
-          gg.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
+          gg.setAttribute('filter', 'url(' + getLocationHref() + '#' + filId + ')');
         }
       } else if (this.data.td == 2) { // eslint-disable-line eqeqeq
         var maskGroup = createNS('mask');
@@ -71,7 +76,7 @@ SVGBaseElement.prototype = {
         alphaRect.setAttribute('y', '0');
         alphaRect.setAttribute('fill', '#ffffff');
         alphaRect.setAttribute('opacity', '0');
-        maskGrouper.setAttribute('filter', 'url(' + locationHref + '#' + filId + ')');
+        maskGrouper.setAttribute('filter', 'url(' + getLocationHref() + '#' + filId + ')');
         maskGrouper.appendChild(alphaRect);
         maskGrouper.appendChild(this.layerElement);
         layerElementParent = maskGrouper;
@@ -111,7 +116,7 @@ SVGBaseElement.prototype = {
 
       if (this.checkMasks()) {
         var cpGroup = createNS('g');
-        cpGroup.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
+        cpGroup.setAttribute('clip-path', 'url(' + getLocationHref() + '#' + clipId + ')');
         cpGroup.appendChild(this.layerElement);
         this.transformedElement = cpGroup;
         if (layerElementParent) {
@@ -120,7 +125,7 @@ SVGBaseElement.prototype = {
           this.baseElement = this.transformedElement;
         }
       } else {
-        this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + clipId + ')');
+        this.layerElement.setAttribute('clip-path', 'url(' + getLocationHref() + '#' + clipId + ')');
       }
     }
     if (this.data.bm !== 0) {
@@ -154,6 +159,8 @@ SVGBaseElement.prototype = {
     if (!this.matteElement) {
       return;
     }
-    this.matteElement.setAttribute('mask', 'url(' + locationHref + '#' + id + ')');
+    this.matteElement.setAttribute('mask', 'url(' + getLocationHref() + '#' + id + ')');
   },
 };
+
+export default SVGBaseElement;

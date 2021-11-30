@@ -1,5 +1,12 @@
 /* global createNS, extendPrototype, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
-HierarchyElement, FrameElement, RenderableElement, createNS, bmMin, bmSqrt, bmMin, bmMax, bmPow */
+HierarchyElement, FrameElement, RenderableElement, createNS, */
+
+import {
+  bmPow,
+  bmMax,
+  bmMin,
+  bmSqrt,
+} from '../../utils/common';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements

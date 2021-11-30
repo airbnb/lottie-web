@@ -1,4 +1,9 @@
-/* global createNS, rgbToHex, degToRads */
+/* global createNS */
+
+import {
+  degToRads,
+  rgbToHex,
+} from '../../../utils/common';
 
 function SVGDropShadowEffect(filter, filterManager) {
   var filterSize = filterManager.container.globalData.renderConfig.filterSize;
@@ -80,3 +85,5 @@ SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
         } */
   }
 };
+
+export default SVGDropShadowEffect;

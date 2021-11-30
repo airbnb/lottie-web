@@ -1,5 +1,12 @@
-/* global segmentsLengthPool, defaultCurveSegments, createSizedArray, bmPow, bmSqrt, bmFloor, createTypedArray, bezierLengthPool */
+/* global segmentsLengthPool, createSizedArray, createTypedArray, bezierLengthPool */
 /* exported bez */
+
+import {
+  bmPow,
+  bmFloor,
+  bmSqrt,
+  getDefaultCurveSegments,
+} from './common';
 
 function bezFunction() {
   var math = Math;
@@ -33,7 +40,7 @@ function bezFunction() {
 
   var getBezierLength = (function () {
     return function (pt1, pt2, pt3, pt4) {
-      var curveSegments = defaultCurveSegments;
+      var curveSegments = getDefaultCurveSegments();
       var k;
       var i;
       var len;
@@ -106,7 +113,7 @@ function bezFunction() {
     return function (pt1, pt2, pt3, pt4) {
       var bezierName = (pt1[0] + '_' + pt1[1] + '_' + pt2[0] + '_' + pt2[1] + '_' + pt3[0] + '_' + pt3[1] + '_' + pt4[0] + '_' + pt4[1]).replace(/\./g, 'p');
       if (!storedData[bezierName]) {
-        var curveSegments = defaultCurveSegments;
+        var curveSegments = getDefaultCurveSegments();
         var k;
         var i;
         var len;
@@ -236,4 +243,6 @@ function bezFunction() {
   };
 }
 
-var bez = bezFunction();
+const bez = bezFunction();
+
+export default bez;

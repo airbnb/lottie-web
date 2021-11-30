@@ -1,5 +1,10 @@
-/* global createElementID, extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
-IImageElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
+/* global extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
+IImageElement, SVGCompElement, ISolidElement, createNS, createSizedArray, expressionsPlugin */
+
+import { getLocationHref } from '../main';
+import {
+  createElementID,
+} from '../utils/common';
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -133,7 +138,7 @@ SVGRenderer.prototype.configAnimation = function (animData) {
   var maskId = createElementID();
   maskElement.setAttribute('id', maskId);
   maskElement.appendChild(rect);
-  this.layerElement.setAttribute('clip-path', 'url(' + locationHref + '#' + maskId + ')');
+  this.layerElement.setAttribute('clip-path', 'url(' + getLocationHref() + '#' + maskId + ')');
 
   defs.appendChild(maskElement);
   this.layers = animData.layers;
@@ -266,3 +271,5 @@ SVGRenderer.prototype.hide = function () {
 SVGRenderer.prototype.show = function () {
   this.layerElement.style.display = 'block';
 };
+
+export default SVGRenderer;

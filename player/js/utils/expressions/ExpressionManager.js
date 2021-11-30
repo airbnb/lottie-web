@@ -1,7 +1,11 @@
 /* eslint-disable camelcase, no-unused-vars */
-/* global BMMath, BezierFactory, createTypedArray, degToRads, shapePool */
+/* global BMMath, BezierFactory, createTypedArray, shapePool */
 
-var ExpressionManager = (function () {
+import {
+  degToRads,
+} from '../common';
+
+const ExpressionManager = (function () {
   'use strict';
 
   var ob = {};
@@ -720,3 +724,5 @@ var ExpressionManager = (function () {
   ob.initiateExpression = initiateExpression;
   return ob;
 }());
+
+export default ExpressionManager;

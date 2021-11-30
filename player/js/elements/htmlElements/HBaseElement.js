@@ -1,4 +1,8 @@
-/* global createTag, createNS, styleDiv, CVEffects, MaskElement, SVGBaseElement, HybridRenderer */
+/* global createTag, createNS, CVEffects, MaskElement, SVGBaseElement, HybridRenderer */
+
+import {
+  styleDiv,
+} from '../../utils/common';
 
 function HBaseElement() {}
 HBaseElement.prototype = {
@@ -76,3 +80,5 @@ HBaseElement.prototype = {
 HBaseElement.prototype.getBaseElement = SVGBaseElement.prototype.getBaseElement;
 HBaseElement.prototype.destroyBaseElement = HBaseElement.prototype.destroy;
 HBaseElement.prototype.buildElementParenting = HybridRenderer.prototype.buildElementParenting;
+
+export default HBaseElement;

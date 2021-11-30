@@ -1,4 +1,8 @@
-/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, roundCorner, ShapeModifiers */
+/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, ShapeModifiers */
+
+import {
+  roundCorner,
+} from '../common';
 
 function RoundCornersModifier() {}
 extendPrototype([ShapeModifier], RoundCornersModifier);
@@ -110,3 +114,5 @@ RoundCornersModifier.prototype.processShapes = function (_isFirstFrame) {
 };
 
 ShapeModifiers.registerModifier('rd', RoundCornersModifier);
+
+export default RoundCornersModifier;

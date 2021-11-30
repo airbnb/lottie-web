@@ -1,5 +1,8 @@
-/* global PropertyFactory, degToRads, TextSelectorProp */
-/* exported TextAnimatorDataProperty */
+/* global PropertyFactory, TextSelectorProp */
+
+import {
+  degToRads,
+} from '../common';
 
 function TextAnimatorDataProperty(elem, animatorProps, container) {
   var defaultData = { propType: false };
@@ -27,3 +30,5 @@ function TextAnimatorDataProperty(elem, animatorProps, container) {
   this.s = TextSelectorProp.getTextSelectorProp(elem, animatorProps.s, container);
   this.s.t = animatorProps.s.t;
 }
+
+export default TextAnimatorDataProperty;

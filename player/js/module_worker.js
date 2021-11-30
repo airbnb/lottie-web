@@ -1,5 +1,11 @@
-/* global defaultCurveSegments:writable, roundValues, animationManager, idPrefix:writable */
+/* global, animationManager, idPrefix:writable */
 /* exported idPrefix, document */
+
+import {
+  setDefaultCurveSegments,
+  getDefaultCurveSegments,
+  roundValues,
+} from './utils/common';
 
 function workerContent() {
   var localIdCounter = 0;
@@ -232,20 +238,20 @@ function workerContent() {
       if (typeof value === 'string') {
         switch (value) {
           case 'high':
-            defaultCurveSegments = 200;
+            setDefaultCurveSegments(200);
             break;
           case 'medium':
-            defaultCurveSegments = 50;
+            setDefaultCurveSegments(50);
             break;
           case 'low':
           default:
-            defaultCurveSegments = 10;
+            setDefaultCurveSegments(10);
             break;
         }
       } else if (!isNaN(value) && value > 1) {
-        defaultCurveSegments = value;
+        setDefaultCurveSegments(value);
       }
-      if (defaultCurveSegments >= 50) {
+      if (getDefaultCurveSegments() >= 50) {
         roundValues(false);
       } else {
         roundValues(true);

@@ -1,9 +1,21 @@
-/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
-CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
-BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
-BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
+/* global ProjectInterface, ImagePreloader, extendPrototype, BaseEvent,
+CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin,
+markerParser */
 
-var AnimationItem = function () {
+import audioControllerFactory from '../utils/audio/AudioController';
+import {
+  getSubframeEnabled,
+  BMEnterFrameEvent,
+  BMCompleteEvent,
+  BMCompleteLoopEvent,
+  BMSegmentStartEvent,
+  BMDestroyEvent,
+  BMRenderFrameErrorEvent,
+  BMConfigErrorEvent,
+  createElementID,
+} from '../utils/common';
+
+const AnimationItem = function () {
   this._cbs = [];
   this.name = '';
   this.path = '';
@@ -27,7 +39,7 @@ var AnimationItem = function () {
   this.assetsPath = '';
   this.timeCompleted = 0;
   this.segmentPos = 0;
-  this.isSubframeEnabled = subframeEnabled;
+  this.isSubframeEnabled = getSubframeEnabled();
   this.segments = [];
   this._idle = true;
   this._completedLoop = false;
@@ -761,3 +773,5 @@ AnimationItem.prototype.triggerConfigError = function (nativeError) {
     this.onError.call(this, error);
   }
 };
+
+export default AnimationItem;

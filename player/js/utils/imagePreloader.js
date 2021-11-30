@@ -1,7 +1,8 @@
-/* global createTag, createNS, isSafari, dataManager */
-/* exported ImagePreloader */
+/* global createTag, createNS, dataManager */
 
-var ImagePreloader = (function () {
+import { isSafari } from './common';
+
+const ImagePreloader = (function () {
   var proxyImage = (function () {
     var canvas = createTag('canvas');
     canvas.width = 1;
@@ -207,3 +208,5 @@ var ImagePreloader = (function () {
 
   return ImagePreloaderFactory;
 }());
+
+export default ImagePreloader;

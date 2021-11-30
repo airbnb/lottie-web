@@ -1,7 +1,11 @@
-/* global initialDefaultFrame, BezierFactory, degToRads, bez, createTypedArray */
+/* global initialDefaultFrame, BezierFactory, bez, createTypedArray */
 /* exported PropertyFactory */
 
-var PropertyFactory = (function () {
+import {
+  degToRads,
+} from './common';
+
+const PropertyFactory = (function () {
   var initFrame = initialDefaultFrame;
   var mathAbs = Math.abs;
 
@@ -473,3 +477,5 @@ var PropertyFactory = (function () {
   };
   return ob;
 }());
+
+export default PropertyFactory;

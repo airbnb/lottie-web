@@ -1,8 +1,10 @@
 /* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
 FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
-SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
+SVGGradientFillStyleData, SVGGradientStrokeStyleData, getBlendMode, ShapeGroupData,
 TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
 lineCapEnum, lineJoinEnum */
+
+import { getLocationHref } from '../../main';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -94,7 +96,7 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
     if (elementData.maskId) {
       this.globalData.defs.appendChild(elementData.ms);
       this.globalData.defs.appendChild(elementData.of);
-      pathElement.setAttribute('mask', 'url(' + locationHref + '#' + elementData.maskId + ')');
+      pathElement.setAttribute('mask', 'url(' + getLocationHref() + '#' + elementData.maskId + ')');
     }
   }
 

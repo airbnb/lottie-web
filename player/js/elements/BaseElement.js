@@ -1,5 +1,9 @@
 /* global LayerExpressionInterface, EffectsExpressionInterface, CompExpressionInterface, ShapeExpressionInterface,
-TextExpressionInterface, getBlendMode,createElementID, EffectsManager */
+TextExpressionInterface, getBlendMode, EffectsManager */
+
+import {
+  createElementID,
+} from '../utils/common';
 
 function BaseElement() {
 }
@@ -61,3 +65,5 @@ BaseElement.prototype = {
   },
   sourceRectAtTime: function () {},
 };
+
+export default BaseElement;

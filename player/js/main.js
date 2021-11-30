@@ -1,9 +1,23 @@
 /* exported svgNS, locationHref, initialDefaultFrame, _useWebWorker */
 
-var svgNS = 'http://www.w3.org/2000/svg';
+const svgNS = 'http://www.w3.org/2000/svg';
 
-var locationHref = '';
+let locationHref = '';
+let _useWebWorker = false;
 
-var initialDefaultFrame = -999999;
+const initialDefaultFrame = -999999;
 
-var _useWebWorker = false;
+const setWebWorker = (flag) => { _useWebWorker = !!flag; };
+const getWebWorker = () => _useWebWorker;
+
+const setLocationHref = (value) => { locationHref = value; };
+const getLocationHref = () => locationHref;
+
+export {
+  svgNS,
+  initialDefaultFrame,
+  setWebWorker,
+  getWebWorker,
+  setLocationHref,
+  getLocationHref,
+};
