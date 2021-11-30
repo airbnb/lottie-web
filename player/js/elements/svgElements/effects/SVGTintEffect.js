@@ -1,4 +1,4 @@
-/* global createNS */
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGTintFilter(filter, filterManager) {
   this.filterManager = filterManager;
@@ -36,3 +36,5 @@ SVGTintFilter.prototype.renderFrame = function (forceRender) {
     this.matrixFilter.setAttribute('values', (colorWhite[0] - colorBlack[0]) + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
   }
 };
+
+export default SVGTintFilter;

@@ -1,4 +1,3 @@
-/* global createNS */
 import { getLocationHref } from './main';
 import {
   createElementID,
@@ -8,6 +7,7 @@ import {
 } from './utils/helpers/arrays';
 import PropertyFactory from './utils/PropertyFactory';
 import ShapePropertyFactory from './utils/shapes/ShapeProperty';
+import createNS from './utils/helpers/svg_elements';
 
 function MaskElement(data, element, globalData) {
   this.data = data;

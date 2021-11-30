@@ -1,4 +1,4 @@
-/* global createNS */
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGStyleData(data, level) {
   this.data = data;
@@ -15,3 +15,5 @@ SVGStyleData.prototype.reset = function () {
   this.d = '';
   this._mdf = false;
 };
+
+export default SVGStyleData;

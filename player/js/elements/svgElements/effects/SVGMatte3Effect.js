@@ -1,8 +1,7 @@
-/* global createNS */
-
 import {
   createElementID,
 } from '../../../utils/common';
+import createNS from '../../../utils/helpers/svg_elements';
 
 var _svgMatteSymbols = [];
 

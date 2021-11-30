@@ -1,9 +1,10 @@
 /* global BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
-RenderableElement, SVGShapeElement, IImageElement, createTag */
+RenderableElement, SVGShapeElement, IImageElement */
 
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
+import createTag from '../../utils/helpers/html_elements';
 
 function CVImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);

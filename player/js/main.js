@@ -1,5 +1,3 @@
-/* exported svgNS, locationHref, initialDefaultFrame, _useWebWorker */
-
 const svgNS = 'http://www.w3.org/2000/svg';
 
 let locationHref = '';

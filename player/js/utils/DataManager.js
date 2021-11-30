@@ -39,8 +39,6 @@ const dataManager = (function () {
         /* exported dataManager */
 
         function dataFunctionManager() {
-          // var tCanvasHelper = createTag('canvas').getContext('2d');
-
           function completeLayers(layers, comps) {
             var layerData;
             var i;

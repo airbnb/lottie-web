@@ -1,8 +1,8 @@
-/* global CanvasRenderer, createTag, createSizedArray */
-
 import {
   createSizedArray,
 } from '../utils/helpers/arrays';
+import CanvasRenderer from './CanvasRenderer';
+import createTag from '../utils/helpers/html_elements';
 
 CanvasRenderer.prototype.configAnimation = function (animData) {
   if (this.animationItem.wrapper) {

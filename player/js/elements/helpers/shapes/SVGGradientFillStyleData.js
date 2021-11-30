@@ -1,4 +1,4 @@
-/* global GradientProperty, createNS,
+/* global GradientProperty,
 lineCapEnum, lineJoinEnum */
 
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../../utils/functionExtensions';
 import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
 import PropertyFactory from '../../../utils/PropertyFactory';
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);

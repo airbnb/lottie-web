@@ -1,5 +1,8 @@
-/* global FontManager, initialDefaultFrame, getFontProperties */
-/* exported TextProperty */
+import {
+  initialDefaultFrame,
+} from '../../main';
+import getFontProperties from '../getFontProperties';
+import FontManager from '../FontManager';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
@@ -440,3 +443,5 @@ TextProperty.prototype.setMinimumFontSize = function (_fontValue) {
   this.recalculate(this.keysIndex);
   this.elem.addDynamicProperty(this);
 };
+
+export default TextProperty;

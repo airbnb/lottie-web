@@ -1,4 +1,4 @@
-/* global dataManager */
+import dataManager from './DataManager';
 
 dataManager.completeData = function (animationData) {
   if (animationData.__complete) {

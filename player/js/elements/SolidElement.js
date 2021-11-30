@@ -1,7 +1,8 @@
-/* global IImageElement, createNS */
+/* global IImageElement */
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
+import createNS from '../utils/helpers/svg_elements';
 
 function ISolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);

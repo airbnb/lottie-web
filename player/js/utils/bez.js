@@ -1,5 +1,4 @@
 /* global segmentsLengthPool, bezierLengthPool */
-/* exported bez */
 
 import {
   bmPow,

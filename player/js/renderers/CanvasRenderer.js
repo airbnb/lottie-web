@@ -1,5 +1,5 @@
 /* global CVContextData, Matrix, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag */
+CVImageElement, CVCompElement, CVSolidElement */
 
 import {
   extendPrototype,
@@ -7,6 +7,8 @@ import {
 import {
   createSizedArray,
 } from '../utils/helpers/arrays';
+import createTag from '../utils/helpers/html_elements';
+import SVGRenderer from './SVGRenderer';
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;

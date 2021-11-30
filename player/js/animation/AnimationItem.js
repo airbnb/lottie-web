@@ -1,6 +1,5 @@
-/* global ProjectInterface, ImagePreloader, BaseEvent,
-CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin,
-markerParser */
+/* global ProjectInterface,
+expressionsPlugin */
 
 import {
   extendPrototype,
@@ -18,6 +17,13 @@ import {
   BMConfigErrorEvent,
   createElementID,
 } from '../utils/common';
+import ImagePreloader from '../utils/imagePreloader';
+import BaseEvent from '../utils/BaseEvent';
+import CanvasRenderer from '../renderers/CanvasRenderer';
+import SVGRenderer from '../renderers/SVGRenderer';
+import HybridRenderer from '../renderers/HybridRenderer';
+import dataManager from '../utils/DataManager';
+import markerParser from '../utils/markers/markerParser';
 
 const AnimationItem = function () {
   this._cbs = [];

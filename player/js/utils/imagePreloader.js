@@ -1,6 +1,7 @@
-/* global createTag, createNS, dataManager */
-
 import { isSafari } from './common';
+import createNS from './helpers/svg_elements';
+import dataManager from './DataManager';
+import createTag from './helpers/html_elements';
 
 const ImagePreloader = (function () {
   var proxyImage = (function () {

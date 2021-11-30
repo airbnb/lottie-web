@@ -1,4 +1,4 @@
-/* global TextAnimatorDataProperty, bez,
+/* global TextAnimatorDataProperty,
   LetterProps, Matrix */
 
 import {
@@ -14,6 +14,7 @@ import {
   createSizedArray,
 } from '../helpers/arrays';
 import PropertyFactory from '../PropertyFactory';
+import bez from '../bez';
 
 function TextAnimatorProperty(textData, renderType, elem) {
   this._isFirstFrame = true;

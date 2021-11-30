@@ -1,4 +1,4 @@
-/* global createNS */
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGGaussianBlurEffect(filter, filterManager) {
   // Outset the filter region by 100% on all sides to accommodate blur expansion.
@@ -39,3 +39,5 @@ SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
     this.feGaussianBlur.setAttribute('edgeMode', edgeMode);
   }
 };
+
+export default SVGGaussianBlurEffect;

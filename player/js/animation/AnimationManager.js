@@ -1,5 +1,7 @@
-/* global createTag, AnimationItem */
+/* global AnimationItem */
 /* exported animationManager */
+
+import createTag from '../utils/helpers/html_elements';
 
 const animationManager = (function () {
   var moduleOb = {};

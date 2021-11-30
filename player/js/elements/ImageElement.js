@@ -1,8 +1,10 @@
-/* global BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, createNS */
+/* global BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement */
 
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
+
+import createNS from '../utils/helpers/svg_elements';
 
 function IImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);

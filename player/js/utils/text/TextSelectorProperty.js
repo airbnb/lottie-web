@@ -40,7 +40,6 @@ const TextSelectorProp = (function () {
       if (this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
         this.getValue();
       }
-      // var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
       var x1 = 0;
       var y1 = 0;
       var x2 = 1;

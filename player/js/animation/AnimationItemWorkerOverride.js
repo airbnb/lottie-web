@@ -1,4 +1,8 @@
-/* global CanvasRenderer, dataManager, expressionsPlugin, AnimationItem */
+/* global expressionsPlugin */
+
+import AnimationItem from './AnimationItem';
+import CanvasRenderer from '../renderers/CanvasRenderer';
+import dataManager from '../utils/DataManager';
 
 AnimationItem.prototype.setParams = function (params) {
   if (params.context) {

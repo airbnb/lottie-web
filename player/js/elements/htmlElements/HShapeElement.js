@@ -1,5 +1,5 @@
-/* global createNS, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
-HierarchyElement, FrameElement, RenderableElement, createNS, */
+/* global BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
+HierarchyElement, FrameElement, RenderableElement, */
 
 import {
   bmPow,
@@ -10,6 +10,7 @@ import {
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements

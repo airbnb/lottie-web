@@ -1,4 +1,4 @@
-/* global CanvasRenderer, ICompElement, CVBaseElement */
+/* global ICompElement, CVBaseElement */
 
 import {
   extendPrototype,
@@ -7,6 +7,7 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
+import CanvasRenderer from '../../renderers/CanvasRenderer';
 
 function CVCompElement(data, globalData, comp) {
   this.completeLayers = false;

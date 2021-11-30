@@ -5,6 +5,8 @@ import {
   setDefaultCurveSegments,
   getDefaultCurveSegments,
   roundValues,
+  setIdPrefix,
+  setSubframeEnabled,
 } from './utils/common';
 import PropertyFactory from './utils/PropertyFactory';
 import ShapePropertyFactory from './utils/shapes/ShapeProperty';
@@ -24,11 +26,11 @@ function searchAnimations() {
 }
 
 function setSubframeRendering(flag) {
-  subframeEnabled = flag;
+  setSubframeEnabled(flag);
 }
 
-function setIDPrefix(prefix) {
-  idPrefix = prefix;
+function setPrefix(prefix) {
+  setIdPrefix(prefix);
 }
 
 function loadAnimation(params) {
@@ -112,7 +114,7 @@ lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
 lottie.useWebWorker = function (flag) {
   _useWebWorker = flag;
 };
-lottie.setIDPrefix = setIDPrefix;
+lottie.setIDPrefix = setPrefix;
 lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';
 

@@ -1,9 +1,11 @@
-/* global ShapeModifier, segmentsLengthPool, bez, shapePool, ShapeModifiers */
+/* global ShapeModifier, segmentsLengthPool, ShapeModifiers */
 
 import {
   extendPrototype,
 } from '../functionExtensions';
 import PropertyFactory from '../PropertyFactory';
+import shapePool from '../pooling/shape_pool';
+import bez from '../bez';
 
 function TrimModifier() {
 }

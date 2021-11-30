@@ -1,5 +1,3 @@
-/* global createTag, animationManager */
-
 function BasicPlayer() {}
 
 BasicPlayer.prototype.setAnimationItem = function () {

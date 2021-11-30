@@ -1,9 +1,10 @@
-/* global filtersFactory, featureSupport, filtersFactory, createNS, MaskElement, SVGEffects */
+/* global filtersFactory, featureSupport, filtersFactory, MaskElement, SVGEffects */
 
 import { getLocationHref } from '../../main';
 import {
   createElementID,
 } from '../../utils/common';
+import createNS from '../../utils/helpers/svg_elements';
 
 function SVGBaseElement() {
 }

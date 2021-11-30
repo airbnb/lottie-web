@@ -1,11 +1,12 @@
-/* global, animationManager, idPrefix:writable */
-/* exported idPrefix, document */
+/* exported document */
 
 import {
   setDefaultCurveSegments,
   getDefaultCurveSegments,
   roundValues,
+  setIdPrefix,
 } from './utils/common';
+import animationManager from './animation/AnimationManager';
 
 function workerContent() {
   var localIdCounter = 0;
@@ -259,7 +260,7 @@ function workerContent() {
     }
 
     function setIDPrefix(prefix) {
-      idPrefix = prefix;
+      setIdPrefix(prefix);
     }
 
     lottiejs.play = animationManager.play;

@@ -1,8 +1,11 @@
-/* global createTag, createNS, CVEffects, MaskElement, SVGBaseElement, HybridRenderer */
+/* global CVEffects, MaskElement, SVGBaseElement */
 
 import {
   styleDiv,
 } from '../../utils/common';
+import createNS from '../../utils/helpers/svg_elements';
+import createTag from '../../utils/helpers/html_elements';
+import HybridRenderer from '../../renderers/HybridRenderer';
 
 function HBaseElement() {}
 HBaseElement.prototype = {

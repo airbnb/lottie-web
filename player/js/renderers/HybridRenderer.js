@@ -1,10 +1,13 @@
-/* global BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
+/* global BaseRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
 HTextElement, HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
-HSolidElement, styleDiv, createTag, createNS */
+HSolidElement, styleDiv */
 
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
+import createNS from '../utils/helpers/svg_elements';
+import createTag from '../utils/helpers/html_elements';
+import SVGRenderer from './SVGRenderer';
 
 function HybridRenderer(animationItem, config) {
   this.animationItem = animationItem;

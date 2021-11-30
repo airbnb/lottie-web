@@ -1,9 +1,10 @@
 /* global BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement,
-FrameElement, RenderableElement, createNS */
+FrameElement, RenderableElement */
 
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
 
 function HImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);

@@ -5,7 +5,7 @@ import {
 
 let subframeEnabled = true;
 let expressionsPlugin = null;
-var idPrefix = '';
+let idPrefix = '';
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 let _shouldRoundValues = false;
 const bmPow = Math.pow;
@@ -236,6 +236,8 @@ const setExpressionsPlugin = (value) => { expressionsPlugin = value; };
 const getExpressionsPlugin = () => expressionsPlugin;
 const setDefaultCurveSegments = (value) => { defaultCurveSegments = value; };
 const getDefaultCurveSegments = () => defaultCurveSegments;
+const setIdPrefix = (value) => { idPrefix = value; };
+const getIdPrefix = () => idPrefix;
 
 export {
   setSubframeEnabled,
@@ -268,4 +270,6 @@ export {
   addBrightnessToRGB,
   addHueToRGB,
   rgbToHex,
+  setIdPrefix,
+  getIdPrefix,
 };

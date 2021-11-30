@@ -1,5 +1,5 @@
 /* global BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
-IImageElement, SVGCompElement, ISolidElement, createNS, expressionsPlugin */
+IImageElement, SVGCompElement, ISolidElement, expressionsPlugin */
 
 import { getLocationHref } from '../main';
 import {
@@ -11,6 +11,7 @@ import {
 import {
   createSizedArray,
 } from '../utils/helpers/arrays';
+import createNS from '../utils/helpers/svg_elements';
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;

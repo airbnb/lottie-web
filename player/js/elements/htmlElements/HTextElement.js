@@ -1,5 +1,5 @@
 /* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
+RenderableDOMElement, ITextElement, styleDiv, lineJoinEnum, lineCapEnum */
 
 import {
   extendPrototype,
@@ -7,6 +7,8 @@ import {
 import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
+import createNS from '../../utils/helpers/svg_elements';
+import createTag from '../../utils/helpers/html_elements';
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];

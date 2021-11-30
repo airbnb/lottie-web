@@ -1,5 +1,5 @@
 /* global BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
-RenderableElement, ITextElement, createTag */
+RenderableElement, ITextElement */
 
 import {
   extendPrototype,
@@ -7,6 +7,7 @@ import {
 import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
+import createTag from '../../utils/helpers/html_elements';
 
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];

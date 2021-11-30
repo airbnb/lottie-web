@@ -1,5 +1,5 @@
 /* global Matrix, TransformPropertyFactory, expressionHelpers, expressionHelpers,
-initialDefaultFrame, shapePool, bez, ExpressionManager */
+ExpressionManager */
 
 import {
   extendPrototype,
@@ -10,6 +10,11 @@ import {
 } from '../helpers/arrays';
 import ShapePropertyFactory from '../shapes/ShapeProperty';
 import PropertyFactory from '../PropertyFactory';
+import shapePool from '../pooling/shape_pool';
+import {
+  initialDefaultFrame,
+} from '../../main';
+import bez from '../bez';
 
 (function addPropertyDecorator() {
   function loopOut(type, duration, durationFlag) {

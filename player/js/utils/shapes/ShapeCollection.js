@@ -1,7 +1,7 @@
-/* global shapePool */
 import {
   createSizedArray,
 } from '../helpers/arrays';
+import shapePool from '../pooling/shape_pool';
 
 function ShapeCollection() {
   this._length = 0;

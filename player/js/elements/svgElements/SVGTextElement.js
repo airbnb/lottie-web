@@ -1,5 +1,5 @@
 /* global BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createNS */
+RenderableDOMElement, ITextElement */
 
 import {
   extendPrototype,
@@ -7,6 +7,7 @@ import {
 import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
+import createNS from '../../utils/helpers/svg_elements';
 
 function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];

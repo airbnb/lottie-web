@@ -1,9 +1,11 @@
 /* global BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, createNS, createTag */
+RenderableDOMElement */
 
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
+import createTag from '../../utils/helpers/html_elements';
 
 function HSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);

@@ -1,9 +1,10 @@
-/* global createNS, bmFloor */
+/* global bmFloor */
 
 import { getLocationHref } from '../../../main';
 import {
   createElementID,
 } from '../../../utils/common';
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGStrokeEffect(elem, filterManager) {
   this.initialized = false;
