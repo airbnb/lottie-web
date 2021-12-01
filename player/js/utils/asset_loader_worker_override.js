@@ -1,3 +1,3 @@
-/* exported assetLoader */
+const assetLoader = null;
 
-var assetLoader = null;
+export default assetLoader;

@@ -1,5 +1,3 @@
-/* exported document */
-
 import {
   setDefaultCurveSegments,
   getDefaultCurveSegments,

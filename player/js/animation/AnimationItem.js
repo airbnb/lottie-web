@@ -1,6 +1,3 @@
-/* global ProjectInterface,
-expressionsPlugin */
-
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
@@ -16,6 +13,7 @@ import {
   BMRenderFrameErrorEvent,
   BMConfigErrorEvent,
   createElementID,
+  getExpressionsPlugin,
 } from '../utils/common';
 import ImagePreloader from '../utils/imagePreloader';
 import BaseEvent from '../utils/BaseEvent';
@@ -24,6 +22,7 @@ import SVGRenderer from '../renderers/SVGRenderer';
 import HybridRenderer from '../renderers/HybridRenderer';
 import dataManager from '../utils/DataManager';
 import markerParser from '../utils/markers/markerParser';
+import ProjectInterface from '../utils/expressions/ProjectInterface';
 
 const AnimationItem = function () {
   this._cbs = [];
@@ -250,6 +249,7 @@ AnimationItem.prototype.includeLayers = function (data) {
 
 AnimationItem.prototype.onSegmentComplete = function (data) {
   this.animationData = data;
+  var expressionsPlugin = getExpressionsPlugin();
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
@@ -345,6 +345,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
+    var expressionsPlugin = getExpressionsPlugin();
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }

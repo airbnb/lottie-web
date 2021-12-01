@@ -1,4 +1,4 @@
-import Howl from '../../3rd_party/howler';
+// import Howl from '../../3rd_party/howler';
 
 const audioControllerFactory = (function () {
   function AudioController(audioFactory) {
@@ -36,8 +36,8 @@ const audioControllerFactory = (function () {
     createAudio: function (assetPath) {
       if (this.audioFactory) {
         return this.audioFactory(assetPath);
-      } if (Howl) {
-        return new Howl({
+      } if (window.Howl) {
+        return new window.Howl({
           src: [assetPath],
         });
       }

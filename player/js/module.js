@@ -1,5 +1,5 @@
 /* <%= contents %> */
-import { setLocationHref } from './main';
+import { setLocationHref, setWebWorker } from './main';
 import animationManager from './animation/AnimationManager';
 import {
   setDefaultCurveSegments,
@@ -7,6 +7,7 @@ import {
   roundValues,
   setIdPrefix,
   setSubframeEnabled,
+  setExpressionsPlugin,
 } from './utils/common';
 import PropertyFactory from './utils/PropertyFactory';
 import ShapePropertyFactory from './utils/shapes/ShapeProperty';
@@ -71,7 +72,7 @@ function inBrowser() {
 
 function installPlugin(type, plugin) {
   if (type === 'expressions') {
-    expressionsPlugin = plugin;
+    setExpressionsPlugin(plugin);
   }
 }
 
@@ -112,9 +113,7 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-lottie.useWebWorker = function (flag) {
-  _useWebWorker = flag;
-};
+lottie.useWebWorker = setWebWorker;
 lottie.setIDPrefix = setPrefix;
 lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';

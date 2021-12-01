@@ -1,4 +1,3 @@
-/* exported ProjectInterface */
 import {
   createSizedArray,
 } from './helpers/arrays';
@@ -273,4 +272,5 @@ export {
   setIdPrefix,
   getIdPrefix,
   BMMath,
+  ProjectInterface,
 };

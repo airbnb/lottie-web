@@ -1,7 +1,7 @@
-/* global expressionsPlugin: writable */
-/* exported expressionsPlugin */
-
 import CompExpressionInterface from './CompInterface';
+import {
+  setExpressionsPlugin,
+} from '../common';
 
 var Expressions = (function () {
   var ob = {};
@@ -46,4 +46,4 @@ var Expressions = (function () {
   return ob;
 }());
 
-expressionsPlugin = Expressions;
+setExpressionsPlugin(Expressions);

@@ -235,3 +235,5 @@ MaskElement.prototype.destroy = function () {
   this.data = null;
   this.masksProperties = null;
 };
+
+export default MaskElement;

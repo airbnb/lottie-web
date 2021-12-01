@@ -1,9 +1,7 @@
-/* global NullElement, SVGTextLottieElement,
-SVGCompElement, ISolidElement, expressionsPlugin */
-
 import { getLocationHref } from '../main';
 import {
   createElementID,
+  getExpressionsPlugin,
 } from '../utils/common';
 import {
   extendPrototype,
@@ -15,6 +13,10 @@ import createNS from '../utils/helpers/svg_elements';
 import BaseRenderer from './BaseRenderer';
 import IImageElement from '../elements/ImageElement';
 import SVGShapeElement from '../elements/svgElements/SVGShapeElement';
+import SVGTextLottieElement from '../elements/svgElements/SVGTextElement';
+import SVGCompElement from '../elements/svgElements/SVGCompElement';
+import ISolidElement from '../elements/SolidElement';
+import NullElement from '../elements/NullElement';
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -185,7 +187,7 @@ SVGRenderer.prototype.buildItem = function (pos) {
   var element = this.createItem(this.layers[pos]);
 
   elements[pos] = element;
-  if (expressionsPlugin) {
+  if (getExpressionsPlugin()) {
     if (this.layers[pos].ty === 0) {
       this.globalData.projectInterface.registerComposition(element);
     }

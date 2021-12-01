@@ -1,4 +1,4 @@
-import getWebWorker from '../main';
+import { getWebWorker } from '../main';
 
 const dataManager = (function () {
   var _counterId = 1;
@@ -36,8 +36,6 @@ const dataManager = (function () {
   function setupWorker() {
     if (!workerInstance) {
       workerInstance = createWorker(function workerStart(e) {
-        /* exported dataManager */
-
         function dataFunctionManager() {
           function completeLayers(layers, comps) {
             var layerData;
@@ -455,7 +453,6 @@ const dataManager = (function () {
           _workerSelf.dataManager = dataFunctionManager();
         }
 
-        /* exported assetLoader */
         if (!_workerSelf.assetLoader) {
           _workerSelf.assetLoader = (function () {
             function formatResponse(xhr) {

@@ -1,6 +1,4 @@
-/* exported assetLoader */
-
-var assetLoader = (function () {
+const assetLoader = (function () {
   function formatResponse(xhr) {
     // using typeof doubles the time of execution of this method,
     // so if available, it's better to use the header to validate the type
@@ -50,3 +48,5 @@ var assetLoader = (function () {
     load: loadAsset,
   };
 }());
+
+export default assetLoader;
