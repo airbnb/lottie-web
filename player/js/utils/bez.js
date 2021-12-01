@@ -1,5 +1,3 @@
-/* global segmentsLengthPool, bezierLengthPool */
-
 import {
   bmPow,
   bmFloor,
@@ -10,6 +8,8 @@ import {
   createSizedArray,
   createTypedArray,
 } from './helpers/arrays';
+import segmentsLengthPool from './pooling/segments_length_pool';
+import bezierLengthPool from './pooling/bezier_length_pool';
 
 function bezFunction() {
   var math = Math;

@@ -1,6 +1,3 @@
-/* global Matrix, TransformPropertyFactory, expressionHelpers, expressionHelpers,
-ExpressionManager */
-
 import {
   extendPrototype,
 } from '../functionExtensions';
@@ -15,6 +12,10 @@ import {
   initialDefaultFrame,
 } from '../../main';
 import bez from '../bez';
+import Matrix from '../../3rd_party/transformation-matrix';
+import TransformPropertyFactory from '../TransformProperty';
+import expressionHelpers from './expressionHelpers';
+import ExpressionManager from './ExpressionManager';
 
 (function addPropertyDecorator() {
   function loopOut(type, duration, durationFlag) {

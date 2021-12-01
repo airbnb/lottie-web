@@ -1,6 +1,4 @@
-/* exported TextExpressionInterface */
-
-var TextExpressionInterface = (function () {
+const TextExpressionInterface = (function () {
   return function (elem) {
     var _prevValue;
     var _sourceText;
@@ -28,3 +26,5 @@ var TextExpressionInterface = (function () {
     return _thisLayerFunction;
   };
 }());
+
+export default TextExpressionInterface;

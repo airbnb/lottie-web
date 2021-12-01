@@ -1,8 +1,10 @@
-/* global ShapeModifiers, ShapeModifier */
-
 import {
   extendPrototype,
 } from '../functionExtensions';
+import {
+  ShapeModifiers,
+  ShapeModifier,
+} from './ShapeModifiers';
 
 function MouseModifier() {}
 extendPrototype([ShapeModifier], MouseModifier);

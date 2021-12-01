@@ -56,3 +56,5 @@ LetterProps.prototype.update = function (o, sw, sc, fc, m, p) {
   }
   return updated;
 };
+
+export default LetterProps;

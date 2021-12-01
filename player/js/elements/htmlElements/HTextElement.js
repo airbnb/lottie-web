@@ -1,5 +1,3 @@
-/* global styleDiv, lineJoinEnum, lineCapEnum */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
@@ -15,6 +13,13 @@ import FrameElement from '../helpers/FrameElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
 import ITextElement from '../TextElement';
 import HBaseElement from './HBaseElement';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
+import {
+  styleDiv,
+} from '../../utils/common';
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];

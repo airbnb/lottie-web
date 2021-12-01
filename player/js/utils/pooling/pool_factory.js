@@ -1,8 +1,7 @@
-/* global pooling */
-
 import {
   createSizedArray,
 } from '../helpers/arrays';
+import pooling from './pooling';
 
 const poolFactory = (function () {
   return function (initialLength, _create, _release) {

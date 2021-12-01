@@ -1,5 +1,7 @@
-/* global CompExpressionInterface, expressionsPlugin: writable */
+/* global expressionsPlugin: writable */
 /* exported expressionsPlugin */
+
+import CompExpressionInterface from './CompInterface';
 
 var Expressions = (function () {
   var ob = {};

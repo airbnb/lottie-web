@@ -1,5 +1,3 @@
-/* global CVBaseElement */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
@@ -13,6 +11,7 @@ import TransformElement from '../helpers/TransformElement';
 import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import ITextElement from '../TextElement';
+import CVBaseElement from './CVBaseElement';
 
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];

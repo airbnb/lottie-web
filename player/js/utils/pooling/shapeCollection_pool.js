@@ -1,9 +1,9 @@
-/* global ShapeCollection, pooling */
-/* exported shapeCollectionPool */
 import {
   createSizedArray,
 } from '../helpers/arrays';
 import shapePool from './shape_pool';
+import pooling from './pooling';
+import ShapeCollection from '../shapes/ShapeCollection';
 
 const shapeCollectionPool = (function () {
   var ob = {

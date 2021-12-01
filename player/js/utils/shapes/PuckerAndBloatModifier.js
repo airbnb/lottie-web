@@ -1,10 +1,12 @@
-/* global ShapeModifier, ShapeModifiers */
-
 import {
   extendPrototype,
 } from '../functionExtensions';
 import PropertyFactory from '../PropertyFactory';
 import shapePool from '../pooling/shape_pool';
+import {
+  ShapeModifiers,
+  ShapeModifier,
+} from './ShapeModifiers';
 
 function PuckerAndBloatModifier() {}
 extendPrototype([ShapeModifier], PuckerAndBloatModifier);

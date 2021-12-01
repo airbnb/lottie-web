@@ -1,8 +1,7 @@
-/* global poolFactory */
-/* exported pointPool */
 import {
   createTypedArray,
 } from '../helpers/arrays';
+import poolFactory from './pool_factory';
 
 const pointPool = (function () {
   function create() {

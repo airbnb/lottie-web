@@ -1,10 +1,12 @@
-/* global filtersFactory, featureSupport, filtersFactory, MaskElement, SVGEffects */
-
 import { getLocationHref } from '../../main';
 import {
   createElementID,
 } from '../../utils/common';
 import createNS from '../../utils/helpers/svg_elements';
+import MaskElement from '../../mask';
+import filtersFactory from '../../utils/filters';
+import featureSupport from '../../utils/featureSupport';
+import SVGEffects from './SVGEffects';
 
 function SVGBaseElement() {
 }

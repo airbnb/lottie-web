@@ -31,7 +31,7 @@ import {
  * @constructor
  */
 
-var Matrix = (function () {
+const Matrix = (function () {
   var _cos = Math.cos;
   var _sin = Math.sin;
   var _tan = Math.tan;
@@ -422,3 +422,5 @@ var Matrix = (function () {
     this.reset();
   };
 }());
+
+export default Matrix;

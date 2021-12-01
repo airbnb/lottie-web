@@ -1,4 +1,7 @@
-/* global TextProperty, TextAnimatorProperty, buildShapeString, LetterProps */
+import LetterProps from '../utils/text/LetterProps';
+import TextProperty from '../utils/text/TextProperty';
+import TextAnimatorProperty from '../utils/text/TextAnimatorProperty';
+import buildShapeString from '../utils/shapes/shapePathBuilder';
 
 function ITextElement() {
 }

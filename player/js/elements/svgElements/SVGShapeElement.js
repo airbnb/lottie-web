@@ -1,9 +1,3 @@
-/* global IShapeElement,
-Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
-SVGGradientFillStyleData, SVGGradientStrokeStyleData, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
-lineCapEnum, lineJoinEnum */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
@@ -15,6 +9,24 @@ import SVGBaseElement from './SVGBaseElement';
 import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import getBlendMode from '../../utils/helpers/blendModes';
+import Matrix from '../../3rd_party/transformation-matrix';
+import IShapeElement from '../ShapeElement';
+import TransformPropertyFactory from '../../utils/TransformProperty';
+import { ShapeModifiers } from '../../utils/shapes/ShapeModifiers';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
+import SVGShapeData from '../helpers/shapes/SVGShapeData';
+import SVGStyleData from '../helpers/shapes/SVGStyleData';
+import SVGStrokeStyleData from '../helpers/shapes/SVGStrokeStyleData';
+import SVGFillStyleData from '../helpers/shapes/SVGFillStyleData';
+import SVGGradientFillStyleData from '../helpers/shapes/SVGGradientFillStyleData';
+import SVGGradientStrokeStyleData from '../helpers/shapes/SVGGradientStrokeStyleData';
+import ShapeGroupData from '../helpers/shapes/ShapeGroupData';
+import SVGTransformData from '../helpers/shapes/SVGTransformData';
+import SVGElementsRenderer from '../helpers/shapes/SVGElementsRenderer';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements

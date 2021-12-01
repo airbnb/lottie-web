@@ -1,7 +1,7 @@
-/* global poolFactory, bezierLengthPool */
-/* exported segmentsLengthPool */
+import bezierLengthPool from './bezier_length_pool';
+import poolFactory from './pool_factory';
 
-var segmentsLengthPool = (function () {
+const segmentsLengthPool = (function () {
   function create() {
     return {
       lengths: [],
@@ -20,3 +20,5 @@ var segmentsLengthPool = (function () {
 
   return poolFactory(8, create, release);
 }());
+
+export default segmentsLengthPool;

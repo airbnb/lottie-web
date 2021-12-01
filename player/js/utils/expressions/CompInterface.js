@@ -1,6 +1,4 @@
-/* exported CompExpressionInterface */
-
-var CompExpressionInterface = (function () {
+const CompExpressionInterface = (function () {
   return function (comp) {
     function _thisLayerFunction(name) {
       var i = 0;
@@ -26,3 +24,5 @@ var CompExpressionInterface = (function () {
     return _thisLayerFunction;
   };
 }());
+
+export default CompExpressionInterface;

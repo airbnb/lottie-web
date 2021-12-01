@@ -1,5 +1,3 @@
-/* global ICompElement, CVBaseElement */
-
 import {
   extendPrototype,
 } from '../../utils/functionExtensions';
@@ -8,6 +6,8 @@ import {
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
 import CanvasRenderer from '../../renderers/CanvasRenderer';
+import CVBaseElement from './CVBaseElement';
+import ICompElement from '../CompElement';
 
 function CVCompElement(data, globalData, comp) {
   this.completeLayers = false;

@@ -24,3 +24,5 @@ function SVGShapeData(transformers, level, shape) {
 SVGShapeData.prototype.setAsAnimated = function () {
   this._isAnimated = true;
 };
+
+export default SVGShapeData;

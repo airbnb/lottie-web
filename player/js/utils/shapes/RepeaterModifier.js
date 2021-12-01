@@ -1,9 +1,13 @@
-/* global ShapeModifier, TransformPropertyFactory, Matrix, ShapeModifiers */
-
 import {
   extendPrototype,
 } from '../functionExtensions';
 import PropertyFactory from '../PropertyFactory';
+import Matrix from '../../3rd_party/transformation-matrix';
+import TransformPropertyFactory from '../TransformProperty';
+import {
+  ShapeModifiers,
+  ShapeModifier,
+} from './ShapeModifiers';
 
 function RepeaterModifier() {}
 extendPrototype([ShapeModifier], RepeaterModifier);

@@ -1,7 +1,8 @@
-/* global expressionHelpers, TextSelectorProp, ExpressionManager */
-/* exported TextExpressionSelectorPropFactory */
+import ExpressionManager from './ExpressionManager';
+import expressionHelpers from './expressionHelpers';
+import TextSelectorProp from '../text/TextSelectorProperty';
 
-var TextExpressionSelectorPropFactory = (function () { // eslint-disable-line no-unused-vars
+const TextExpressionSelectorPropFactory = (function () { // eslint-disable-line no-unused-vars
   function getValueProxy(index, total) {
     this.textIndex = index + 1;
     this.textTotal = total;
@@ -39,3 +40,5 @@ TextSelectorProp.getTextSelectorProp = function (elem, data, arr) {
   }
   return propertyGetTextProp(elem, data, arr);
 };
+
+export default TextExpressionSelectorPropFactory;

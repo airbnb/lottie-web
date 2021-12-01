@@ -1,7 +1,6 @@
-/* global ExpressionPropertyInterface */
-/* exported TransformExpressionInterface */
+import ExpressionPropertyInterface from './ExpressionValueFactory';
 
-var TransformExpressionInterface = (function () {
+const TransformExpressionInterface = (function () {
   return function (transform) {
     function _thisFunction(name) {
       switch (name) {
@@ -123,3 +122,5 @@ var TransformExpressionInterface = (function () {
     return _thisFunction;
   };
 }());
+
+export default TransformExpressionInterface;

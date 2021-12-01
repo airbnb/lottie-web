@@ -1,5 +1,3 @@
-/* global shapeCollectionPool */
-
 import {
   extendPrototype,
 } from '../functionExtensions';
@@ -7,6 +5,7 @@ import DynamicPropertyContainer from '../helpers/dynamicProperties';
 import {
   initialDefaultFrame,
 } from '../../main';
+import shapeCollectionPool from '../pooling/shapeCollection_pool';
 
 const ShapeModifiers = (function () {
   var ob = {};

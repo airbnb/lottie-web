@@ -1,8 +1,7 @@
-/* global ExpressionManager */
-
 import {
   createTypedArray,
 } from '../helpers/arrays';
+import ExpressionManager from './ExpressionManager';
 
 const expressionHelpers = (function () {
   function searchExpressions(elem, data, prop) {

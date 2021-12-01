@@ -1,6 +1,3 @@
-/* global CVContextData, Matrix, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement */
-
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
@@ -9,6 +6,14 @@ import {
 } from '../utils/helpers/arrays';
 import createTag from '../utils/helpers/html_elements';
 import SVGRenderer from './SVGRenderer';
+import Matrix from '../3rd_party/transformation-matrix';
+import BaseRenderer from './BaseRenderer';
+import CVContextData from '../elements/canvasElements/CVContextData';
+import CVShapeElement from '../elements/canvasElements/CVShapeElement';
+import CVTextElement from '../elements/canvasElements/CVTextElement';
+import CVImageElement from '../elements/canvasElements/CVImageElement';
+import CVSolidElement from '../elements/canvasElements/CVSolidElement';
+import CVCompElement from '../elements/canvasElements/CVCompElement';
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;

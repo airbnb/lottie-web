@@ -1,8 +1,7 @@
-/* global shapeCollectionPool, bmMin */
-
 import {
   degToRads,
   roundCorner,
+  bmMin,
 } from '../common';
 import {
   extendPrototype,
@@ -11,6 +10,7 @@ import DynamicPropertyContainer from '../helpers/dynamicProperties';
 import PropertyFactory from '../PropertyFactory';
 import BezierFactory from '../../3rd_party/BezierEaser';
 import shapePool from '../pooling/shape_pool';
+import shapeCollectionPool from '../pooling/shapeCollection_pool';
 
 const ShapePropertyFactory = (function () {
   var initFrame = -999999;

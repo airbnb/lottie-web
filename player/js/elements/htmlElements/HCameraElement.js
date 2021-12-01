@@ -1,5 +1,3 @@
-/* global Matrix */
-
 import {
   degToRads,
 } from '../../utils/common';
@@ -10,6 +8,7 @@ import PropertyFactory from '../../utils/PropertyFactory';
 import BaseElement from '../BaseElement';
 import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
+import Matrix from '../../3rd_party/transformation-matrix';
 
 function HCameraElement(data, globalData, comp) {
   this.initFrame();

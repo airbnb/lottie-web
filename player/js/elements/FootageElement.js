@@ -1,11 +1,10 @@
-/* global FootageInterface */
-
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
 import RenderableElement from './helpers/RenderableElement';
 import BaseElement from './BaseElement';
 import FrameElement from './helpers/FrameElement';
+import FootageInterface from '../utils/expressions/FootageInterface';
 
 function FootageElement(data, globalData, comp) {
   this.initFrame();

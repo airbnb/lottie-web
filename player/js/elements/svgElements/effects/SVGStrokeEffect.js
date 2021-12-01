@@ -1,8 +1,7 @@
-/* global bmFloor */
-
 import { getLocationHref } from '../../../main';
 import {
   createElementID,
+  bmFloor,
 } from '../../../utils/common';
 import createNS from '../../../utils/helpers/svg_elements';
 

@@ -1,7 +1,7 @@
-/* global pointPool */
 import {
   createSizedArray,
 } from '../helpers/arrays';
+import pointPool from '../pooling/point_pool';
 
 function ShapePath() {
   this.c = false;

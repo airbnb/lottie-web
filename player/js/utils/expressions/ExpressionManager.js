@@ -1,8 +1,8 @@
 /* eslint-disable camelcase, no-unused-vars */
-/* global BMMath */
 
 import {
   degToRads,
+  BMMath,
 } from '../common';
 import {
   createTypedArray,

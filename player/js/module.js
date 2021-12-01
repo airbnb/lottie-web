@@ -10,6 +10,7 @@ import {
 } from './utils/common';
 import PropertyFactory from './utils/PropertyFactory';
 import ShapePropertyFactory from './utils/shapes/ShapeProperty';
+import Matrix from './3rd_party/transformation-matrix';
 
 const lottie = {};
 

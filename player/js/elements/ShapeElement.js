@@ -1,4 +1,4 @@
-/* global ProcessedElement */
+import ProcessedElement from './helpers/shapes/ProcessedElement';
 
 function IShapeElement() {
 }
@@ -72,3 +72,5 @@ IShapeElement.prototype = {
     this.prepareProperties(num, this.isInRange);
   },
 };
+
+export default IShapeElement;

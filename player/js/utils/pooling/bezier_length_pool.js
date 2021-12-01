@@ -1,12 +1,10 @@
-/* global poolFactory */
-/* exported bezierLengthPool */
-
 import {
   getDefaultCurveSegments,
 } from '../common';
 import {
   createTypedArray,
 } from '../helpers/arrays';
+import poolFactory from './pool_factory';
 
 const bezierLengthPool = (function () {
   function create() {

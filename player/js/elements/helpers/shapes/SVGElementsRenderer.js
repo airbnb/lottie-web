@@ -1,7 +1,8 @@
-/* global Matrix, buildShapeString, bmFloor */
-/* exported SVGElementsRenderer */
+import Matrix from '../../../3rd_party/transformation-matrix';
+import buildShapeString from '../../../utils/shapes/shapePathBuilder';
+import { bmFloor } from '../../../utils/common';
 
-var SVGElementsRenderer = (function () {
+const SVGElementsRenderer = (function () {
   var _identityMatrix = new Matrix();
   var _matrixHelper = new Matrix();
 
@@ -230,3 +231,5 @@ var SVGElementsRenderer = (function () {
 
   return ob;
 }());
+
+export default SVGElementsRenderer;

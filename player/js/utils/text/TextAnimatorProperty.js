@@ -1,6 +1,3 @@
-/* global TextAnimatorDataProperty,
-  LetterProps, Matrix */
-
 import {
   addSaturationToRGB,
   addBrightnessToRGB,
@@ -15,6 +12,9 @@ import {
 } from '../helpers/arrays';
 import PropertyFactory from '../PropertyFactory';
 import bez from '../bez';
+import Matrix from '../../3rd_party/transformation-matrix';
+import TextAnimatorDataProperty from './TextAnimatorDataProperty';
+import LetterProps from './LetterProps';
 
 function TextAnimatorProperty(textData, renderType, elem) {
   this._isFirstFrame = true;

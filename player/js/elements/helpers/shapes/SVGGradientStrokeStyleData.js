@@ -1,10 +1,10 @@
-/* global DashProperty, SVGGradientFillStyleData */
-
 import {
   extendPrototype,
 } from '../../../utils/functionExtensions';
 import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
 import PropertyFactory from '../../../utils/PropertyFactory';
+import DashProperty from '../../../utils/shapes/DashProperty';
+import SVGGradientFillStyleData from './SVGGradientFillStyleData';
 
 function SVGGradientStrokeStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);

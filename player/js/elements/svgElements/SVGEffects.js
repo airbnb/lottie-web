@@ -1,10 +1,11 @@
-/* global filtersFactory, SVGTintFilter, SVGFillFilter, SVGStrokeEffect, SVGTritoneFilter,
+/* global SVGTintFilter, SVGFillFilter, SVGStrokeEffect, SVGTritoneFilter,
 SVGProLevelsFilter, SVGDropShadowEffect, SVGMatte3Effect, SVGGaussianBlurEffect */
 
 import { getLocationHref } from '../../main';
 import {
   createElementID,
 } from '../../utils/common';
+import filtersFactory from '../../utils/filters';
 
 function SVGEffects(elem) {
   var i;

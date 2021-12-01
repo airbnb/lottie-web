@@ -1,4 +1,5 @@
-/* global TransformPropertyFactory, Matrix */
+import Matrix from '../../3rd_party/transformation-matrix';
+import TransformPropertyFactory from '../../utils/TransformProperty';
 
 function TransformElement() {}
 

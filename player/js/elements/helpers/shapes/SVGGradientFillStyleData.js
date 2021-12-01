@@ -1,6 +1,3 @@
-/* global GradientProperty,
-lineCapEnum, lineJoinEnum */
-
 import {
   degToRads,
   createElementID,
@@ -12,6 +9,11 @@ import {
 import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
 import PropertyFactory from '../../../utils/PropertyFactory';
 import createNS from '../../../utils/helpers/svg_elements';
+import GradientProperty from '../../../utils/shapes/GradientProperty';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../../utils/helpers/shapeEnums';
 
 function SVGGradientFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);

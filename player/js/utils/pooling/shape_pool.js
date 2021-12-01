@@ -1,4 +1,6 @@
-/* global ShapePath, pointPool, poolFactory */
+import poolFactory from './pool_factory';
+import pointPool from './point_pool';
+import ShapePath from '../shapes/ShapePath';
 
 const shapePool = (function () {
   function create() {

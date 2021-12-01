@@ -1,10 +1,9 @@
-/* global MaskElement */
-
 import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 
 import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
+import MaskElement from '../../mask';
 
 function CVMaskElement(data, element) {
   this.data = data;

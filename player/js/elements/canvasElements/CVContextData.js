@@ -1,7 +1,7 @@
-/* global Matrix */
 import {
   createTypedArray,
 } from '../../utils/helpers/arrays';
+import Matrix from '../../3rd_party/transformation-matrix';
 
 function CVContextData() {
   this.saved = [];

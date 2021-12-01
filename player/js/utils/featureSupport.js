@@ -1,6 +1,4 @@
-/* exported featureSupport */
-
-var featureSupport = (function () {
+const featureSupport = (function () {
   var ob = {
     maskType: true,
   };
@@ -9,3 +7,5 @@ var featureSupport = (function () {
   }
   return ob;
 }());
+
+export default featureSupport;

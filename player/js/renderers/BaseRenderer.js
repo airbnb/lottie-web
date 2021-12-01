@@ -149,3 +149,5 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
     h: animData.h,
   };
 };
+
+export default BaseRenderer;

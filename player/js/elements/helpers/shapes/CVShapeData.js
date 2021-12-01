@@ -1,5 +1,5 @@
-/* global SVGShapeData */
 import ShapePropertyFactory from '../../../utils/shapes/ShapeProperty';
+import SVGShapeData from './SVGShapeData';
 
 function CVShapeData(element, data, styles, transformsManager) {
   this.styledShapes = [];

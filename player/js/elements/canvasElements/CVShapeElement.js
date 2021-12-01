@@ -1,9 +1,6 @@
-/* global ShapeTransformManager, CVBaseElement, IShapeElement,
-GradientProperty,
-DashProperty, TransformPropertyFactory, CVShapeData, ShapeModifiers, bmFloor, lineCapEnum, lineJoinEnum */
-
 import {
   degToRads,
+  bmFloor,
 } from '../../utils/common';
 
 import {
@@ -16,6 +13,18 @@ import TransformElement from '../helpers/TransformElement';
 import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import ShapeTransformManager from '../helpers/shapes/ShapeTransformManager';
+import CVBaseElement from './CVBaseElement';
+import IShapeElement from '../ShapeElement';
+import GradientProperty from '../../utils/shapes/GradientProperty';
+import DashProperty from '../../utils/shapes/DashProperty';
+import TransformPropertyFactory from '../../utils/TransformProperty';
+import CVShapeData from '../helpers/shapes/CVShapeData';
+import { ShapeModifiers } from '../../utils/shapes/ShapeModifiers';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
 
 function CVShapeElement(data, globalData, comp) {
   this.shapes = [];

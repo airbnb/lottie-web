@@ -1,5 +1,3 @@
-/* global SVGShapeElement */
-
 import {
   bmPow,
   bmMax,
@@ -17,6 +15,7 @@ import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import HBaseElement from './HBaseElement';
 import HSolidElement from './HSolidElement';
+import SVGShapeElement from '../svgElements/SVGShapeElement';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements
