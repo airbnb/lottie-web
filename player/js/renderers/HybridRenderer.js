@@ -15,6 +15,8 @@ import {
 import BaseRenderer from './BaseRenderer';
 import IImageElement from '../elements/ImageElement';
 import SVGShapeElement from '../elements/svgElements/SVGShapeElement';
+import HShapeElement from '../elements/htmlElements/HShapeElement';
+import HTextElement from '../elements/htmlElements/HTextElement';
 
 function HybridRenderer(animationItem, config) {
   this.animationItem = animationItem;

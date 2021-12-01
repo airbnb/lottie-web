@@ -1,6 +1,7 @@
-/* global PropertyInterface, propertyGroupFactory, ShapePathInterface */
-
 import ExpressionPropertyInterface from './ExpressionValueFactory';
+import propertyGroupFactory from './PropertyGroupFactory';
+import PropertyInterface from './PropertyInterface';
+import ShapePathInterface from './shapes/ShapePathInterface';
 
 const ShapeExpressionInterface = (function () {
   function iterateElements(shapes, view, propertyGroup) {

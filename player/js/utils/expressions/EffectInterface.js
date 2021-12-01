@@ -1,6 +1,6 @@
-/* global propertyGroupFactory, PropertyInterface */
-
 import ExpressionPropertyInterface from './ExpressionValueFactory';
+import propertyGroupFactory from './PropertyGroupFactory';
+import PropertyInterface from './PropertyInterface';
 
 const EffectsExpressionInterface = (function () {
   var ob = {

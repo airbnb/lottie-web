@@ -1,5 +1,4 @@
-/* global BasicPlayer, createElement */
-/* exported playerManager */
+import BasicPlayer from './BasicPlayer';
 
 function PlayerManager() {}
 
@@ -12,4 +11,6 @@ PlayerManager.prototype.createPlayer = function (type) {
   }
 };
 
-var playerManager = createElement(PlayerManager);
+const playerManager = createElement(PlayerManager);
+
+export default playerManager;

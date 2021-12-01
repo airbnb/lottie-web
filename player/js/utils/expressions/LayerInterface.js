@@ -1,9 +1,9 @@
-/* global MaskManagerInterface, TransformExpressionInterface */
-
 import {
   getDescriptor,
 } from '../functionExtensions';
 import Matrix from '../../3rd_party/transformation-matrix';
+import MaskManagerInterface from './MaskInterface';
+import TransformExpressionInterface from './TransformInterface';
 
 const LayerExpressionInterface = (function () {
   function getMatrix(time) {
