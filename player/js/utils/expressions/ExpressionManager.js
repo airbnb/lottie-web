@@ -714,9 +714,15 @@ var ExpressionManager = (function () {
       // globalData.popExpression();
       return scoped_bm_rt;
     }
+
+    // Bundlers will see these as dead code and unless we reference them
+    executeExpression.__preventDeadCodeRemoval = [$bm_transform, inPoint, outPoint, width, height, name, loop_in, loop_out, smooth, toComp, fromCompToSurface, toWorld, fromWorld, mask, position, rotation, scale, thisComp, numKeys, active, wiggle, loopInDuration, loopOutDuration, comp, lookAt, easeOut, easeIn, ease, nearestKey, key, text, textIndex, textTotal, selectorValue, framesToTime, timeToFrames, sourceRectAtTime, substring, substr, posterizeTime, index, globalData];
     return executeExpression;
   }
 
   ob.initiateExpression = initiateExpression;
+
+  // Bundlers will see these as dead code and unless we reference them
+  ob.__preventDeadCodeRemoval = [window, document, XMLHttpRequest, fetch, frames, $bm_neg, add, $bm_sum, $bm_sub, $bm_mul, $bm_div, $bm_mod, clamp, radians_to_degrees, degreesToRadians, degrees_to_radians, normalize, rgbToHsl, hslToRgb, linear, random, createPath];
   return ob;
 }());
