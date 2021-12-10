@@ -9,6 +9,8 @@ import {
 } from '../helpers/arrays';
 import BezierFactory from '../../3rd_party/BezierEaser';
 import shapePool from '../pooling/shape_pool';
+import seedrandom from '../../3rd_party/seedrandom';
+import propTypes from '../helpers/propTypes';
 
 const ExpressionManager = (function () {
   'use strict';
@@ -20,6 +22,7 @@ const ExpressionManager = (function () {
   var XMLHttpRequest = null;
   var fetch = null;
   var frames = null;
+  seedrandom(BMMath);
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -717,10 +720,10 @@ const ExpressionManager = (function () {
       this.frameExpressionId = elem.globalData.frameId;
 
       // TODO: Check if it's possible to return on ShapeInterface the .v value
-      if (scoped_bm_rt.propType === 'shape') {
-        scoped_bm_rt = scoped_bm_rt.v;
-      }
-      // globalData.popExpression();
+      // Changed this to a ternary operation because Rollup failed compiling it correctly
+      scoped_bm_rt = scoped_bm_rt.propType === propTypes.SHAPE
+        ? scoped_bm_rt.v
+        : scoped_bm_rt;
       return scoped_bm_rt;
     }
     // Bundlers will see these as dead code and unless we reference them

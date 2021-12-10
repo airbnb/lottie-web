@@ -23,7 +23,7 @@
 
  */
 
-(function (pool, math) {
+function seedRandom(pool, math) {
 //
 // The following constants are related to IEEE 754 limits.
 //
@@ -228,7 +228,10 @@
 //
 
 // End anonymous scope, and pass initial values.
-})(
-    [],     // pool: entropy pool starts empty
-    BMMath    // math: package containing random, pow, and seedrandom
-);
+};
+
+function initialize(BMMath) {
+    seedRandom([], BMMath);
+}
+
+export default initialize;
