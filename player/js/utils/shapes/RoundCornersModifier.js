@@ -7,7 +7,6 @@ import {
 import PropertyFactory from '../PropertyFactory';
 import shapePool from '../pooling/shape_pool';
 import {
-  ShapeModifiers,
   ShapeModifier,
 } from './ShapeModifiers';
 

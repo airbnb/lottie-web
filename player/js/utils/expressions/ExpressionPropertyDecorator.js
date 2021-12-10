@@ -454,7 +454,7 @@ function addPropertyDecorator() {
     }
     return prop;
   };
-};
+}
 
 function initialize() {
   addPropertyDecorator();

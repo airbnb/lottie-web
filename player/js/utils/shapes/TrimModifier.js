@@ -5,7 +5,6 @@ import PropertyFactory from '../PropertyFactory';
 import shapePool from '../pooling/shape_pool';
 import bez from '../bez';
 import {
-  ShapeModifiers,
   ShapeModifier,
 } from './ShapeModifiers';
 import segmentsLengthPool from '../pooling/segments_length_pool';

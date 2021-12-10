@@ -50,5 +50,5 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
   this.updateContainerSize();
 };
 
-//TODO: review export
+// TODO: review export
 export default CanvasRenderer;
