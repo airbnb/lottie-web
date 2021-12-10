@@ -1,7 +1,26 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
-import pkg from './package.json';
+
+// const copyFile = (options = {}) => {
+//   const { targets = [], hook = 'buildEnd' } = options
+//   return {
+//     name: 'copy-file',
+//     // [hook]: async(test) => {
+//     //   console.log('targets', targets.length)
+//     //   console.log('options', options)
+//     //   console.log('test', test)
+//     // },
+//     generateBundle: (options, bundle) => {
+//       // console.log('PASO,. generateBundle', options, bundle)
+//       console.log('PASO,. generateBundle', options, bundle.code)
+//       // bundle.code = '()=>{}';
+//     },
+//     writeBundle: () => {
+//       console.log('PASO,. writeBundle')
+//     }
+//   }
+// } 
 
 const destinationBuildFolder = 'build/player/';
 
@@ -169,7 +188,6 @@ const exports = builds.reduce((acc, build) => {
   acc = acc.concat(builds);
   return acc;
 }, []);
-console.log('exports', exports.length);
 export default exports;
 /* export default [
   {
