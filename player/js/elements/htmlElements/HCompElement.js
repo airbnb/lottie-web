@@ -8,6 +8,7 @@ import PropertyFactory from '../../utils/PropertyFactory';
 import HybridRendererBase from '../../renderers/HybridRendererBase';
 import HBaseElement from './HBaseElement';
 import ICompElement from '../CompElement';
+import SVGCompElement from '../svgElements/SVGCompElement';
 
 function HCompElement(data, globalData, comp) {
   this.layers = data.layers;
@@ -48,6 +49,13 @@ HCompElement.prototype.addTo3dContainer = function (elem, pos) {
   } else {
     this.layerElement.appendChild(elem);
   }
+};
+
+HCompElement.prototype.createComp = function (data) {
+  if (!this.supports3d) {
+    return new SVGCompElement(data, this.globalData, this);
+  }
+  return new HCompElement(data, this.globalData, this);
 };
 
 export default HCompElement;
