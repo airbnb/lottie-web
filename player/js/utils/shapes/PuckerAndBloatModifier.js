@@ -77,6 +77,5 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
     this._mdf = false;
   }
 };
-ShapeModifiers.registerModifier('pb', PuckerAndBloatModifier);
 
 export default PuckerAndBloatModifier;

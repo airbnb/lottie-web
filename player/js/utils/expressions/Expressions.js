@@ -1,9 +1,6 @@
 import CompExpressionInterface from './CompInterface';
-import {
-  setExpressionsPlugin,
-} from '../common';
 
-var Expressions = (function () {
+const Expressions = (function () {
   var ob = {};
   ob.initExpressions = initExpressions;
 
@@ -46,4 +43,4 @@ var Expressions = (function () {
   return ob;
 }());
 
-setExpressionsPlugin(Expressions);
+export default Expressions;

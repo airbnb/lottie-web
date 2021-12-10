@@ -5,7 +5,7 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
-import SVGRenderer from '../../renderers/SVGRenderer';
+import SVGRendererBase from '../../renderers/SVGRendererBase';
 import SVGBaseElement from './SVGBaseElement';
 import ICompElement from '../CompElement';
 
@@ -19,6 +19,10 @@ function SVGCompElement(data, globalData, comp) {
   this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : { _placeholder: true };
 }
 
-extendPrototype([SVGRenderer, ICompElement, SVGBaseElement], SVGCompElement);
+extendPrototype([SVGRendererBase, ICompElement, SVGBaseElement], SVGCompElement);
+
+SVGCompElement.prototype.createComp = function (data) {
+  return new SVGCompElement(data, this.globalData, this);
+};
 
 export default SVGCompElement;

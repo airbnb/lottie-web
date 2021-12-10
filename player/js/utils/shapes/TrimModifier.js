@@ -357,6 +357,4 @@ TrimModifier.prototype.addShapes = function (shapeData, shapeSegment, shapePath)
   return shapes;
 };
 
-ShapeModifiers.registerModifier('tm', TrimModifier);
-
 export default TrimModifier;

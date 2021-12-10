@@ -17,12 +17,10 @@ import {
 } from '../utils/common';
 import ImagePreloader from '../utils/imagePreloader';
 import BaseEvent from '../utils/BaseEvent';
-import CanvasRenderer from '../renderers/CanvasRenderer';
-import SVGRenderer from '../renderers/SVGRenderer';
-import HybridRenderer from '../renderers/HybridRenderer';
 import dataManager from '../utils/DataManager';
 import markerParser from '../utils/markers/markerParser';
 import ProjectInterface from '../utils/expressions/ProjectInterface';
+import { getRenderer } from '../renderers/renderersManager';
 
 const AnimationItem = function () {
   this._cbs = [];
@@ -73,17 +71,8 @@ AnimationItem.prototype.setParams = function (params) {
   } else if (params.renderer) {
     animType = params.renderer;
   }
-  switch (animType) {
-    case 'canvas':
-      this.renderer = new CanvasRenderer(this, params.rendererSettings);
-      break;
-    case 'svg':
-      this.renderer = new SVGRenderer(this, params.rendererSettings);
-      break;
-    default:
-      this.renderer = new HybridRenderer(this, params.rendererSettings);
-      break;
-  }
+  const RendererClass = getRenderer(animType);
+  this.renderer = new RendererClass(this, params.rendererSettings);
   this.imagePreloader.setCacheType(animType, this.renderer.globalData.defs);
   this.renderer.setProjectInterface(this.projectInterface);
   this.animType = animType;

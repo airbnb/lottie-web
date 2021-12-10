@@ -17,7 +17,7 @@ import TransformPropertyFactory from '../TransformProperty';
 import expressionHelpers from './expressionHelpers';
 import ExpressionManager from './ExpressionManager';
 
-(function addPropertyDecorator() {
+function addPropertyDecorator() {
   function loopOut(type, duration, durationFlag) {
     if (!this.k || !this.keyframes) {
       return this.pv;
@@ -454,4 +454,10 @@ import ExpressionManager from './ExpressionManager';
     }
     return prop;
   };
-}());
+};
+
+function initialize() {
+  addPropertyDecorator();
+}
+
+export default initialize;

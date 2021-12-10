@@ -230,6 +230,4 @@ RepeaterModifier.prototype.processShapes = function (_isFirstFrame) {
 
 RepeaterModifier.prototype.addShape = function () {};
 
-ShapeModifiers.registerModifier('rp', RepeaterModifier);
-
 export default RepeaterModifier;

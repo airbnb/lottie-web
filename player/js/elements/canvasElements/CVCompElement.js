@@ -5,7 +5,7 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
-import CanvasRenderer from '../../renderers/CanvasRenderer';
+import CanvasRendererBase from '../../renderers/CanvasRendererBase';
 import CVBaseElement from './CVBaseElement';
 import ICompElement from '../CompElement';
 
@@ -18,7 +18,7 @@ function CVCompElement(data, globalData, comp) {
   this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : { _placeholder: true };
 }
 
-extendPrototype([CanvasRenderer, ICompElement, CVBaseElement], CVCompElement);
+extendPrototype([CanvasRendererBase, ICompElement, CVBaseElement], CVCompElement);
 
 CVCompElement.prototype.renderInnerContent = function () {
   var ctx = this.canvasContext;
