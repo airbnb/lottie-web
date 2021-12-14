@@ -33,6 +33,7 @@ function RenderableDOMElement() {}
         this._isFirstFrame = true;
       }
     },
+    // TODO(myxvisual): Root
     renderFrame: function () {
       // If it is exported as hidden (data.hd === true) no need to render
       // If it is not visible no need to render

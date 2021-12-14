@@ -30,6 +30,7 @@ HBaseElement.prototype = {
       this.setBlendMode();
     }
   },
+  // TODO(myxvisual): Root
   renderElement: function () {
     var transformedElementStyle = this.transformedElement ? this.transformedElement.style : {};
     if (this.finalTransform._matMdf) {
@@ -41,6 +42,7 @@ HBaseElement.prototype = {
       transformedElementStyle.opacity = this.finalTransform.mProp.o.v;
     }
   },
+  // TODO(myxvisual): Root
   renderFrame: function () {
     // If it is exported as hidden (data.hd === true) no need to render
     // If it is not visible no need to render

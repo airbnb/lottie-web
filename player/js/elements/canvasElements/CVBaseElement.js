@@ -34,6 +34,7 @@ CVBaseElement.prototype = {
       this.maskManager._isFirstFrame = true;
     }
   },
+  // TODO(myxvisual): Root
   renderFrame: function () {
     if (this.hidden || this.data.hd) {
       return;

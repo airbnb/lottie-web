@@ -348,6 +348,7 @@ AnimationItem.prototype.setSubframe = function (flag) {
   this.isSubframeEnabled = !!flag;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.gotoFrame = function () {
   this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame; // eslint-disable-line no-bitwise
 
@@ -360,6 +361,7 @@ AnimationItem.prototype.gotoFrame = function () {
   this.trigger('drawnFrame');
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.renderFrame = function () {
   if (this.isLoaded === false || !this.renderer) {
     return;
@@ -467,6 +469,7 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
   this.play();
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.advanceTime = function (value) {
   if (this.isPaused === true || this.isLoaded === false) {
     return;
@@ -617,6 +620,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.projectInterface = null;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setCurrentRawFrameValue = function (value) {
   this.currentRawFrame = value;
   this.gotoFrame();
