@@ -26,6 +26,7 @@ var animationManager = (function () {
     }
   }
 
+  // TODO(myxvisual): Root
   function registerAnimation(element, animationData) {
     if (!element) {
       return null;
@@ -70,6 +71,7 @@ var animationManager = (function () {
     len += 1;
   }
 
+  // TODO(myxvisual): Root
   function loadAnimation(params) {
     var animItem = new AnimationItem();
     setupAnimation(animItem, null);

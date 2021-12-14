@@ -1,5 +1,6 @@
 /* global CanvasRenderer, dataManager, expressionsPlugin, AnimationItem */
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setParams = function (params) {
   if (params.context) {
     this.context = params.context;
@@ -99,6 +100,7 @@ AnimationItem.prototype.imagesLoaded = null;
 
 AnimationItem.prototype.preloadImages = null;
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.configAnimation = function (animData) {
   if (!this.renderer) {
     return;

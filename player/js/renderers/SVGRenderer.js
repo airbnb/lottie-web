@@ -80,6 +80,11 @@ SVGRenderer.prototype.createImage = function (data) {
   return new IImageElement(data, this.globalData, this);
 };
 
+// TODO(myxvisual): Work
+SVGRenderer.prototype.createVideo = function (data) {
+  return new VideoElement(data, this.globalData, this);
+};
+
 SVGRenderer.prototype.createComp = function (data) {
   return new SVGCompElement(data, this.globalData, this);
 };

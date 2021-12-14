@@ -42,6 +42,7 @@ var AnimationItem = function () {
 
 extendPrototype([BaseEvent], AnimationItem);
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setParams = function (params) {
   if (params.wrapper || params.container) {
     this.wrapper = params.wrapper || params.container;
@@ -113,6 +114,7 @@ AnimationItem.prototype.setupAnimation = function (data) {
   );
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setData = function (wrapper, animationData) {
   if (animationData) {
     if (typeof animationData !== 'object') {
@@ -330,6 +332,7 @@ AnimationItem.prototype.checkLoaded = function () {
     setTimeout(function () {
       this.trigger('DOMLoaded');
     }.bind(this), 0);
+    // TODO(myxvisual): Root
     this.gotoFrame();
     if (this.autoplay) {
       this.play();
@@ -352,6 +355,7 @@ AnimationItem.prototype.gotoFrame = function () {
     this.currentFrame = this.timeCompleted;
   }
   this.trigger('enterFrame');
+  // TODO(myxvisual): Root
   this.renderFrame();
   this.trigger('drawnFrame');
 };

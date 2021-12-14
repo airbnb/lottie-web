@@ -103,6 +103,10 @@ HybridRenderer.prototype.createImage = function (data) {
   return new HImageElement(data, this.globalData, this);
 };
 
+HybridRenderer.prototype.createVideo = function (data) {
+  return new VideoElement(data, this.globalData, this);
+};
+
 HybridRenderer.prototype.createComp = function (data) {
   if (!this.supports3d) {
     return new SVGCompElement(data, this.globalData, this);

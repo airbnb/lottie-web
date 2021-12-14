@@ -45,6 +45,10 @@ CanvasRenderer.prototype.createImage = function (data) {
   return new CVImageElement(data, this.globalData, this);
 };
 
+CanvasRenderer.prototype.createVideo = function (data) {
+  return new CVVideoElement(data, this.globalData, this);
+};
+
 CanvasRenderer.prototype.createComp = function (data) {
   return new CVCompElement(data, this.globalData, this);
 };

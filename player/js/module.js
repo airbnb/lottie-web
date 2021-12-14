@@ -27,6 +27,7 @@ function setIDPrefix(prefix) {
   idPrefix = prefix;
 }
 
+// TODO(myxvisual): Root
 function loadAnimation(params) {
   if (standalone === true) {
     params.animationData = JSON.parse(animationData);

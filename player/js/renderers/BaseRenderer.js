@@ -18,6 +18,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
   this.checkPendingElements();
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.createItem = function (layer) {
   switch (layer.ty) {
     case 2:
@@ -34,6 +35,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createText(layer);
     case 6:
       return this.createAudio(layer);
+    case 9:
+      return this.createVideo(layer);
     case 13:
       return this.createCamera(layer);
     case 15:
@@ -55,6 +58,7 @@ BaseRenderer.prototype.createFootage = function (data) {
   return new FootageElement(data, this.globalData, this);
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.buildAllItems = function () {
   var i;
   var len = this.layers.length;
@@ -86,11 +90,13 @@ BaseRenderer.prototype.setProjectInterface = function (pInterface) {
   this.globalData.projectInterface = pInterface;
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.initItems = function () {
   if (!this.globalData.progressiveLoad) {
     this.buildAllItems();
   }
 };
+
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
   var elements = this.elements;
   var layers = this.layers;
