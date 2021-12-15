@@ -125,6 +125,7 @@ export type LottiePlayer = {
     registerAnimation(element: Element, animationData?: any): void;
     setQuality(quality: string | number): void;
     setLocationHref(href: string): void;
+    setIDPrefix(prefix: string): void;
 };
 
 declare const Lottie: LottiePlayer;
