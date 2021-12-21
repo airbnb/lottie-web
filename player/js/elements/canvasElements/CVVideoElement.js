@@ -30,7 +30,6 @@ CVVideoElement.prototype.prepareFrame = function () {
   }
   this.currFrame = currFrame;
   var res = IImageElement.prototype.prepareFrame.apply(this, arguments);
-  // CVBaseElement.prototype.renderFrame.call(this);
   return res;
 };
 

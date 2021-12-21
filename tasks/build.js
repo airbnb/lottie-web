@@ -536,6 +536,10 @@ const scripts = [
 		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{
+		src: 'js/utils/expressions/video/preloadVideo.js',
+		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
+	},
+	{
 		src: 'js/effects/SliderEffect.js',
 		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},

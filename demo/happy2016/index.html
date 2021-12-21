@@ -15,8 +15,7 @@
         loop: true,
         prerender: true,
         autoplay: true,
-        path: 0 ? "https://tiila.oss-cn-shenzhen.aliyuncs.com/lottie/s1.json" : 'https://surreal-public.oss-cn-beijing.aliyuncs.com/mini_t/video_data/story/data.json'
-
+        path: 1 ? 'data.json' : 0 ? "https://tiila.oss-cn-shenzhen.aliyuncs.com/lottie/s1.json" : 'https://surreal-public.oss-cn-beijing.aliyuncs.com/mini_t/video_data/story/data.json'
     };
     var anim = bodymovin.loadAnimation(animData);
 </script>
