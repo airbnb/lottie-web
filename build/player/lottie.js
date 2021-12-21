@@ -10999,6 +10999,7 @@ function CVVideoElement(data, globalData, comp) {
   // anim.frameRate.renderedFrame
   // anim.renderer
   // data.st
+  console.warn(this);
   this.assetData = globalData.getAssetData(data.refId);
   var video = createTag('video');
   video.width = this.assetData.w;
