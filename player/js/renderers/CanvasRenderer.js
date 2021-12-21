@@ -1,5 +1,5 @@
 /* global CVContextData, Matrix, extendPrototype, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
+CVImageElement, CVVideoElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -299,15 +299,19 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
 
   for (i = 0; i < len; i += 1) {
     if (this.completeLayers || this.elements[i]) {
-      this.elements[i].prepareFrame(num - this.layers[i].st);
+      var element = this.elements[i];
+      element.prepareFrame(num - this.layers[i].st);
     }
   }
-  if (this.globalData._mdf) {
+
+  // TODO(myxvisual): need detects
+  if (1 || this.globalData._mdf) {
     if (this.renderConfig.clearCanvas === true) {
       this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
     } else {
       this.save();
     }
+
     for (i = len - 1; i >= 0; i -= 1) {
       if (this.completeLayers || this.elements[i]) {
         this.elements[i].renderFrame();

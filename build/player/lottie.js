@@ -6804,6 +6804,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
   this.checkPendingElements();
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.createItem = function (layer) {
   switch (layer.ty) {
     case 2:
@@ -6820,6 +6821,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createText(layer);
     case 6:
       return this.createAudio(layer);
+    case 9:
+      return this.createVideo(layer);
     case 13:
       return this.createCamera(layer);
     case 15:
@@ -6841,6 +6844,7 @@ BaseRenderer.prototype.createFootage = function (data) {
   return new FootageElement(data, this.globalData, this);
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.buildAllItems = function () {
   var i;
   var len = this.layers.length;
@@ -6872,11 +6876,13 @@ BaseRenderer.prototype.setProjectInterface = function (pInterface) {
   this.globalData.projectInterface = pInterface;
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.initItems = function () {
   if (!this.globalData.progressiveLoad) {
     this.buildAllItems();
   }
 };
+
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
   var elements = this.elements;
   var layers = this.layers;
@@ -6928,6 +6934,7 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
   this.globalData.frameId = 0;
   this.globalData.frameRate = animData.fr;
   this.globalData.nm = animData.nm;
+  this.globalData.totalFrames = this.animationItem.totalFrames;
   this.globalData.compSize = {
     w: animData.w,
     h: animData.h,
@@ -6935,7 +6942,7 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
 };
 
 /* global createElementID, extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
-IImageElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
+IImageElement, VideoElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -7014,6 +7021,11 @@ SVGRenderer.prototype.createText = function (data) {
 
 SVGRenderer.prototype.createImage = function (data) {
   return new IImageElement(data, this.globalData, this);
+};
+
+// TODO(myxvisual): Work
+SVGRenderer.prototype.createVideo = function (data) {
+  return new VideoElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createComp = function (data) {
@@ -7204,7 +7216,7 @@ SVGRenderer.prototype.show = function () {
 };
 
 /* global CVContextData, Matrix, extendPrototype, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
+CVImageElement, CVVideoElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -7248,6 +7260,10 @@ CanvasRenderer.prototype.createText = function (data) {
 
 CanvasRenderer.prototype.createImage = function (data) {
   return new CVImageElement(data, this.globalData, this);
+};
+
+CanvasRenderer.prototype.createVideo = function (data) {
+  return new CVVideoElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
@@ -7500,15 +7516,19 @@ CanvasRenderer.prototype.renderFrame = function (num, forceRender) {
 
   for (i = 0; i < len; i += 1) {
     if (this.completeLayers || this.elements[i]) {
-      this.elements[i].prepareFrame(num - this.layers[i].st);
+      var element = this.elements[i];
+      element.prepareFrame(num - this.layers[i].st);
     }
   }
-  if (this.globalData._mdf) {
+
+  // TODO(myxvisual): need detects
+  if (1 || this.globalData._mdf) {
     if (this.renderConfig.clearCanvas === true) {
       this.canvasContext.clearRect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
     } else {
       this.save();
     }
+
     for (i = len - 1; i >= 0; i -= 1) {
       if (this.completeLayers || this.elements[i]) {
         this.elements[i].renderFrame();
@@ -7549,7 +7569,7 @@ CanvasRenderer.prototype.show = function () {
 };
 
 /* global extendPrototype, BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
-HTextElement, HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
+HTextElement, VideoElement HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
 HSolidElement, styleDiv, createTag, createNS */
 
 function HybridRenderer(animationItem, config) {
@@ -7651,6 +7671,10 @@ HybridRenderer.prototype.createImage = function (data) {
     return new IImageElement(data, this.globalData, this);
   }
   return new HImageElement(data, this.globalData, this);
+};
+
+HybridRenderer.prototype.createVideo = function (data) {
+  return new VideoElement(data, this.globalData, this);
 };
 
 HybridRenderer.prototype.createComp = function (data) {
@@ -8340,7 +8364,8 @@ RenderableElement.prototype = {
      *
      */
   checkLayerLimits: function (num) {
-    if (this.data.ip - this.data.st <= num && this.data.op - this.data.st > num) {
+    var isInRange = this.data.ip - this.data.st <= num && this.data.op - this.data.st > num;
+    if (isInRange) {
       if (this.isInRange !== true) {
         this.globalData._mdf = true;
         this._mdf = true;
@@ -8413,6 +8438,7 @@ function RenderableDOMElement() {}
         this._isFirstFrame = true;
       }
     },
+    // TODO(myxvisual): Root
     renderFrame: function () {
       // If it is exported as hidden (data.hd === true) no need to render
       // If it is not visible no need to render
@@ -8429,7 +8455,6 @@ function RenderableDOMElement() {}
     },
     renderInnerContent: function () {},
     prepareFrame: function (num) {
-      this._mdf = false;
       this.prepareRenderableFrame(num);
       this.prepareProperties(num, this.isInRange);
       this.checkTransparency();
@@ -10887,6 +10912,7 @@ CVBaseElement.prototype = {
       this.maskManager._isFirstFrame = true;
     }
   },
+  // TODO(myxvisual): Root
   renderFrame: function () {
     if (this.hidden || this.data.hd) {
       return;
@@ -10963,6 +10989,67 @@ CVImageElement.prototype.renderInnerContent = function () {
 
 CVImageElement.prototype.destroy = function () {
   this.img = null;
+};
+
+// TODO(myxvisual): Work
+/* global extendPrototype, BaseElement, TransformElement, CVBaseElement,HierarchyElement, FrameElement,
+RenderableElement, SVGShapeElement, IImageElement, createTag */
+
+function CVVideoElement(data, globalData, comp) {
+  // anim.frameRate.renderedFrame
+  // anim.renderer
+  // data.st
+  this.assetData = globalData.getAssetData(data.refId);
+  var video = createTag('video');
+  video.width = this.assetData.w;
+  video.height = this.assetData.h;
+  video.autoplay = 'false';
+  video.muted = 'true';
+  this.video = video;
+  this.currFrame = 0;
+
+  this.initElement(data, globalData, comp);
+}
+extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVVideoElement);
+
+CVVideoElement.prototype.initElement = SVGShapeElement.prototype.initElement;
+
+CVVideoElement.prototype.prepareFrame = function () {
+  // anim.renderer.renderedFrame
+  var currFrame = arguments[0];
+  if (currFrame < this.currFrame) {
+    this._isFirstFrame = true;
+  }
+  this.currFrame = currFrame;
+  var res = IImageElement.prototype.prepareFrame.apply(this, arguments);
+  // CVBaseElement.prototype.renderFrame.call(this);
+  return res;
+};
+
+CVVideoElement.prototype.createContent = function () {
+  var assetPath = this.globalData.getAssetsPath(this.assetData);
+  this.video.src = assetPath;
+};
+
+CVVideoElement.prototype.renderInnerContent = function () {
+  this.renderVideo();
+};
+
+CVVideoElement.prototype.renderVideo = function () {
+  if (this._isFirstFrame) {
+    this.video.currentTime = 0;
+    this.video.play();
+  }
+  if (this.hidden) {
+    this.video.pause();
+    this.video.currentTime = 0;
+  } else {
+    this.canvasContext.drawImage(this.video, 0, 0);
+  }
+};
+
+CVVideoElement.prototype.destroy = function () {
+  this.video = null;
 };
 
 /* global createSizedArray, PropertyFactory, extendPrototype, CanvasRenderer, ICompElement, CVBaseElement */
@@ -11832,6 +11919,7 @@ HBaseElement.prototype = {
       this.setBlendMode();
     }
   },
+  // TODO(myxvisual): Root
   renderElement: function () {
     var transformedElementStyle = this.transformedElement ? this.transformedElement.style : {};
     if (this.finalTransform._matMdf) {
@@ -11843,6 +11931,7 @@ HBaseElement.prototype = {
       transformedElementStyle.opacity = this.finalTransform.mProp.o.v;
     }
   },
+  // TODO(myxvisual): Root
   renderFrame: function () {
     // If it is exported as hidden (data.hd === true) no need to render
     // If it is not visible no need to render
@@ -12661,6 +12750,7 @@ var animationManager = (function () {
     }
   }
 
+  // TODO(myxvisual): Root
   function registerAnimation(element, animationData) {
     if (!element) {
       return null;
@@ -12705,6 +12795,7 @@ var animationManager = (function () {
     len += 1;
   }
 
+  // TODO(myxvisual): Root
   function loadAnimation(params) {
     var animItem = new AnimationItem();
     setupAnimation(animItem, null);
@@ -12924,6 +13015,7 @@ var AnimationItem = function () {
 
 extendPrototype([BaseEvent], AnimationItem);
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setParams = function (params) {
   if (params.wrapper || params.container) {
     this.wrapper = params.wrapper || params.container;
@@ -12995,6 +13087,7 @@ AnimationItem.prototype.setupAnimation = function (data) {
   );
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setData = function (wrapper, animationData) {
   if (animationData) {
     if (typeof animationData !== 'object') {
@@ -13212,6 +13305,7 @@ AnimationItem.prototype.checkLoaded = function () {
     setTimeout(function () {
       this.trigger('DOMLoaded');
     }.bind(this), 0);
+    // TODO(myxvisual): Root
     this.gotoFrame();
     if (this.autoplay) {
       this.play();
@@ -13227,6 +13321,7 @@ AnimationItem.prototype.setSubframe = function (flag) {
   this.isSubframeEnabled = !!flag;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.gotoFrame = function () {
   this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame; // eslint-disable-line no-bitwise
 
@@ -13234,10 +13329,12 @@ AnimationItem.prototype.gotoFrame = function () {
     this.currentFrame = this.timeCompleted;
   }
   this.trigger('enterFrame');
+  // TODO(myxvisual): Root
   this.renderFrame();
   this.trigger('drawnFrame');
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.renderFrame = function () {
   if (this.isLoaded === false || !this.renderer) {
     return;
@@ -13345,6 +13442,7 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
   this.play();
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.advanceTime = function (value) {
   if (this.isPaused === true || this.isLoaded === false) {
     return;
@@ -13362,6 +13460,11 @@ AnimationItem.prototype.advanceTime = function (value) {
     } else if (nextValue >= this.totalFrames) {
       this.playCount += 1;
       if (!this.checkSegments(nextValue % this.totalFrames)) {
+        window.isLottieHidden = true;
+        this.renderer.elements.forEach(function (el) {
+          el.hidden = true;
+          el.renderFrame();
+        });
         this.setCurrentRawFrameValue(nextValue % this.totalFrames);
         this._completedLoop = true;
         this.trigger('loopComplete');
@@ -13495,6 +13598,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.projectInterface = null;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setCurrentRawFrameValue = function (value) {
   this.currentRawFrame = value;
   this.gotoFrame();
@@ -16467,6 +16571,8 @@ function setIDPrefix(prefix) {
   idPrefix = prefix;
 }
 
+console.warn('-------------------- lottie web -----------------------');
+// TODO(myxvisual): Root
 function loadAnimation(params) {
   if (standalone === true) {
     params.animationData = JSON.parse(animationData);

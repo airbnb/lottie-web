@@ -50,7 +50,6 @@ function RenderableDOMElement() {}
     },
     renderInnerContent: function () {},
     prepareFrame: function (num) {
-      this._mdf = false;
       this.prepareRenderableFrame(num);
       this.prepareProperties(num, this.isInRange);
       this.checkTransparency();

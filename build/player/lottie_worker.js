@@ -6914,6 +6914,7 @@ BaseRenderer.prototype.checkLayers = function (num) {
   this.checkPendingElements();
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.createItem = function (layer) {
   switch (layer.ty) {
     case 2:
@@ -6930,6 +6931,8 @@ BaseRenderer.prototype.createItem = function (layer) {
       return this.createText(layer);
     case 6:
       return this.createAudio(layer);
+    case 9:
+      return this.createVideo(layer);
     case 13:
       return this.createCamera(layer);
     case 15:
@@ -6951,6 +6954,7 @@ BaseRenderer.prototype.createFootage = function (data) {
   return new FootageElement(data, this.globalData, this);
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.buildAllItems = function () {
   var i;
   var len = this.layers.length;
@@ -6982,11 +6986,13 @@ BaseRenderer.prototype.setProjectInterface = function (pInterface) {
   this.globalData.projectInterface = pInterface;
 };
 
+// TODO(myxvisual): Root
 BaseRenderer.prototype.initItems = function () {
   if (!this.globalData.progressiveLoad) {
     this.buildAllItems();
   }
 };
+
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
   var elements = this.elements;
   var layers = this.layers;
@@ -7045,7 +7051,7 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
 };
 
 /* global createElementID, extendPrototype, BaseRenderer, NullElement, SVGShapeElement, SVGTextLottieElement,
-IImageElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
+IImageElement, VideoElement, SVGCompElement, ISolidElement, createNS, locationHref, createSizedArray, expressionsPlugin */
 
 function SVGRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -7124,6 +7130,11 @@ SVGRenderer.prototype.createText = function (data) {
 
 SVGRenderer.prototype.createImage = function (data) {
   return new IImageElement(data, this.globalData, this);
+};
+
+// TODO(myxvisual): Work
+SVGRenderer.prototype.createVideo = function (data) {
+  return new VideoElement(data, this.globalData, this);
 };
 
 SVGRenderer.prototype.createComp = function (data) {
@@ -7314,7 +7325,7 @@ SVGRenderer.prototype.show = function () {
 };
 
 /* global CVContextData, Matrix, extendPrototype, BaseRenderer, CVShapeElement, CVTextElement,
-CVImageElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
+CVImageElement, CVVideoElement, CVCompElement, CVSolidElement, SVGRenderer, createTag, createSizedArray */
 
 function CanvasRenderer(animationItem, config) {
   this.animationItem = animationItem;
@@ -7358,6 +7369,10 @@ CanvasRenderer.prototype.createText = function (data) {
 
 CanvasRenderer.prototype.createImage = function (data) {
   return new CVImageElement(data, this.globalData, this);
+};
+
+CanvasRenderer.prototype.createVideo = function (data) {
+  return new CVVideoElement(data, this.globalData, this);
 };
 
 CanvasRenderer.prototype.createComp = function (data) {
@@ -8191,6 +8206,7 @@ function RenderableDOMElement() {}
         this._isFirstFrame = true;
       }
     },
+    // TODO(myxvisual): Root
     renderFrame: function () {
       // If it is exported as hidden (data.hd === true) no need to render
       // If it is not visible no need to render
@@ -10665,6 +10681,7 @@ CVBaseElement.prototype = {
       this.maskManager._isFirstFrame = true;
     }
   },
+  // TODO(myxvisual): Root
   renderFrame: function () {
     if (this.hidden || this.data.hd) {
       return;
@@ -11344,6 +11361,7 @@ var animationManager = (function () {
     }
   }
 
+  // TODO(myxvisual): Root
   function registerAnimation(element, animationData) {
     if (!element) {
       return null;
@@ -11388,6 +11406,7 @@ var animationManager = (function () {
     len += 1;
   }
 
+  // TODO(myxvisual): Root
   function loadAnimation(params) {
     var animItem = new AnimationItem();
     setupAnimation(animItem, null);
@@ -11607,6 +11626,7 @@ var AnimationItem = function () {
 
 extendPrototype([BaseEvent], AnimationItem);
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setParams = function (params) {
   if (params.wrapper || params.container) {
     this.wrapper = params.wrapper || params.container;
@@ -11678,6 +11698,7 @@ AnimationItem.prototype.setupAnimation = function (data) {
   );
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setData = function (wrapper, animationData) {
   if (animationData) {
     if (typeof animationData !== 'object') {
@@ -11895,6 +11916,7 @@ AnimationItem.prototype.checkLoaded = function () {
     setTimeout(function () {
       this.trigger('DOMLoaded');
     }.bind(this), 0);
+    // TODO(myxvisual): Root
     this.gotoFrame();
     if (this.autoplay) {
       this.play();
@@ -11910,6 +11932,7 @@ AnimationItem.prototype.setSubframe = function (flag) {
   this.isSubframeEnabled = !!flag;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.gotoFrame = function () {
   this.currentFrame = this.isSubframeEnabled ? this.currentRawFrame : ~~this.currentRawFrame; // eslint-disable-line no-bitwise
 
@@ -11917,10 +11940,12 @@ AnimationItem.prototype.gotoFrame = function () {
     this.currentFrame = this.timeCompleted;
   }
   this.trigger('enterFrame');
+  // TODO(myxvisual): Root
   this.renderFrame();
   this.trigger('drawnFrame');
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.renderFrame = function () {
   if (this.isLoaded === false || !this.renderer) {
     return;
@@ -12028,6 +12053,7 @@ AnimationItem.prototype.goToAndPlay = function (value, isFrame, name) {
   this.play();
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.advanceTime = function (value) {
   if (this.isPaused === true || this.isLoaded === false) {
     return;
@@ -12178,6 +12204,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.projectInterface = null;
 };
 
+// TODO(myxvisual): Root
 AnimationItem.prototype.setCurrentRawFrameValue = function (value) {
   this.currentRawFrame = value;
   this.gotoFrame();

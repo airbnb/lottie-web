@@ -392,6 +392,10 @@ const scripts = [
 		builds: ['full','canvas','canvas_light']
 	},
 	{
+		src: 'js/elements/canvasElements/CVVideoElement.js',
+		builds: ['full','canvas','canvas_light']
+	},
+	{
 		src: 'js/elements/canvasElements/CVCompElement.js',
 		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},

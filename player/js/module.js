@@ -27,6 +27,7 @@ function setIDPrefix(prefix) {
   idPrefix = prefix;
 }
 
+console.warn('-------------------- lottie web -----------------------');
 // TODO(myxvisual): Root
 function loadAnimation(params) {
   if (standalone === true) {

@@ -487,6 +487,11 @@ AnimationItem.prototype.advanceTime = function (value) {
     } else if (nextValue >= this.totalFrames) {
       this.playCount += 1;
       if (!this.checkSegments(nextValue % this.totalFrames)) {
+        window.isLottieHidden = true;
+        this.renderer.elements.forEach(function (el) {
+          el.hidden = true;
+          el.renderFrame();
+        });
         this.setCurrentRawFrameValue(nextValue % this.totalFrames);
         this._completedLoop = true;
         this.trigger('loopComplete');

@@ -148,6 +148,7 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
   this.globalData.frameId = 0;
   this.globalData.frameRate = animData.fr;
   this.globalData.nm = animData.nm;
+  this.globalData.totalFrames = this.animationItem.totalFrames;
   this.globalData.compSize = {
     w: animData.w,
     h: animData.h,

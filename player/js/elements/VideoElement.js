@@ -27,10 +27,10 @@ VideoElement.prototype.sourceRectAtTime = function () {
   return this.sourceRect;
 };
 
-{/* <foreignObject x="0" y="0" width="250" height="250">
+/* <foreignObject x="0" y="0" width="250" height="250">
 <video controls width="250">
     <source src="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.webm"
             type="video/webm">
     Sorry, your browser doesn't support embedded videos.
 </video>
-    <foreignObject> */}
+    <foreignObject> */

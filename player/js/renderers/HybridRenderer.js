@@ -1,5 +1,5 @@
 /* global extendPrototype, BaseRenderer, SVGRenderer, SVGShapeElement, HShapeElement, SVGTextLottieElement,
-HTextElement, HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
+HTextElement, VideoElement HCameraElement, IImageElement, HImageElement, SVGCompElement, HCompElement, ISolidElement,
 HSolidElement, styleDiv, createTag, createNS */
 
 function HybridRenderer(animationItem, config) {
