@@ -11087,7 +11087,6 @@ function CVVideoElement(data, globalData, comp) {
   // anim.frameRate.renderedFrame
   // anim.renderer
   // data.st
-  console.warn(this);
   this.assetData = globalData.getAssetData(data.refId);
   var video = createTag('video');
   video.width = this.assetData.w;
@@ -16724,7 +16723,7 @@ function setIDPrefix(prefix) {
   idPrefix = prefix;
 }
 
-console.warn('-------------------- lottie web -----------------------');
+console.warn('-------------------- surreal-ai lottie web -----------------------');
 // TODO(myxvisual): Root
 function loadAnimation(params) {
   if (standalone === true) {
