@@ -11106,6 +11106,7 @@ CVVideoElement.prototype.prepareFrame = function () {
   // anim.renderer.renderedFrame
   var currFrame = arguments[0];
   if (currFrame < this.currFrame) {
+    this.video.currentTime = 0;
     this._isFirstFrame = true;
   }
   this.currFrame = currFrame;
