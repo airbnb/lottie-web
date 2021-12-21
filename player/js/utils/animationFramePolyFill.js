@@ -1,3 +1,13 @@
+/* eslint-disable no-extend-native */
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function (search, thisLen) {
+    if (thisLen === undefined || thisLen > this.length) {
+      thisLen = this.length;
+    }
+    return this.substring(thisLen - search.length, thisLen) === search;
+  };
+}
+
 (function () {
   var lastTime = 0;
   var vendors = ['ms', 'moz', 'webkit', 'o'];

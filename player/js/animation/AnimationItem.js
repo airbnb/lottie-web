@@ -1,4 +1,4 @@
-/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
+/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, VideoPreloader, audioControllerFactory, extendPrototype, BaseEvent,
 CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
 BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
 BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
@@ -33,6 +33,7 @@ var AnimationItem = function () {
   this._completedLoop = false;
   this.projectInterface = ProjectInterface();
   this.imagePreloader = new ImagePreloader();
+  this.videoPreloader = new VideoPreloader();
   this.audioController = audioControllerFactory();
   this.markers = [];
   this.configAnimation = this.configAnimation.bind(this);
@@ -265,10 +266,36 @@ AnimationItem.prototype.imagesLoaded = function () {
   this.checkLoaded();
 };
 
+AnimationItem.prototype.videosLoaded = function () {
+  this.trigger('loaded_videos');
+  this.checkLoaded();
+};
+
+// @ref https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+var imageExtNames = ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp'];
+var videoExtNames = ['.mov', '.mp4', '.webm', '.mkv'];
 AnimationItem.prototype.preloadImages = function () {
   this.imagePreloader.setAssetsPath(this.assetsPath);
   this.imagePreloader.setPath(this.path);
-  this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
+  var _this = this;
+  var imageAssets = [];
+  var videoAssets = [];
+  var assetsPath = this.assetsPath || '';
+  var originPath = this.path || '';
+  this.animationData.assets.forEach(function (asset) {
+    var path = ImagePreloader.prototype.getAssetsPath.call(_this, asset, assetsPath, originPath);
+    if (path) {
+      if (path.indexOf('data:image') === 0) {
+        imageAssets.push(asset);
+      } else if (imageExtNames.some(function (extName) { return path.endsWith(extName); })) {
+        imageAssets.push(asset);
+      } else if (videoExtNames.some(function (extName) { return path.endsWith(extName); })) {
+        videoAssets.push(asset);
+      }
+    }
+  });
+  this.imagePreloader.loadAssets(imageAssets, this.imagesLoaded.bind(this));
+  this.videoPreloader.loadAssets(videoAssets, this.videosLoaded.bind(this));
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -323,6 +350,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && this.renderer.globalData.fontManager.isLoaded
         && (this.imagePreloader.loadedImages() || this.renderer.rendererType !== 'canvas')
         && (this.imagePreloader.loadedFootages())
+        && this.videoPreloader.loadedVideos()
   ) {
     this.isLoaded = true;
     if (expressionsPlugin) {
@@ -612,6 +640,7 @@ AnimationItem.prototype.destroy = function (name) {
   }
   this.renderer.destroy();
   this.imagePreloader.destroy();
+  this.videoPreloader.destroy();
   this.trigger('destroy');
   this._cbs = null;
   this.onEnterFrame = null;
@@ -622,6 +651,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.renderer = null;
   this.renderer = null;
   this.imagePreloader = null;
+  this.videoPreloader = null;
   this.projectInterface = null;
 };
 

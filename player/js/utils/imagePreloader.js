@@ -42,7 +42,7 @@ var ImagePreloader = (function () {
     } else {
       path = originalPath;
       path += assetData.u ? assetData.u : '';
-      path += assetData.p;
+      path += assetData.p ? assetData.p : '';
     }
     return path;
   }
@@ -203,6 +203,7 @@ var ImagePreloader = (function () {
     imageLoaded: imageLoaded,
     footageLoaded: footageLoaded,
     setCacheType: setCacheType,
+    getAssetsPath: getAssetsPath,
   };
 
   return ImagePreloaderFactory;

@@ -140,6 +140,10 @@ const scripts = [
 		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light','lottie_worker', 'canvas_worker']
 	},
 	{
+		src: 'js/utils/videoPreloader.js',
+		builds: ['full','canvas','canvas_light','html','html_light','svg','svg_light','lottie_worker', 'canvas_worker']
+	},
+	{
 		src: 'js/utils/featureSupport.js',
 		builds: defaultBuilds
 	},
@@ -533,10 +537,6 @@ const scripts = [
 	},
 	{
 		src: 'js/utils/expressions/TextSelectorPropertyDecorator.js',
-		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
-	},
-	{
-		src: 'js/utils/expressions/video/preloadVideo.js',
 		builds: ['full','svg','canvas','html','canvas_worker', 'lottie_worker']
 	},
 	{

@@ -1240,6 +1240,16 @@ var BezierFactory = (function () {
   return ob;
 }());
 
+/* eslint-disable no-extend-native */
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function (search, thisLen) {
+    if (thisLen === undefined || thisLen > this.length) {
+      thisLen = this.length;
+    }
+    return this.substring(thisLen - search.length, thisLen) === search;
+  };
+}
+
 (function () {
   var lastTime = 0;
   var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -5039,7 +5049,7 @@ var ImagePreloader = (function () {
     } else {
       path = originalPath;
       path += assetData.u ? assetData.u : '';
-      path += assetData.p;
+      path += assetData.p ? assetData.p : '';
     }
     return path;
   }
@@ -5200,9 +5210,75 @@ var ImagePreloader = (function () {
     imageLoaded: imageLoaded,
     footageLoaded: footageLoaded,
     setCacheType: setCacheType,
+    getAssetsPath: getAssetsPath,
   };
 
   return ImagePreloaderFactory;
+}());
+
+/* global ImagePreloader */
+/* exported VideoPreloader, preloadVideo */
+function preloadVideo(url, success, error) {
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'blob';
+  xhr.open('GET', url);
+  xhr.send();
+  xhr.onload = function () {
+    var blobUrl = URL.createObjectURL(xhr.response);
+    if (success) {
+      success(blobUrl);
+    }
+  };
+
+  xhr.onerror = error;
+}
+
+var VideoPreloader = (function () {
+  function loadAssets(assets, cb) {
+    var _this = this;
+    assets.forEach(function (asset) {
+      var path = ImagePreloader.prototype.getAssetsPath.call(_this, asset, '', '');
+      _this.videos.push(asset);
+      preloadVideo(path, function (blobUrl) {
+        videoLoaded.call(_this);
+        asset.e = 1;
+        asset.p = blobUrl;
+        asset.u = '';
+        if (cb) cb();
+      }, function () {
+        loadAssets([asset], cb);
+      });
+    });
+  }
+
+  function destroy() {
+    this.imagesLoadedCb = null;
+    this.videos.length = 0;
+  }
+
+  function loadedVideos() {
+    var isAllLoaded = this.videos.length === this.loadedAssets;
+    return isAllLoaded;
+  }
+
+  function videoLoaded() {
+    this.loadedAssets += 1;
+  }
+
+  function VideoPreloaderFactory() {
+    this._videoLoaded = videoLoaded.bind(this);
+    this.loadedAssets = 0;
+    this.videos = [];
+  }
+
+  VideoPreloaderFactory.prototype = {
+    loadAssets: loadAssets,
+    destroy: destroy,
+    loadedVideos: loadedVideos,
+    getAssetsPath: ImagePreloader.prototype.getAssetsPath,
+  };
+
+  return VideoPreloaderFactory;
 }());
 
 /* exported featureSupport */
@@ -11023,7 +11099,6 @@ CVVideoElement.prototype.prepareFrame = function () {
   }
   this.currFrame = currFrame;
   var res = IImageElement.prototype.prepareFrame.apply(this, arguments);
-  // CVBaseElement.prototype.renderFrame.call(this);
   return res;
 };
 
@@ -12972,7 +13047,7 @@ var animationManager = (function () {
   return moduleOb;
 }());
 
-/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
+/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, VideoPreloader, audioControllerFactory, extendPrototype, BaseEvent,
 CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
 BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
 BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
@@ -13007,6 +13082,7 @@ var AnimationItem = function () {
   this._completedLoop = false;
   this.projectInterface = ProjectInterface();
   this.imagePreloader = new ImagePreloader();
+  this.videoPreloader = new VideoPreloader();
   this.audioController = audioControllerFactory();
   this.markers = [];
   this.configAnimation = this.configAnimation.bind(this);
@@ -13239,10 +13315,36 @@ AnimationItem.prototype.imagesLoaded = function () {
   this.checkLoaded();
 };
 
+AnimationItem.prototype.videosLoaded = function () {
+  this.trigger('loaded_videos');
+  this.checkLoaded();
+};
+
+// @ref https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Image_types
+var imageExtNames = ['.apng', '.avif', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.png', '.svg', '.webp'];
+var videoExtNames = ['.mov', '.mp4', '.webm', '.mkv'];
 AnimationItem.prototype.preloadImages = function () {
   this.imagePreloader.setAssetsPath(this.assetsPath);
   this.imagePreloader.setPath(this.path);
-  this.imagePreloader.loadAssets(this.animationData.assets, this.imagesLoaded.bind(this));
+  var _this = this;
+  var imageAssets = [];
+  var videoAssets = [];
+  var assetsPath = this.assetsPath || '';
+  var originPath = this.path || '';
+  this.animationData.assets.forEach(function (asset) {
+    var path = ImagePreloader.prototype.getAssetsPath.call(_this, asset, assetsPath, originPath);
+    if (path) {
+      if (path.indexOf('data:image') === 0) {
+        imageAssets.push(asset);
+      } else if (imageExtNames.some(function (extName) { return path.endsWith(extName); })) {
+        imageAssets.push(asset);
+      } else if (videoExtNames.some(function (extName) { return path.endsWith(extName); })) {
+        videoAssets.push(asset);
+      }
+    }
+  });
+  this.imagePreloader.loadAssets(imageAssets, this.imagesLoaded.bind(this));
+  this.videoPreloader.loadAssets(videoAssets, this.videosLoaded.bind(this));
 };
 
 AnimationItem.prototype.configAnimation = function (animData) {
@@ -13297,6 +13399,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && this.renderer.globalData.fontManager.isLoaded
         && (this.imagePreloader.loadedImages() || this.renderer.rendererType !== 'canvas')
         && (this.imagePreloader.loadedFootages())
+        && this.videoPreloader.loadedVideos()
   ) {
     this.isLoaded = true;
     if (expressionsPlugin) {
@@ -13586,6 +13689,7 @@ AnimationItem.prototype.destroy = function (name) {
   }
   this.renderer.destroy();
   this.imagePreloader.destroy();
+  this.videoPreloader.destroy();
   this.trigger('destroy');
   this._cbs = null;
   this.onEnterFrame = null;
@@ -13596,6 +13700,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.renderer = null;
   this.renderer = null;
   this.imagePreloader = null;
+  this.videoPreloader = null;
   this.projectInterface = null;
 };
 
