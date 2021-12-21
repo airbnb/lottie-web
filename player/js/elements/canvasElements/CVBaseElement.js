@@ -8,6 +8,7 @@ CVBaseElement.prototype = {
   initRendererElement: function () {},
   createContainerElements: function () {
     this.canvasContext = this.globalData.canvasContext;
+    this.container = this.globalData.container;
     this.renderableEffectsManager = new CVEffects(this);
   },
   createContent: function () {},
@@ -62,8 +63,8 @@ CVBaseElement.prototype = {
     this.maskManager.destroy();
   },
   mHelper: new Matrix(),
-  _maskEl: null,
   _isMaskEl: false,
+  _maskEl: null,
 };
 CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;

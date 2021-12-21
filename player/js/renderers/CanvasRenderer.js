@@ -181,6 +181,7 @@ CanvasRenderer.prototype.configAnimation = function (animData) {
   };
   this.setupGlobalData(animData, document.body);
   this.globalData.canvasContext = this.canvasContext;
+  this.globalData.container = this.animationItem.container;
   this.globalData.renderer = this;
   this.globalData.isDashed = false;
   this.globalData.progressiveLoad = this.renderConfig.progressiveLoad;
