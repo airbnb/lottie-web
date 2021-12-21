@@ -196,6 +196,7 @@ SVGRenderer.prototype.checkPendingElements = function () {
   while (this.pendingElements.length) {
     var element = this.pendingElements.pop();
     element.checkParenting();
+    // TODO(myxvisual): MASK LOGIC
     if (element.data.tt) {
       var i = 0;
       var len = this.elements.length;
