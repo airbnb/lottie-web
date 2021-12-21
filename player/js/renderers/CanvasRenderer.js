@@ -329,6 +329,13 @@ CanvasRenderer.prototype.buildItem = function (pos) {
     return;
   }
   var element = this.createItem(this.layers[pos], this, this.globalData);
+  var tt = element.data.tt;
+  // eslint-disable-next-line no-void
+  if (tt !== void 0) {
+    var maskEl = this.elements[tt] || this.createItem(this.layers[tt], this, this.globalData);
+    maskEl._isMaskEl = true;
+    element._maskEl = maskEl;
+  }
   elements[pos] = element;
   element.initExpressions();
   /* if(this.layers[pos].ty === 0){

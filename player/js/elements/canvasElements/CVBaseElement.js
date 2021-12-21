@@ -62,6 +62,8 @@ CVBaseElement.prototype = {
     this.maskManager.destroy();
   },
   mHelper: new Matrix(),
+  _maskEl: null,
+  _isMaskEl: false,
 };
 CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;

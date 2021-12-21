@@ -7623,6 +7623,13 @@ CanvasRenderer.prototype.buildItem = function (pos) {
     return;
   }
   var element = this.createItem(this.layers[pos], this, this.globalData);
+  var tt = element.data.tt;
+  // eslint-disable-next-line no-void
+  if (tt !== void 0) {
+    var maskEl = this.elements[tt] || this.createItem(this.layers[tt], this, this.globalData);
+    maskEl._isMaskEl = true;
+    element._maskEl = maskEl;
+  }
   elements[pos] = element;
   element.initExpressions();
   /* if(this.layers[pos].ty === 0){
@@ -11017,6 +11024,8 @@ CVBaseElement.prototype = {
     this.maskManager.destroy();
   },
   mHelper: new Matrix(),
+  _maskEl: null,
+  _isMaskEl: false,
 };
 CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;
@@ -11121,7 +11130,10 @@ CVVideoElement.prototype.renderVideo = function () {
     this.video.pause();
     this.video.currentTime = 0;
   } else {
-    this.canvasContext.drawImage(this.video, 0, 0);
+    // eslint-disable-next-line no-lonely-if
+    if (!this._isMaskEl) {
+      this.canvasContext.drawImage(this.video, 0, 0);
+    }
   }
 };
 

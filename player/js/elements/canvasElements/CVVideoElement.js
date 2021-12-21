@@ -51,7 +51,10 @@ CVVideoElement.prototype.renderVideo = function () {
     this.video.pause();
     this.video.currentTime = 0;
   } else {
-    this.canvasContext.drawImage(this.video, 0, 0);
+    // eslint-disable-next-line no-lonely-if
+    if (!this._isMaskEl) {
+      this.canvasContext.drawImage(this.video, 0, 0);
+    }
   }
 };
 
