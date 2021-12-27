@@ -1,7 +1,23 @@
-/* global createTypedArray, Matrix, TransformPropertyFactory, expressionHelpers, PropertyFactory, expressionHelpers,
-initialDefaultFrame, shapePool, ShapePropertyFactory, bez, extendPrototype, ExpressionManager, createSizedArray */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import {
+  createSizedArray,
+  createTypedArray,
+} from '../helpers/arrays';
+import ShapePropertyFactory from '../shapes/ShapeProperty';
+import PropertyFactory from '../PropertyFactory';
+import shapePool from '../pooling/shape_pool';
+import {
+  initialDefaultFrame,
+} from '../../main';
+import bez from '../bez';
+import Matrix from '../../3rd_party/transformation-matrix';
+import TransformPropertyFactory from '../TransformProperty';
+import expressionHelpers from './expressionHelpers';
+import ExpressionManager from './ExpressionManager';
 
-(function addPropertyDecorator() {
+function addPropertyDecorator() {
   function loopOut(type, duration, durationFlag) {
     if (!this.k || !this.keyframes) {
       return this.pv;
@@ -438,4 +454,10 @@ initialDefaultFrame, shapePool, ShapePropertyFactory, bez, extendPrototype, Expr
     }
     return prop;
   };
-}());
+}
+
+function initialize() {
+  addPropertyDecorator();
+}
+
+export default initialize;

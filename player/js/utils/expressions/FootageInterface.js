@@ -1,7 +1,4 @@
-/* global */
-/* exported FootageInterface */
-
-var FootageInterface = (function () {
+const FootageInterface = (function () {
   var outlineInterfaceFactory = (function (elem) {
     var currentPropertyName = '';
     var currentProperty = elem.getFootageData();
@@ -59,3 +56,5 @@ var FootageInterface = (function () {
     return _interfaceFunction;
   };
 }());
+
+export default FootageInterface;

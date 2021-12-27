@@ -1,4 +1,7 @@
-/* global Matrix, createTypedArray */
+import {
+  createTypedArray,
+} from '../../utils/helpers/arrays';
+import Matrix from '../../3rd_party/transformation-matrix';
 
 function CVContextData() {
   this.saved = [];
@@ -31,3 +34,5 @@ CVContextData.prototype.reset = function () {
   this.cTr.reset();
   this.cO = 1;
 };
+
+export default CVContextData;

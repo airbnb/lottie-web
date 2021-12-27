@@ -1,4 +1,4 @@
-/* global createNS */
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGProLevelsFilter(filter, filterManager) {
   this.filterManager = filterManager;
@@ -99,3 +99,5 @@ SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
     }
   }
 };
+
+export default SVGProLevelsFilter;

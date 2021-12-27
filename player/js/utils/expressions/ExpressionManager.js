@@ -1,7 +1,18 @@
-/* eslint-disable camelcase, no-unused-vars */
-/* global BMMath, BezierFactory, createTypedArray, degToRads, shapePool */
+/* eslint-disable camelcase */
 
-var ExpressionManager = (function () {
+import {
+  degToRads,
+  BMMath,
+} from '../common';
+import {
+  createTypedArray,
+} from '../helpers/arrays';
+import BezierFactory from '../../3rd_party/BezierEaser';
+import shapePool from '../pooling/shape_pool';
+import seedrandom from '../../3rd_party/seedrandom';
+import propTypes from '../helpers/propTypes';
+
+const ExpressionManager = (function () {
   'use strict';
 
   var ob = {};
@@ -11,6 +22,7 @@ var ExpressionManager = (function () {
   var XMLHttpRequest = null;
   var fetch = null;
   var frames = null;
+  seedrandom(BMMath);
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -708,15 +720,20 @@ var ExpressionManager = (function () {
       this.frameExpressionId = elem.globalData.frameId;
 
       // TODO: Check if it's possible to return on ShapeInterface the .v value
-      if (scoped_bm_rt.propType === 'shape') {
-        scoped_bm_rt = scoped_bm_rt.v;
-      }
-      // globalData.popExpression();
+      // Changed this to a ternary operation because Rollup failed compiling it correctly
+      scoped_bm_rt = scoped_bm_rt.propType === propTypes.SHAPE
+        ? scoped_bm_rt.v
+        : scoped_bm_rt;
       return scoped_bm_rt;
     }
+    // Bundlers will see these as dead code and unless we reference them
+    executeExpression.__preventDeadCodeRemoval = [$bm_transform, anchorPoint, velocity, inPoint, outPoint, width, height, name, loop_in, loop_out, smooth, toComp, fromCompToSurface, toWorld, fromWorld, mask, position, rotation, scale, thisComp, numKeys, active, wiggle, loopInDuration, loopOutDuration, comp, lookAt, easeOut, easeIn, ease, nearestKey, key, text, textIndex, textTotal, selectorValue, framesToTime, timeToFrames, sourceRectAtTime, substring, substr, posterizeTime, index, globalData];
     return executeExpression;
   }
 
   ob.initiateExpression = initiateExpression;
+  ob.__preventDeadCodeRemoval = [window, document, XMLHttpRequest, fetch, frames, $bm_neg, add, $bm_sum, $bm_sub, $bm_mul, $bm_div, $bm_mod, clamp, radians_to_degrees, degreesToRadians, degrees_to_radians, normalize, rgbToHsl, hslToRgb, linear, random, createPath];
   return ob;
 }());
+
+export default ExpressionManager;

@@ -1,4 +1,7 @@
-/* global TextProperty, TextAnimatorProperty, buildShapeString, LetterProps */
+import LetterProps from '../utils/text/LetterProps';
+import TextProperty from '../utils/text/TextProperty';
+import TextAnimatorProperty from '../utils/text/TextAnimatorProperty';
+import buildShapeString from '../utils/shapes/shapePathBuilder';
 
 function ITextElement() {
 }
@@ -82,3 +85,5 @@ ITextElement.prototype.emptyProp = new LetterProps();
 ITextElement.prototype.destroy = function () {
 
 };
+
+export default ITextElement;

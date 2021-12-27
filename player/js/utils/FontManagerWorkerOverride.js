@@ -1,5 +1,6 @@
-/* global FontManager:writable */
-/* exported FontManager */
+import FontManager from './FontManager';
+
+// TODO: fix overwrite
 
 FontManager = (function () {
   var Font = function () {
@@ -11,3 +12,5 @@ FontManager = (function () {
   };
   return Font;
 }());
+
+export default FontManager;

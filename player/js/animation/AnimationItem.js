@@ -1,9 +1,28 @@
-/* global createElementID, subframeEnabled, ProjectInterface, ImagePreloader, audioControllerFactory, extendPrototype, BaseEvent,
-CanvasRenderer, SVGRenderer, HybridRenderer, dataManager, expressionsPlugin, BMEnterFrameEvent, BMCompleteLoopEvent,
-BMCompleteEvent, BMSegmentStartEvent, BMDestroyEvent, BMEnterFrameEvent, BMCompleteLoopEvent, BMCompleteEvent, BMSegmentStartEvent,
-BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, markerParser */
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
 
-var AnimationItem = function () {
+import audioControllerFactory from '../utils/audio/AudioController';
+import {
+  getSubframeEnabled,
+  BMEnterFrameEvent,
+  BMCompleteEvent,
+  BMCompleteLoopEvent,
+  BMSegmentStartEvent,
+  BMDestroyEvent,
+  BMRenderFrameErrorEvent,
+  BMConfigErrorEvent,
+  createElementID,
+  getExpressionsPlugin,
+} from '../utils/common';
+import ImagePreloader from '../utils/imagePreloader';
+import BaseEvent from '../utils/BaseEvent';
+import dataManager from '../utils/DataManager';
+import markerParser from '../utils/markers/markerParser';
+import ProjectInterface from '../utils/expressions/ProjectInterface';
+import { getRenderer } from '../renderers/renderersManager';
+
+const AnimationItem = function () {
   this._cbs = [];
   this.name = '';
   this.path = '';
@@ -27,7 +46,7 @@ var AnimationItem = function () {
   this.assetsPath = '';
   this.timeCompleted = 0;
   this.segmentPos = 0;
-  this.isSubframeEnabled = subframeEnabled;
+  this.isSubframeEnabled = getSubframeEnabled();
   this.segments = [];
   this._idle = true;
   this._completedLoop = false;
@@ -52,17 +71,8 @@ AnimationItem.prototype.setParams = function (params) {
   } else if (params.renderer) {
     animType = params.renderer;
   }
-  switch (animType) {
-    case 'canvas':
-      this.renderer = new CanvasRenderer(this, params.rendererSettings);
-      break;
-    case 'svg':
-      this.renderer = new SVGRenderer(this, params.rendererSettings);
-      break;
-    default:
-      this.renderer = new HybridRenderer(this, params.rendererSettings);
-      break;
-  }
+  const RendererClass = getRenderer(animType);
+  this.renderer = new RendererClass(this, params.rendererSettings);
   this.imagePreloader.setCacheType(animType, this.renderer.globalData.defs);
   this.renderer.setProjectInterface(this.projectInterface);
   this.animType = animType;
@@ -228,6 +238,7 @@ AnimationItem.prototype.includeLayers = function (data) {
 
 AnimationItem.prototype.onSegmentComplete = function (data) {
   this.animationData = data;
+  var expressionsPlugin = getExpressionsPlugin();
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
@@ -323,6 +334,7 @@ AnimationItem.prototype.checkLoaded = function () {
         && (this.imagePreloader.loadedFootages())
   ) {
     this.isLoaded = true;
+    var expressionsPlugin = getExpressionsPlugin();
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }
@@ -761,3 +773,5 @@ AnimationItem.prototype.triggerConfigError = function (nativeError) {
     this.onError.call(this, error);
   }
 };
+
+export default AnimationItem;

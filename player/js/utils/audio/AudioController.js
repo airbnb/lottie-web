@@ -1,7 +1,6 @@
-/* global Howl */
-/* exported audioControllerFactory */
+// import Howl from '../../3rd_party/howler';
 
-var audioControllerFactory = (function () {
+const audioControllerFactory = (function () {
   function AudioController(audioFactory) {
     this.audios = [];
     this.audioFactory = audioFactory;
@@ -37,8 +36,8 @@ var audioControllerFactory = (function () {
     createAudio: function (assetPath) {
       if (this.audioFactory) {
         return this.audioFactory(assetPath);
-      } if (Howl) {
-        return new Howl({
+      } if (window.Howl) {
+        return new window.Howl({
           src: [assetPath],
         });
       }
@@ -82,3 +81,5 @@ var audioControllerFactory = (function () {
     return new AudioController();
   };
 }());
+
+export default audioControllerFactory;

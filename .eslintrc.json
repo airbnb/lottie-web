@@ -6,8 +6,8 @@
         "airbnb-base"
     ],
     "parserOptions": {
-        "ecmaVersion": 5,
-        "sourceType": "script",
+        "ecmaVersion": 2015,
+        "sourceType": "module",
         "ecmaFeatures" : {
             "globalReturn": false
         }

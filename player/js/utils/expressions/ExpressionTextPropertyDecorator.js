@@ -1,4 +1,5 @@
-/* global ExpressionManager, TextProperty */
+import TextProperty from '../text/TextProperty';
+import ExpressionManager from './ExpressionManager';
 
 (function addDecorator() {
   function searchExpressions() {

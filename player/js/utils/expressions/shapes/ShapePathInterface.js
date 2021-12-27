@@ -1,7 +1,7 @@
-/* global propertyGroupFactory, PropertyInterface */
-/* exported ShapePathInterface */
+import propertyGroupFactory from '../PropertyGroupFactory';
+import PropertyInterface from '../PropertyInterface';
 
-var ShapePathInterface = (
+const ShapePathInterface = (
 
   function () {
     return function pathInterfaceFactory(shape, view, propertyGroup) {
@@ -43,3 +43,5 @@ var ShapePathInterface = (
     };
   }()
 );
+
+export default ShapePathInterface;

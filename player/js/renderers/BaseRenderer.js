@@ -1,4 +1,6 @@
-/* global AudioElement, FootageElement, FontManager */
+import FontManager from '../utils/FontManager';
+import FootageElement from '../elements/FootageElement';
+import AudioElement from '../elements/AudioElement';
 
 function BaseRenderer() {}
 BaseRenderer.prototype.checkLayers = function (num) {
@@ -147,3 +149,5 @@ BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
     h: animData.h,
   };
 };
+
+export default BaseRenderer;

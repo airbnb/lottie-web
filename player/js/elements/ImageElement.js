@@ -1,4 +1,14 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement, RenderableDOMElement, createNS */
+import {
+  extendPrototype,
+} from '../utils/functionExtensions';
+
+import createNS from '../utils/helpers/svg_elements';
+import BaseElement from './BaseElement';
+import TransformElement from './helpers/TransformElement';
+import SVGBaseElement from './svgElements/SVGBaseElement';
+import HierarchyElement from './helpers/HierarchyElement';
+import FrameElement from './helpers/FrameElement';
+import RenderableDOMElement from './helpers/RenderableDOMElement';
 
 function IImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
@@ -25,3 +35,5 @@ IImageElement.prototype.createContent = function () {
 IImageElement.prototype.sourceRectAtTime = function () {
   return this.sourceRect;
 };
+
+export default IImageElement;

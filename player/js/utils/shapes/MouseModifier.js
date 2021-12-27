@@ -1,4 +1,10 @@
-/* global extendPrototype, ShapeModifiers, ShapeModifier */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import {
+  ShapeModifiers,
+  ShapeModifier,
+} from './ShapeModifiers';
 
 function MouseModifier() {}
 extendPrototype([ShapeModifier], MouseModifier);
@@ -212,3 +218,5 @@ MouseModifier.prototype.initModifierProperties = function (elem, data) {
 };
 
 ShapeModifiers.registerModifier('ms', MouseModifier);
+
+export default MouseModifier;

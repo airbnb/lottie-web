@@ -1,4 +1,9 @@
-/* global DashProperty, PropertyFactory, extendPrototype, DynamicPropertyContainer */
+import {
+  extendPrototype,
+} from '../../../utils/functionExtensions';
+import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
+import PropertyFactory from '../../../utils/PropertyFactory';
+import DashProperty from '../../../utils/shapes/DashProperty';
 
 function SVGStrokeStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
@@ -12,3 +17,5 @@ function SVGStrokeStyleData(elem, data, styleOb) {
 }
 
 extendPrototype([DynamicPropertyContainer], SVGStrokeStyleData);
+
+export default SVGStrokeStyleData;

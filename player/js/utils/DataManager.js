@@ -1,6 +1,6 @@
-/* global _useWebWorker */
+import { getWebWorker } from '../main';
 
-var dataManager = (function () {
+const dataManager = (function () {
   var _counterId = 1;
   var processes = [];
   var workerFn;
@@ -23,7 +23,7 @@ var dataManager = (function () {
     },
   };
   function createWorker(fn) {
-    if (window.Worker && window.Blob && _useWebWorker) {
+    if (window.Worker && window.Blob && getWebWorker()) {
       var blob = new Blob(['var _workerSelf = self; self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       // var blob = new Blob(['self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       var url = URL.createObjectURL(blob);
@@ -36,11 +36,7 @@ var dataManager = (function () {
   function setupWorker() {
     if (!workerInstance) {
       workerInstance = createWorker(function workerStart(e) {
-        /* exported dataManager */
-
         function dataFunctionManager() {
-          // var tCanvasHelper = createTag('canvas').getContext('2d');
-
           function completeLayers(layers, comps) {
             var layerData;
             var i;
@@ -457,7 +453,6 @@ var dataManager = (function () {
           _workerSelf.dataManager = dataFunctionManager();
         }
 
-        /* exported assetLoader */
         if (!_workerSelf.assetLoader) {
           _workerSelf.assetLoader = (function () {
             function formatResponse(xhr) {
@@ -625,3 +620,5 @@ var dataManager = (function () {
     completeAnimation: completeAnimation,
   };
 }());
+
+export default dataManager;

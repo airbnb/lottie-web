@@ -1,5 +1,3 @@
-/* exported extendPrototype, getDescriptor, createProxyFunction */
-
 function extendPrototype(sources, destination) {
   var i;
   var len = sources.length;
@@ -21,3 +19,9 @@ function createProxyFunction(prototype) {
   ProxyFunction.prototype = prototype;
   return ProxyFunction;
 }
+
+export {
+  extendPrototype,
+  getDescriptor,
+  createProxyFunction,
+};

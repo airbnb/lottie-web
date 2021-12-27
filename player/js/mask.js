@@ -1,4 +1,13 @@
-/* global createSizedArray, createElementID, PropertyFactory, ShapePropertyFactory, createNS, locationHref */
+import { getLocationHref } from './main';
+import {
+  createElementID,
+} from './utils/common';
+import {
+  createSizedArray,
+} from './utils/helpers/arrays';
+import PropertyFactory from './utils/PropertyFactory';
+import ShapePropertyFactory from './utils/shapes/ShapeProperty';
+import createNS from './utils/helpers/svg_elements';
 
 function MaskElement(data, element, globalData) {
   this.data = data;
@@ -99,7 +108,7 @@ function MaskElement(data, element, globalData) {
         mask.setAttribute('id', layerId + '_' + count);
         mask.appendChild(path);
         defs.appendChild(mask);
-        g.setAttribute('mask', 'url(' + locationHref + '#' + layerId + '_' + count + ')');
+        g.setAttribute('mask', 'url(' + getLocationHref() + '#' + layerId + '_' + count + ')');
 
         currentMasks.length = 0;
         currentMasks.push(g);
@@ -132,7 +141,7 @@ function MaskElement(data, element, globalData) {
 
   if (count > 0) {
     this.maskElement.setAttribute('id', layerId);
-    this.element.maskedElement.setAttribute(maskRef, 'url(' + locationHref + '#' + layerId + ')');
+    this.element.maskedElement.setAttribute(maskRef, 'url(' + getLocationHref() + '#' + layerId + ')');
     defs.appendChild(this.maskElement);
   }
   if (this.viewData.length) {
@@ -164,7 +173,7 @@ MaskElement.prototype.renderFrame = function (isFirstFrame) {
         if (this.storedData[i].x.v < 0) {
           if (this.storedData[i].lastOperator !== 'erode') {
             this.storedData[i].lastOperator = 'erode';
-            this.storedData[i].elem.setAttribute('filter', 'url(' + locationHref + '#' + this.storedData[i].filterId + ')');
+            this.storedData[i].elem.setAttribute('filter', 'url(' + getLocationHref() + '#' + this.storedData[i].filterId + ')');
           }
           feMorph.setAttribute('radius', -this.storedData[i].x.v);
         } else {
@@ -226,3 +235,5 @@ MaskElement.prototype.destroy = function () {
   this.data = null;
   this.masksProperties = null;
 };
+
+export default MaskElement;

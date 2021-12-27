@@ -1,7 +1,16 @@
-/* global initialDefaultFrame, BezierFactory, degToRads, bez, createTypedArray */
-/* exported PropertyFactory */
+import {
+  degToRads,
+} from './common';
+import {
+  createTypedArray,
+} from './helpers/arrays';
+import BezierFactory from '../3rd_party/BezierEaser';
+import {
+  initialDefaultFrame,
+} from '../main';
+import bez from './bez';
 
-var PropertyFactory = (function () {
+const PropertyFactory = (function () {
   var initFrame = initialDefaultFrame;
   var mathAbs = Math.abs;
 
@@ -473,3 +482,5 @@ var PropertyFactory = (function () {
   };
   return ob;
 }());
+
+export default PropertyFactory;

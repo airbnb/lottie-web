@@ -1,7 +1,8 @@
-/* global ShapePath, pointPool, poolFactory */
-/* exported shapePool */
+import poolFactory from './pool_factory';
+import pointPool from './point_pool';
+import ShapePath from '../shapes/ShapePath';
 
-var shapePool = (function () {
+const shapePool = (function () {
   function create() {
     return new ShapePath();
   }
@@ -39,3 +40,5 @@ var shapePool = (function () {
 
   return factory;
 }());
+
+export default shapePool;

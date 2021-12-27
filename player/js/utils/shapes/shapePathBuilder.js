@@ -1,6 +1,4 @@
-/* exported buildShapeString */
-
-var buildShapeString = function (pathNodes, length, closed, mat) {
+const buildShapeString = function (pathNodes, length, closed, mat) {
   if (length === 0) {
     return '';
   }
@@ -18,3 +16,5 @@ var buildShapeString = function (pathNodes, length, closed, mat) {
   }
   return shapeString;
 };
+
+export default buildShapeString;

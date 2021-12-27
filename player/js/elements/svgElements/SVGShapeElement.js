@@ -1,8 +1,32 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
-FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
-SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
-lineCapEnum, lineJoinEnum */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import { getLocationHref } from '../../main';
+import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import SVGBaseElement from './SVGBaseElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import getBlendMode from '../../utils/helpers/blendModes';
+import Matrix from '../../3rd_party/transformation-matrix';
+import IShapeElement from '../ShapeElement';
+import TransformPropertyFactory from '../../utils/TransformProperty';
+import { ShapeModifiers } from '../../utils/shapes/ShapeModifiers';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
+import SVGShapeData from '../helpers/shapes/SVGShapeData';
+import SVGStyleData from '../helpers/shapes/SVGStyleData';
+import SVGStrokeStyleData from '../helpers/shapes/SVGStrokeStyleData';
+import SVGFillStyleData from '../helpers/shapes/SVGFillStyleData';
+import SVGGradientFillStyleData from '../helpers/shapes/SVGGradientFillStyleData';
+import SVGGradientStrokeStyleData from '../helpers/shapes/SVGGradientStrokeStyleData';
+import ShapeGroupData from '../helpers/shapes/ShapeGroupData';
+import SVGTransformData from '../helpers/shapes/SVGTransformData';
+import SVGElementsRenderer from '../helpers/shapes/SVGElementsRenderer';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -94,7 +118,7 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
     if (elementData.maskId) {
       this.globalData.defs.appendChild(elementData.ms);
       this.globalData.defs.appendChild(elementData.of);
-      pathElement.setAttribute('mask', 'url(' + locationHref + '#' + elementData.maskId + ')');
+      pathElement.setAttribute('mask', 'url(' + getLocationHref() + '#' + elementData.maskId + ')');
     }
   }
 
@@ -336,3 +360,5 @@ SVGShapeElement.prototype.destroy = function () {
   this.shapesData = null;
   this.itemsData = null;
 };
+
+export default SVGShapeElement;

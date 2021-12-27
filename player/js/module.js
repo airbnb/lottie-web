@@ -1,14 +1,22 @@
-/* global locationHref:writable, animationManager, subframeEnabled:writable, defaultCurveSegments:writable, roundValues,
-expressionsPlugin:writable, PropertyFactory, ShapePropertyFactory, Matrix, idPrefix:writable, _useWebWorker:writable */
-/* exported locationHref, subframeEnabled, expressionsPlugin, idPrefix, _useWebWorker */
-
-'use strict';
-
 /* <%= contents %> */
-var lottie = {};
+import { setLocationHref, setWebWorker } from './main';
+import animationManager from './animation/AnimationManager';
+import {
+  setDefaultCurveSegments,
+  getDefaultCurveSegments,
+  roundValues,
+  setIdPrefix,
+  setSubframeEnabled,
+  setExpressionsPlugin,
+} from './utils/common';
+import PropertyFactory from './utils/PropertyFactory';
+import ShapePropertyFactory from './utils/shapes/ShapeProperty';
+import Matrix from './3rd_party/transformation-matrix';
 
-function setLocationHref(href) {
-  locationHref = href;
+const lottie = {};
+
+function setLocation(href) {
+  setLocationHref(href);
 }
 
 function searchAnimations() {
@@ -20,11 +28,11 @@ function searchAnimations() {
 }
 
 function setSubframeRendering(flag) {
-  subframeEnabled = flag;
+  setSubframeEnabled(flag);
 }
 
-function setIDPrefix(prefix) {
-  idPrefix = prefix;
+function setPrefix(prefix) {
+  setIdPrefix(prefix);
 }
 
 function loadAnimation(params) {
@@ -38,20 +46,20 @@ function setQuality(value) {
   if (typeof value === 'string') {
     switch (value) {
       case 'high':
-        defaultCurveSegments = 200;
+        setDefaultCurveSegments(200);
         break;
       default:
       case 'medium':
-        defaultCurveSegments = 50;
+        setDefaultCurveSegments(50);
         break;
       case 'low':
-        defaultCurveSegments = 10;
+        setDefaultCurveSegments(10);
         break;
     }
   } else if (!isNaN(value) && value > 1) {
-    defaultCurveSegments = value;
+    setDefaultCurveSegments(value);
   }
-  if (defaultCurveSegments >= 50) {
+  if (getDefaultCurveSegments() >= 50) {
     roundValues(false);
   } else {
     roundValues(true);
@@ -64,7 +72,7 @@ function inBrowser() {
 
 function installPlugin(type, plugin) {
   if (type === 'expressions') {
-    expressionsPlugin = plugin;
+    setExpressionsPlugin(plugin);
   }
 }
 
@@ -83,7 +91,7 @@ function getFactory(name) {
 
 lottie.play = animationManager.play;
 lottie.pause = animationManager.pause;
-lottie.setLocationHref = setLocationHref;
+lottie.setLocationHref = setLocation;
 lottie.togglePause = animationManager.togglePause;
 lottie.setSpeed = animationManager.setSpeed;
 lottie.setDirection = animationManager.setDirection;
@@ -105,10 +113,8 @@ lottie.setVolume = animationManager.setVolume;
 lottie.mute = animationManager.mute;
 lottie.unmute = animationManager.unmute;
 lottie.getRegisteredAnimations = animationManager.getRegisteredAnimations;
-lottie.useWebWorker = function (flag) {
-  _useWebWorker = flag;
-};
-lottie.setIDPrefix = setIDPrefix;
+lottie.useWebWorker = setWebWorker;
+lottie.setIDPrefix = setPrefix;
 lottie.__getFactory = getFactory;
 lottie.version = '[[BM_VERSION]]';
 
@@ -143,3 +149,5 @@ if (standalone) {
   renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
+
+export default lottie;

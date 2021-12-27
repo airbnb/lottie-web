@@ -1,5 +1,13 @@
-/* global LayerExpressionInterface, EffectsExpressionInterface, CompExpressionInterface, ShapeExpressionInterface,
-TextExpressionInterface, getBlendMode,createElementID, EffectsManager */
+import {
+  createElementID,
+} from '../utils/common';
+import LayerExpressionInterface from '../utils/expressions/LayerInterface';
+import EffectsExpressionInterface from '../utils/expressions/EffectInterface';
+import CompExpressionInterface from '../utils/expressions/CompInterface';
+import ShapeExpressionInterface from '../utils/expressions/ShapeInterface';
+import TextExpressionInterface from '../utils/expressions/TextInterface';
+import getBlendMode from '../utils/helpers/blendModes';
+import EffectsManager from '../EffectsManager';
 
 function BaseElement() {
 }
@@ -61,3 +69,5 @@ BaseElement.prototype = {
   },
   sourceRectAtTime: function () {},
 };
+
+export default BaseElement;

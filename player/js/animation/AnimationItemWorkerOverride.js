@@ -1,4 +1,9 @@
-/* global CanvasRenderer, dataManager, expressionsPlugin, AnimationItem */
+import AnimationItem from './AnimationItem';
+import CanvasRenderer from '../renderers/CanvasRenderer';
+import dataManager from '../utils/DataManager';
+import {
+  getExpressionsPlugin,
+} from '../utils/common';
 
 AnimationItem.prototype.setParams = function (params) {
   if (params.context) {
@@ -72,6 +77,7 @@ AnimationItem.prototype.includeLayers = function (data) {
   this.animationData.__complete = false;
   dataManager.completeAnimation(this.animationData);
   this.renderer.includeLayers(data.layers);
+  var expressionsPlugin = getExpressionsPlugin();
   if (expressionsPlugin) {
     expressionsPlugin.initExpressions(this);
   }
@@ -125,6 +131,7 @@ AnimationItem.prototype.waitForFontsLoaded = null;
 AnimationItem.prototype.checkLoaded = function () {
   if (!this.isLoaded) {
     this.isLoaded = true;
+    var expressionsPlugin = getExpressionsPlugin();
     if (expressionsPlugin) {
       expressionsPlugin.initExpressions(this);
     }

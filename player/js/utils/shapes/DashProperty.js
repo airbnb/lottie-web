@@ -1,4 +1,12 @@
-/* global createSizedArray, createTypedArray, PropertyFactory, extendPrototype, DynamicPropertyContainer */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import {
+  createSizedArray,
+  createTypedArray,
+} from '../helpers/arrays';
+import PropertyFactory from '../PropertyFactory';
 
 function DashProperty(elem, data, renderer, container) {
   this.elem = elem;
@@ -51,3 +59,5 @@ DashProperty.prototype.getValue = function (forceRender) {
   }
 };
 extendPrototype([DynamicPropertyContainer], DashProperty);
+
+export default DashProperty;

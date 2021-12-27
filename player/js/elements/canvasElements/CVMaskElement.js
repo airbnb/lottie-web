@@ -1,4 +1,9 @@
-/* global createSizedArray, ShapePropertyFactory, MaskElement */
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+
+import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
+import MaskElement from '../../mask';
 
 function CVMaskElement(data, element) {
   this.data = data;
@@ -63,3 +68,5 @@ CVMaskElement.prototype.getMaskProperty = MaskElement.prototype.getMaskProperty;
 CVMaskElement.prototype.destroy = function () {
   this.element = null;
 };
+
+export default CVMaskElement;

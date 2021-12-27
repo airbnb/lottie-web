@@ -1,3 +1,3 @@
-/* exported ImagePreloader */
+const ImagePreloader = function () {};
 
-var ImagePreloader = function () {};
+export default ImagePreloader;

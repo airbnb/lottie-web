@@ -1,4 +1,9 @@
-/* global createNS, createElementID, locationHref, bmFloor */
+import { getLocationHref } from '../../../main';
+import {
+  createElementID,
+  bmFloor,
+} from '../../../utils/common';
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGStrokeEffect(elem, filterManager) {
   this.initialized = false;
@@ -37,7 +42,7 @@ SVGStrokeEffect.prototype.initialize = function () {
     mask.appendChild(groupPath);
     this.elem.globalData.defs.appendChild(mask);
     var g = createNS('g');
-    g.setAttribute('mask', 'url(' + locationHref + '#' + id + ')');
+    g.setAttribute('mask', 'url(' + getLocationHref() + '#' + id + ')');
     while (elemChildren[0]) {
       g.appendChild(elemChildren[0]);
     }
@@ -110,3 +115,5 @@ SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
     }
   }
 };
+
+export default SVGStrokeEffect;

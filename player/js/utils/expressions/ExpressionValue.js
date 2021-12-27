@@ -1,5 +1,6 @@
-/* global createTypedArray */
-/* exported ExpressionValue */
+import {
+  createTypedArray,
+} from '../helpers/arrays';
 
 function ExpressionValue(elementProp, mult, type) {
   mult = mult || 1;
@@ -56,3 +57,5 @@ function ExpressionValue(elementProp, mult, type) {
   });
   return expressionValue;
 }
+
+export default ExpressionValue;

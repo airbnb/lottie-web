@@ -83,3 +83,5 @@ RenderableElement.prototype = {
     return { w: this.data.width, h: this.data.height };
   },
 };
+
+export default RenderableElement;
