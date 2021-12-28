@@ -50,4 +50,8 @@ CVCompElement.prototype.destroy = function () {
   this.elements = null;
 };
 
+CVCompElement.prototype.createComp = function (data) {
+  return new CVCompElement(data, this.globalData, this);
+};
+
 export default CVCompElement;
