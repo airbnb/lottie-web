@@ -17,7 +17,7 @@ export type AnimationItem = {
     playCount: number;
     isPaused: boolean;
     autoplay: boolean;
-    loop: boolean;
+    loop: boolean | number;
     renderer: any;
     animationID: string;
     assetsPath: string;
