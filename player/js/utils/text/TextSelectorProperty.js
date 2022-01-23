@@ -36,6 +36,9 @@ var TextSelectorProp = (function () {
       if (this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
         this.getValue();
       }
+      if (this._currentTotalChars !== this.data.totalChars) {
+        this.getValue();
+      }
       // var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
       var x1 = 0;
       var y1 = 0;
@@ -150,6 +153,7 @@ var TextSelectorProp = (function () {
         this.e.v = this._currentTextLength;
       }
       var divisor = this.data.r === 2 ? 1 : 100 / this.data.totalChars;
+      this._currentTotalChars = this.data.totalChars;
       var o = this.o.v / divisor;
       var s = this.s.v / divisor + o;
       var e = (this.e.v / divisor) + o;
