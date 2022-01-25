@@ -22,7 +22,7 @@
         }
 
         #lottie{
-            background-color:#ccc;
+            background-color:#000;
             width:100%;
             height:100%;
             display:block;
@@ -36,7 +36,7 @@
     
     <!-- end Expressions -->
     <!-- endbuild -->
-    <script src="js/module.js" type="module"></script>
+    <!-- <script src="js/module.js" type="module"></script> -->
     <!-- <script src="lottie.js"></script> -->
     <!-- <script src="bodymovin_light.js"></script> -->
 
@@ -49,44 +49,46 @@
 
 <script>
     var anim;
-    var elem = document.getElementById('lottie');
-    var animData = {
-        container: elem,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        rendererSettings: {
-            progressiveLoad:false,
-            preserveAspectRatio: 'xMidYMid meet',
-            imagePreserveAspectRatio: 'xMidYMid meet',
-            title: 'TEST TITLE',
-            description: 'TEST DESCRIPTION',
-            filterSize: {
-                width: '500%',
-                height: '500%',
-                x: '-200%',
-                y: '-200%',
-            }
-        },
-        path: 'exports/render/data.json',
-        audioFactory: createAudio,
-    };
-    // lottie.setQuality('low');
-    // anim.setSpeed(0.5)
-    // lottie.useWebWorker(true);
-    setTimeout(() => {
-        console.log(lottie);
+    import('./js/modules/full.js').then(({default: lottie }) => {
+        var elem = document.getElementById('lottie');
+        var animData = {
+            container: elem,
+            renderer: 'svg',
+            loop: false,
+            autoplay: true,
+            rendererSettings: {
+                progressiveLoad:false,
+                preserveAspectRatio: 'xMidYMid meet',
+                imagePreserveAspectRatio: 'xMidYMid meet',
+                title: 'TEST TITLE',
+                description: 'TEST DESCRIPTION',
+                filterSize: {
+                    width: '500%',
+                    height: '500%',
+                    x: '-200%',
+                    y: '-200%',
+                }
+            },
+            path: 'exports/render/data.json',
+            audioFactory: createAudio,
+        };
+        // lottie.setQuality('low');
+        // anim.setSpeed(0.5)
+        // lottie.useWebWorker(true);
+        setTimeout(() => {
 
-        // anim = lottie.loadAnimation(animData);
-        // anim.setSubframe(false);
-        // anim.onError = function(errorType, nativeError, errorProps) {
-        //     console.log(errorType)
-        // }
-        
-        // anim.addEventListener('error', function(error) {
-        //     console.log(error)
-        // })
-    }, 1)
+            anim = lottie.loadAnimation(animData);
+            anim.setSubframe(false);
+            anim.onError = function(errorType, nativeError, errorProps) {
+                console.log(errorType)
+            }
+            
+            anim.addEventListener('error', function(error) {
+                console.log(error)
+            })
+        }, 1)
+    console.log(lottie.default)
+    });
         
     // setTimeout(()=>anim.destroy(), 1000);
 

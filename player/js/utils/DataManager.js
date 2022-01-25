@@ -203,21 +203,39 @@ const dataManager = (function () {
               if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
                 var i;
                 var len = animationData.chars.length;
-                var j;
-                var jLen;
-                var pathData;
-                var paths;
                 for (i = 0; i < len; i += 1) {
-                  if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
-                    paths = animationData.chars[i].data.shapes[0].it;
-                    jLen = paths.length;
-
-                    for (j = 0; j < jLen; j += 1) {
-                      pathData = paths[j].ks.k;
-                      if (!pathData.__converted) {
-                        convertPathsToAbsoluteValues(paths[j].ks.k);
-                        pathData.__converted = true;
-                      }
+                  var charData = animationData.chars[i];
+                  if (charData.data && charData.data.shapes) {
+                    completeShapes(charData.data.shapes);
+                    charData.data.ip = 0;
+                    charData.data.op = 99999;
+                    charData.data.st = 0;
+                    charData.data.sr = 1;
+                    charData.data.ks = {
+                      p: { k: [0, 0], a: 0 },
+                      s: { k: [100, 100], a: 0 },
+                      a: { k: [0, 0], a: 0 },
+                      r: { k: 0, a: 0 },
+                      o: { k: 100, a: 0 },
+                    };
+                    if (!animationData.chars[i].t) {
+                      charData.data.shapes.push(
+                        {
+                          ty: 'no',
+                        }
+                      );
+                      charData.data.shapes[0].it.push(
+                        {
+                          p: { k: [0, 0], a: 0 },
+                          s: { k: [100, 100], a: 0 },
+                          a: { k: [0, 0], a: 0 },
+                          r: { k: 0, a: 0 },
+                          o: { k: 100, a: 0 },
+                          sk: { k: 0, a: 0 },
+                          sa: { k: 0, a: 0 },
+                          ty: 'tr',
+                        }
+                      );
                     }
                   }
                 }
@@ -435,7 +453,7 @@ const dataManager = (function () {
 
           function completeText(data) {
             if (data.t.a.length === 0 && !('m' in data.t.p)) {
-              data.singleShape = true;
+              // data.singleShape = true;
             }
           }
 

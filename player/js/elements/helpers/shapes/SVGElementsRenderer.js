@@ -27,6 +27,8 @@ const SVGElementsRenderer = (function () {
         return renderPath;
       case 'tr':
         return renderContentTransform;
+      case 'no':
+        return renderNoop;
       default:
         return null;
     }
@@ -39,6 +41,10 @@ const SVGElementsRenderer = (function () {
     if (isFirstFrame || itemData.transform.mProps._mdf) {
       itemData.transform.container.setAttribute('transform', itemData.transform.mProps.v.to2dCSS());
     }
+  }
+
+  function renderNoop() {
+
   }
 
   function renderPath(styleData, itemData, isFirstFrame) {

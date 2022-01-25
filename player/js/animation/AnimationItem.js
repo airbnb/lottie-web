@@ -284,36 +284,36 @@ AnimationItem.prototype.configAnimation = function (animData) {
   if (!this.renderer) {
     return;
   }
-  try {
-    this.animationData = animData;
-    if (this.initialSegment) {
-      this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
-      this.firstFrame = Math.round(this.initialSegment[0]);
-    } else {
-      this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
-      this.firstFrame = Math.round(this.animationData.ip);
-    }
-    this.renderer.configAnimation(animData);
-    if (!animData.assets) {
-      animData.assets = [];
-    }
-
-    this.assets = this.animationData.assets;
-    this.frameRate = this.animationData.fr;
-    this.frameMult = this.animationData.fr / 1000;
-    this.renderer.searchExtraCompositions(animData.assets);
-    this.markers = markerParser(animData.markers || []);
-    this.trigger('config_ready');
-    this.preloadImages();
-    this.loadSegments();
-    this.updaFrameModifier();
-    this.waitForFontsLoaded();
-    if (this.isPaused) {
-      this.audioController.pause();
-    }
-  } catch (error) {
-    this.triggerConfigError(error);
+  // try {
+  this.animationData = animData;
+  if (this.initialSegment) {
+    this.totalFrames = Math.floor(this.initialSegment[1] - this.initialSegment[0]);
+    this.firstFrame = Math.round(this.initialSegment[0]);
+  } else {
+    this.totalFrames = Math.floor(this.animationData.op - this.animationData.ip);
+    this.firstFrame = Math.round(this.animationData.ip);
   }
+  this.renderer.configAnimation(animData);
+  if (!animData.assets) {
+    animData.assets = [];
+  }
+
+  this.assets = this.animationData.assets;
+  this.frameRate = this.animationData.fr;
+  this.frameMult = this.animationData.fr / 1000;
+  this.renderer.searchExtraCompositions(animData.assets);
+  this.markers = markerParser(animData.markers || []);
+  this.trigger('config_ready');
+  this.preloadImages();
+  this.loadSegments();
+  this.updaFrameModifier();
+  this.waitForFontsLoaded();
+  if (this.isPaused) {
+    this.audioController.pause();
+  }
+  // } catch (error) {
+    // this.triggerConfigError(error);
+  // }
 };
 
 AnimationItem.prototype.waitForFontsLoaded = function () {
@@ -372,11 +372,11 @@ AnimationItem.prototype.renderFrame = function () {
   if (this.isLoaded === false || !this.renderer) {
     return;
   }
-  try {
+  // try {
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
-  } catch (error) {
-    this.triggerRenderFrameError(error);
-  }
+  // } catch (error) {
+  //   this.triggerRenderFrameError(error);
+  // }
 };
 
 AnimationItem.prototype.play = function (name) {
