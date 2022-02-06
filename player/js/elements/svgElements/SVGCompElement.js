@@ -5,7 +5,7 @@ import {
   createSizedArray,
 } from '../../utils/helpers/arrays';
 import PropertyFactory from '../../utils/PropertyFactory';
-import SVGRendererBase from '../../renderers/SVGRendererBase';
+import SVGRendererBase from '../../renderers/SVGRendererBase'; // eslint-disable-line
 import SVGBaseElement from './SVGBaseElement';
 import ICompElement from '../CompElement';
 

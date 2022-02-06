@@ -12,6 +12,7 @@ import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
 import ITextElement from '../TextElement';
+import SVGCompElement from './SVGCompElement'; // eslint-disable-line
 import SVGShapeElement from './SVGShapeElement';
 
 function SVGTextLottieElement(data, globalData, comp) {
@@ -169,7 +170,12 @@ SVGTextLottieElement.prototype.buildNewText = function () {
       }
       if (usesGlyphs) {
         charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        var glyphElement = new SVGShapeElement(charData.data, this.globalData, this);
+        var glyphElement;
+        if (charData.t === 1) {
+          glyphElement = new SVGCompElement(charData.data, this.globalData, this);
+        } else {
+          glyphElement = new SVGShapeElement(charData.data, this.globalData, this);
+        }
         this.textSpans[i].glyph = glyphElement;
         glyphElement._debug = true;
         glyphElement.prepareFrame(0);

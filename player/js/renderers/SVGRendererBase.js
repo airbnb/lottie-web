@@ -13,7 +13,7 @@ import createNS from '../utils/helpers/svg_elements';
 import BaseRenderer from './BaseRenderer';
 import IImageElement from '../elements/ImageElement';
 import SVGShapeElement from '../elements/svgElements/SVGShapeElement';
-import SVGTextLottieElement from '../elements/svgElements/SVGTextElement';
+import SVGTextLottieElement from '../elements/svgElements/SVGTextElement'; // eslint-disable-line import/no-cycle
 import ISolidElement from '../elements/SolidElement';
 import NullElement from '../elements/NullElement';
 

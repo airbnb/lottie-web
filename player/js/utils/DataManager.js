@@ -83,18 +83,52 @@ const dataManager = (function () {
             }
           }
 
-          function findCompLayers(id, comps) {
+          function completeChars(chars, assets) {
+            if (chars) {
+              var i = 0;
+              var len = chars.length;
+              for (i = 0; i < len; i += 1) {
+                if (chars[i].t === 1) {
+                  // var compData = findComp(chars[i].data.refId, assets);
+                  chars[i].data.layers = findCompLayers(chars[i].data.refId, assets);
+                  // chars[i].data.ip = 0;
+                  // chars[i].data.op = 99999;
+                  // chars[i].data.st = 0;
+                  // chars[i].data.sr = 1;
+                  // chars[i].w = compData.w;
+                  // chars[i].data.ks = {
+                  //   a: { k: [0, 0, 0], a: 0 },
+                  //   p: { k: [0, -compData.h, 0], a: 0 },
+                  //   r: { k: 0, a: 0 },
+                  //   s: { k: [100, 100], a: 0 },
+                  //   o: { k: 100, a: 0 },
+                  // };
+                  completeLayers(chars[i].data.layers, assets);
+                }
+              }
+            }
+          }
+
+          function findComp(id, comps) {
             var i = 0;
             var len = comps.length;
             while (i < len) {
               if (comps[i].id === id) {
-                if (!comps[i].layers.__used) {
-                  comps[i].layers.__used = true;
-                  return comps[i].layers;
-                }
-                return JSON.parse(JSON.stringify(comps[i].layers));
+                return comps[i];
               }
               i += 1;
+            }
+            return null;
+          }
+
+          function findCompLayers(id, comps) {
+            var comp = findComp(id, comps);
+            if (comp) {
+              if (!comp.layers.__used) {
+                comp.layers.__used = true;
+                return comp.layers;
+              }
+              return JSON.parse(JSON.stringify(comp.layers));
             }
             return null;
           }
@@ -448,6 +482,7 @@ const dataManager = (function () {
             checkPathProperties(animationData);
             checkShapes(animationData);
             completeLayers(animationData.layers, animationData.assets);
+            completeChars(animationData.chars, animationData.assets);
             animationData.__complete = true;
           }
 
