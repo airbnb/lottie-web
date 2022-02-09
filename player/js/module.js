@@ -132,14 +132,13 @@ function getQueryVariable(variable) {
 var standalone = '__[STANDALONE]__';
 var animationData = '__[ANIMATIONDATA]__';
 var renderer = '';
-var queryString;
+var queryString = '';
 if (standalone) {
   var scripts = document.getElementsByTagName('script');
   var index = scripts.length - 1;
-  var myScript = scripts[index] || {
-    src: '',
-  };
-  queryString = myScript.src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
+  if (scripts[index] && scripts[index].src) {
+    queryString = scripts[index].src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
+  }
   renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
