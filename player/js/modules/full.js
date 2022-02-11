@@ -15,6 +15,7 @@ import {
 } from '../renderers/renderersManager';
 import Expressions from '../utils/expressions/Expressions';
 import expressionPropertyDecorator from '../utils/expressions/ExpressionPropertyDecorator';
+import expressionTextPropertyDecorator from '../utils/expressions/ExpressionTextPropertyDecorator';
 
 // Registering renderers
 registerRenderer('canvas', CanvasRenderer);
@@ -30,5 +31,6 @@ ShapeModifiers.registerModifier('rd', RoundCornersModifier);
 // Registering expression plugin
 setExpressionsPlugin(Expressions);
 expressionPropertyDecorator();
+expressionTextPropertyDecorator();
 
 export default lottie;

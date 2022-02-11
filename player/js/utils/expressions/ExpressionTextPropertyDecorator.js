@@ -1,7 +1,7 @@
 import TextProperty from '../text/TextProperty';
 import ExpressionManager from './ExpressionManager';
 
-(function addDecorator() {
+function addDecorator() {
   function searchExpressions() {
     if (this.data.d.x) {
       this.calculateExpression = ExpressionManager.initiateExpression.bind(this)(this.elem, this.data.d, this);
@@ -31,4 +31,10 @@ import ExpressionManager from './ExpressionManager';
   };
 
   TextProperty.prototype.searchExpressions = searchExpressions;
-}());
+}
+
+function initialize() {
+  addDecorator();
+}
+
+export default initialize;

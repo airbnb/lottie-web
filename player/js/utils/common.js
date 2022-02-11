@@ -24,7 +24,6 @@ const BMMath = {};
 }());
 
 function ProjectInterface() { return {}; }
-
 BMMath.random = Math.random;
 BMMath.abs = function (val) {
   var tOfVal = typeof val;
