@@ -69,7 +69,7 @@
                     y: '-200%',
                 }
             },
-            path: 'exports/render/4-device_catalog.json',
+            path: 'exports/render/data.json',
             audioFactory: createAudio,
         };
         // lottie.setQuality('low');
@@ -78,7 +78,7 @@
         setTimeout(() => {
 
             anim = lottie.loadAnimation(animData);
-            // anim.setSubframe(false);
+            anim.setSubframe(false);
             anim.onError = function(errorType, nativeError, errorProps) {
                 console.log(errorType)
             }
