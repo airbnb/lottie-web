@@ -12,6 +12,8 @@ import SVGDropShadowEffect from './effects/SVGDropShadowEffect';
 import SVGMatte3Effect from './effects/SVGMatte3Effect';
 import SVGGaussianBlurEffect from './effects/SVGGaussianBlurEffect';
 
+var registeredEffects = {};
+
 function SVGEffects(elem) {
   var i;
   var len = elem.data.ef ? elem.data.ef.length : 0;
@@ -22,6 +24,14 @@ function SVGEffects(elem) {
   var filterManager;
   for (i = 0; i < len; i += 1) {
     filterManager = null;
+    var type = elem.data.ef[i].ty;
+    if (registeredEffects[type]) {
+      var Effect = registeredEffects[type].effect;
+      filterManager = new Effect(fil, elem.effectsManager.effectElements[i], elem);
+      if (registeredEffects[type].countsAsEffect) {
+        count += 1;
+      }
+    }
     if (elem.data.ef[i].ty === 20) {
       count += 1;
       filterManager = new SVGTintFilter(fil, elem.effectsManager.effectElements[i]);
@@ -66,5 +76,12 @@ SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
     this.filters[i].renderFrame(_isFirstFrame);
   }
 };
+
+export function registerEffect(id, effect, countsAsEffect) {
+  registeredEffects[id] = {
+    effect,
+    countsAsEffect,
+  };
+}
 
 export default SVGEffects;
