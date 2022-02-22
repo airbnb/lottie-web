@@ -30,8 +30,8 @@ export type AnimationItem = {
     togglePause(name?: string): void;
     destroy(name?: string): void;
     pause(name?: string): void;
-    goToAndStop(value: number, isFrame?: boolean, name?: string): void;
-    goToAndPlay(value: number, isFrame?: boolean, name?: string): void;
+    goToAndStop(value: number | string, isFrame?: boolean, name?: string): void;
+    goToAndPlay(value: number | string, isFrame?: boolean, name?: string): void;
     includeLayers(data: any): void;
     setSegment(init: number, end: number): void;
     resetSegments(forceFlag: boolean): void;
