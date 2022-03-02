@@ -174,6 +174,9 @@ SVGTextLottieElement.prototype.buildNewText = function () {
         if (charData.t === 1) {
           glyphElement = new SVGCompElement(charData.data, this.globalData, this);
         } else {
+          if (!charData.data.shapes) {
+            charData.data.shapes = [];
+          }
           glyphElement = new SVGShapeElement(charData.data, this.globalData, this);
         }
         this.textSpans[i].glyph = glyphElement;
