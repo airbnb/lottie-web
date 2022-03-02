@@ -226,9 +226,11 @@ SVGTextLottieElement.prototype.getValue = function () {
   this.renderedFrame = this.comp.renderedFrame;
   for (i = 0; i < len; i += 1) {
     glyphElement = this.textSpans[i].glyph;
-    glyphElement.prepareFrame(this.comp.renderedFrame - this.data.st);
-    if (glyphElement._mdf) {
-      this._mdf = true;
+    if (glyphElement) {
+      glyphElement.prepareFrame(this.comp.renderedFrame - this.data.st);
+      if (glyphElement._mdf) {
+        this._mdf = true;
+      }
     }
   }
 };
@@ -253,7 +255,9 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
           renderedLetter = renderedLetters[i];
           textSpan = this.textSpans[i].span;
           glyphElement = this.textSpans[i].glyph;
-          glyphElement.renderFrame();
+          if (glyphElement) {
+            glyphElement.renderFrame();
+          }
           if (renderedLetter._mdf.m) {
             textSpan.setAttribute('transform', renderedLetter.m);
           }
