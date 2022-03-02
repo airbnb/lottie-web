@@ -1,26 +1,16 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
+import {version} from './package.json'
 
-// const copyFile = (options = {}) => {
-//   const { targets = [], hook = 'buildEnd' } = options
-//   return {
-//     name: 'copy-file',
-//     // [hook]: async(test) => {
-//     //   console.log('targets', targets.length)
-//     //   console.log('options', options)
-//     //   console.log('test', test)
-//     // },
-//     generateBundle: (options, bundle) => {
-//       // console.log('PASO,. generateBundle', options, bundle)
-//       console.log('PASO,. generateBundle', options, bundle.code)
-//       // bundle.code = '()=>{}';
-//     },
-//     writeBundle: () => {
-//       console.log('PASO,. writeBundle')
-//     }
-//   }
-// } 
+const injectVersion = (options = {}) => {
+  return {
+    name: 'inject-version',
+    renderChunk: (code) => {
+      return code.replace('[[BM_VERSION]]', version)
+    },
+  }
+} 
 
 const destinationBuildFolder = 'build/player/';
 
@@ -123,6 +113,7 @@ const plugins = [
   babel({
     babelHelpers: 'bundled',
   }),
+  injectVersion(),
 ]
 const pluginsWithTerser = [
   ...plugins,
