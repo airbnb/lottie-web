@@ -40,8 +40,10 @@ ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
   var pathNodes;
   var shapeStr = '';
   for (j = 0; j < jLen; j += 1) {
-    pathNodes = shapes[j].ks.k;
-    shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
+    if (shapes[j].ty === 'sh') {
+      pathNodes = shapes[j].ks.k;
+      shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
+    }
   }
   return shapeStr;
 };

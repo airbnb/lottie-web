@@ -15,6 +15,10 @@ import ITextElement from '../TextElement';
 import SVGCompElement from './SVGCompElement'; // eslint-disable-line
 import SVGShapeElement from './SVGShapeElement';
 
+var emptyShapeData = {
+  shapes: [],
+};
+
 function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];
   this.renderType = 'svg';
@@ -174,10 +178,11 @@ SVGTextLottieElement.prototype.buildNewText = function () {
         if (charData.t === 1) {
           glyphElement = new SVGCompElement(charData.data, this.globalData, this);
         } else {
-          if (!charData.data.shapes) {
-            charData.data.shapes = [];
+          var data = emptyShapeData;
+          if (charData.data && charData.data.shapes) {
+            data = charData.data;
           }
-          glyphElement = new SVGShapeElement(charData.data, this.globalData, this);
+          glyphElement = new SVGShapeElement(data, this.globalData, this);
         }
         this.textSpans[i].glyph = glyphElement;
         glyphElement._debug = true;

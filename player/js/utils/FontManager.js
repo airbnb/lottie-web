@@ -8,6 +8,9 @@ const FontManager = (function () {
     w: 0,
     size: 0,
     shapes: [],
+    data: {
+      shapes: [],
+    },
   };
   var combinedCharacters = [];
   // Hindi characters

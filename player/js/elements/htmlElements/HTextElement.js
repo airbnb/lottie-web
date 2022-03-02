@@ -138,7 +138,7 @@ HTextElement.prototype.buildNewText = function () {
         shapeData = null;
       }
       matrixHelper.reset();
-      if (shapeData && shapeData.shapes) {
+      if (shapeData && shapeData.shapes && shapeData.shapes.length) {
         shapes = shapeData.shapes[0].it;
         matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
         shapeStr = this.createPathShape(matrixHelper, shapes);
