@@ -149,4 +149,14 @@ if (standalone) {
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
 
+// this adds bodymovin to the window object for backwards compatibility
+try {
+  if (!(typeof exports === 'object' && typeof module !== 'undefined')
+    && !(typeof define === 'function' && define.amd) // eslint-disable-line no-undef
+  ) {
+    window.bodymovin = lottie;
+  }
+} catch (err) {
+  //
+}
 export default lottie;
