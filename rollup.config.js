@@ -122,7 +122,8 @@ const builds = [
 const plugins = [
   nodeResolve(),
   babel({
-    babelHelpers: 'bundled',
+    babelHelpers: 'runtime',
+    skipPreflightCheck: true,
   }),
   noTreeShakingForStandalonePlugin(),
   injectVersion(),
@@ -158,8 +159,6 @@ const ESMModule = {
     },
   ],
 };
-
-const input = ['player/js/modules/full.js'];
 
 const exports = builds.reduce((acc, build) => {
   const builds = [];
