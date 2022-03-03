@@ -1,3 +1,9 @@
+## V 5.9.0
+- FEATURE: Added support for using shapes as animated characters
+- FIX: added methods used by expressions to an array to prevent treeshaking
+- DEV: Migrated code to imports
+- DEV: Use Rollup for build process
+
 ## V 5.8.1
 - FEATURE: added more methods available for the lottie worker player
 

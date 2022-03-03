@@ -18,7 +18,7 @@ const noTreeShakingForStandalonePlugin = () => {
     transform(code) {
         // This is very fast but can produce lots of false positives.
         // Use a good regular expression or parse an AST and analyze scoping to improve as needed.
-        if (code.indexOf('__[STANDALONE]__') >= 0) return {moduleSIdeEffects: 'no-treeshake'};
+        if (code.indexOf('__[STANDALONE]__') >= 0) return {moduleSideEffects: 'no-treeshake'};
     }
   }
 }
@@ -125,7 +125,7 @@ const plugins = [
     babelHelpers: 'runtime',
     skipPreflightCheck: true,
   }),
-  noTreeShakingForStandalonePlugin(),
+  // noTreeShakingForStandalonePlugin(),
   injectVersion(),
 ]
 const pluginsWithTerser = [
