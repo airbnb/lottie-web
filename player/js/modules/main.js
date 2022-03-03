@@ -13,6 +13,9 @@ import ShapePropertyFactory from '../utils/shapes/ShapeProperty';
 import Matrix from '../3rd_party/transformation-matrix';
 
 const lottie = {};
+var standalone = '__[STANDALONE]__';
+var animationData = '__[ANIMATIONDATA]__';
+var renderer = '';
 
 function setLocation(href) {
   setLocationHref(href);
@@ -134,9 +137,6 @@ function getQueryVariable(variable) {
   }
   return null;
 }
-var standalone = '__[STANDALONE]__';
-var animationData = '__[ANIMATIONDATA]__';
-var renderer = '';
 var queryString;
 if (standalone) {
   var scripts = document.getElementsByTagName('script');

@@ -75,6 +75,7 @@
         // lottie.setQuality('low');
         // anim.setSpeed(0.5)
         // lottie.useWebWorker(true);
+        window.lottie = lottie;
         setTimeout(() => {
 
             anim = lottie.loadAnimation(animData);
@@ -87,7 +88,6 @@
                 console.log(error)
             })
         }, 1)
-    console.log(lottie.default)
     });
         
     // setTimeout(()=>anim.destroy(), 1000);

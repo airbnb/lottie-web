@@ -1,9 +1,10 @@
 const fs = require('fs');
 const UglifyJS = require("uglify-js");
+const packageFile = require("../package.json");
 
 const buildFolder = 'build/player/';
 const rootFolder = 'player/';
-const bm_version = '5.8.1';
+const bm_version = packageFile.version;
 const defaultBuilds = [ 'canvas_worker', 'lottie_worker']
 
 const scripts = [

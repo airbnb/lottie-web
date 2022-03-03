@@ -10,7 +10,18 @@ const injectVersion = (options = {}) => {
       return code.replace('[[BM_VERSION]]', version)
     },
   }
-} 
+}
+
+const noTreeShakingForStandalonePlugin = () => {
+  return {
+    name: 'no-treeshaking-for-standalone',
+    transform(code) {
+        // This is very fast but can produce lots of false positives.
+        // Use a good regular expression or parse an AST and analyze scoping to improve as needed.
+        if (code.indexOf('__[STANDALONE]__') >= 0) return {moduleSIdeEffects: 'no-treeshake'};
+    }
+  }
+}
 
 const destinationBuildFolder = 'build/player/';
 
@@ -113,6 +124,7 @@ const plugins = [
   babel({
     babelHelpers: 'bundled',
   }),
+  noTreeShakingForStandalonePlugin(),
   injectVersion(),
 ]
 const pluginsWithTerser = [
@@ -129,10 +141,12 @@ const UMDModule = {
     sourcemap: false,
     compact: false,
   },
+  treeshake: false,
 };
 
 const ESMModule = {
   plugins: [nodeResolve()],
+  treeshake: false,
   output: [
     {
       format: 'esm',
@@ -180,44 +194,3 @@ const exports = builds.reduce((acc, build) => {
   return acc;
 }, []);
 export default exports;
-/* export default [
-  {
-    // UMD
-    input,
-    plugins: [
-      nodeResolve(),
-      babel({
-        babelHelpers: 'bundled',
-      }),
-      terser(),
-    ],
-    output: {
-      file: `dist/${pkg.name}.min.js`,
-      format: 'umd',
-      name: 'lottie-web', // this is the name of the global object
-      esModule: false,
-      exports: 'named',
-      sourcemap: true,
-    },
-  },
-  // ESM and CJS
-  {
-    input,
-    plugins: [nodeResolve()],
-    output: [
-      {
-        dir: 'dist/esm',
-        format: 'esm',
-        exports: 'named',
-        sourcemap: true,
-      },
-      {
-        dir: 'dist/cjs',
-        format: 'cjs',
-        exports: 'named',
-        sourcemap: true,
-      },
-    ],
-  },
-];
-*/
