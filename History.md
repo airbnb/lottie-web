@@ -1,3 +1,6 @@
+## V 5.9.1
+- FIX: navigator validation for SSR
+
 ## V 5.9.0
 - FEATURE: Added support for using shapes as animated characters
 - FIX: added methods used by expressions to an array to prevent treeshaking

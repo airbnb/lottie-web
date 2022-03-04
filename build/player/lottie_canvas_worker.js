@@ -126,7 +126,7 @@
   var lottieInternal = (function () {
     'use strict';
 
-    (function (global, factory) {
+    (typeof navigator !== "undefined") && (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.lottie = factory());
@@ -5329,7 +5329,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.0';
+  lottie.version = '5.9.1';
 
   function checkReady() {
     if (document.readyState === 'complete') {

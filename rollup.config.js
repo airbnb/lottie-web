@@ -12,6 +12,15 @@ const injectVersion = (options = {}) => {
   }
 }
 
+const addNavigatorValidation = (options = {}) => {
+  return {
+    name: 'inject-version',
+    renderChunk: (code) => {
+      return '(typeof navigator !== "undefined") && '  + code
+    },
+  }
+}
+
 const noTreeShakingForStandalonePlugin = () => {
   return {
     name: 'no-treeshaking-for-standalone',
@@ -127,6 +136,7 @@ const plugins = [
   }),
   // noTreeShakingForStandalonePlugin(),
   injectVersion(),
+  addNavigatorValidation(),
 ]
 const pluginsWithTerser = [
   ...plugins,
