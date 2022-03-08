@@ -2082,7 +2082,7 @@
     for (var i = 0; i < this.markers.length; i += 1) {
       marker = this.markers[i];
 
-      if (marker.payload && marker.payload.name === markerName) {
+      if (marker.payload && marker.payload.name.cm === markerName) {
         return marker;
       }
     }
