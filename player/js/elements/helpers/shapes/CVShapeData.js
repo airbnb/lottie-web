@@ -1,4 +1,5 @@
-/* global ShapePropertyFactory, SVGShapeData */
+import ShapePropertyFactory from '../../../utils/shapes/ShapeProperty';
+import SVGShapeData from './SVGShapeData';
 
 function CVShapeData(element, data, styles, transformsManager) {
   this.styledShapes = [];
@@ -28,3 +29,5 @@ function CVShapeData(element, data, styles, transformsManager) {
 }
 
 CVShapeData.prototype.setAsAnimated = SVGShapeData.prototype.setAsAnimated;
+
+export default CVShapeData;

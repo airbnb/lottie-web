@@ -1,4 +1,8 @@
-/* global extendPrototype, RenderableElement, createProxyFunction */
+import {
+  extendPrototype,
+  createProxyFunction,
+} from '../../utils/functionExtensions';
+import RenderableElement from './RenderableElement';
 
 function RenderableDOMElement() {}
 
@@ -17,6 +21,7 @@ function RenderableDOMElement() {}
       this.hide();
     },
     hide: function () {
+      // console.log('HIDE', this);
       if (!this.hidden && (!this.isInRange || this.isTransparent)) {
         var elem = this.baseElement || this.layerElement;
         elem.style.display = 'none';
@@ -24,6 +29,7 @@ function RenderableDOMElement() {}
       }
     },
     show: function () {
+      // console.log('SHOW', this);
       if (this.isInRange && !this.isTransparent) {
         if (!this.data.hd) {
           var elem = this.baseElement || this.layerElement;
@@ -61,3 +67,5 @@ function RenderableDOMElement() {}
   };
   extendPrototype([RenderableElement, createProxyFunction(_prototype)], RenderableDOMElement);
 }());
+
+export default RenderableDOMElement;

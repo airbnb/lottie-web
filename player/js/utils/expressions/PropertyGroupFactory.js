@@ -1,6 +1,4 @@
-/* exported propertyGroupFactory */
-
-var propertyGroupFactory = (function () {
+const propertyGroupFactory = (function () {
   return function (interfaceFunction, parentPropertyGroup) {
     return function (val) {
       val = val === undefined ? 1 : val;
@@ -11,3 +9,5 @@ var propertyGroupFactory = (function () {
     };
   };
 }());
+
+export default propertyGroupFactory;

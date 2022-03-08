@@ -38,3 +38,5 @@ BaseEvent.prototype = {
     }
   },
 };
+
+export default BaseEvent;

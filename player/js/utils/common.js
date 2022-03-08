@@ -1,22 +1,19 @@
-/* global createSizedArray */
-/* exported subframeEnabled, expressionsPlugin, isSafari, cachedColors, bmPow, bmSqrt, bmFloor, bmMax, bmMin, ProjectInterface,
-defaultCurveSegments, degToRads, roundCorner, bmRnd, styleDiv, BMEnterFrameEvent, BMCompleteEvent, BMCompleteLoopEvent,
-BMSegmentStartEvent, BMDestroyEvent, BMRenderFrameErrorEvent, BMConfigErrorEvent, BMAnimationConfigErrorEvent, createElementID,
-addSaturationToRGB, addBrightnessToRGB, addHueToRGB, rgbToHex */
+import {
+  createSizedArray,
+} from './helpers/arrays';
 
-var subframeEnabled = true;
-var idPrefix = '';
-var expressionsPlugin;
-var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-var cachedColors = {};
-var bmRnd;
-var bmPow = Math.pow;
-var bmSqrt = Math.sqrt;
-var bmFloor = Math.floor;
-var bmMax = Math.max;
-var bmMin = Math.min;
+let subframeEnabled = true;
+let expressionsPlugin = null;
+let idPrefix = '';
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+let _shouldRoundValues = false;
+const bmPow = Math.pow;
+const bmSqrt = Math.sqrt;
+const bmFloor = Math.floor;
+const bmMax = Math.max;
+const bmMin = Math.min;
 
-var BMMath = {};
+const BMMath = {};
 (function () {
   var propertyNames = ['abs', 'acos', 'acosh', 'asin', 'asinh', 'atan', 'atanh', 'atan2', 'ceil', 'cbrt', 'expm1', 'clz32', 'cos', 'cosh', 'exp', 'floor', 'fround', 'hypot', 'imul', 'log', 'log1p', 'log2', 'log10', 'max', 'min', 'pow', 'random', 'round', 'sign', 'sin', 'sinh', 'sqrt', 'tan', 'tanh', 'trunc', 'E', 'LN10', 'LN2', 'LOG10E', 'LOG2E', 'PI', 'SQRT1_2', 'SQRT2'];
   var i;
@@ -27,7 +24,6 @@ var BMMath = {};
 }());
 
 function ProjectInterface() { return {}; }
-
 BMMath.random = Math.random;
 BMMath.abs = function (val) {
   var tOfVal = typeof val;
@@ -42,20 +38,20 @@ BMMath.abs = function (val) {
   }
   return Math.abs(val);
 };
-var defaultCurveSegments = 150;
-var degToRads = Math.PI / 180;
-var roundCorner = 0.5519;
+let defaultCurveSegments = 150;
+const degToRads = Math.PI / 180;
+const roundCorner = 0.5519;
 
 function roundValues(flag) {
-  if (flag) {
-    bmRnd = Math.round;
-  } else {
-    bmRnd = function (val) {
-      return val;
-    };
-  }
+  _shouldRoundValues = !!flag;
 }
-roundValues(false);
+
+function bmRnd(value) {
+  if (_shouldRoundValues) {
+    return Math.round(value);
+  }
+  return value;
+}
 
 function styleDiv(element) {
   element.style.position = 'absolute';
@@ -117,7 +113,7 @@ function BMAnimationConfigErrorEvent(type, nativeError) {
   this.nativeError = nativeError;
 }
 
-var createElementID = (function () {
+const createElementID = (function () {
   var _count = 0;
   return function createID() {
     _count += 1;
@@ -209,7 +205,7 @@ function addHueToRGB(color, offset) {
   return HSVtoRGB(hsv[0], hsv[1], hsv[2]);
 }
 
-var rgbToHex = (function () {
+const rgbToHex = (function () {
   var colorMap = [];
   var i;
   var hex;
@@ -231,3 +227,49 @@ var rgbToHex = (function () {
     return '#' + colorMap[r] + colorMap[g] + colorMap[b];
   };
 }());
+
+const setSubframeEnabled = (flag) => { subframeEnabled = !!flag; };
+const getSubframeEnabled = () => subframeEnabled;
+const setExpressionsPlugin = (value) => { expressionsPlugin = value; };
+const getExpressionsPlugin = () => expressionsPlugin;
+const setDefaultCurveSegments = (value) => { defaultCurveSegments = value; };
+const getDefaultCurveSegments = () => defaultCurveSegments;
+const setIdPrefix = (value) => { idPrefix = value; };
+const getIdPrefix = () => idPrefix;
+
+export {
+  setSubframeEnabled,
+  getSubframeEnabled,
+  setExpressionsPlugin,
+  getExpressionsPlugin,
+  setDefaultCurveSegments,
+  getDefaultCurveSegments,
+  isSafari,
+  bmPow,
+  bmSqrt,
+  bmFloor,
+  bmMax,
+  bmMin,
+  degToRads,
+  roundCorner,
+  styleDiv,
+  bmRnd,
+  roundValues,
+  BMEnterFrameEvent,
+  BMCompleteEvent,
+  BMCompleteLoopEvent,
+  BMSegmentStartEvent,
+  BMDestroyEvent,
+  BMRenderFrameErrorEvent,
+  BMConfigErrorEvent,
+  BMAnimationConfigErrorEvent,
+  createElementID,
+  addSaturationToRGB,
+  addBrightnessToRGB,
+  addHueToRGB,
+  rgbToHex,
+  setIdPrefix,
+  getIdPrefix,
+  BMMath,
+  ProjectInterface,
+};

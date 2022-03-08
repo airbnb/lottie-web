@@ -1,7 +1,8 @@
-/* global Matrix, buildShapeString, bmFloor */
-/* exported SVGElementsRenderer */
+import Matrix from '../../../3rd_party/transformation-matrix';
+import buildShapeString from '../../../utils/shapes/shapePathBuilder';
+import { bmFloor } from '../../../utils/common';
 
-var SVGElementsRenderer = (function () {
+const SVGElementsRenderer = (function () {
   var _identityMatrix = new Matrix();
   var _matrixHelper = new Matrix();
 
@@ -26,6 +27,8 @@ var SVGElementsRenderer = (function () {
         return renderPath;
       case 'tr':
         return renderContentTransform;
+      case 'no':
+        return renderNoop;
       default:
         return null;
     }
@@ -38,6 +41,10 @@ var SVGElementsRenderer = (function () {
     if (isFirstFrame || itemData.transform.mProps._mdf) {
       itemData.transform.container.setAttribute('transform', itemData.transform.mProps.v.to2dCSS());
     }
+  }
+
+  function renderNoop() {
+
   }
 
   function renderPath(styleData, itemData, isFirstFrame) {
@@ -230,3 +237,5 @@ var SVGElementsRenderer = (function () {
 
   return ob;
 }());
+
+export default SVGElementsRenderer;

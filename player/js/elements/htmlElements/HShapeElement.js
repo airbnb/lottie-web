@@ -1,5 +1,21 @@
-/* global createNS, extendPrototype, BaseElement, TransformElement, HSolidElement, SVGShapeElement, HBaseElement,
-HierarchyElement, FrameElement, RenderableElement, createNS, bmMin, bmSqrt, bmMin, bmMax, bmPow */
+import {
+  bmPow,
+  bmMax,
+  bmMin,
+  bmSqrt,
+} from '../../utils/common';
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import HBaseElement from './HBaseElement';
+import HSolidElement from './HSolidElement';
+import SVGShapeElement from '../svgElements/SVGShapeElement';
 
 function HShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -219,3 +235,5 @@ HShapeElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default HShapeElement;

@@ -1,5 +1,23 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createNS */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import createNS from '../../utils/helpers/svg_elements';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import SVGBaseElement from './SVGBaseElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import ITextElement from '../TextElement';
+import SVGCompElement from './SVGCompElement'; // eslint-disable-line
+import SVGShapeElement from './SVGShapeElement';
+
+var emptyShapeData = {
+  shapes: [],
+};
 
 function SVGTextLottieElement(data, globalData, comp) {
   this.textSpans = [];
@@ -34,6 +52,7 @@ SVGTextLottieElement.prototype.buildTextContents = function (textArray) {
 };
 
 SVGTextLottieElement.prototype.buildNewText = function () {
+  this.addDynamicProperty(this);
   var i;
   var len;
 
@@ -67,7 +86,6 @@ SVGTextLottieElement.prototype.buildNewText = function () {
 
   var tSpan;
   var matrixHelper = this.mHelper;
-  var shapes;
   var shapeStr = '';
   var singleShape = this.data.singleShape;
   var xPos = 0;
@@ -94,29 +112,47 @@ SVGTextLottieElement.prototype.buildNewText = function () {
     len = textContent.length;
     yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
     for (i = 0; i < len; i += 1) {
-      tSpan = this.textSpans[i] || createNS('tspan');
+      tSpan = this.textSpans[i].span || createNS('tspan');
       tSpan.textContent = textContent[i];
       tSpan.setAttribute('x', 0);
       tSpan.setAttribute('y', yPos);
       tSpan.style.display = 'inherit';
       tElement.appendChild(tSpan);
-      this.textSpans[i] = tSpan;
+      if (!this.textSpans[i]) {
+        this.textSpans[i] = {
+          span: null,
+          glyph: null,
+        };
+      }
+      this.textSpans[i].span = tSpan;
       yPos += documentData.finalLineHeight;
     }
 
     this.layerElement.appendChild(tElement);
   } else {
     var cachedSpansLength = this.textSpans.length;
-    var shapeData;
     var charData;
     for (i = 0; i < len; i += 1) {
+      if (!this.textSpans[i]) {
+        this.textSpans[i] = {
+          span: null,
+          childSpan: null,
+          glyph: null,
+        };
+      }
       if (!usesGlyphs || !singleShape || i === 0) {
-        tSpan = cachedSpansLength > i ? this.textSpans[i] : createNS(usesGlyphs ? 'path' : 'text');
+        tSpan = cachedSpansLength > i ? this.textSpans[i].span : createNS(usesGlyphs ? 'g' : 'text');
         if (cachedSpansLength <= i) {
           tSpan.setAttribute('stroke-linecap', 'butt');
           tSpan.setAttribute('stroke-linejoin', 'round');
           tSpan.setAttribute('stroke-miterlimit', '4');
-          this.textSpans[i] = tSpan;
+          this.textSpans[i].span = tSpan;
+          if (usesGlyphs) {
+            var childSpan = createNS('g');
+            tSpan.appendChild(childSpan);
+            this.textSpans[i].childSpan = childSpan;
+          }
+          this.textSpans[i].span = tSpan;
           this.layerElement.appendChild(tSpan);
         }
         tSpan.style.display = 'inherit';
@@ -138,13 +174,22 @@ SVGTextLottieElement.prototype.buildNewText = function () {
       }
       if (usesGlyphs) {
         charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-        shapeData = (charData && charData.data) || {};
-        shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
-        if (!singleShape) {
-          tSpan.setAttribute('d', this.createPathShape(matrixHelper, shapes));
+        var glyphElement;
+        if (charData.t === 1) {
+          glyphElement = new SVGCompElement(charData.data, this.globalData, this);
         } else {
-          shapeStr += this.createPathShape(matrixHelper, shapes);
+          var data = emptyShapeData;
+          if (charData.data && charData.data.shapes) {
+            data = charData.data;
+          }
+          glyphElement = new SVGShapeElement(data, this.globalData, this);
         }
+        this.textSpans[i].glyph = glyphElement;
+        glyphElement._debug = true;
+        glyphElement.prepareFrame(0);
+        glyphElement.renderFrame();
+        this.textSpans[i].childSpan.appendChild(glyphElement.layerElement);
+        this.textSpans[i].childSpan.setAttribute('transform', 'scale(' + documentData.finalSize / 100 + ',' + documentData.finalSize / 100 + ')');
       } else {
         if (singleShape) {
           tSpan.setAttribute('transform', 'translate(' + matrixHelper.props[12] + ',' + matrixHelper.props[13] + ')');
@@ -159,7 +204,7 @@ SVGTextLottieElement.prototype.buildNewText = function () {
     }
   }
   while (i < this.textSpans.length) {
-    this.textSpans[i].style.display = 'none';
+    this.textSpans[i].span.style.display = 'none';
     i += 1;
   }
 
@@ -182,8 +227,24 @@ SVGTextLottieElement.prototype.sourceRectAtTime = function () {
   return this.bbox;
 };
 
+SVGTextLottieElement.prototype.getValue = function () {
+  var i;
+  var len = this.textSpans.length;
+  var glyphElement;
+  this.renderedFrame = this.comp.renderedFrame;
+  for (i = 0; i < len; i += 1) {
+    glyphElement = this.textSpans[i].glyph;
+    if (glyphElement) {
+      glyphElement.prepareFrame(this.comp.renderedFrame - this.data.st);
+      if (glyphElement._mdf) {
+        this._mdf = true;
+      }
+    }
+  }
+};
+
 SVGTextLottieElement.prototype.renderInnerContent = function () {
-  if (!this.data.singleShape) {
+  if (!this.data.singleShape || this._mdf) {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if (this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {
       this._sizeChanged = true;
@@ -196,10 +257,15 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
       len = letters.length;
       var renderedLetter;
       var textSpan;
+      var glyphElement;
       for (i = 0; i < len; i += 1) {
         if (!letters[i].n) {
           renderedLetter = renderedLetters[i];
-          textSpan = this.textSpans[i];
+          textSpan = this.textSpans[i].span;
+          glyphElement = this.textSpans[i].glyph;
+          if (glyphElement) {
+            glyphElement.renderFrame();
+          }
           if (renderedLetter._mdf.m) {
             textSpan.setAttribute('transform', renderedLetter.m);
           }
@@ -220,3 +286,5 @@ SVGTextLottieElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default SVGTextLottieElement;

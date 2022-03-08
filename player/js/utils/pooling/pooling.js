@@ -1,7 +1,8 @@
-/* global createSizedArray */
-/* exported pooling */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
 
-var pooling = (function () {
+const pooling = (function () {
   function double(arr) {
     return arr.concat(createSizedArray(arr.length));
   }
@@ -10,3 +11,5 @@ var pooling = (function () {
     double: double,
   };
 }());
+
+export default pooling;

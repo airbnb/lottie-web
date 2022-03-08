@@ -1,4 +1,7 @@
-/* global CVEffects, getBlendMode, CVMaskElement, Matrix */
+import getBlendMode from '../../utils/helpers/blendModes';
+import Matrix from '../../3rd_party/transformation-matrix';
+import CVEffects from './CVEffects';
+import CVMaskElement from './CVMaskElement';
 
 function CVBaseElement() {
 }
@@ -64,3 +67,5 @@ CVBaseElement.prototype = {
 };
 CVBaseElement.prototype.hide = CVBaseElement.prototype.hideElement;
 CVBaseElement.prototype.show = CVBaseElement.prototype.showElement;
+
+export default CVBaseElement;

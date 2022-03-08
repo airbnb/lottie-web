@@ -1,4 +1,7 @@
-/* global createElementID, createNS */
+import {
+  createElementID,
+} from '../../../utils/common';
+import createNS from '../../../utils/helpers/svg_elements';
 
 var _svgMatteSymbols = [];
 
@@ -94,3 +97,5 @@ SVGMatte3Effect.prototype.renderFrame = function () {
     this.initialize();
   }
 };
+
+export default SVGMatte3Effect;

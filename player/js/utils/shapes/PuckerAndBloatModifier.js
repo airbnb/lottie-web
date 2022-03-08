@@ -1,4 +1,11 @@
-/* global extendPrototype, ShapeModifier, PropertyFactory, shapePool, ShapeModifiers */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import PropertyFactory from '../PropertyFactory';
+import shapePool from '../pooling/shape_pool';
+import {
+  ShapeModifier,
+} from './ShapeModifiers';
 
 function PuckerAndBloatModifier() {}
 extendPrototype([ShapeModifier], PuckerAndBloatModifier);
@@ -69,4 +76,5 @@ PuckerAndBloatModifier.prototype.processShapes = function (_isFirstFrame) {
     this._mdf = false;
   }
 };
-ShapeModifiers.registerModifier('pb', PuckerAndBloatModifier);
+
+export default PuckerAndBloatModifier;

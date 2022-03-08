@@ -1,5 +1,17 @@
-/* global extendPrototype, BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement,
-RenderableElement, ITextElement, createTag, createSizedArray */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import createTag from '../../utils/helpers/html_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import ITextElement from '../TextElement';
+import CVBaseElement from './CVBaseElement';
 
 function CVTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -77,26 +89,29 @@ CVTextElement.prototype.buildNewText = function () {
       yPos += firstLine ? 1 : 0;
       firstLine = false;
     }
-
     shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
     jLen = shapes.length;
     matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
     if (singleShape) {
       this.applyTextPropertiesToMatrix(documentData, matrixHelper, letters[i].line, xPos, yPos);
     }
-    commands = createSizedArray(jLen);
+    commands = createSizedArray(jLen - 1);
+    var commandsCounter = 0;
     for (j = 0; j < jLen; j += 1) {
-      kLen = shapes[j].ks.k.i.length;
-      pathNodes = shapes[j].ks.k;
-      pathArr = [];
-      for (k = 1; k < kLen; k += 1) {
-        if (k === 1) {
-          pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
+      if (shapes[j].ty === 'sh') {
+        kLen = shapes[j].ks.k.i.length;
+        pathNodes = shapes[j].ks.k;
+        pathArr = [];
+        for (k = 1; k < kLen; k += 1) {
+          if (k === 1) {
+            pathArr.push(matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
+          }
+          pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToY(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToX(pathNodes.v[k][0], pathNodes.v[k][1], 0), matrixHelper.applyToY(pathNodes.v[k][0], pathNodes.v[k][1], 0));
         }
-        pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToY(pathNodes.i[k][0], pathNodes.i[k][1], 0), matrixHelper.applyToX(pathNodes.v[k][0], pathNodes.v[k][1], 0), matrixHelper.applyToY(pathNodes.v[k][0], pathNodes.v[k][1], 0));
+        pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToY(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
+        commands[commandsCounter] = pathArr;
+        commandsCounter += 1;
       }
-      pathArr.push(matrixHelper.applyToX(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToY(pathNodes.o[k - 1][0], pathNodes.o[k - 1][1], 0), matrixHelper.applyToX(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToY(pathNodes.i[0][0], pathNodes.i[0][1], 0), matrixHelper.applyToX(pathNodes.v[0][0], pathNodes.v[0][1], 0), matrixHelper.applyToY(pathNodes.v[0][0], pathNodes.v[0][1], 0));
-      commands[j] = pathArr;
     }
     if (singleShape) {
       xPos += letters[i].l;
@@ -212,3 +227,5 @@ CVTextElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default CVTextElement;

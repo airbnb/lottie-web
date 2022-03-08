@@ -1,7 +1,8 @@
-/* global createTypedArray */
-/* exported ExpressionPropertyInterface */
+import {
+  createTypedArray,
+} from '../helpers/arrays';
 
-var ExpressionPropertyInterface = (function () {
+const ExpressionPropertyInterface = (function () {
   var defaultUnidimensionalValue = { pv: 0, v: 0, mult: 1 };
   var defaultMultidimensionalValue = { pv: [0, 0, 0], v: [0, 0, 0], mult: 1 };
 
@@ -96,3 +97,5 @@ var ExpressionPropertyInterface = (function () {
     return MultidimensionalPropertyInterface(property);
   };
 }());
+
+export default ExpressionPropertyInterface;

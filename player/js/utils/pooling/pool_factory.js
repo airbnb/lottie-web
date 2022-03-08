@@ -1,7 +1,9 @@
-/* global createSizedArray, pooling */
-/* exported poolFactory */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
+import pooling from './pooling';
 
-var poolFactory = (function () {
+const poolFactory = (function () {
   return function (initialLength, _create, _release) {
     var _length = 0;
     var _maxLength = initialLength;
@@ -38,3 +40,5 @@ var poolFactory = (function () {
     return ob;
   };
 }());
+
+export default poolFactory;

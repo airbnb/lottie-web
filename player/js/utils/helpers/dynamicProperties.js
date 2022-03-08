@@ -25,3 +25,5 @@ DynamicPropertyContainer.prototype = {
     this._isAnimated = false;
   },
 };
+
+export default DynamicPropertyContainer;

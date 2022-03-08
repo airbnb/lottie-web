@@ -1,7 +1,11 @@
-/* global extendPrototype, BezierFactory, PropertyFactory, DynamicPropertyContainer */
-/* exported TextSelectorProp */
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import PropertyFactory from '../PropertyFactory';
+import BezierFactory from '../../3rd_party/BezierEaser';
 
-var TextSelectorProp = (function () {
+const TextSelectorProp = (function () {
   var max = Math.max;
   var min = Math.min;
   var floor = Math.floor;
@@ -36,7 +40,6 @@ var TextSelectorProp = (function () {
       if (this._currentTextLength !== this.elem.textProperty.currentData.l.length) {
         this.getValue();
       }
-      // var easer = bez.getEasingCurve(this.ne.v/100,0,1-this.xe.v/100,1);
       var x1 = 0;
       var y1 = 0;
       var x2 = 1;
@@ -172,3 +175,5 @@ var TextSelectorProp = (function () {
     getTextSelectorProp: getTextSelectorProp,
   };
 }());
+
+export default TextSelectorProp;

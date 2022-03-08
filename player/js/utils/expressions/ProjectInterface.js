@@ -1,6 +1,4 @@
-/* exported ProjectInterface */
-
-var ProjectInterface = (function () {
+const ProjectInterface = (function () {
   function registerComposition(comp) {
     this.compositions.push(comp);
   }
@@ -29,3 +27,5 @@ var ProjectInterface = (function () {
     return _thisProjectFunction;
   };
 }());
+
+export default ProjectInterface;

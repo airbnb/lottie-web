@@ -1,6 +1,6 @@
-/* global _useWebWorker */
+import { getWebWorker } from '../main';
 
-var dataManager = (function () {
+const dataManager = (function () {
   var _counterId = 1;
   var processes = [];
   var workerFn;
@@ -23,7 +23,7 @@ var dataManager = (function () {
     },
   };
   function createWorker(fn) {
-    if (window.Worker && window.Blob && _useWebWorker) {
+    if (window.Worker && window.Blob && getWebWorker()) {
       var blob = new Blob(['var _workerSelf = self; self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       // var blob = new Blob(['self.onmessage = ', fn.toString()], { type: 'text/javascript' });
       var url = URL.createObjectURL(blob);
@@ -36,11 +36,7 @@ var dataManager = (function () {
   function setupWorker() {
     if (!workerInstance) {
       workerInstance = createWorker(function workerStart(e) {
-        /* exported dataManager */
-
         function dataFunctionManager() {
-          // var tCanvasHelper = createTag('canvas').getContext('2d');
-
           function completeLayers(layers, comps) {
             var layerData;
             var i;
@@ -87,18 +83,52 @@ var dataManager = (function () {
             }
           }
 
-          function findCompLayers(id, comps) {
+          function completeChars(chars, assets) {
+            if (chars) {
+              var i = 0;
+              var len = chars.length;
+              for (i = 0; i < len; i += 1) {
+                if (chars[i].t === 1) {
+                  // var compData = findComp(chars[i].data.refId, assets);
+                  chars[i].data.layers = findCompLayers(chars[i].data.refId, assets);
+                  // chars[i].data.ip = 0;
+                  // chars[i].data.op = 99999;
+                  // chars[i].data.st = 0;
+                  // chars[i].data.sr = 1;
+                  // chars[i].w = compData.w;
+                  // chars[i].data.ks = {
+                  //   a: { k: [0, 0, 0], a: 0 },
+                  //   p: { k: [0, -compData.h, 0], a: 0 },
+                  //   r: { k: 0, a: 0 },
+                  //   s: { k: [100, 100], a: 0 },
+                  //   o: { k: 100, a: 0 },
+                  // };
+                  completeLayers(chars[i].data.layers, assets);
+                }
+              }
+            }
+          }
+
+          function findComp(id, comps) {
             var i = 0;
             var len = comps.length;
             while (i < len) {
               if (comps[i].id === id) {
-                if (!comps[i].layers.__used) {
-                  comps[i].layers.__used = true;
-                  return comps[i].layers;
-                }
-                return JSON.parse(JSON.stringify(comps[i].layers));
+                return comps[i];
               }
               i += 1;
+            }
+            return null;
+          }
+
+          function findCompLayers(id, comps) {
+            var comp = findComp(id, comps);
+            if (comp) {
+              if (!comp.layers.__used) {
+                comp.layers.__used = true;
+                return comp.layers;
+              }
+              return JSON.parse(JSON.stringify(comp.layers));
             }
             return null;
           }
@@ -207,21 +237,39 @@ var dataManager = (function () {
               if (animationData.chars && !checkVersion(minimumVersion, animationData.v)) {
                 var i;
                 var len = animationData.chars.length;
-                var j;
-                var jLen;
-                var pathData;
-                var paths;
                 for (i = 0; i < len; i += 1) {
-                  if (animationData.chars[i].data && animationData.chars[i].data.shapes) {
-                    paths = animationData.chars[i].data.shapes[0].it;
-                    jLen = paths.length;
-
-                    for (j = 0; j < jLen; j += 1) {
-                      pathData = paths[j].ks.k;
-                      if (!pathData.__converted) {
-                        convertPathsToAbsoluteValues(paths[j].ks.k);
-                        pathData.__converted = true;
-                      }
+                  var charData = animationData.chars[i];
+                  if (charData.data && charData.data.shapes) {
+                    completeShapes(charData.data.shapes);
+                    charData.data.ip = 0;
+                    charData.data.op = 99999;
+                    charData.data.st = 0;
+                    charData.data.sr = 1;
+                    charData.data.ks = {
+                      p: { k: [0, 0], a: 0 },
+                      s: { k: [100, 100], a: 0 },
+                      a: { k: [0, 0], a: 0 },
+                      r: { k: 0, a: 0 },
+                      o: { k: 100, a: 0 },
+                    };
+                    if (!animationData.chars[i].t) {
+                      charData.data.shapes.push(
+                        {
+                          ty: 'no',
+                        }
+                      );
+                      charData.data.shapes[0].it.push(
+                        {
+                          p: { k: [0, 0], a: 0 },
+                          s: { k: [100, 100], a: 0 },
+                          a: { k: [0, 0], a: 0 },
+                          r: { k: 0, a: 0 },
+                          o: { k: 100, a: 0 },
+                          sk: { k: 0, a: 0 },
+                          sa: { k: 0, a: 0 },
+                          ty: 'tr',
+                        }
+                      );
                     }
                   }
                 }
@@ -434,12 +482,13 @@ var dataManager = (function () {
             checkPathProperties(animationData);
             checkShapes(animationData);
             completeLayers(animationData.layers, animationData.assets);
+            completeChars(animationData.chars, animationData.assets);
             animationData.__complete = true;
           }
 
           function completeText(data) {
             if (data.t.a.length === 0 && !('m' in data.t.p)) {
-              data.singleShape = true;
+              // data.singleShape = true;
             }
           }
 
@@ -457,7 +506,6 @@ var dataManager = (function () {
           _workerSelf.dataManager = dataFunctionManager();
         }
 
-        /* exported assetLoader */
         if (!_workerSelf.assetLoader) {
           _workerSelf.assetLoader = (function () {
             function formatResponse(xhr) {
@@ -625,3 +673,5 @@ var dataManager = (function () {
     completeAnimation: completeAnimation,
   };
 }());
+
+export default dataManager;

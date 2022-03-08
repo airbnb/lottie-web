@@ -1,4 +1,9 @@
-/* global PropertyFactory, extendPrototype, DynamicPropertyContainer */
+import DynamicPropertyContainer from '../../../utils/helpers/dynamicProperties';
+
+import {
+  extendPrototype,
+} from '../../../utils/functionExtensions';
+import PropertyFactory from '../../../utils/PropertyFactory';
 
 function SVGFillStyleData(elem, data, styleOb) {
   this.initDynamicPropertyContainer(elem);
@@ -9,3 +14,5 @@ function SVGFillStyleData(elem, data, styleOb) {
 }
 
 extendPrototype([DynamicPropertyContainer], SVGFillStyleData);
+
+export default SVGFillStyleData;

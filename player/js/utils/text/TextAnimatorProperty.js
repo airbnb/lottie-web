@@ -1,5 +1,20 @@
-/* global createSizedArray, PropertyFactory, TextAnimatorDataProperty, bez, addHueToRGB,
-  addSaturationToRGB, addBrightnessToRGB, LetterProps, Matrix, extendPrototype, DynamicPropertyContainer */
+import {
+  addSaturationToRGB,
+  addBrightnessToRGB,
+  addHueToRGB,
+} from '../common';
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import {
+  createSizedArray,
+} from '../helpers/arrays';
+import PropertyFactory from '../PropertyFactory';
+import bez from '../bez';
+import Matrix from '../../3rd_party/transformation-matrix';
+import TextAnimatorDataProperty from './TextAnimatorDataProperty';
+import LetterProps from './LetterProps';
 
 function TextAnimatorProperty(textData, renderType, elem) {
   this._isFirstFrame = true;
@@ -591,3 +606,5 @@ TextAnimatorProperty.prototype.getValue = function () {
 TextAnimatorProperty.prototype.mHelper = new Matrix();
 TextAnimatorProperty.prototype.defaultPropsArray = [];
 extendPrototype([DynamicPropertyContainer], TextAnimatorProperty);
+
+export default TextAnimatorProperty;

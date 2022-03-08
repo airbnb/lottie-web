@@ -1,4 +1,4 @@
-/* global Matrix */
+import Matrix from '../../../3rd_party/transformation-matrix';
 
 function ShapeTransformManager() {
   this.sequences = {};
@@ -59,3 +59,5 @@ ShapeTransformManager.prototype = {
     return '_' + this.transform_key_count;
   },
 };
+
+export default ShapeTransformManager;

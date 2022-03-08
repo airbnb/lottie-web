@@ -1,7 +1,11 @@
-/* global Matrix, MaskManagerInterface, TransformExpressionInterface, getDescriptor */
-/* exported LayerExpressionInterface */
+import {
+  getDescriptor,
+} from '../functionExtensions';
+import Matrix from '../../3rd_party/transformation-matrix';
+import MaskManagerInterface from './MaskInterface';
+import TransformExpressionInterface from './TransformInterface';
 
-var LayerExpressionInterface = (function () {
+const LayerExpressionInterface = (function () {
   function getMatrix(time) {
     var toWorldMat = new Matrix();
     if (time !== undefined) {
@@ -171,3 +175,5 @@ var LayerExpressionInterface = (function () {
     return _thisLayerFunction;
   };
 }());
+
+export default LayerExpressionInterface;

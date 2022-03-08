@@ -1,7 +1,11 @@
-/* global createSizedArray, ShapeCollection, shapePool, pooling */
-/* exported shapeCollectionPool */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
+import shapePool from './shape_pool';
+import pooling from './pooling';
+import ShapeCollection from '../shapes/ShapeCollection';
 
-var shapeCollectionPool = (function () {
+const shapeCollectionPool = (function () {
   var ob = {
     newShapeCollection: newShapeCollection,
     release: release,
@@ -40,3 +44,5 @@ var shapeCollectionPool = (function () {
 
   return ob;
 }());
+
+export default shapeCollectionPool;

@@ -1,7 +1,8 @@
-/* global createSizedArray */
-/* exported MaskManagerInterface */
+import {
+  createSizedArray,
+} from '../helpers/arrays';
 
-var MaskManagerInterface = (function () {
+const MaskManagerInterface = (function () {
   function MaskInterface(mask, data) {
     this._mask = mask;
     this._data = data;
@@ -45,3 +46,5 @@ var MaskManagerInterface = (function () {
   };
   return MaskManager;
 }());
+
+export default MaskManagerInterface;

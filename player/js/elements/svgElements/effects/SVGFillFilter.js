@@ -1,4 +1,4 @@
-/* global createNS */
+import createNS from '../../../utils/helpers/svg_elements';
 
 function SVGFillFilter(filter, filterManager) {
   this.filterManager = filterManager;
@@ -16,3 +16,5 @@ SVGFillFilter.prototype.renderFrame = function (forceRender) {
     this.matrixFilter.setAttribute('values', '0 0 0 0 ' + color[0] + ' 0 0 0 0 ' + color[1] + ' 0 0 0 0 ' + color[2] + ' 0 0 0 ' + opacity + ' 0');
   }
 };
+
+export default SVGFillFilter;

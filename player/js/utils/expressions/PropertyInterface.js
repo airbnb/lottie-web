@@ -1,6 +1,4 @@
-/* exported PropertyInterface */
-
-var PropertyInterface = (function () {
+const PropertyInterface = (function () {
   return function (propertyName, propertyGroup) {
     var interfaceFunction = {
       _name: propertyName,
@@ -17,3 +15,5 @@ var PropertyInterface = (function () {
     return _propertyGroup;
   };
 }());
+
+export default PropertyInterface;

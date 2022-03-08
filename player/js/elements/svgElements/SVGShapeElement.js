@@ -1,8 +1,33 @@
-/* global extendPrototype, BaseElement, TransformElement, SVGBaseElement, IShapeElement, HierarchyElement,
-FrameElement, RenderableDOMElement, Matrix, SVGStyleData, SVGStrokeStyleData, SVGFillStyleData,
-SVGGradientFillStyleData, SVGGradientStrokeStyleData, locationHref, getBlendMode, ShapeGroupData,
-TransformPropertyFactory, SVGTransformData, ShapePropertyFactory, SVGShapeData, SVGElementsRenderer, ShapeModifiers,
-lineCapEnum, lineJoinEnum */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import { getLocationHref } from '../../main';
+import ShapePropertyFactory from '../../utils/shapes/ShapeProperty';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import SVGBaseElement from './SVGBaseElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import getBlendMode from '../../utils/helpers/blendModes';
+import Matrix from '../../3rd_party/transformation-matrix';
+import IShapeElement from '../ShapeElement';
+import TransformPropertyFactory from '../../utils/TransformProperty';
+import { ShapeModifiers } from '../../utils/shapes/ShapeModifiers';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
+import SVGShapeData from '../helpers/shapes/SVGShapeData';
+import SVGStyleData from '../helpers/shapes/SVGStyleData';
+import SVGStrokeStyleData from '../helpers/shapes/SVGStrokeStyleData';
+import SVGFillStyleData from '../helpers/shapes/SVGFillStyleData';
+import SVGNoStyleData from '../helpers/shapes/SVGNoStyleData';
+import SVGGradientFillStyleData from '../helpers/shapes/SVGGradientFillStyleData';
+import SVGGradientStrokeStyleData from '../helpers/shapes/SVGGradientStrokeStyleData';
+import ShapeGroupData from '../helpers/shapes/ShapeGroupData';
+import SVGTransformData from '../helpers/shapes/SVGTransformData';
+import SVGElementsRenderer from '../helpers/shapes/SVGElementsRenderer';
 
 function SVGShapeElement(data, globalData, comp) {
   // List of drawable elements
@@ -94,8 +119,10 @@ SVGShapeElement.prototype.createStyleElement = function (data, level) {
     if (elementData.maskId) {
       this.globalData.defs.appendChild(elementData.ms);
       this.globalData.defs.appendChild(elementData.of);
-      pathElement.setAttribute('mask', 'url(' + locationHref + '#' + elementData.maskId + ')');
+      pathElement.setAttribute('mask', 'url(' + getLocationHref() + '#' + elementData.maskId + ')');
     }
+  } else if (data.ty === 'no') {
+    elementData = new SVGNoStyleData(this, data, styleOb);
   }
 
   if (data.ty === 'st' || data.ty === 'gs') {
@@ -224,7 +251,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
     } else {
       itemsData[i] = prevViewData[processedPos - 1];
     }
-    if (arr[i].ty === 'fl' || arr[i].ty === 'st' || arr[i].ty === 'gf' || arr[i].ty === 'gs') {
+    if (arr[i].ty === 'fl' || arr[i].ty === 'st' || arr[i].ty === 'gf' || arr[i].ty === 'gs' || arr[i].ty === 'no') {
       if (!processedPos) {
         itemsData[i] = this.createStyleElement(arr[i], level);
       } else {
@@ -306,7 +333,6 @@ SVGShapeElement.prototype.renderInnerContent = function () {
     this.stylesList[i].reset();
   }
   this.renderShape();
-
   for (i = 0; i < len; i += 1) {
     if (this.stylesList[i]._mdf || this._isFirstFrame) {
       if (this.stylesList[i].msElem) {
@@ -336,3 +362,5 @@ SVGShapeElement.prototype.destroy = function () {
   this.shapesData = null;
   this.itemsData = null;
 };
+
+export default SVGShapeElement;

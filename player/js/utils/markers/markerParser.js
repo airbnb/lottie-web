@@ -1,6 +1,4 @@
-/* exported markerParser */
-
-var markerParser = (
+const markerParser = (
 
   function () {
     function parsePayloadLines(payload) {
@@ -45,3 +43,5 @@ var markerParser = (
       return markers;
     };
   }());
+
+export default markerParser;

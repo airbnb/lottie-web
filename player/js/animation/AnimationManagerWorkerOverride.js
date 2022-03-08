@@ -1,7 +1,6 @@
-/* global AnimationItem */
-/* exported animationManager */
+import AnimationItem from './AnimationItem';
 
-var animationManager = (function () {
+const animationManager = (function () {
   var moduleOb = {};
   var registeredAnimations = [];
   var initTime = 0;
@@ -198,3 +197,5 @@ var animationManager = (function () {
   moduleOb.getRegisteredAnimations = getRegisteredAnimations;
   return moduleOb;
 }());
+
+export default animationManager;

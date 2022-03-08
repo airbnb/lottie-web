@@ -1,5 +1,17 @@
-/* global extendPrototype, SliderEffect, AngleEffect, ColorEffect, PointEffect, CheckboxEffect, LayerIndexEffect,
-MaskIndexEffect, NoValueEffect, DynamicPropertyContainer */
+import {
+  extendPrototype,
+} from './utils/functionExtensions';
+import {
+  SliderEffect,
+  AngleEffect,
+  ColorEffect,
+  PointEffect,
+  LayerIndexEffect,
+  MaskIndexEffect,
+  CheckboxEffect,
+  NoValueEffect,
+} from './effects/SliderEffect';
+import DynamicPropertyContainer from './utils/helpers/dynamicProperties';
 
 function EffectsManager(data, element) {
   var effects = data.ef || [];
@@ -67,3 +79,5 @@ GroupEffect.prototype.init = function (data, element) {
     }
   }
 };
+
+export default EffectsManager;

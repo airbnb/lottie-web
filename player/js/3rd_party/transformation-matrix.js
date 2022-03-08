@@ -1,4 +1,6 @@
-/* global createTypedArray */
+import {
+  createTypedArray,
+} from '../utils/helpers/arrays';
 
 /*!
  Transformation Matrix v2.0
@@ -29,7 +31,7 @@
  * @constructor
  */
 
-var Matrix = (function () {
+const Matrix = (function () {
   var _cos = Math.cos;
   var _sin = Math.sin;
   var _tan = Math.tan;
@@ -420,3 +422,5 @@ var Matrix = (function () {
     this.reset();
   };
 }());
+
+export default Matrix;

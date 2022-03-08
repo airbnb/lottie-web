@@ -1,12 +1,16 @@
-/* global createNS, createTag, getFontProperties */
-/* exported FontManager */
+import createNS from './helpers/svg_elements';
+import createTag from './helpers/html_elements';
+import getFontProperties from './getFontProperties';
 
-var FontManager = (function () {
+const FontManager = (function () {
   var maxWaitingTime = 5000;
   var emptyChar = {
     w: 0,
     size: 0,
     shapes: [],
+    data: {
+      shapes: [],
+    },
   };
   var combinedCharacters = [];
   // Hindi characters
@@ -350,3 +354,5 @@ var FontManager = (function () {
 
   return Font;
 }());
+
+export default FontManager;

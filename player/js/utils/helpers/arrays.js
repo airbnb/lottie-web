@@ -1,6 +1,4 @@
-/* exported createTypedArray, createSizedArray */
-
-var createTypedArray = (function () {
+const createTypedArray = (function () {
   function createRegularArray(type, len) {
     var i = 0;
     var arr = [];
@@ -38,3 +36,8 @@ var createTypedArray = (function () {
 function createSizedArray(len) {
   return Array.apply(null, { length: len });
 }
+
+export {
+  createTypedArray,
+  createSizedArray,
+};

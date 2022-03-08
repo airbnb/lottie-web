@@ -1,7 +1,6 @@
-/* global createNS */
-/* exported filtersFactory */
+import createNS from './helpers/svg_elements';
 
-var filtersFactory = (function () {
+const filtersFactory = (function () {
   var ob = {};
   ob.createFilter = createFilter;
   ob.createAlphaToLuminanceFilter = createAlphaToLuminanceFilter;
@@ -29,3 +28,5 @@ var filtersFactory = (function () {
 
   return ob;
 }());
+
+export default filtersFactory;

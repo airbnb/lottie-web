@@ -1,7 +1,8 @@
-/* global propertyGroupFactory, ExpressionPropertyInterface, PropertyInterface */
-/* exported EffectsExpressionInterface */
+import ExpressionPropertyInterface from './ExpressionValueFactory';
+import propertyGroupFactory from './PropertyGroupFactory';
+import PropertyInterface from './PropertyInterface';
 
-var EffectsExpressionInterface = (function () {
+const EffectsExpressionInterface = (function () {
   var ob = {
     createEffectsInterface: createEffectsInterface,
   };
@@ -106,3 +107,5 @@ var EffectsExpressionInterface = (function () {
 
   return ob;
 }());
+
+export default EffectsExpressionInterface;

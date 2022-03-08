@@ -1,4 +1,4 @@
-/* exported BaseTextElement */
-
-var BaseTextElement = function () {
+const BaseTextElement = function () {
 };
+
+export default BaseTextElement;

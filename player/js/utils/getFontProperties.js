@@ -1,5 +1,3 @@
-/* exported getFontProperties */
-
 function getFontProperties(fontData) {
   var styles = fontData.fStyle ? fontData.fStyle.split(' ') : [];
 
@@ -40,3 +38,5 @@ function getFontProperties(fontData) {
     weight: fontData.fWeight || fWeight,
   };
 }
+
+export default getFontProperties;

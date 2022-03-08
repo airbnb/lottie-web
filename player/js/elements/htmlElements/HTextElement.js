@@ -1,5 +1,25 @@
-/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HierarchyElement, FrameElement,
-RenderableDOMElement, ITextElement, createSizedArray, createTag, styleDiv, createNS, lineJoinEnum, lineCapEnum */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import {
+  createSizedArray,
+} from '../../utils/helpers/arrays';
+import createNS from '../../utils/helpers/svg_elements';
+import createTag from '../../utils/helpers/html_elements';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import ITextElement from '../TextElement';
+import HBaseElement from './HBaseElement';
+import {
+  lineCapEnum,
+  lineJoinEnum,
+} from '../../utils/helpers/shapeEnums';
+import {
+  styleDiv,
+} from '../../utils/common';
 
 function HTextElement(data, globalData, comp) {
   this.textSpans = [];
@@ -118,7 +138,7 @@ HTextElement.prototype.buildNewText = function () {
         shapeData = null;
       }
       matrixHelper.reset();
-      if (shapeData && shapeData.shapes) {
+      if (shapeData && shapeData.shapes && shapeData.shapes.length) {
         shapes = shapeData.shapes[0].it;
         matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
         shapeStr = this.createPathShape(matrixHelper, shapes);
@@ -265,3 +285,5 @@ HTextElement.prototype.renderInnerContent = function () {
     }
   }
 };
+
+export default HTextElement;

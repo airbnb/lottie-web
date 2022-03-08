@@ -1,4 +1,7 @@
-/* global TextProperty, TextAnimatorProperty, buildShapeString, LetterProps */
+import LetterProps from '../utils/text/LetterProps';
+import TextProperty from '../utils/text/TextProperty';
+import TextAnimatorProperty from '../utils/text/TextAnimatorProperty';
+import buildShapeString from '../utils/shapes/shapePathBuilder';
 
 function ITextElement() {
 }
@@ -37,8 +40,10 @@ ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
   var pathNodes;
   var shapeStr = '';
   for (j = 0; j < jLen; j += 1) {
-    pathNodes = shapes[j].ks.k;
-    shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
+    if (shapes[j].ty === 'sh') {
+      pathNodes = shapes[j].ks.k;
+      shapeStr += buildShapeString(pathNodes, pathNodes.i.length, true, matrixHelper);
+    }
   }
   return shapeStr;
 };
@@ -82,3 +87,5 @@ ITextElement.prototype.emptyProp = new LetterProps();
 ITextElement.prototype.destroy = function () {
 
 };
+
+export default ITextElement;

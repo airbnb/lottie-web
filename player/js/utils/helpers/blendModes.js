@@ -1,6 +1,4 @@
-/* exported getBlendMode */
-
-var getBlendMode = (function () {
+const getBlendMode = (function () {
   var blendModeEnums = {
     0: 'source-over',
     1: 'multiply',
@@ -24,3 +22,5 @@ var getBlendMode = (function () {
     return blendModeEnums[mode] || '';
   };
 }());
+
+export default getBlendMode;

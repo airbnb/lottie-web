@@ -1,5 +1,14 @@
-/* global extendPrototype, BaseElement, TransformElement, HBaseElement, HSolidElement, HierarchyElement,
-FrameElement, RenderableElement, createNS */
+import {
+  extendPrototype,
+} from '../../utils/functionExtensions';
+import createNS from '../../utils/helpers/svg_elements';
+import RenderableElement from '../helpers/RenderableElement';
+import BaseElement from '../BaseElement';
+import TransformElement from '../helpers/TransformElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import FrameElement from '../helpers/FrameElement';
+import HBaseElement from './HBaseElement';
+import HSolidElement from './HSolidElement';
 
 function HImageElement(data, globalData, comp) {
   this.assetData = globalData.getAssetData(data.refId);
@@ -29,3 +38,5 @@ HImageElement.prototype.createContent = function () {
     this.baseElement.setAttribute('id', this.data.ln);
   }
 };
+
+export default HImageElement;

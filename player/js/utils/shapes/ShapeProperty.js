@@ -1,8 +1,18 @@
-/* global extendPrototype, roundCorner, BezierFactory, shapePool, degToRads,
-  shapeCollectionPool, PropertyFactory, bmMin, DynamicPropertyContainer */
-/* exported ShapePropertyFactory */
+import {
+  degToRads,
+  roundCorner,
+  bmMin,
+} from '../common';
+import {
+  extendPrototype,
+} from '../functionExtensions';
+import DynamicPropertyContainer from '../helpers/dynamicProperties';
+import PropertyFactory from '../PropertyFactory';
+import BezierFactory from '../../3rd_party/BezierEaser';
+import shapePool from '../pooling/shape_pool';
+import shapeCollectionPool from '../pooling/shapeCollection_pool';
 
-var ShapePropertyFactory = (function () {
+const ShapePropertyFactory = (function () {
   var initFrame = -999999;
 
   function interpolateShape(frameNum, previousValue, caching) {
@@ -225,12 +235,6 @@ var ShapePropertyFactory = (function () {
     var cPoint = roundCorner;
 
     function EllShapePropertyFactory(elem, data) {
-      /* this.v = {
-                v: createSizedArray(4),
-                i: createSizedArray(4),
-                o: createSizedArray(4),
-                c: true
-            }; */
       this.v = shapePool.newElement();
       this.v.setPathData(true, 4);
       this.localShapeCollection = shapeCollectionPool.newShapeCollection();
@@ -538,3 +542,5 @@ var ShapePropertyFactory = (function () {
   ob.getKeyframedConstructorFunction = getKeyframedConstructorFunction;
   return ob;
 }());
+
+export default ShapePropertyFactory;
