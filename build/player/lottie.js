@@ -16706,6 +16706,26 @@
     return new HCompElement(data, this.globalData, this);
   };
 
+AnimationItem.prototype.stop = function (name) {
+  if (name && this.name !== name) {
+    return;
+  }
+  this.pause();
+  this.playCount = 0;
+  this._completedLoop = false;
+  this.setCurrentRawFrameValue(0);
+};
+
+AnimationItem.prototype.getMarkerData = function (markerName) {
+  var marker;
+  for (var i = 0; i < this.markers.length; i += 1) {
+    marker = this.markers[i];
+    if (marker.payload && marker.payload.name.cm === markerName) {
+      return marker;
+    }
+  }
+  return null;
+};
   var Expressions = function () {
     var ob = {};
     ob.initExpressions = initExpressions;
