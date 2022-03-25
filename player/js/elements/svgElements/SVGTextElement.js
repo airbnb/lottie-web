@@ -184,6 +184,11 @@ SVGTextLottieElement.prototype.buildNewText = function () {
           }
           glyphElement = new SVGShapeElement(data, this.globalData, this);
         }
+        if (this.textSpans[i].glyph) {
+          var glyph = this.textSpans[i].glyph;
+          this.textSpans[i].childSpan.removeChild(glyph.layerElement);
+          glyph.destroy();
+        }
         this.textSpans[i].glyph = glyphElement;
         glyphElement._debug = true;
         glyphElement.prepareFrame(0);
