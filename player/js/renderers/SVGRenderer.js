@@ -56,6 +56,8 @@ function SVGRenderer(animationItem, config) {
       x: (config && config.filterSize && config.filterSize.x) || '0%',
       y: (config && config.filterSize && config.filterSize.y) || '0%',
     },
+    width: (config && config.width),
+    height: (config && config.height),
   };
 
   this.globalData = {

@@ -58,6 +58,12 @@ SVGRendererBase.prototype.configAnimation = function (animData) {
     this.svgElement.style.transform = 'translate3d(0,0,0)';
     this.svgElement.style.contentVisibility = this.renderConfig.contentVisibility;
   }
+  if (this.renderConfig.width) {
+    this.svgElement.setAttribute('width', this.renderConfig.width);
+  }
+  if (this.renderConfig.height) {
+    this.svgElement.setAttribute('height', this.renderConfig.height);
+  }
   if (this.renderConfig.className) {
     this.svgElement.setAttribute('class', this.renderConfig.className);
   }
