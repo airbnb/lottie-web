@@ -10,7 +10,7 @@ function workerContent() {
   var localIdCounter = 0;
   var animations = {};
 
-  var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility'];
+  var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
   function createElement(namespace, type) {
     var style = {
       serialize: function () {
