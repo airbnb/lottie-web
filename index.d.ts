@@ -6,6 +6,7 @@ export type AnimationEventCallback<T = any> = (args: T) => void;
 export type AnimationItem = {
     name: string;
     isLoaded: boolean;
+    dataFailed: boolean;
     currentFrame: number;
     currentRawFrame: number;
     firstFrame: number;
