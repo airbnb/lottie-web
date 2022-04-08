@@ -1,3 +1,12 @@
+## V 5.9.2
+- FEATURE: add support for playsegments and blend mode on lottie worker
+- FIX: Fix ts typing for loadAnimation parameter
+- FEATURE: allows to set width and height of svg from config
+- FIX: Fix getMarkerData bug
+- FEATURE: Add type for goToAndPlay & goToAndStop
+- FIX: add time to list of code for preventing removal
+- FIX: glyphs removed from DOM before reloading
+
 ## V 5.9.1
 - FIX: navigator validation for SSR
 

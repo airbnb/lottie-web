@@ -2082,7 +2082,7 @@
     for (var i = 0; i < this.markers.length; i += 1) {
       marker = this.markers[i];
 
-      if (marker.payload && marker.payload.name === markerName) {
+      if (marker.payload && marker.payload.name.cm === markerName) {
         return marker;
       }
     }
@@ -5201,7 +5201,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.1';
+  lottie.version = '5.9.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -13245,6 +13245,12 @@
             glyphElement = new SVGShapeElement(data, this.globalData, this);
           }
 
+          if (this.textSpans[i].glyph) {
+            var glyph = this.textSpans[i].glyph;
+            this.textSpans[i].childSpan.removeChild(glyph.layerElement);
+            glyph.destroy();
+          }
+
           this.textSpans[i].glyph = glyphElement;
           glyphElement._debug = true;
           glyphElement.prepareFrame(0);
@@ -13445,6 +13451,14 @@
       this.svgElement.style.height = '100%';
       this.svgElement.style.transform = 'translate3d(0,0,0)';
       this.svgElement.style.contentVisibility = this.renderConfig.contentVisibility;
+    }
+
+    if (this.renderConfig.width) {
+      this.svgElement.setAttribute('width', this.renderConfig.width);
+    }
+
+    if (this.renderConfig.height) {
+      this.svgElement.setAttribute('height', this.renderConfig.height);
     }
 
     if (this.renderConfig.className) {
@@ -13806,7 +13820,9 @@
         height: config && config.filterSize && config.filterSize.height || '100%',
         x: config && config.filterSize && config.filterSize.x || '0%',
         y: config && config.filterSize && config.filterSize.y || '0%'
-      }
+      },
+      width: config && config.width,
+      height: config && config.height
     };
     this.globalData = {
       _mdf: false,
@@ -16601,7 +16617,7 @@
       } // Bundlers will see these as dead code and unless we reference them
 
 
-      executeExpression.__preventDeadCodeRemoval = [$bm_transform, anchorPoint, velocity, inPoint, outPoint, width, height, name, loop_in, loop_out, smooth, toComp, fromCompToSurface, toWorld, fromWorld, mask, position, rotation, scale, thisComp, numKeys, active, wiggle, loopInDuration, loopOutDuration, comp, lookAt, easeOut, easeIn, ease, nearestKey, key, text, textIndex, textTotal, selectorValue, framesToTime, timeToFrames, sourceRectAtTime, substring, substr, posterizeTime, index, globalData];
+      executeExpression.__preventDeadCodeRemoval = [$bm_transform, anchorPoint, time, velocity, inPoint, outPoint, width, height, name, loop_in, loop_out, smooth, toComp, fromCompToSurface, toWorld, fromWorld, mask, position, rotation, scale, thisComp, numKeys, active, wiggle, loopInDuration, loopOutDuration, comp, lookAt, easeOut, easeIn, ease, nearestKey, key, text, textIndex, textTotal, selectorValue, framesToTime, timeToFrames, sourceRectAtTime, substring, substr, posterizeTime, index, globalData];
       return executeExpression;
     }
 
