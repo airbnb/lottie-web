@@ -2,7 +2,7 @@ function workerContent() {
   var localIdCounter = 0;
   var animations = {};
 
-  var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility'];
+  var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
   function createElement(namespace, type) {
     var style = {
       serialize: function () {
@@ -295,6 +295,10 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].resize();
       }
+    } else if (type === 'playSegments') {
+      if (animations[payload.id]) {
+        animations[payload.id].playSegments(payload.arr, payload.forceFlag);
+      }
     }
   };
 }
@@ -538,6 +542,16 @@ var lottie = (function () {
             id: animationId,
             value: value,
             isFrame: isFrame,
+          },
+        });
+      },
+      playSegments: function (arr, forceFlag) {
+        workerInstance.postMessage({
+          type: 'playSegments',
+          payload: {
+            id: animationId,
+            arr: arr,
+            forceFlag: forceFlag,
           },
         });
       },
