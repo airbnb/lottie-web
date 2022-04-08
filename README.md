@@ -33,7 +33,7 @@ http://aescripts.com/bodymovin/
 
 ### Option 2:
 **Or get it from the adobe store**
-https://creative.adobe.com/addons/products/12557
+https://exchange.adobe.com/creativecloud.details.12557.html
 CC 2014 and up.
 
 ## Other installation options:
