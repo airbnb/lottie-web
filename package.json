@@ -37,5 +37,8 @@
     "watch": "^1.0.2"
   },
   "types": "./index.d.ts",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "klona": "^2.0.5"
+  }
 }
