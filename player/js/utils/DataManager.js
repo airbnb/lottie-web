@@ -1,3 +1,4 @@
+import { klona } from 'klona/json';
 import { getWebWorker } from '../main';
 
 const dataManager = (function () {
@@ -128,7 +129,7 @@ const dataManager = (function () {
                 comp.layers.__used = true;
                 return comp.layers;
               }
-              return JSON.parse(JSON.stringify(comp.layers));
+              return klona(comp.layers);
             }
             return null;
           }
