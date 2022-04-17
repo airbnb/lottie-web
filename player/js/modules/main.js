@@ -137,14 +137,14 @@ function getQueryVariable(variable) {
   }
   return null;
 }
-var queryString;
+var queryString = '';
 if (standalone) {
   var scripts = document.getElementsByTagName('script');
   var index = scripts.length - 1;
   var myScript = scripts[index] || {
     src: '',
   };
-  queryString = myScript.src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
+  queryString = myScript.src ? myScript.src.replace(/^[^\?]+\??/, '') : ''; // eslint-disable-line no-useless-escape
   renderer = getQueryVariable('renderer');
 }
 var readyStateCheckInterval = setInterval(checkReady, 100);
