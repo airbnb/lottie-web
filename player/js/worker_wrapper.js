@@ -235,7 +235,10 @@ function workerContent() {
           });
         });
       }
-      animations[payload.id] = animation;
+      animations[payload.id] = {
+        animation: animation,
+        events: {},
+      };
     }
 
     return {
@@ -250,43 +253,43 @@ function workerContent() {
       lottieInternal.loadAnimation(payload);
     } else if (type === 'pause') {
       if (animations[payload.id]) {
-        animations[payload.id].pause();
+        animations[payload.id].animation.pause();
       }
     } else if (type === 'play') {
       if (animations[payload.id]) {
-        animations[payload.id].play();
+        animations[payload.id].animation.play();
       }
     } else if (type === 'stop') {
       if (animations[payload.id]) {
-        animations[payload.id].stop();
+        animations[payload.id].animation.stop();
       }
     } else if (type === 'setSpeed') {
       if (animations[payload.id]) {
-        animations[payload.id].setSpeed(payload.value);
+        animations[payload.id].animation.setSpeed(payload.value);
       }
     } else if (type === 'setDirection') {
       if (animations[payload.id]) {
-        animations[payload.id].setDirection(payload.value);
+        animations[payload.id].animation.setDirection(payload.value);
       }
     } else if (type === 'setDirection') {
       if (animations[payload.id]) {
-        animations[payload.id].setDirection(payload.value);
+        animations[payload.id].animation.setDirection(payload.value);
       }
     } else if (type === 'goToAndPlay') {
       if (animations[payload.id]) {
-        animations[payload.id].goToAndPlay(payload.value, payload.isFrame);
+        animations[payload.id].animation.goToAndPlay(payload.value, payload.isFrame);
       }
     } else if (type === 'goToAndStop') {
       if (animations[payload.id]) {
-        animations[payload.id].goToAndStop(payload.value, payload.isFrame);
+        animations[payload.id].animation.goToAndStop(payload.value, payload.isFrame);
       }
     } else if (type === 'setSubframe') {
       if (animations[payload.id]) {
-        animations[payload.id].setSubframe(payload.value);
+        animations[payload.id].animation.setSubframe(payload.value);
       }
     } else if (type === 'addEventListener') {
       if (animations[payload.id]) {
-        animations[payload.id].addEventListener(payload.eventName, function () {
+        var eventCallback = function () {
           self.postMessage({
             type: 'event',
             payload: {
@@ -295,23 +298,32 @@ function workerContent() {
               argument: arguments[0],
             },
           });
-        });
+        };
+        animations[payload.id].events[payload.callbackId] = {
+          callback: eventCallback,
+        };
+        animations[payload.id].animation.addEventListener(payload.eventName, eventCallback);
+      }
+    } else if (type === 'removeEventListener') {
+      if (animations[payload.id]) {
+        var callback = animations[payload.id].events[payload.callbackId];
+        animations[payload.id].animation.removeEventListener(payload.eventName, callback);
       }
     } else if (type === 'destroy') {
       if (animations[payload.id]) {
-        animations[payload.id].destroy();
+        animations[payload.id].animation.destroy();
         animations[payload.id] = null;
       }
     } else if (type === 'resize') {
       if (animations[payload.id]) {
-        animations[payload.id].resize();
+        animations[payload.id].animation.resize();
       }
     } else if (type === 'playSegments') {
       if (animations[payload.id]) {
-        animations[payload.id].playSegments(payload.arr, payload.forceFlag);
+        animations[payload.id].animation.playSegments(payload.arr, payload.forceFlag);
       }
     } else if (type === 'updateDocumentData') {
-      animations[payload.id].updateDocumentData(payload.path, payload.documentData, payload.index);
+      animations[payload.id].animation.updateDocumentData(payload.path, payload.documentData, payload.index);
     }
   };
 }
@@ -451,7 +463,7 @@ var lottie = (function () {
     if (animation) {
       var callbacks = animation.callbacks;
       if (callbacks[payload.callbackId]) {
-        callbacks[payload.callbackId](payload.argument);
+        callbacks[payload.callbackId].callback(payload.argument);
       }
     }
   }
@@ -596,7 +608,10 @@ var lottie = (function () {
         } else {
           eventsIdCounter += 1;
           var callbackId = 'callback_' + eventsIdCounter;
-          animation.callbacks[callbackId] = callback;
+          animation.callbacks[callbackId] = {
+            eventName: eventName,
+            callback: callback,
+          };
           workerInstance.postMessage({
             type: 'addEventListener',
             payload: {
@@ -606,6 +621,23 @@ var lottie = (function () {
             },
           });
         }
+      },
+      removeEventListener: function (eventName, callback) {
+        Object.keys(animation.callbacks)
+          .forEach(function (key) {
+            if (animation.callbacks[key].eventName === eventName
+              && (animation.callbacks[key].callback === callback || !callback)) {
+              delete animation.callbacks[key];
+              workerInstance.postMessage({
+                type: 'removeEventListener',
+                payload: {
+                  id: animationId,
+                  callbackId: key,
+                  eventName: eventName,
+                },
+              });
+            }
+          });
       },
       destroy: function () {
         animations[animationId] = null;
