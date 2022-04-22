@@ -135,6 +135,7 @@ const FontManager = (function () {
     }
     function measure(text) {
       if (engine === 'svg') {
+        helper.textContent = text;
         return helper.getComputedTextLength();
       }
       return helper.measureText(text).width;
