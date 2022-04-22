@@ -108,27 +108,40 @@ const FontManager = (function () {
     }
   }
 
-  function createHelper(def, fontData) {
-    var tHelper = createNS('text');
-    tHelper.style.fontSize = '100px';
-    // tHelper.style.fontFamily = fontData.fFamily;
-
+  function createHelper(fontData, def) {
+    var engine = (document.body && def) ? 'svg' : 'canvas';
+    var helper;
     var fontProps = getFontProperties(fontData);
-    tHelper.setAttribute('font-family', fontData.fFamily);
-    tHelper.setAttribute('font-style', fontProps.style);
-    tHelper.setAttribute('font-weight', fontProps.weight);
-    tHelper.textContent = '1';
-    if (fontData.fClass) {
-      tHelper.style.fontFamily = 'inherit';
-      tHelper.setAttribute('class', fontData.fClass);
+    if (engine === 'svg') {
+      var tHelper = createNS('text');
+      tHelper.style.fontSize = '100px';
+      // tHelper.style.fontFamily = fontData.fFamily;
+      tHelper.setAttribute('font-family', fontData.fFamily);
+      tHelper.setAttribute('font-style', fontProps.style);
+      tHelper.setAttribute('font-weight', fontProps.weight);
+      tHelper.textContent = '1';
+      if (fontData.fClass) {
+        tHelper.style.fontFamily = 'inherit';
+        tHelper.setAttribute('class', fontData.fClass);
+      } else {
+        tHelper.style.fontFamily = fontData.fFamily;
+      }
+      def.appendChild(tHelper);
+      helper = tHelper;
     } else {
-      tHelper.style.fontFamily = fontData.fFamily;
+      var tCanvasHelper = new OffscreenCanvas(500, 500).getContext('2d');
+      tCanvasHelper.font = fontProps.style + ' ' + fontProps.weight + ' 100px ' + fontData.fFamily;
+      helper = tCanvasHelper;
     }
-    def.appendChild(tHelper);
-    var tCanvasHelper = createTag('canvas').getContext('2d');
-    tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px ' + fontData.fFamily;
-    // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
-    return tHelper;
+    function measure(text) {
+      if (engine === 'svg') {
+        return helper.getComputedTextLength();
+      }
+      return helper.measureText(text).width;
+    }
+    return {
+      measureText: measure,
+    };
   }
 
   function addFonts(fontData, defs) {
@@ -138,6 +151,15 @@ const FontManager = (function () {
     }
     if (this.chars) {
       this.isLoaded = true;
+      this.fonts = fontData.list;
+      return;
+    }
+    if (!document.body) {
+      this.isLoaded = true;
+      fontData.list.forEach((data) => {
+        data.helper = createHelper(data);
+        data.cache = {};
+      });
       this.fonts = fontData.list;
       return;
     }
@@ -210,7 +232,7 @@ const FontManager = (function () {
           defs.appendChild(sc);
         }
       }
-      fontArr[i].helper = createHelper(defs, fontArr[i]);
+      fontArr[i].helper = createHelper(fontArr[i], defs);
       fontArr[i].cache = {};
       this.fonts.push(fontArr[i]);
     }
@@ -276,19 +298,12 @@ const FontManager = (function () {
     var index = char.charCodeAt(0);
     if (!fontData.cache[index + 1]) {
       var tHelper = fontData.helper;
-      // Canvas version
-      // fontData.cache[index] = tHelper.measureText(char).width / 100;
-      // SVG version
-      // console.log(tHelper.getBBox().width)
       if (char === ' ') {
-        tHelper.textContent = '|' + char + '|';
-        var doubleSize = tHelper.getComputedTextLength();
-        tHelper.textContent = '||';
-        var singleSize = tHelper.getComputedTextLength();
+        var doubleSize = tHelper.measureText('|' + char + '|');
+        var singleSize = tHelper.measureText('||');
         fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
       } else {
-        tHelper.textContent = char;
-        fontData.cache[index + 1] = (tHelper.getComputedTextLength()) / 100;
+        fontData.cache[index + 1] = tHelper.measureText(char) / 100;
       }
     }
     return fontData.cache[index + 1] * size;

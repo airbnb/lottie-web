@@ -40,6 +40,7 @@ function workerContent() {
       _changedStyles: [],
       _changedAttributes: [],
       _changedElements: [],
+      _textContent: null,
       type: type,
       namespace: namespace,
       children: [],
@@ -79,6 +80,7 @@ function workerContent() {
           style: this.style.serialize(),
           attributes: this.attributes,
           children: this.children.map(function (child) { return child.serialize(); }),
+          textContent: this._textContent,
         };
       },
       getContext: function () { return { fillRect: function () {} }; },
@@ -94,6 +96,12 @@ function workerContent() {
       },
     };
     element.style = style;
+    Object.defineProperty(element, 'textContent', {
+      set: function (value) {
+        element._isDirty = true;
+        element._textContent = value;
+      },
+    });
     return element;
   }
 
@@ -122,6 +130,7 @@ function workerContent() {
       element._changedStyles.length = 0;
       element._changedAttributes.length = 0;
       element._changedElements.length = 0;
+      element._textContent = null;
       element.children.forEach(function (child) {
         addElementToList(child, list);
       });
@@ -206,12 +215,14 @@ function workerContent() {
                 styles: addChangedStyles(element),
                 attributes: addChangedAttributes(element),
                 elements: addChangedElements(element, elements),
+                textContent: element._textContent || undefined,
               };
               changedElements.push(changedElement);
               element._isDirty = false;
               element._changedAttributes.length = 0;
               element._changedStyles.length = 0;
               element._changedElements.length = 0;
+              element._textContent = null;
             }
           }
           self.postMessage({
@@ -327,6 +338,9 @@ var lottie = (function () {
     } else {
       elem = document.createElementNS(data.namespace, data.type);
     }
+    if (data.textContent) {
+      elem.textContent = data.textContent;
+    }
     for (var attr in data.attributes) {
       if (Object.prototype.hasOwnProperty.call(data.attributes, attr)) {
         if (attr === 'href') {
@@ -406,6 +420,12 @@ var lottie = (function () {
     }
   }
 
+  function updateTextContent(element, text) {
+    if (text) {
+      element.textContent = text;
+    }
+  }
+
   function handleAnimationUpdate(payload) {
     var changedElements = payload.elements;
     var animation = animations[payload.id];
@@ -418,6 +438,7 @@ var lottie = (function () {
         addNewElements(elementData.elements, elements);
         updateElementStyles(element, elementData.styles);
         updateElementAttributes(element, elementData.attributes);
+        updateTextContent(element, elementData.textContent);
       }
       animation.animInstance.currentFrame = payload.currentTime;
     }
