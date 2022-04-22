@@ -100,6 +100,18 @@ export type AnimationConfig<T extends RendererType> = {
     }
 }
 
+export type TextDocumentData = {
+    t?: string;
+    s?: number;
+    f?: string;
+    ca?: number;
+    j?: number;
+    tr?: number;
+    lh?: number;
+    ls?: number;
+    fc?: [number, number, number];
+}
+
 export type AnimationConfigWithPath<T extends RendererType> = AnimationConfig<T> & {
     path?: string;
 }
@@ -128,6 +140,7 @@ export type LottiePlayer = {
     setQuality(quality: string | number): void;
     setLocationHref(href: string): void;
     setIDPrefix(prefix: string): void;
+    updateDocumentData(path: (string|number)[], documentData: TextDocumentData, index: number): void;
 };
 
 declare const Lottie: LottiePlayer;

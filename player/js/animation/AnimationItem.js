@@ -716,6 +716,15 @@ AnimationItem.prototype.getDuration = function (isFrame) {
   return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
 };
 
+AnimationItem.prototype.updateDocumentData = function (path, documentData, index) {
+  try {
+    var element = this.renderer.getElementByPath(path);
+    element.updateDocumentData(documentData, index);
+  } catch (error) {
+    // TODO: decide how to handle catch case
+  }
+};
+
 AnimationItem.prototype.trigger = function (name) {
   if (this._cbs && this._cbs[name]) {
     switch (name) {

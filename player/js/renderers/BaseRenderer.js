@@ -133,6 +133,27 @@ BaseRenderer.prototype.searchExtraCompositions = function (assets) {
   }
 };
 
+BaseRenderer.prototype.getElementByPath = function (path) {
+  var pathValue = path.shift();
+  var element;
+  if (typeof pathValue === 'number') {
+    element = this.elements[pathValue];
+  } else {
+    var i;
+    var len = this.elements.length;
+    for (i = 0; i < len; i += 1) {
+      if (this.elements[i].data.nm === pathValue) {
+        element = this.elements[i];
+        break;
+      }
+    }
+  }
+  if (path.length === 0) {
+    return element;
+  }
+  return element.getElementByPath(path);
+};
+
 BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
   this.globalData.fontManager = new FontManager();
   this.globalData.fontManager.addChars(animData.chars);
