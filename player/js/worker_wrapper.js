@@ -310,6 +310,8 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].playSegments(payload.arr, payload.forceFlag);
       }
+    } else if (type === 'updateDocumentData') {
+      animations[payload.id].updateDocumentData(payload.path, payload.documentData, payload.index);
     }
   };
 }
@@ -622,6 +624,17 @@ var lottie = (function () {
           type: 'resize',
           payload: {
             id: animationId,
+          },
+        });
+      },
+      updateDocumentData: function (path, documentData, index) {
+        workerInstance.postMessage({
+          type: 'updateDocumentData',
+          payload: {
+            id: animationId,
+            path: path,
+            documentData: documentData,
+            index: index,
           },
         });
       },
