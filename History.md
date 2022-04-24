@@ -1,3 +1,11 @@
+## V 5.9.3
+- FEATURE: Add support for isPaused property on lottie worker
+- FEATURE: Adds support for changing volume based on the audio layer data
+- FEATURE: add support for removeEventListener on worker
+- FEATURE: add support for updateDocumentData on worker
+- FEATURE: add text as font support on worker
+- FIX: avoid crash when script does not have src
+
 ## V 5.9.2
 - FEATURE: add support for playsegments and blend mode on lottie worker
 - FIX: Fix ts typing for loadAnimation parameter

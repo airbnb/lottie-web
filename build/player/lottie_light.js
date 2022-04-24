@@ -1711,6 +1711,7 @@
     this.configAnimation = this.configAnimation.bind(this);
     this.onSetupError = this.onSetupError.bind(this);
     this.onSegmentComplete = this.onSegmentComplete.bind(this);
+    this.drawnFrameEvent = new BMEnterFrameEvent('drawnFrame', 0, 0, 0);
   };
 
   extendPrototype([BaseEvent], AnimationItem);
@@ -2031,6 +2032,7 @@
 
     if (this.isPaused === true) {
       this.isPaused = false;
+      this.trigger('_pause');
       this.audioController.resume();
 
       if (this._idle) {
@@ -2047,6 +2049,7 @@
 
     if (this.isPaused === false) {
       this.isPaused = true;
+      this.trigger('_play');
       this._idle = true;
       this.trigger('_idle');
       this.audioController.pause();
@@ -2407,12 +2410,26 @@
     return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
   };
 
+  AnimationItem.prototype.updateDocumentData = function (path, documentData, index) {
+    try {
+      var element = this.renderer.getElementByPath(path);
+      element.updateDocumentData(documentData, index);
+    } catch (error) {// TODO: decide how to handle catch case
+    }
+  };
+
   AnimationItem.prototype.trigger = function (name) {
     if (this._cbs && this._cbs[name]) {
       switch (name) {
         case 'enterFrame':
-        case 'drawnFrame':
           this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
+          break;
+
+        case 'drawnFrame':
+          this.drawnFrameEvent.currentTime = this.currentFrame;
+          this.drawnFrameEvent.totalTime = this.totalFrames;
+          this.drawnFrameEvent.direction = this.frameModifier;
+          this.triggerEvent(name, this.drawnFrameEvent);
           break;
 
         case 'loopComplete':
@@ -5201,7 +5218,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.2';
+  lottie.version = '5.9.3';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -5225,7 +5242,7 @@
     return null;
   }
 
-  var queryString;
+  var queryString = '';
 
   if (standalone) {
     var scripts = document.getElementsByTagName('script');
@@ -5233,7 +5250,7 @@
     var myScript = scripts[index] || {
       src: ''
     };
-    queryString = myScript.src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
+    queryString = myScript.src ? myScript.src.replace(/^[^\?]+\??/, '') : ''; // eslint-disable-line no-useless-escape
 
     renderer = getQueryVariable('renderer');
   }
@@ -6635,28 +6652,47 @@
       }
     }
 
-    function createHelper(def, fontData) {
-      var tHelper = createNS('text');
-      tHelper.style.fontSize = '100px'; // tHelper.style.fontFamily = fontData.fFamily;
-
+    function createHelper(fontData, def) {
+      var engine = document.body && def ? 'svg' : 'canvas';
+      var helper;
       var fontProps = getFontProperties(fontData);
-      tHelper.setAttribute('font-family', fontData.fFamily);
-      tHelper.setAttribute('font-style', fontProps.style);
-      tHelper.setAttribute('font-weight', fontProps.weight);
-      tHelper.textContent = '1';
 
-      if (fontData.fClass) {
-        tHelper.style.fontFamily = 'inherit';
-        tHelper.setAttribute('class', fontData.fClass);
+      if (engine === 'svg') {
+        var tHelper = createNS('text');
+        tHelper.style.fontSize = '100px'; // tHelper.style.fontFamily = fontData.fFamily;
+
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontProps.style);
+        tHelper.setAttribute('font-weight', fontProps.weight);
+        tHelper.textContent = '1';
+
+        if (fontData.fClass) {
+          tHelper.style.fontFamily = 'inherit';
+          tHelper.setAttribute('class', fontData.fClass);
+        } else {
+          tHelper.style.fontFamily = fontData.fFamily;
+        }
+
+        def.appendChild(tHelper);
+        helper = tHelper;
       } else {
-        tHelper.style.fontFamily = fontData.fFamily;
+        var tCanvasHelper = new OffscreenCanvas(500, 500).getContext('2d');
+        tCanvasHelper.font = fontProps.style + ' ' + fontProps.weight + ' 100px ' + fontData.fFamily;
+        helper = tCanvasHelper;
       }
 
-      def.appendChild(tHelper);
-      var tCanvasHelper = createTag('canvas').getContext('2d');
-      tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px ' + fontData.fFamily; // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+      function measure(text) {
+        if (engine === 'svg') {
+          helper.textContent = text;
+          return helper.getComputedTextLength();
+        }
 
-      return tHelper;
+        return helper.measureText(text).width;
+      }
+
+      return {
+        measureText: measure
+      };
     }
 
     function addFonts(fontData, defs) {
@@ -6667,6 +6703,16 @@
 
       if (this.chars) {
         this.isLoaded = true;
+        this.fonts = fontData.list;
+        return;
+      }
+
+      if (!document.body) {
+        this.isLoaded = true;
+        fontData.list.forEach(function (data) {
+          data.helper = createHelper(data);
+          data.cache = {};
+        });
         this.fonts = fontData.list;
         return;
       }
@@ -6742,7 +6788,7 @@
           }
         }
 
-        fontArr[i].helper = createHelper(defs, fontArr[i]);
+        fontArr[i].helper = createHelper(fontArr[i], defs);
         fontArr[i].cache = {};
         this.fonts.push(fontArr[i]);
       }
@@ -6817,20 +6863,14 @@
       var index = _char2.charCodeAt(0);
 
       if (!fontData.cache[index + 1]) {
-        var tHelper = fontData.helper; // Canvas version
-        // fontData.cache[index] = tHelper.measureText(char).width / 100;
-        // SVG version
-        // console.log(tHelper.getBBox().width)
+        var tHelper = fontData.helper;
 
         if (_char2 === ' ') {
-          tHelper.textContent = '|' + _char2 + '|';
-          var doubleSize = tHelper.getComputedTextLength();
-          tHelper.textContent = '||';
-          var singleSize = tHelper.getComputedTextLength();
+          var doubleSize = tHelper.measureText('|' + _char2 + '|');
+          var singleSize = tHelper.measureText('||');
           fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
         } else {
-          tHelper.textContent = _char2;
-          fontData.cache[index + 1] = tHelper.getComputedTextLength() / 100;
+          fontData.cache[index + 1] = tHelper.measureText(_char2) / 100;
         }
       }
 
@@ -8760,9 +8800,15 @@
     this.audio = this.globalData.audioController.createAudio(assetPath);
     this._currentTime = 0;
     this.globalData.audioController.addAudio(this);
+    this._volumeMultiplier = 1;
+    this._volume = 1;
+    this._previousVolume = null;
     this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {
       _placeholder: true
     };
+    this.lv = PropertyFactory.getProp(this, data.au && data.au.lv ? data.au.lv : {
+      k: [100]
+    }, 1, 0.01, this);
   }
 
   AudioElement.prototype.prepareFrame = function (num) {
@@ -8774,6 +8820,14 @@
       this._currentTime = timeRemapped;
     } else {
       this._currentTime = num / this.data.sr;
+    }
+
+    this._volume = this.lv.v[0];
+    var totalVolume = this._volume * this._volumeMultiplier;
+
+    if (this._previousVolume !== totalVolume) {
+      this._previousVolume = totalVolume;
+      this.audio.volume(totalVolume);
     }
   };
 
@@ -8814,7 +8868,9 @@
   };
 
   AudioElement.prototype.volume = function (volumeValue) {
-    this.audio.volume(volumeValue);
+    this._volumeMultiplier = volumeValue;
+    this._previousVolume = volumeValue * this._volume;
+    this.audio.volume(this._previousVolume);
   };
 
   AudioElement.prototype.getBaseElement = function () {
@@ -8981,6 +9037,31 @@
         this.globalData.projectInterface.registerComposition(comp);
       }
     }
+  };
+
+  BaseRenderer.prototype.getElementByPath = function (path) {
+    var pathValue = path.shift();
+    var element;
+
+    if (typeof pathValue === 'number') {
+      element = this.elements[pathValue];
+    } else {
+      var i;
+      var len = this.elements.length;
+
+      for (i = 0; i < len; i += 1) {
+        if (this.elements[i].data.nm === pathValue) {
+          element = this.elements[i];
+          break;
+        }
+      }
+    }
+
+    if (path.length === 0) {
+      return element;
+    }
+
+    return element.getElementByPath(path);
   };
 
   BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {

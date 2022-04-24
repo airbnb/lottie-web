@@ -52,6 +52,7 @@
       _changedStyles: [],
       _changedAttributes: [],
       _changedElements: [],
+      _textContent: null,
       type: type,
       namespace: namespace,
       children: [],
@@ -91,6 +92,7 @@
           style: this.style.serialize(),
           attributes: this.attributes,
           children: this.children.map(function (child) { return child.serialize(); }),
+          textContent: this._textContent,
         };
       },
       getContext: function () { return { fillRect: function () {} }; },
@@ -106,6 +108,12 @@
       },
     };
     element.style = style;
+    Object.defineProperty(element, 'textContent', {
+      set: function (value) {
+        element._isDirty = true;
+        element._textContent = value;
+      },
+    });
     return element;
   }
 
@@ -1839,6 +1847,7 @@
     this.configAnimation = this.configAnimation.bind(this);
     this.onSetupError = this.onSetupError.bind(this);
     this.onSegmentComplete = this.onSegmentComplete.bind(this);
+    this.drawnFrameEvent = new BMEnterFrameEvent('drawnFrame', 0, 0, 0);
   };
 
   extendPrototype([BaseEvent], AnimationItem);
@@ -2159,6 +2168,7 @@
 
     if (this.isPaused === true) {
       this.isPaused = false;
+      this.trigger('_pause');
       this.audioController.resume();
 
       if (this._idle) {
@@ -2175,6 +2185,7 @@
 
     if (this.isPaused === false) {
       this.isPaused = true;
+      this.trigger('_play');
       this._idle = true;
       this.trigger('_idle');
       this.audioController.pause();
@@ -2535,12 +2546,26 @@
     return isFrame ? this.totalFrames : this.totalFrames / this.frameRate;
   };
 
+  AnimationItem.prototype.updateDocumentData = function (path, documentData, index) {
+    try {
+      var element = this.renderer.getElementByPath(path);
+      element.updateDocumentData(documentData, index);
+    } catch (error) {// TODO: decide how to handle catch case
+    }
+  };
+
   AnimationItem.prototype.trigger = function (name) {
     if (this._cbs && this._cbs[name]) {
       switch (name) {
         case 'enterFrame':
-        case 'drawnFrame':
           this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
+          break;
+
+        case 'drawnFrame':
+          this.drawnFrameEvent.currentTime = this.currentFrame;
+          this.drawnFrameEvent.totalTime = this.totalFrames;
+          this.drawnFrameEvent.direction = this.frameModifier;
+          this.triggerEvent(name, this.drawnFrameEvent);
           break;
 
         case 'loopComplete':
@@ -5329,7 +5354,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.2';
+  lottie.version = '5.9.3';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -5353,7 +5378,7 @@
     return null;
   }
 
-  var queryString;
+  var queryString = '';
 
   if (standalone) {
     var scripts = document.getElementsByTagName('script');
@@ -5361,7 +5386,7 @@
     var myScript = scripts[index] || {
       src: ''
     };
-    queryString = myScript.src.replace(/^[^\?]+\??/, ''); // eslint-disable-line no-useless-escape
+    queryString = myScript.src ? myScript.src.replace(/^[^\?]+\??/, '') : ''; // eslint-disable-line no-useless-escape
 
     renderer = getQueryVariable('renderer');
   }
@@ -6763,28 +6788,47 @@
       }
     }
 
-    function createHelper(def, fontData) {
-      var tHelper = createNS('text');
-      tHelper.style.fontSize = '100px'; // tHelper.style.fontFamily = fontData.fFamily;
-
+    function createHelper(fontData, def) {
+      var engine = document.body && def ? 'svg' : 'canvas';
+      var helper;
       var fontProps = getFontProperties(fontData);
-      tHelper.setAttribute('font-family', fontData.fFamily);
-      tHelper.setAttribute('font-style', fontProps.style);
-      tHelper.setAttribute('font-weight', fontProps.weight);
-      tHelper.textContent = '1';
 
-      if (fontData.fClass) {
-        tHelper.style.fontFamily = 'inherit';
-        tHelper.setAttribute('class', fontData.fClass);
+      if (engine === 'svg') {
+        var tHelper = createNS('text');
+        tHelper.style.fontSize = '100px'; // tHelper.style.fontFamily = fontData.fFamily;
+
+        tHelper.setAttribute('font-family', fontData.fFamily);
+        tHelper.setAttribute('font-style', fontProps.style);
+        tHelper.setAttribute('font-weight', fontProps.weight);
+        tHelper.textContent = '1';
+
+        if (fontData.fClass) {
+          tHelper.style.fontFamily = 'inherit';
+          tHelper.setAttribute('class', fontData.fClass);
+        } else {
+          tHelper.style.fontFamily = fontData.fFamily;
+        }
+
+        def.appendChild(tHelper);
+        helper = tHelper;
       } else {
-        tHelper.style.fontFamily = fontData.fFamily;
+        var tCanvasHelper = new OffscreenCanvas(500, 500).getContext('2d');
+        tCanvasHelper.font = fontProps.style + ' ' + fontProps.weight + ' 100px ' + fontData.fFamily;
+        helper = tCanvasHelper;
       }
 
-      def.appendChild(tHelper);
-      var tCanvasHelper = createTag('canvas').getContext('2d');
-      tCanvasHelper.font = fontData.fWeight + ' ' + fontData.fStyle + ' 100px ' + fontData.fFamily; // tCanvasHelper.font = ' 100px '+ fontData.fFamily;
+      function measure(text) {
+        if (engine === 'svg') {
+          helper.textContent = text;
+          return helper.getComputedTextLength();
+        }
 
-      return tHelper;
+        return helper.measureText(text).width;
+      }
+
+      return {
+        measureText: measure
+      };
     }
 
     function addFonts(fontData, defs) {
@@ -6795,6 +6839,16 @@
 
       if (this.chars) {
         this.isLoaded = true;
+        this.fonts = fontData.list;
+        return;
+      }
+
+      if (!document.body) {
+        this.isLoaded = true;
+        fontData.list.forEach(function (data) {
+          data.helper = createHelper(data);
+          data.cache = {};
+        });
         this.fonts = fontData.list;
         return;
       }
@@ -6870,7 +6924,7 @@
           }
         }
 
-        fontArr[i].helper = createHelper(defs, fontArr[i]);
+        fontArr[i].helper = createHelper(fontArr[i], defs);
         fontArr[i].cache = {};
         this.fonts.push(fontArr[i]);
       }
@@ -6945,20 +6999,14 @@
       var index = _char2.charCodeAt(0);
 
       if (!fontData.cache[index + 1]) {
-        var tHelper = fontData.helper; // Canvas version
-        // fontData.cache[index] = tHelper.measureText(char).width / 100;
-        // SVG version
-        // console.log(tHelper.getBBox().width)
+        var tHelper = fontData.helper;
 
         if (_char2 === ' ') {
-          tHelper.textContent = '|' + _char2 + '|';
-          var doubleSize = tHelper.getComputedTextLength();
-          tHelper.textContent = '||';
-          var singleSize = tHelper.getComputedTextLength();
+          var doubleSize = tHelper.measureText('|' + _char2 + '|');
+          var singleSize = tHelper.measureText('||');
           fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
         } else {
-          tHelper.textContent = _char2;
-          fontData.cache[index + 1] = tHelper.getComputedTextLength() / 100;
+          fontData.cache[index + 1] = tHelper.measureText(_char2) / 100;
         }
       }
 
@@ -8888,9 +8936,15 @@
     this.audio = this.globalData.audioController.createAudio(assetPath);
     this._currentTime = 0;
     this.globalData.audioController.addAudio(this);
+    this._volumeMultiplier = 1;
+    this._volume = 1;
+    this._previousVolume = null;
     this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : {
       _placeholder: true
     };
+    this.lv = PropertyFactory.getProp(this, data.au && data.au.lv ? data.au.lv : {
+      k: [100]
+    }, 1, 0.01, this);
   }
 
   AudioElement.prototype.prepareFrame = function (num) {
@@ -8902,6 +8956,14 @@
       this._currentTime = timeRemapped;
     } else {
       this._currentTime = num / this.data.sr;
+    }
+
+    this._volume = this.lv.v[0];
+    var totalVolume = this._volume * this._volumeMultiplier;
+
+    if (this._previousVolume !== totalVolume) {
+      this._previousVolume = totalVolume;
+      this.audio.volume(totalVolume);
     }
   };
 
@@ -8942,7 +9004,9 @@
   };
 
   AudioElement.prototype.volume = function (volumeValue) {
-    this.audio.volume(volumeValue);
+    this._volumeMultiplier = volumeValue;
+    this._previousVolume = volumeValue * this._volume;
+    this.audio.volume(this._previousVolume);
   };
 
   AudioElement.prototype.getBaseElement = function () {
@@ -9109,6 +9173,31 @@
         this.globalData.projectInterface.registerComposition(comp);
       }
     }
+  };
+
+  BaseRenderer.prototype.getElementByPath = function (path) {
+    var pathValue = path.shift();
+    var element;
+
+    if (typeof pathValue === 'number') {
+      element = this.elements[pathValue];
+    } else {
+      var i;
+      var len = this.elements.length;
+
+      for (i = 0; i < len; i += 1) {
+        if (this.elements[i].data.nm === pathValue) {
+          element = this.elements[i];
+          break;
+        }
+      }
+    }
+
+    if (path.length === 0) {
+      return element;
+    }
+
+    return element.getElementByPath(path);
   };
 
   BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
@@ -18702,6 +18791,7 @@
       element._changedStyles.length = 0;
       element._changedAttributes.length = 0;
       element._changedElements.length = 0;
+      element._textContent = null;
       element.children.forEach(function (child) {
         addElementToList(child, list);
       });
@@ -18761,6 +18851,22 @@
       animation.onError = function (error) {
         console.log('ERRORO', error); // eslint-disable-line
       };
+      animation.addEventListener('_play', function () {
+        self.postMessage({
+          type: 'playing',
+          payload: {
+            id: payload.id,
+          },
+        });
+      });
+      animation.addEventListener('_pause', function () {
+        self.postMessage({
+          type: 'paused',
+          payload: {
+            id: payload.id,
+          },
+        });
+      });
       if (params.renderer === 'svg') {
         animation.addEventListener('DOMLoaded', function () {
           var serialized = wrapper.serialize();
@@ -18786,12 +18892,14 @@
                 styles: addChangedStyles(element),
                 attributes: addChangedAttributes(element),
                 elements: addChangedElements(element, elements),
+                textContent: element._textContent || undefined,
               };
               changedElements.push(changedElement);
               element._isDirty = false;
               element._changedAttributes.length = 0;
               element._changedStyles.length = 0;
               element._changedElements.length = 0;
+              element._textContent = null;
             }
           }
           self.postMessage({
@@ -18804,7 +18912,10 @@
           });
         });
       }
-      animations[payload.id] = animation;
+      animations[payload.id] = {
+        animation: animation,
+        events: {},
+      };
     }
 
     return {
@@ -18819,43 +18930,43 @@
       lottieInternal.loadAnimation(payload);
     } else if (type === 'pause') {
       if (animations[payload.id]) {
-        animations[payload.id].pause();
+        animations[payload.id].animation.pause();
       }
     } else if (type === 'play') {
       if (animations[payload.id]) {
-        animations[payload.id].play();
+        animations[payload.id].animation.play();
       }
     } else if (type === 'stop') {
       if (animations[payload.id]) {
-        animations[payload.id].stop();
+        animations[payload.id].animation.stop();
       }
     } else if (type === 'setSpeed') {
       if (animations[payload.id]) {
-        animations[payload.id].setSpeed(payload.value);
+        animations[payload.id].animation.setSpeed(payload.value);
       }
     } else if (type === 'setDirection') {
       if (animations[payload.id]) {
-        animations[payload.id].setDirection(payload.value);
+        animations[payload.id].animation.setDirection(payload.value);
       }
     } else if (type === 'setDirection') {
       if (animations[payload.id]) {
-        animations[payload.id].setDirection(payload.value);
+        animations[payload.id].animation.setDirection(payload.value);
       }
     } else if (type === 'goToAndPlay') {
       if (animations[payload.id]) {
-        animations[payload.id].goToAndPlay(payload.value, payload.isFrame);
+        animations[payload.id].animation.goToAndPlay(payload.value, payload.isFrame);
       }
     } else if (type === 'goToAndStop') {
       if (animations[payload.id]) {
-        animations[payload.id].goToAndStop(payload.value, payload.isFrame);
+        animations[payload.id].animation.goToAndStop(payload.value, payload.isFrame);
       }
     } else if (type === 'setSubframe') {
       if (animations[payload.id]) {
-        animations[payload.id].setSubframe(payload.value);
+        animations[payload.id].animation.setSubframe(payload.value);
       }
     } else if (type === 'addEventListener') {
       if (animations[payload.id]) {
-        animations[payload.id].addEventListener(payload.eventName, function () {
+        var eventCallback = function () {
           self.postMessage({
             type: 'event',
             payload: {
@@ -18864,21 +18975,32 @@
               argument: arguments[0],
             },
           });
-        });
+        };
+        animations[payload.id].events[payload.callbackId] = {
+          callback: eventCallback,
+        };
+        animations[payload.id].animation.addEventListener(payload.eventName, eventCallback);
+      }
+    } else if (type === 'removeEventListener') {
+      if (animations[payload.id]) {
+        var callback = animations[payload.id].events[payload.callbackId];
+        animations[payload.id].animation.removeEventListener(payload.eventName, callback);
       }
     } else if (type === 'destroy') {
       if (animations[payload.id]) {
-        animations[payload.id].destroy();
+        animations[payload.id].animation.destroy();
         animations[payload.id] = null;
       }
     } else if (type === 'resize') {
       if (animations[payload.id]) {
-        animations[payload.id].resize();
+        animations[payload.id].animation.resize();
       }
     } else if (type === 'playSegments') {
       if (animations[payload.id]) {
-        animations[payload.id].playSegments(payload.arr, payload.forceFlag);
+        animations[payload.id].animation.playSegments(payload.arr, payload.forceFlag);
       }
+    } else if (type === 'updateDocumentData') {
+      animations[payload.id].animation.updateDocumentData(payload.path, payload.documentData, payload.index);
     }
   };
 }
@@ -18906,6 +19028,9 @@ var lottie = (function () {
       elem = document.createElement('div');
     } else {
       elem = document.createElementNS(data.namespace, data.type);
+    }
+    if (data.textContent) {
+      elem.textContent = data.textContent;
     }
     for (var attr in data.attributes) {
       if (Object.prototype.hasOwnProperty.call(data.attributes, attr)) {
@@ -18986,6 +19111,12 @@ var lottie = (function () {
     }
   }
 
+  function updateTextContent(element, text) {
+    if (text) {
+      element.textContent = text;
+    }
+  }
+
   function handleAnimationUpdate(payload) {
     var changedElements = payload.elements;
     var animation = animations[payload.id];
@@ -18998,6 +19129,7 @@ var lottie = (function () {
         addNewElements(elementData.elements, elements);
         updateElementStyles(element, elementData.styles);
         updateElementAttributes(element, elementData.attributes);
+        updateTextContent(element, elementData.textContent);
       }
       animation.animInstance.currentFrame = payload.currentTime;
     }
@@ -19008,18 +19140,36 @@ var lottie = (function () {
     if (animation) {
       var callbacks = animation.callbacks;
       if (callbacks[payload.callbackId]) {
-        callbacks[payload.callbackId](payload.argument);
+        callbacks[payload.callbackId].callback(payload.argument);
       }
     }
   }
 
+  function handlePlaying(payload) {
+    var animation = animations[payload.id];
+    if (animation) {
+      animation.animInstance.isPaused = false;
+    }
+  }
+
+  function handlePaused(payload) {
+    var animation = animations[payload.id];
+    if (animation) {
+      animation.animInstance.isPaused = true;
+    }
+  }
+
+  var messageHandlers = {
+    loaded: handleAnimationLoaded,
+    updated: handleAnimationUpdate,
+    event: handleEvent,
+    playing: handlePlaying,
+    paused: handlePaused,
+  };
+
   workerInstance.onmessage = function (event) {
-    if (event.data.type === 'loaded') {
-      handleAnimationLoaded(event.data.payload);
-    } else if (event.data.type === 'updated') {
-      handleAnimationUpdate(event.data.payload);
-    } else if (event.data.type === 'event') {
-      handleEvent(event.data.payload);
+    if (messageHandlers[event.data.type]) {
+      messageHandlers[event.data.type](event.data.payload);
     }
   };
 
@@ -19063,6 +19213,7 @@ var lottie = (function () {
     };
     var animInstance = {
       id: animationId,
+      isPaused: true,
       pause: function () {
         workerInstance.postMessage({
           type: 'pause',
@@ -19153,7 +19304,10 @@ var lottie = (function () {
         } else {
           eventsIdCounter += 1;
           var callbackId = 'callback_' + eventsIdCounter;
-          animation.callbacks[callbackId] = callback;
+          animation.callbacks[callbackId] = {
+            eventName: eventName,
+            callback: callback,
+          };
           workerInstance.postMessage({
             type: 'addEventListener',
             payload: {
@@ -19163,6 +19317,23 @@ var lottie = (function () {
             },
           });
         }
+      },
+      removeEventListener: function (eventName, callback) {
+        Object.keys(animation.callbacks)
+          .forEach(function (key) {
+            if (animation.callbacks[key].eventName === eventName
+              && (animation.callbacks[key].callback === callback || !callback)) {
+              delete animation.callbacks[key];
+              workerInstance.postMessage({
+                type: 'removeEventListener',
+                payload: {
+                  id: animationId,
+                  callbackId: key,
+                  eventName: eventName,
+                },
+              });
+            }
+          });
       },
       destroy: function () {
         animations[animationId] = null;
@@ -19181,6 +19352,17 @@ var lottie = (function () {
           type: 'resize',
           payload: {
             id: animationId,
+          },
+        });
+      },
+      updateDocumentData: function (path, documentData, index) {
+        workerInstance.postMessage({
+          type: 'updateDocumentData',
+          payload: {
+            id: animationId,
+            path: path,
+            documentData: documentData,
+            index: index,
           },
         });
       },
