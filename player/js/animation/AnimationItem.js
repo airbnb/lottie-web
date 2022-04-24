@@ -57,6 +57,7 @@ const AnimationItem = function () {
   this.configAnimation = this.configAnimation.bind(this);
   this.onSetupError = this.onSetupError.bind(this);
   this.onSegmentComplete = this.onSegmentComplete.bind(this);
+  this.drawnFrameEvent = new BMEnterFrameEvent('drawnFrame', 0, 0, 0);
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -385,6 +386,7 @@ AnimationItem.prototype.play = function (name) {
   }
   if (this.isPaused === true) {
     this.isPaused = false;
+    this.trigger('_pause');
     this.audioController.resume();
     if (this._idle) {
       this._idle = false;
@@ -399,6 +401,7 @@ AnimationItem.prototype.pause = function (name) {
   }
   if (this.isPaused === false) {
     this.isPaused = true;
+    this.trigger('_play');
     this._idle = true;
     this.trigger('_idle');
     this.audioController.pause();
@@ -729,8 +732,13 @@ AnimationItem.prototype.trigger = function (name) {
   if (this._cbs && this._cbs[name]) {
     switch (name) {
       case 'enterFrame':
-      case 'drawnFrame':
         this.triggerEvent(name, new BMEnterFrameEvent(name, this.currentFrame, this.totalFrames, this.frameModifier));
+        break;
+      case 'drawnFrame':
+        this.drawnFrameEvent.currentTime = this.currentFrame;
+        this.drawnFrameEvent.totalTime = this.totalFrames;
+        this.drawnFrameEvent.direction = this.frameModifier;
+        this.triggerEvent(name, this.drawnFrameEvent);
         break;
       case 'loopComplete':
         this.triggerEvent(name, new BMCompleteLoopEvent(name, this.loop, this.playCount, this.frameMult));

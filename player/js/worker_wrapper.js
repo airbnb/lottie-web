@@ -190,6 +190,22 @@ function workerContent() {
       animation.onError = function (error) {
         console.log('ERRORO', error); // eslint-disable-line
       };
+      animation.addEventListener('_play', function () {
+        self.postMessage({
+          type: 'playing',
+          payload: {
+            id: payload.id,
+          },
+        });
+      });
+      animation.addEventListener('_pause', function () {
+        self.postMessage({
+          type: 'paused',
+          payload: {
+            id: payload.id,
+          },
+        });
+      });
       if (params.renderer === 'svg') {
         animation.addEventListener('DOMLoaded', function () {
           var serialized = wrapper.serialize();
@@ -468,13 +484,31 @@ var lottie = (function () {
     }
   }
 
+  function handlePlaying(payload) {
+    var animation = animations[payload.id];
+    if (animation) {
+      animation.animInstance.isPaused = false;
+    }
+  }
+
+  function handlePaused(payload) {
+    var animation = animations[payload.id];
+    if (animation) {
+      animation.animInstance.isPaused = true;
+    }
+  }
+
+  var messageHandlers = {
+    loaded: handleAnimationLoaded,
+    updated: handleAnimationUpdate,
+    event: handleEvent,
+    playing: handlePlaying,
+    paused: handlePaused,
+  };
+
   workerInstance.onmessage = function (event) {
-    if (event.data.type === 'loaded') {
-      handleAnimationLoaded(event.data.payload);
-    } else if (event.data.type === 'updated') {
-      handleAnimationUpdate(event.data.payload);
-    } else if (event.data.type === 'event') {
-      handleEvent(event.data.payload);
+    if (messageHandlers[event.data.type]) {
+      messageHandlers[event.data.type](event.data.payload);
     }
   };
 
@@ -518,6 +552,7 @@ var lottie = (function () {
     };
     var animInstance = {
       id: animationId,
+      isPaused: true,
       pause: function () {
         workerInstance.postMessage({
           type: 'pause',
