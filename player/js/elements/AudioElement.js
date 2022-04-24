@@ -21,7 +21,7 @@ function AudioElement(data, globalData, comp) {
   this._volume = 1;
   this._previousVolume = null;
   this.tm = data.tm ? PropertyFactory.getProp(this, data.tm, 0, globalData.frameRate, this) : { _placeholder: true };
-  this.lv = PropertyFactory.getProp(this, data.au && data.au.lv ? data.au.lv : {k: [100]}, 1, 0.01, this);
+  this.lv = PropertyFactory.getProp(this, data.au && data.au.lv ? data.au.lv : { k: [100] }, 1, 0.01, this);
 }
 
 AudioElement.prototype.prepareFrame = function (num) {
@@ -35,7 +35,7 @@ AudioElement.prototype.prepareFrame = function (num) {
   }
   this._volume = this.lv.v[0];
   var totalVolume = this._volume * this._volumeMultiplier;
-  if ( this._previousVolume != totalVolume ) {
+  if (this._previousVolume !== totalVolume) {
     this._previousVolume = totalVolume;
     this.audio.volume(totalVolume);
   }
