@@ -78,7 +78,7 @@ export type HTMLRendererConfig = BaseRendererConfig & {
 
 export type RendererType = 'svg' | 'canvas' | 'html';
 
-export type AnimationConfig<T extends RendererType> = {
+export type AnimationConfig<T extends RendererType = 'svg'> = {
     container: Element;
     renderer?: T;
     loop?: boolean | number;
@@ -100,11 +100,11 @@ export type AnimationConfig<T extends RendererType> = {
     }
 }
 
-export type AnimationConfigWithPath<T extends RendererType> = AnimationConfig<T> & {
+export type AnimationConfigWithPath<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     path?: string;
 }
 
-export type AnimationConfigWithData<T extends RendererType> = AnimationConfig<T> & {
+export type AnimationConfigWithData<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     animationData?: any;
 }
 
@@ -122,7 +122,7 @@ export type LottiePlayer = {
     setSpeed(speed: number, name?: string): void;
     setDirection(direction: AnimationDirection, name?: string): void;
     searchAnimations(animationData?: any, standalone?: boolean, renderer?: string): void;
-    loadAnimation<T extends RendererType>(params: AnimationConfigWithPath<T> | AnimationConfigWithData<T>): AnimationItem;
+    loadAnimation<T extends RendererType = 'svg'>(params: AnimationConfigWithPath<T> | AnimationConfigWithData<T>): AnimationItem;
     destroy(name?: string): void;
     registerAnimation(element: Element, animationData?: any): void;
     setQuality(quality: string | number): void;
