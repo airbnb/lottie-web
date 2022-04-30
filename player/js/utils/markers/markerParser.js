@@ -34,7 +34,7 @@ const markerParser = (
             markerData.payload = parsePayloadLines(_markers[i].cm);
           } catch (__) {
             markerData.payload = {
-              name: _markers[i],
+              name: _markers[i].cm,
             };
           }
         }
