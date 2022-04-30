@@ -1,31 +1,36 @@
 import createNS from '../../../utils/helpers/svg_elements';
 
-function SVGProLevelsFilter(filter, filterManager) {
+function SVGProLevelsFilter(filter, filterManager, elem, id) {
   this.filterManager = filterManager;
   var effectElements = this.filterManager.effectElements;
   var feComponentTransfer = createNS('feComponentTransfer');
 
+  // Red
   if (effectElements[10].p.k || effectElements[10].p.v !== 0 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 1 || effectElements[13].p.k || effectElements[13].p.v !== 0 || effectElements[14].p.k || effectElements[14].p.v !== 1) {
     this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
   }
+  // Green
   if (effectElements[17].p.k || effectElements[17].p.v !== 0 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 1 || effectElements[20].p.k || effectElements[20].p.v !== 0 || effectElements[21].p.k || effectElements[21].p.v !== 1) {
     this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
   }
+  // Blue
   if (effectElements[24].p.k || effectElements[24].p.v !== 0 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 1 || effectElements[27].p.k || effectElements[27].p.v !== 0 || effectElements[28].p.k || effectElements[28].p.v !== 1) {
     this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
   }
+  // Alpha
   if (effectElements[31].p.k || effectElements[31].p.v !== 0 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 1 || effectElements[34].p.k || effectElements[34].p.v !== 0 || effectElements[35].p.k || effectElements[35].p.v !== 1) {
     this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
   }
-
+  // RGB
   if (this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA) {
     feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
     filter.appendChild(feComponentTransfer);
-    feComponentTransfer = createNS('feComponentTransfer');
   }
 
   if (effectElements[3].p.k || effectElements[3].p.v !== 0 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 1 || effectElements[6].p.k || effectElements[6].p.v !== 0 || effectElements[7].p.k || effectElements[7].p.v !== 1) {
+    feComponentTransfer = createNS('feComponentTransfer');
     feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
+    feComponentTransfer.setAttribute('result', id);
     filter.appendChild(feComponentTransfer);
     this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
     this.feFuncGComposed = this.createFeFunc('feFuncG', feComponentTransfer);

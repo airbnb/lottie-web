@@ -1,16 +1,15 @@
 import createNS from '../../../utils/helpers/svg_elements';
 
-function SVGTritoneFilter(filter, filterManager) {
+function SVGTritoneFilter(filter, filterManager, elem, id) {
   this.filterManager = filterManager;
   var feColorMatrix = createNS('feColorMatrix');
   feColorMatrix.setAttribute('type', 'matrix');
   feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
   feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
-  feColorMatrix.setAttribute('result', 'f1');
   filter.appendChild(feColorMatrix);
   var feComponentTransfer = createNS('feComponentTransfer');
   feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
-  filter.appendChild(feComponentTransfer);
+  feComponentTransfer.setAttribute('result', id);
   this.matrixFilter = feComponentTransfer;
   var feFuncR = createNS('feFuncR');
   feFuncR.setAttribute('type', 'table');
@@ -24,6 +23,7 @@ function SVGTritoneFilter(filter, filterManager) {
   feFuncB.setAttribute('type', 'table');
   feComponentTransfer.appendChild(feFuncB);
   this.feFuncB = feFuncB;
+  filter.appendChild(feComponentTransfer);
 }
 
 SVGTritoneFilter.prototype.renderFrame = function (forceRender) {
@@ -37,8 +37,6 @@ SVGTritoneFilter.prototype.renderFrame = function (forceRender) {
     this.feFuncR.setAttribute('tableValues', tableR);
     this.feFuncG.setAttribute('tableValues', tableG);
     this.feFuncB.setAttribute('tableValues', tableB);
-    // var opacity = this.filterManager.effectElements[2].p.v/100;
-    // this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
   }
 };
 
