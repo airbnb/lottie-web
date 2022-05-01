@@ -51,6 +51,24 @@ SVGTextLottieElement.prototype.buildTextContents = function (textArray) {
   return textContents;
 };
 
+SVGTextLottieElement.prototype.buildShapeData = function (data, scale) {
+  // data should probably be cloned to apply scale separately to each instance of a text on different layers
+  // but since text internal content gets only rendered once and then it's never rerendered,
+  // it's probably safe not to clone data and reuse always the same instance even if the object is mutated.
+  // Avoiding cloning is preferred since cloning each character shape data is expensive
+  if (data.shapes && data.shapes.length) {
+    var shape = data.shapes[0];
+    if (shape.it) {
+      var shapeItem = shape.it[shape.it.length - 1];
+      if (shapeItem.s) {
+        shapeItem.s.k[0] = scale;
+        shapeItem.s.k[1] = scale;
+      }
+    }
+  }
+  return data;
+};
+
 SVGTextLottieElement.prototype.buildNewText = function () {
   this.addDynamicProperty(this);
   var i;
@@ -159,7 +177,6 @@ SVGTextLottieElement.prototype.buildNewText = function () {
       }
 
       matrixHelper.reset();
-      matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
       if (singleShape) {
         if (letters[i].n) {
           xPos = -trackingOffset;
@@ -173,14 +190,19 @@ SVGTextLottieElement.prototype.buildNewText = function () {
         xPos += trackingOffset;
       }
       if (usesGlyphs) {
-        charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
+        charData = this.globalData.fontManager.getCharData(
+          documentData.finalText[i],
+          fontData.fStyle,
+          this.globalData.fontManager.getFontByName(documentData.f).fFamily
+        );
         var glyphElement;
+        // t === 1 means the character has been replaced with an animated shaped
         if (charData.t === 1) {
           glyphElement = new SVGCompElement(charData.data, this.globalData, this);
         } else {
           var data = emptyShapeData;
           if (charData.data && charData.data.shapes) {
-            data = charData.data;
+            data = this.buildShapeData(charData.data, documentData.finalSize);
           }
           glyphElement = new SVGShapeElement(data, this.globalData, this);
         }
@@ -194,7 +216,11 @@ SVGTextLottieElement.prototype.buildNewText = function () {
         glyphElement.prepareFrame(0);
         glyphElement.renderFrame();
         this.textSpans[i].childSpan.appendChild(glyphElement.layerElement);
-        this.textSpans[i].childSpan.setAttribute('transform', 'scale(' + documentData.finalSize / 100 + ',' + documentData.finalSize / 100 + ')');
+        // when using animated shapes, the layer will be scaled instead of replacing the internal scale
+        // this might have issues with strokes and might need a different solution
+        if (charData.t === 1) {
+          this.textSpans[i].childSpan.setAttribute('transform', 'scale(' + documentData.finalSize / 100 + ',' + documentData.finalSize / 100 + ')');
+        }
       } else {
         if (singleShape) {
           tSpan.setAttribute('transform', 'translate(' + matrixHelper.props[12] + ',' + matrixHelper.props[13] + ')');
