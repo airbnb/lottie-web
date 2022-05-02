@@ -5,7 +5,7 @@ import {
 } from '../../../utils/common';
 import createNS from '../../../utils/helpers/svg_elements';
 
-function SVGStrokeEffect(elem, filterManager) {
+function SVGStrokeEffect(fil, filterManager, elem) {
   this.initialized = false;
   this.filterManager = filterManager;
   this.elem = elem;
