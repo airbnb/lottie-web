@@ -1,3 +1,8 @@
+## V 5.9.4
+- FIX: support for all marker definitions
+- FIX: improve composable filters
+- FIX: strokes with correct width on fonts
+
 ## V 5.9.3
 - FEATURE: Add support for isPaused property on lottie worker
 - FEATURE: Adds support for changing volume based on the audio layer data

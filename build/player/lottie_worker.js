@@ -343,7 +343,7 @@
   function _typeof$6(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof$6 = function _typeof(obj) { return typeof obj; }; } else { _typeof$6 = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof$6(obj); }
   var subframeEnabled = true;
   var expressionsPlugin = null;
-  var idPrefix = '';
+  var idPrefix$1 = '';
   var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   var _shouldRoundValues = false;
   var bmPow = Math.pow;
@@ -467,7 +467,7 @@
     var _count = 0;
     return function createID() {
       _count += 1;
-      return idPrefix + '__lottie_element_' + _count;
+      return idPrefix$1 + '__lottie_element_' + _count;
     };
   }();
 
@@ -656,11 +656,11 @@
   };
 
   var setIdPrefix = function setIdPrefix(value) {
-    idPrefix = value;
+    idPrefix$1 = value;
   };
 
   var getIdPrefix = function getIdPrefix() {
-    return idPrefix;
+    return idPrefix$1;
   };
 
   function createNS(type) {
@@ -1756,7 +1756,7 @@
             markerData.payload = parsePayloadLines(_markers[i].cm);
           } catch (__) {
             markerData.payload = {
-              name: _markers[i]
+              name: _markers[i].cm
             };
           }
         }
@@ -2221,7 +2221,7 @@
     for (var i = 0; i < this.markers.length; i += 1) {
       marker = this.markers[i];
 
-      if (marker.payload && marker.payload.name.cm === markerName) {
+      if (marker.payload && marker.payload.name === markerName) {
         return marker;
       }
     }
@@ -5354,7 +5354,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.3';
+  lottie.version = '5.9.4';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -9591,582 +9591,12 @@
     return ob;
   }();
 
-  function SVGTintFilter(filter, filterManager) {
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
-    feColorMatrix.setAttribute('type', 'matrix');
-    feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
-    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
-    feColorMatrix.setAttribute('result', 'f1');
-    filter.appendChild(feColorMatrix);
-    feColorMatrix = createNS('feColorMatrix');
-    feColorMatrix.setAttribute('type', 'matrix');
-    feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
-    feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
-    feColorMatrix.setAttribute('result', 'f2');
-    filter.appendChild(feColorMatrix);
-    this.matrixFilter = feColorMatrix;
-
-    if (filterManager.effectElements[2].p.v !== 100 || filterManager.effectElements[2].p.k) {
-      var feMerge = createNS('feMerge');
-      filter.appendChild(feMerge);
-      var feMergeNode;
-      feMergeNode = createNS('feMergeNode');
-      feMergeNode.setAttribute('in', 'SourceGraphic');
-      feMerge.appendChild(feMergeNode);
-      feMergeNode = createNS('feMergeNode');
-      feMergeNode.setAttribute('in', 'f2');
-      feMerge.appendChild(feMergeNode);
-    }
-  }
-
-  SVGTintFilter.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      var colorBlack = this.filterManager.effectElements[0].p.v;
-      var colorWhite = this.filterManager.effectElements[1].p.v;
-      var opacity = this.filterManager.effectElements[2].p.v / 100;
-      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
-    }
-  };
-
-  function SVGFillFilter(filter, filterManager) {
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
-    feColorMatrix.setAttribute('type', 'matrix');
-    feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
-    feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
-    filter.appendChild(feColorMatrix);
-    this.matrixFilter = feColorMatrix;
-  }
-
-  SVGFillFilter.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      var color = this.filterManager.effectElements[2].p.v;
-      var opacity = this.filterManager.effectElements[6].p.v;
-      this.matrixFilter.setAttribute('values', '0 0 0 0 ' + color[0] + ' 0 0 0 0 ' + color[1] + ' 0 0 0 0 ' + color[2] + ' 0 0 0 ' + opacity + ' 0');
-    }
-  };
-
-  function SVGStrokeEffect(elem, filterManager) {
-    this.initialized = false;
-    this.filterManager = filterManager;
-    this.elem = elem;
-    this.paths = [];
-  }
-
-  SVGStrokeEffect.prototype.initialize = function () {
-    var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
-    var path;
-    var groupPath;
-    var i;
-    var len;
-
-    if (this.filterManager.effectElements[1].p.v === 1) {
-      len = this.elem.maskManager.masksProperties.length;
-      i = 0;
-    } else {
-      i = this.filterManager.effectElements[0].p.v - 1;
-      len = i + 1;
-    }
-
-    groupPath = createNS('g');
-    groupPath.setAttribute('fill', 'none');
-    groupPath.setAttribute('stroke-linecap', 'round');
-    groupPath.setAttribute('stroke-dashoffset', 1);
-
-    for (i; i < len; i += 1) {
-      path = createNS('path');
-      groupPath.appendChild(path);
-      this.paths.push({
-        p: path,
-        m: i
-      });
-    }
-
-    if (this.filterManager.effectElements[10].p.v === 3) {
-      var mask = createNS('mask');
-      var id = createElementID();
-      mask.setAttribute('id', id);
-      mask.setAttribute('mask-type', 'alpha');
-      mask.appendChild(groupPath);
-      this.elem.globalData.defs.appendChild(mask);
-      var g = createNS('g');
-      g.setAttribute('mask', 'url(' + getLocationHref() + '#' + id + ')');
-
-      while (elemChildren[0]) {
-        g.appendChild(elemChildren[0]);
-      }
-
-      this.elem.layerElement.appendChild(g);
-      this.masker = mask;
-      groupPath.setAttribute('stroke', '#fff');
-    } else if (this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
-      if (this.filterManager.effectElements[10].p.v === 2) {
-        elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
-
-        while (elemChildren.length) {
-          this.elem.layerElement.removeChild(elemChildren[0]);
-        }
-      }
-
-      this.elem.layerElement.appendChild(groupPath);
-      this.elem.layerElement.removeAttribute('mask');
-      groupPath.setAttribute('stroke', '#fff');
-    }
-
-    this.initialized = true;
-    this.pathMasker = groupPath;
-  };
-
-  SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
-    if (!this.initialized) {
-      this.initialize();
-    }
-
-    var i;
-    var len = this.paths.length;
-    var mask;
-    var path;
-
-    for (i = 0; i < len; i += 1) {
-      if (this.paths[i].m !== -1) {
-        mask = this.elem.maskManager.viewData[this.paths[i].m];
-        path = this.paths[i].p;
-
-        if (forceRender || this.filterManager._mdf || mask.prop._mdf) {
-          path.setAttribute('d', mask.lastPath);
-        }
-
-        if (forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf) {
-          var dasharrayValue;
-
-          if (this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100) {
-            var s = Math.min(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) * 0.01;
-            var e = Math.max(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) * 0.01;
-            var l = path.getTotalLength();
-            dasharrayValue = '0 0 0 ' + l * s + ' ';
-            var lineLength = l * (e - s);
-            var segment = 1 + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01;
-            var units = Math.floor(lineLength / segment);
-            var j;
-
-            for (j = 0; j < units; j += 1) {
-              dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01 + ' ';
-            }
-
-            dasharrayValue += '0 ' + l * 10 + ' 0 0';
-          } else {
-            dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01;
-          }
-
-          path.setAttribute('stroke-dasharray', dasharrayValue);
-        }
-      }
-    }
-
-    if (forceRender || this.filterManager.effectElements[4].p._mdf) {
-      this.pathMasker.setAttribute('stroke-width', this.filterManager.effectElements[4].p.v * 2);
-    }
-
-    if (forceRender || this.filterManager.effectElements[6].p._mdf) {
-      this.pathMasker.setAttribute('opacity', this.filterManager.effectElements[6].p.v);
-    }
-
-    if (this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
-      if (forceRender || this.filterManager.effectElements[3].p._mdf) {
-        var color = this.filterManager.effectElements[3].p.v;
-        this.pathMasker.setAttribute('stroke', 'rgb(' + bmFloor(color[0] * 255) + ',' + bmFloor(color[1] * 255) + ',' + bmFloor(color[2] * 255) + ')');
-      }
-    }
-  };
-
-  function SVGTritoneFilter(filter, filterManager) {
-    this.filterManager = filterManager;
-    var feColorMatrix = createNS('feColorMatrix');
-    feColorMatrix.setAttribute('type', 'matrix');
-    feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
-    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
-    feColorMatrix.setAttribute('result', 'f1');
-    filter.appendChild(feColorMatrix);
-    var feComponentTransfer = createNS('feComponentTransfer');
-    feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
-    filter.appendChild(feComponentTransfer);
-    this.matrixFilter = feComponentTransfer;
-    var feFuncR = createNS('feFuncR');
-    feFuncR.setAttribute('type', 'table');
-    feComponentTransfer.appendChild(feFuncR);
-    this.feFuncR = feFuncR;
-    var feFuncG = createNS('feFuncG');
-    feFuncG.setAttribute('type', 'table');
-    feComponentTransfer.appendChild(feFuncG);
-    this.feFuncG = feFuncG;
-    var feFuncB = createNS('feFuncB');
-    feFuncB.setAttribute('type', 'table');
-    feComponentTransfer.appendChild(feFuncB);
-    this.feFuncB = feFuncB;
-  }
-
-  SVGTritoneFilter.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      var color1 = this.filterManager.effectElements[0].p.v;
-      var color2 = this.filterManager.effectElements[1].p.v;
-      var color3 = this.filterManager.effectElements[2].p.v;
-      var tableR = color3[0] + ' ' + color2[0] + ' ' + color1[0];
-      var tableG = color3[1] + ' ' + color2[1] + ' ' + color1[1];
-      var tableB = color3[2] + ' ' + color2[2] + ' ' + color1[2];
-      this.feFuncR.setAttribute('tableValues', tableR);
-      this.feFuncG.setAttribute('tableValues', tableG);
-      this.feFuncB.setAttribute('tableValues', tableB); // var opacity = this.filterManager.effectElements[2].p.v/100;
-      // this.matrixFilter.setAttribute('values',(colorWhite[0]- colorBlack[0])+' 0 0 0 '+ colorBlack[0] +' '+ (colorWhite[1]- colorBlack[1]) +' 0 0 0 '+ colorBlack[1] +' '+ (colorWhite[2]- colorBlack[2]) +' 0 0 0 '+ colorBlack[2] +' 0 0 0 ' + opacity + ' 0');
-    }
-  };
-
-  function SVGProLevelsFilter(filter, filterManager) {
-    this.filterManager = filterManager;
-    var effectElements = this.filterManager.effectElements;
-    var feComponentTransfer = createNS('feComponentTransfer');
-
-    if (effectElements[10].p.k || effectElements[10].p.v !== 0 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 1 || effectElements[13].p.k || effectElements[13].p.v !== 0 || effectElements[14].p.k || effectElements[14].p.v !== 1) {
-      this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
-    }
-
-    if (effectElements[17].p.k || effectElements[17].p.v !== 0 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 1 || effectElements[20].p.k || effectElements[20].p.v !== 0 || effectElements[21].p.k || effectElements[21].p.v !== 1) {
-      this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
-    }
-
-    if (effectElements[24].p.k || effectElements[24].p.v !== 0 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 1 || effectElements[27].p.k || effectElements[27].p.v !== 0 || effectElements[28].p.k || effectElements[28].p.v !== 1) {
-      this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
-    }
-
-    if (effectElements[31].p.k || effectElements[31].p.v !== 0 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 1 || effectElements[34].p.k || effectElements[34].p.v !== 0 || effectElements[35].p.k || effectElements[35].p.v !== 1) {
-      this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
-    }
-
-    if (this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA) {
-      feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
-      filter.appendChild(feComponentTransfer);
-      feComponentTransfer = createNS('feComponentTransfer');
-    }
-
-    if (effectElements[3].p.k || effectElements[3].p.v !== 0 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 1 || effectElements[6].p.k || effectElements[6].p.v !== 0 || effectElements[7].p.k || effectElements[7].p.v !== 1) {
-      feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
-      filter.appendChild(feComponentTransfer);
-      this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
-      this.feFuncGComposed = this.createFeFunc('feFuncG', feComponentTransfer);
-      this.feFuncBComposed = this.createFeFunc('feFuncB', feComponentTransfer);
-    }
-  }
-
-  SVGProLevelsFilter.prototype.createFeFunc = function (type, feComponentTransfer) {
-    var feFunc = createNS(type);
-    feFunc.setAttribute('type', 'table');
-    feComponentTransfer.appendChild(feFunc);
-    return feFunc;
-  };
-
-  SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
-    var cnt = 0;
-    var segments = 256;
-    var perc;
-    var min = Math.min(inputBlack, inputWhite);
-    var max = Math.max(inputBlack, inputWhite);
-    var table = Array.call(null, {
-      length: segments
-    });
-    var colorValue;
-    var pos = 0;
-    var outputDelta = outputWhite - outputBlack;
-    var inputDelta = inputWhite - inputBlack;
-
-    while (cnt <= 256) {
-      perc = cnt / 256;
-
-      if (perc <= min) {
-        colorValue = inputDelta < 0 ? outputWhite : outputBlack;
-      } else if (perc >= max) {
-        colorValue = inputDelta < 0 ? outputBlack : outputWhite;
-      } else {
-        colorValue = outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma);
-      }
-
-      table[pos] = colorValue;
-      pos += 1;
-      cnt += 256 / (segments - 1);
-    }
-
-    return table.join(' ');
-  };
-
-  SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      var val;
-      var effectElements = this.filterManager.effectElements;
-
-      if (this.feFuncRComposed && (forceRender || effectElements[3].p._mdf || effectElements[4].p._mdf || effectElements[5].p._mdf || effectElements[6].p._mdf || effectElements[7].p._mdf)) {
-        val = this.getTableValue(effectElements[3].p.v, effectElements[4].p.v, effectElements[5].p.v, effectElements[6].p.v, effectElements[7].p.v);
-        this.feFuncRComposed.setAttribute('tableValues', val);
-        this.feFuncGComposed.setAttribute('tableValues', val);
-        this.feFuncBComposed.setAttribute('tableValues', val);
-      }
-
-      if (this.feFuncR && (forceRender || effectElements[10].p._mdf || effectElements[11].p._mdf || effectElements[12].p._mdf || effectElements[13].p._mdf || effectElements[14].p._mdf)) {
-        val = this.getTableValue(effectElements[10].p.v, effectElements[11].p.v, effectElements[12].p.v, effectElements[13].p.v, effectElements[14].p.v);
-        this.feFuncR.setAttribute('tableValues', val);
-      }
-
-      if (this.feFuncG && (forceRender || effectElements[17].p._mdf || effectElements[18].p._mdf || effectElements[19].p._mdf || effectElements[20].p._mdf || effectElements[21].p._mdf)) {
-        val = this.getTableValue(effectElements[17].p.v, effectElements[18].p.v, effectElements[19].p.v, effectElements[20].p.v, effectElements[21].p.v);
-        this.feFuncG.setAttribute('tableValues', val);
-      }
-
-      if (this.feFuncB && (forceRender || effectElements[24].p._mdf || effectElements[25].p._mdf || effectElements[26].p._mdf || effectElements[27].p._mdf || effectElements[28].p._mdf)) {
-        val = this.getTableValue(effectElements[24].p.v, effectElements[25].p.v, effectElements[26].p.v, effectElements[27].p.v, effectElements[28].p.v);
-        this.feFuncB.setAttribute('tableValues', val);
-      }
-
-      if (this.feFuncA && (forceRender || effectElements[31].p._mdf || effectElements[32].p._mdf || effectElements[33].p._mdf || effectElements[34].p._mdf || effectElements[35].p._mdf)) {
-        val = this.getTableValue(effectElements[31].p.v, effectElements[32].p.v, effectElements[33].p.v, effectElements[34].p.v, effectElements[35].p.v);
-        this.feFuncA.setAttribute('tableValues', val);
-      }
-    }
-  };
-
-  function SVGDropShadowEffect(filter, filterManager) {
-    var filterSize = filterManager.container.globalData.renderConfig.filterSize;
-    filter.setAttribute('x', filterSize.x);
-    filter.setAttribute('y', filterSize.y);
-    filter.setAttribute('width', filterSize.width);
-    filter.setAttribute('height', filterSize.height);
-    this.filterManager = filterManager;
-    var feGaussianBlur = createNS('feGaussianBlur');
-    feGaussianBlur.setAttribute('in', 'SourceAlpha');
-    feGaussianBlur.setAttribute('result', 'drop_shadow_1');
-    feGaussianBlur.setAttribute('stdDeviation', '0');
-    this.feGaussianBlur = feGaussianBlur;
-    filter.appendChild(feGaussianBlur);
-    var feOffset = createNS('feOffset');
-    feOffset.setAttribute('dx', '25');
-    feOffset.setAttribute('dy', '0');
-    feOffset.setAttribute('in', 'drop_shadow_1');
-    feOffset.setAttribute('result', 'drop_shadow_2');
-    this.feOffset = feOffset;
-    filter.appendChild(feOffset);
-    var feFlood = createNS('feFlood');
-    feFlood.setAttribute('flood-color', '#00ff00');
-    feFlood.setAttribute('flood-opacity', '1');
-    feFlood.setAttribute('result', 'drop_shadow_3');
-    this.feFlood = feFlood;
-    filter.appendChild(feFlood);
-    var feComposite = createNS('feComposite');
-    feComposite.setAttribute('in', 'drop_shadow_3');
-    feComposite.setAttribute('in2', 'drop_shadow_2');
-    feComposite.setAttribute('operator', 'in');
-    feComposite.setAttribute('result', 'drop_shadow_4');
-    filter.appendChild(feComposite);
-    var feMerge = createNS('feMerge');
-    filter.appendChild(feMerge);
-    var feMergeNode;
-    feMergeNode = createNS('feMergeNode');
-    feMerge.appendChild(feMergeNode);
-    feMergeNode = createNS('feMergeNode');
-    feMergeNode.setAttribute('in', 'SourceGraphic');
-    this.feMergeNode = feMergeNode;
-    this.feMerge = feMerge;
-    this.originalNodeAdded = false;
-    feMerge.appendChild(feMergeNode);
-  }
-
-  SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      if (forceRender || this.filterManager.effectElements[4].p._mdf) {
-        this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);
-      }
-
-      if (forceRender || this.filterManager.effectElements[0].p._mdf) {
-        var col = this.filterManager.effectElements[0].p.v;
-        this.feFlood.setAttribute('flood-color', rgbToHex(Math.round(col[0] * 255), Math.round(col[1] * 255), Math.round(col[2] * 255)));
-      }
-
-      if (forceRender || this.filterManager.effectElements[1].p._mdf) {
-        this.feFlood.setAttribute('flood-opacity', this.filterManager.effectElements[1].p.v / 255);
-      }
-
-      if (forceRender || this.filterManager.effectElements[2].p._mdf || this.filterManager.effectElements[3].p._mdf) {
-        var distance = this.filterManager.effectElements[3].p.v;
-        var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads;
-        var x = distance * Math.cos(angle);
-        var y = distance * Math.sin(angle);
-        this.feOffset.setAttribute('dx', x);
-        this.feOffset.setAttribute('dy', y);
-      }
-      /* if(forceRender || this.filterManager.effectElements[5].p._mdf){
-              if(this.filterManager.effectElements[5].p.v === 1 && this.originalNodeAdded) {
-                  this.feMerge.removeChild(this.feMergeNode);
-                  this.originalNodeAdded = false;
-              } else if(this.filterManager.effectElements[5].p.v === 0 && !this.originalNodeAdded) {
-                  this.feMerge.appendChild(this.feMergeNode);
-                  this.originalNodeAdded = true;
-              }
-          } */
-
-    }
-  };
-
-  var _svgMatteSymbols = [];
-
-  function SVGMatte3Effect(filterElem, filterManager, elem) {
-    this.initialized = false;
-    this.filterManager = filterManager;
-    this.filterElem = filterElem;
-    this.elem = elem;
-    elem.matteElement = createNS('g');
-    elem.matteElement.appendChild(elem.layerElement);
-    elem.matteElement.appendChild(elem.transformedElement);
-    elem.baseElement = elem.matteElement;
-  }
-
-  SVGMatte3Effect.prototype.findSymbol = function (mask) {
-    var i = 0;
-    var len = _svgMatteSymbols.length;
-
-    while (i < len) {
-      if (_svgMatteSymbols[i] === mask) {
-        return _svgMatteSymbols[i];
-      }
-
-      i += 1;
-    }
-
-    return null;
-  };
-
-  SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
-    var parentNode = mask.layerElement.parentNode;
-
-    if (!parentNode) {
-      return;
-    }
-
-    var children = parentNode.children;
-    var i = 0;
-    var len = children.length;
-
-    while (i < len) {
-      if (children[i] === mask.layerElement) {
-        break;
-      }
-
-      i += 1;
-    }
-
-    var nextChild;
-
-    if (i <= len - 2) {
-      nextChild = children[i + 1];
-    }
-
-    var useElem = createNS('use');
-    useElem.setAttribute('href', '#' + symbolId);
-
-    if (nextChild) {
-      parentNode.insertBefore(useElem, nextChild);
-    } else {
-      parentNode.appendChild(useElem);
-    }
-  };
-
-  SVGMatte3Effect.prototype.setElementAsMask = function (elem, mask) {
-    if (!this.findSymbol(mask)) {
-      var symbolId = createElementID();
-      var masker = createNS('mask');
-      masker.setAttribute('id', mask.layerId);
-      masker.setAttribute('mask-type', 'alpha');
-
-      _svgMatteSymbols.push(mask);
-
-      var defs = elem.globalData.defs;
-      defs.appendChild(masker);
-      var symbol = createNS('symbol');
-      symbol.setAttribute('id', symbolId);
-      this.replaceInParent(mask, symbolId);
-      symbol.appendChild(mask.layerElement);
-      defs.appendChild(symbol);
-      var useElem = createNS('use');
-      useElem.setAttribute('href', '#' + symbolId);
-      masker.appendChild(useElem);
-      mask.data.hd = false;
-      mask.show();
-    }
-
-    elem.setMatte(mask.layerId);
-  };
-
-  SVGMatte3Effect.prototype.initialize = function () {
-    var ind = this.filterManager.effectElements[0].p.v;
-    var elements = this.elem.comp.elements;
-    var i = 0;
-    var len = elements.length;
-
-    while (i < len) {
-      if (elements[i] && elements[i].data.ind === ind) {
-        this.setElementAsMask(this.elem, elements[i]);
-      }
-
-      i += 1;
-    }
-
-    this.initialized = true;
-  };
-
-  SVGMatte3Effect.prototype.renderFrame = function () {
-    if (!this.initialized) {
-      this.initialize();
-    }
-  };
-
-  function SVGGaussianBlurEffect(filter, filterManager) {
-    // Outset the filter region by 100% on all sides to accommodate blur expansion.
-    filter.setAttribute('x', '-100%');
-    filter.setAttribute('y', '-100%');
-    filter.setAttribute('width', '300%');
-    filter.setAttribute('height', '300%');
-    this.filterManager = filterManager;
-    var feGaussianBlur = createNS('feGaussianBlur');
-    filter.appendChild(feGaussianBlur);
-    this.feGaussianBlur = feGaussianBlur;
-  }
-
-  SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
-    if (forceRender || this.filterManager._mdf) {
-      // Empirical value, matching AE's blur appearance.
-      var kBlurrinessToSigma = 0.3;
-      var sigma = this.filterManager.effectElements[0].p.v * kBlurrinessToSigma; // Dimensions mapping:
-      //
-      //   1 -> horizontal & vertical
-      //   2 -> horizontal only
-      //   3 -> vertical only
-      //
-
-      var dimensions = this.filterManager.effectElements[1].p.v;
-      var sigmaX = dimensions == 3 ? 0 : sigma; // eslint-disable-line eqeqeq
-
-      var sigmaY = dimensions == 2 ? 0 : sigma; // eslint-disable-line eqeqeq
-
-      this.feGaussianBlur.setAttribute('stdDeviation', sigmaX + ' ' + sigmaY); // Repeat edges mapping:
-      //
-      //   0 -> off -> duplicate
-      //   1 -> on  -> wrap
-
-      var edgeMode = this.filterManager.effectElements[2].p.v == 1 ? 'wrap' : 'duplicate'; // eslint-disable-line eqeqeq
-
-      this.feGaussianBlur.setAttribute('edgeMode', edgeMode);
-    }
-  };
-
   var registeredEffects = {};
+  var idPrefix = 'filter_result_';
 
   function SVGEffects(elem) {
     var i;
+    var source = 'SourceGraphic';
     var len = elem.data.ef ? elem.data.ef.length : 0;
     var filId = createElementID();
     var fil = filtersFactory.createFilter(filId, true);
@@ -10180,36 +9610,12 @@
 
       if (registeredEffects[type]) {
         var Effect = registeredEffects[type].effect;
-        filterManager = new Effect(fil, elem.effectsManager.effectElements[i], elem);
+        filterManager = new Effect(fil, elem.effectsManager.effectElements[i], elem, idPrefix + count, source);
+        source = idPrefix + count;
 
         if (registeredEffects[type].countsAsEffect) {
           count += 1;
         }
-      }
-
-      if (elem.data.ef[i].ty === 20) {
-        count += 1;
-        filterManager = new SVGTintFilter(fil, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 21) {
-        count += 1;
-        filterManager = new SVGFillFilter(fil, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 22) {
-        filterManager = new SVGStrokeEffect(elem, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 23) {
-        count += 1;
-        filterManager = new SVGTritoneFilter(fil, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 24) {
-        count += 1;
-        filterManager = new SVGProLevelsFilter(fil, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 25) {
-        count += 1;
-        filterManager = new SVGDropShadowEffect(fil, elem.effectsManager.effectElements[i]);
-      } else if (elem.data.ef[i].ty === 28) {
-        // count += 1;
-        filterManager = new SVGMatte3Effect(fil, elem.effectsManager.effectElements[i], elem);
-      } else if (elem.data.ef[i].ty === 29) {
-        count += 1;
-        filterManager = new SVGGaussianBlurEffect(fil, elem.effectsManager.effectElements[i]);
       }
 
       if (filterManager) {
@@ -13306,6 +12712,27 @@
     return textContents;
   };
 
+  SVGTextLottieElement.prototype.buildShapeData = function (data, scale) {
+    // data should probably be cloned to apply scale separately to each instance of a text on different layers
+    // but since text internal content gets only rendered once and then it's never rerendered,
+    // it's probably safe not to clone data and reuse always the same instance even if the object is mutated.
+    // Avoiding cloning is preferred since cloning each character shape data is expensive
+    if (data.shapes && data.shapes.length) {
+      var shape = data.shapes[0];
+
+      if (shape.it) {
+        var shapeItem = shape.it[shape.it.length - 1];
+
+        if (shapeItem.s) {
+          shapeItem.s.k[0] = scale;
+          shapeItem.s.k[1] = scale;
+        }
+      }
+    }
+
+    return data;
+  };
+
   SVGTextLottieElement.prototype.buildNewText = function () {
     this.addDynamicProperty(this);
     var i;
@@ -13430,7 +12857,6 @@
         }
 
         matrixHelper.reset();
-        matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
 
         if (singleShape) {
           if (letters[i].n) {
@@ -13448,7 +12874,7 @@
 
         if (usesGlyphs) {
           charData = this.globalData.fontManager.getCharData(documentData.finalText[i], fontData.fStyle, this.globalData.fontManager.getFontByName(documentData.f).fFamily);
-          var glyphElement;
+          var glyphElement; // t === 1 means the character has been replaced with an animated shaped
 
           if (charData.t === 1) {
             glyphElement = new SVGCompElement(charData.data, this.globalData, this);
@@ -13456,7 +12882,7 @@
             var data = emptyShapeData;
 
             if (charData.data && charData.data.shapes) {
-              data = charData.data;
+              data = this.buildShapeData(charData.data, documentData.finalSize);
             }
 
             glyphElement = new SVGShapeElement(data, this.globalData, this);
@@ -13472,8 +12898,12 @@
           glyphElement._debug = true;
           glyphElement.prepareFrame(0);
           glyphElement.renderFrame();
-          this.textSpans[i].childSpan.appendChild(glyphElement.layerElement);
-          this.textSpans[i].childSpan.setAttribute('transform', 'scale(' + documentData.finalSize / 100 + ',' + documentData.finalSize / 100 + ')');
+          this.textSpans[i].childSpan.appendChild(glyphElement.layerElement); // when using animated shapes, the layer will be scaled instead of replacing the internal scale
+          // this might have issues with strokes and might need a different solution
+
+          if (charData.t === 1) {
+            this.textSpans[i].childSpan.setAttribute('transform', 'scale(' + documentData.finalSize / 100 + ',' + documentData.finalSize / 100 + ')');
+          }
         } else {
           if (singleShape) {
             tSpan.setAttribute('transform', 'translate(' + matrixHelper.props[12] + ',' + matrixHelper.props[13] + ')');
@@ -18756,6 +18186,579 @@
   function initialize() {
     addDecorator();
   }
+
+  function SVGComposableEffect() {}
+
+  SVGComposableEffect.prototype = {
+    createMergeNode: function createMergeNode(resultId, ins) {
+      var feMerge = createNS('feMerge');
+      feMerge.setAttribute('result', resultId);
+      var feMergeNode;
+      var i;
+
+      for (i = 0; i < ins.length; i += 1) {
+        feMergeNode = createNS('feMergeNode');
+        feMergeNode.setAttribute('in', ins[i]);
+        feMerge.appendChild(feMergeNode);
+        feMerge.appendChild(feMergeNode);
+      }
+
+      return feMerge;
+    }
+  };
+
+  function SVGTintFilter(filter, filterManager, elem, id, source) {
+    this.filterManager = filterManager;
+    var feColorMatrix = createNS('feColorMatrix');
+    feColorMatrix.setAttribute('type', 'matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
+    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result', id + '_tint_1');
+    filter.appendChild(feColorMatrix);
+    feColorMatrix = createNS('feColorMatrix');
+    feColorMatrix.setAttribute('type', 'matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
+    feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result', id + '_tint_2');
+    filter.appendChild(feColorMatrix);
+    this.matrixFilter = feColorMatrix;
+    var feMerge = this.createMergeNode(id, [source, id + '_tint_1', id + '_tint_2']);
+    filter.appendChild(feMerge);
+  }
+
+  extendPrototype([SVGComposableEffect], SVGTintFilter);
+
+  SVGTintFilter.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      var colorBlack = this.filterManager.effectElements[0].p.v;
+      var colorWhite = this.filterManager.effectElements[1].p.v;
+      var opacity = this.filterManager.effectElements[2].p.v / 100;
+      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
+    }
+  };
+
+  function SVGFillFilter(filter, filterManager, elem, id) {
+    this.filterManager = filterManager;
+    var feColorMatrix = createNS('feColorMatrix');
+    feColorMatrix.setAttribute('type', 'matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters', 'sRGB');
+    feColorMatrix.setAttribute('values', '1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('result', id);
+    filter.appendChild(feColorMatrix);
+    this.matrixFilter = feColorMatrix;
+  }
+
+  SVGFillFilter.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      var color = this.filterManager.effectElements[2].p.v;
+      var opacity = this.filterManager.effectElements[6].p.v;
+      this.matrixFilter.setAttribute('values', '0 0 0 0 ' + color[0] + ' 0 0 0 0 ' + color[1] + ' 0 0 0 0 ' + color[2] + ' 0 0 0 ' + opacity + ' 0');
+    }
+  };
+
+  function SVGStrokeEffect(fil, filterManager, elem) {
+    this.initialized = false;
+    this.filterManager = filterManager;
+    this.elem = elem;
+    this.paths = [];
+  }
+
+  SVGStrokeEffect.prototype.initialize = function () {
+    var elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
+    var path;
+    var groupPath;
+    var i;
+    var len;
+
+    if (this.filterManager.effectElements[1].p.v === 1) {
+      len = this.elem.maskManager.masksProperties.length;
+      i = 0;
+    } else {
+      i = this.filterManager.effectElements[0].p.v - 1;
+      len = i + 1;
+    }
+
+    groupPath = createNS('g');
+    groupPath.setAttribute('fill', 'none');
+    groupPath.setAttribute('stroke-linecap', 'round');
+    groupPath.setAttribute('stroke-dashoffset', 1);
+
+    for (i; i < len; i += 1) {
+      path = createNS('path');
+      groupPath.appendChild(path);
+      this.paths.push({
+        p: path,
+        m: i
+      });
+    }
+
+    if (this.filterManager.effectElements[10].p.v === 3) {
+      var mask = createNS('mask');
+      var id = createElementID();
+      mask.setAttribute('id', id);
+      mask.setAttribute('mask-type', 'alpha');
+      mask.appendChild(groupPath);
+      this.elem.globalData.defs.appendChild(mask);
+      var g = createNS('g');
+      g.setAttribute('mask', 'url(' + getLocationHref() + '#' + id + ')');
+
+      while (elemChildren[0]) {
+        g.appendChild(elemChildren[0]);
+      }
+
+      this.elem.layerElement.appendChild(g);
+      this.masker = mask;
+      groupPath.setAttribute('stroke', '#fff');
+    } else if (this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
+      if (this.filterManager.effectElements[10].p.v === 2) {
+        elemChildren = this.elem.layerElement.children || this.elem.layerElement.childNodes;
+
+        while (elemChildren.length) {
+          this.elem.layerElement.removeChild(elemChildren[0]);
+        }
+      }
+
+      this.elem.layerElement.appendChild(groupPath);
+      this.elem.layerElement.removeAttribute('mask');
+      groupPath.setAttribute('stroke', '#fff');
+    }
+
+    this.initialized = true;
+    this.pathMasker = groupPath;
+  };
+
+  SVGStrokeEffect.prototype.renderFrame = function (forceRender) {
+    if (!this.initialized) {
+      this.initialize();
+    }
+
+    var i;
+    var len = this.paths.length;
+    var mask;
+    var path;
+
+    for (i = 0; i < len; i += 1) {
+      if (this.paths[i].m !== -1) {
+        mask = this.elem.maskManager.viewData[this.paths[i].m];
+        path = this.paths[i].p;
+
+        if (forceRender || this.filterManager._mdf || mask.prop._mdf) {
+          path.setAttribute('d', mask.lastPath);
+        }
+
+        if (forceRender || this.filterManager.effectElements[9].p._mdf || this.filterManager.effectElements[4].p._mdf || this.filterManager.effectElements[7].p._mdf || this.filterManager.effectElements[8].p._mdf || mask.prop._mdf) {
+          var dasharrayValue;
+
+          if (this.filterManager.effectElements[7].p.v !== 0 || this.filterManager.effectElements[8].p.v !== 100) {
+            var s = Math.min(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) * 0.01;
+            var e = Math.max(this.filterManager.effectElements[7].p.v, this.filterManager.effectElements[8].p.v) * 0.01;
+            var l = path.getTotalLength();
+            dasharrayValue = '0 0 0 ' + l * s + ' ';
+            var lineLength = l * (e - s);
+            var segment = 1 + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01;
+            var units = Math.floor(lineLength / segment);
+            var j;
+
+            for (j = 0; j < units; j += 1) {
+              dasharrayValue += '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01 + ' ';
+            }
+
+            dasharrayValue += '0 ' + l * 10 + ' 0 0';
+          } else {
+            dasharrayValue = '1 ' + this.filterManager.effectElements[4].p.v * 2 * this.filterManager.effectElements[9].p.v * 0.01;
+          }
+
+          path.setAttribute('stroke-dasharray', dasharrayValue);
+        }
+      }
+    }
+
+    if (forceRender || this.filterManager.effectElements[4].p._mdf) {
+      this.pathMasker.setAttribute('stroke-width', this.filterManager.effectElements[4].p.v * 2);
+    }
+
+    if (forceRender || this.filterManager.effectElements[6].p._mdf) {
+      this.pathMasker.setAttribute('opacity', this.filterManager.effectElements[6].p.v);
+    }
+
+    if (this.filterManager.effectElements[10].p.v === 1 || this.filterManager.effectElements[10].p.v === 2) {
+      if (forceRender || this.filterManager.effectElements[3].p._mdf) {
+        var color = this.filterManager.effectElements[3].p.v;
+        this.pathMasker.setAttribute('stroke', 'rgb(' + bmFloor(color[0] * 255) + ',' + bmFloor(color[1] * 255) + ',' + bmFloor(color[2] * 255) + ')');
+      }
+    }
+  };
+
+  function SVGTritoneFilter(filter, filterManager, elem, id) {
+    this.filterManager = filterManager;
+    var feColorMatrix = createNS('feColorMatrix');
+    feColorMatrix.setAttribute('type', 'matrix');
+    feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
+    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    filter.appendChild(feColorMatrix);
+    var feComponentTransfer = createNS('feComponentTransfer');
+    feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
+    feComponentTransfer.setAttribute('result', id);
+    this.matrixFilter = feComponentTransfer;
+    var feFuncR = createNS('feFuncR');
+    feFuncR.setAttribute('type', 'table');
+    feComponentTransfer.appendChild(feFuncR);
+    this.feFuncR = feFuncR;
+    var feFuncG = createNS('feFuncG');
+    feFuncG.setAttribute('type', 'table');
+    feComponentTransfer.appendChild(feFuncG);
+    this.feFuncG = feFuncG;
+    var feFuncB = createNS('feFuncB');
+    feFuncB.setAttribute('type', 'table');
+    feComponentTransfer.appendChild(feFuncB);
+    this.feFuncB = feFuncB;
+    filter.appendChild(feComponentTransfer);
+  }
+
+  SVGTritoneFilter.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      var color1 = this.filterManager.effectElements[0].p.v;
+      var color2 = this.filterManager.effectElements[1].p.v;
+      var color3 = this.filterManager.effectElements[2].p.v;
+      var tableR = color3[0] + ' ' + color2[0] + ' ' + color1[0];
+      var tableG = color3[1] + ' ' + color2[1] + ' ' + color1[1];
+      var tableB = color3[2] + ' ' + color2[2] + ' ' + color1[2];
+      this.feFuncR.setAttribute('tableValues', tableR);
+      this.feFuncG.setAttribute('tableValues', tableG);
+      this.feFuncB.setAttribute('tableValues', tableB);
+    }
+  };
+
+  function SVGProLevelsFilter(filter, filterManager, elem, id) {
+    this.filterManager = filterManager;
+    var effectElements = this.filterManager.effectElements;
+    var feComponentTransfer = createNS('feComponentTransfer'); // Red
+
+    if (effectElements[10].p.k || effectElements[10].p.v !== 0 || effectElements[11].p.k || effectElements[11].p.v !== 1 || effectElements[12].p.k || effectElements[12].p.v !== 1 || effectElements[13].p.k || effectElements[13].p.v !== 0 || effectElements[14].p.k || effectElements[14].p.v !== 1) {
+      this.feFuncR = this.createFeFunc('feFuncR', feComponentTransfer);
+    } // Green
+
+
+    if (effectElements[17].p.k || effectElements[17].p.v !== 0 || effectElements[18].p.k || effectElements[18].p.v !== 1 || effectElements[19].p.k || effectElements[19].p.v !== 1 || effectElements[20].p.k || effectElements[20].p.v !== 0 || effectElements[21].p.k || effectElements[21].p.v !== 1) {
+      this.feFuncG = this.createFeFunc('feFuncG', feComponentTransfer);
+    } // Blue
+
+
+    if (effectElements[24].p.k || effectElements[24].p.v !== 0 || effectElements[25].p.k || effectElements[25].p.v !== 1 || effectElements[26].p.k || effectElements[26].p.v !== 1 || effectElements[27].p.k || effectElements[27].p.v !== 0 || effectElements[28].p.k || effectElements[28].p.v !== 1) {
+      this.feFuncB = this.createFeFunc('feFuncB', feComponentTransfer);
+    } // Alpha
+
+
+    if (effectElements[31].p.k || effectElements[31].p.v !== 0 || effectElements[32].p.k || effectElements[32].p.v !== 1 || effectElements[33].p.k || effectElements[33].p.v !== 1 || effectElements[34].p.k || effectElements[34].p.v !== 0 || effectElements[35].p.k || effectElements[35].p.v !== 1) {
+      this.feFuncA = this.createFeFunc('feFuncA', feComponentTransfer);
+    } // RGB
+
+
+    if (this.feFuncR || this.feFuncG || this.feFuncB || this.feFuncA) {
+      feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
+      filter.appendChild(feComponentTransfer);
+    }
+
+    if (effectElements[3].p.k || effectElements[3].p.v !== 0 || effectElements[4].p.k || effectElements[4].p.v !== 1 || effectElements[5].p.k || effectElements[5].p.v !== 1 || effectElements[6].p.k || effectElements[6].p.v !== 0 || effectElements[7].p.k || effectElements[7].p.v !== 1) {
+      feComponentTransfer = createNS('feComponentTransfer');
+      feComponentTransfer.setAttribute('color-interpolation-filters', 'sRGB');
+      feComponentTransfer.setAttribute('result', id);
+      filter.appendChild(feComponentTransfer);
+      this.feFuncRComposed = this.createFeFunc('feFuncR', feComponentTransfer);
+      this.feFuncGComposed = this.createFeFunc('feFuncG', feComponentTransfer);
+      this.feFuncBComposed = this.createFeFunc('feFuncB', feComponentTransfer);
+    }
+  }
+
+  SVGProLevelsFilter.prototype.createFeFunc = function (type, feComponentTransfer) {
+    var feFunc = createNS(type);
+    feFunc.setAttribute('type', 'table');
+    feComponentTransfer.appendChild(feFunc);
+    return feFunc;
+  };
+
+  SVGProLevelsFilter.prototype.getTableValue = function (inputBlack, inputWhite, gamma, outputBlack, outputWhite) {
+    var cnt = 0;
+    var segments = 256;
+    var perc;
+    var min = Math.min(inputBlack, inputWhite);
+    var max = Math.max(inputBlack, inputWhite);
+    var table = Array.call(null, {
+      length: segments
+    });
+    var colorValue;
+    var pos = 0;
+    var outputDelta = outputWhite - outputBlack;
+    var inputDelta = inputWhite - inputBlack;
+
+    while (cnt <= 256) {
+      perc = cnt / 256;
+
+      if (perc <= min) {
+        colorValue = inputDelta < 0 ? outputWhite : outputBlack;
+      } else if (perc >= max) {
+        colorValue = inputDelta < 0 ? outputBlack : outputWhite;
+      } else {
+        colorValue = outputBlack + outputDelta * Math.pow((perc - inputBlack) / inputDelta, 1 / gamma);
+      }
+
+      table[pos] = colorValue;
+      pos += 1;
+      cnt += 256 / (segments - 1);
+    }
+
+    return table.join(' ');
+  };
+
+  SVGProLevelsFilter.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      var val;
+      var effectElements = this.filterManager.effectElements;
+
+      if (this.feFuncRComposed && (forceRender || effectElements[3].p._mdf || effectElements[4].p._mdf || effectElements[5].p._mdf || effectElements[6].p._mdf || effectElements[7].p._mdf)) {
+        val = this.getTableValue(effectElements[3].p.v, effectElements[4].p.v, effectElements[5].p.v, effectElements[6].p.v, effectElements[7].p.v);
+        this.feFuncRComposed.setAttribute('tableValues', val);
+        this.feFuncGComposed.setAttribute('tableValues', val);
+        this.feFuncBComposed.setAttribute('tableValues', val);
+      }
+
+      if (this.feFuncR && (forceRender || effectElements[10].p._mdf || effectElements[11].p._mdf || effectElements[12].p._mdf || effectElements[13].p._mdf || effectElements[14].p._mdf)) {
+        val = this.getTableValue(effectElements[10].p.v, effectElements[11].p.v, effectElements[12].p.v, effectElements[13].p.v, effectElements[14].p.v);
+        this.feFuncR.setAttribute('tableValues', val);
+      }
+
+      if (this.feFuncG && (forceRender || effectElements[17].p._mdf || effectElements[18].p._mdf || effectElements[19].p._mdf || effectElements[20].p._mdf || effectElements[21].p._mdf)) {
+        val = this.getTableValue(effectElements[17].p.v, effectElements[18].p.v, effectElements[19].p.v, effectElements[20].p.v, effectElements[21].p.v);
+        this.feFuncG.setAttribute('tableValues', val);
+      }
+
+      if (this.feFuncB && (forceRender || effectElements[24].p._mdf || effectElements[25].p._mdf || effectElements[26].p._mdf || effectElements[27].p._mdf || effectElements[28].p._mdf)) {
+        val = this.getTableValue(effectElements[24].p.v, effectElements[25].p.v, effectElements[26].p.v, effectElements[27].p.v, effectElements[28].p.v);
+        this.feFuncB.setAttribute('tableValues', val);
+      }
+
+      if (this.feFuncA && (forceRender || effectElements[31].p._mdf || effectElements[32].p._mdf || effectElements[33].p._mdf || effectElements[34].p._mdf || effectElements[35].p._mdf)) {
+        val = this.getTableValue(effectElements[31].p.v, effectElements[32].p.v, effectElements[33].p.v, effectElements[34].p.v, effectElements[35].p.v);
+        this.feFuncA.setAttribute('tableValues', val);
+      }
+    }
+  };
+
+  function SVGDropShadowEffect(filter, filterManager, elem, id, source) {
+    var filterSize = filterManager.container.globalData.renderConfig.filterSize;
+    filter.setAttribute('x', filterSize.x);
+    filter.setAttribute('y', filterSize.y);
+    filter.setAttribute('width', filterSize.width);
+    filter.setAttribute('height', filterSize.height);
+    this.filterManager = filterManager;
+    var feGaussianBlur = createNS('feGaussianBlur');
+    feGaussianBlur.setAttribute('in', 'SourceAlpha');
+    feGaussianBlur.setAttribute('result', id + '_drop_shadow_1');
+    feGaussianBlur.setAttribute('stdDeviation', '0');
+    this.feGaussianBlur = feGaussianBlur;
+    filter.appendChild(feGaussianBlur);
+    var feOffset = createNS('feOffset');
+    feOffset.setAttribute('dx', '25');
+    feOffset.setAttribute('dy', '0');
+    feOffset.setAttribute('in', id + '_drop_shadow_1');
+    feOffset.setAttribute('result', id + '_drop_shadow_2');
+    this.feOffset = feOffset;
+    filter.appendChild(feOffset);
+    var feFlood = createNS('feFlood');
+    feFlood.setAttribute('flood-color', '#00ff00');
+    feFlood.setAttribute('flood-opacity', '1');
+    feFlood.setAttribute('result', id + '_drop_shadow_3');
+    this.feFlood = feFlood;
+    filter.appendChild(feFlood);
+    var feComposite = createNS('feComposite');
+    feComposite.setAttribute('in', id + '_drop_shadow_3');
+    feComposite.setAttribute('in2', id + '_drop_shadow_2');
+    feComposite.setAttribute('operator', 'in');
+    feComposite.setAttribute('result', id + '_drop_shadow_4');
+    filter.appendChild(feComposite);
+    var feMerge = this.createMergeNode(id, [id + '_drop_shadow_4', source]);
+    filter.appendChild(feMerge); //
+  }
+
+  extendPrototype([SVGComposableEffect], SVGDropShadowEffect);
+
+  SVGDropShadowEffect.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      if (forceRender || this.filterManager.effectElements[4].p._mdf) {
+        this.feGaussianBlur.setAttribute('stdDeviation', this.filterManager.effectElements[4].p.v / 4);
+      }
+
+      if (forceRender || this.filterManager.effectElements[0].p._mdf) {
+        var col = this.filterManager.effectElements[0].p.v;
+        this.feFlood.setAttribute('flood-color', rgbToHex(Math.round(col[0] * 255), Math.round(col[1] * 255), Math.round(col[2] * 255)));
+      }
+
+      if (forceRender || this.filterManager.effectElements[1].p._mdf) {
+        this.feFlood.setAttribute('flood-opacity', this.filterManager.effectElements[1].p.v / 255);
+      }
+
+      if (forceRender || this.filterManager.effectElements[2].p._mdf || this.filterManager.effectElements[3].p._mdf) {
+        var distance = this.filterManager.effectElements[3].p.v;
+        var angle = (this.filterManager.effectElements[2].p.v - 90) * degToRads;
+        var x = distance * Math.cos(angle);
+        var y = distance * Math.sin(angle);
+        this.feOffset.setAttribute('dx', x);
+        this.feOffset.setAttribute('dy', y);
+      }
+    }
+  };
+
+  var _svgMatteSymbols = [];
+
+  function SVGMatte3Effect(filterElem, filterManager, elem) {
+    this.initialized = false;
+    this.filterManager = filterManager;
+    this.filterElem = filterElem;
+    this.elem = elem;
+    elem.matteElement = createNS('g');
+    elem.matteElement.appendChild(elem.layerElement);
+    elem.matteElement.appendChild(elem.transformedElement);
+    elem.baseElement = elem.matteElement;
+  }
+
+  SVGMatte3Effect.prototype.findSymbol = function (mask) {
+    var i = 0;
+    var len = _svgMatteSymbols.length;
+
+    while (i < len) {
+      if (_svgMatteSymbols[i] === mask) {
+        return _svgMatteSymbols[i];
+      }
+
+      i += 1;
+    }
+
+    return null;
+  };
+
+  SVGMatte3Effect.prototype.replaceInParent = function (mask, symbolId) {
+    var parentNode = mask.layerElement.parentNode;
+
+    if (!parentNode) {
+      return;
+    }
+
+    var children = parentNode.children;
+    var i = 0;
+    var len = children.length;
+
+    while (i < len) {
+      if (children[i] === mask.layerElement) {
+        break;
+      }
+
+      i += 1;
+    }
+
+    var nextChild;
+
+    if (i <= len - 2) {
+      nextChild = children[i + 1];
+    }
+
+    var useElem = createNS('use');
+    useElem.setAttribute('href', '#' + symbolId);
+
+    if (nextChild) {
+      parentNode.insertBefore(useElem, nextChild);
+    } else {
+      parentNode.appendChild(useElem);
+    }
+  };
+
+  SVGMatte3Effect.prototype.setElementAsMask = function (elem, mask) {
+    if (!this.findSymbol(mask)) {
+      var symbolId = createElementID();
+      var masker = createNS('mask');
+      masker.setAttribute('id', mask.layerId);
+      masker.setAttribute('mask-type', 'alpha');
+
+      _svgMatteSymbols.push(mask);
+
+      var defs = elem.globalData.defs;
+      defs.appendChild(masker);
+      var symbol = createNS('symbol');
+      symbol.setAttribute('id', symbolId);
+      this.replaceInParent(mask, symbolId);
+      symbol.appendChild(mask.layerElement);
+      defs.appendChild(symbol);
+      var useElem = createNS('use');
+      useElem.setAttribute('href', '#' + symbolId);
+      masker.appendChild(useElem);
+      mask.data.hd = false;
+      mask.show();
+    }
+
+    elem.setMatte(mask.layerId);
+  };
+
+  SVGMatte3Effect.prototype.initialize = function () {
+    var ind = this.filterManager.effectElements[0].p.v;
+    var elements = this.elem.comp.elements;
+    var i = 0;
+    var len = elements.length;
+
+    while (i < len) {
+      if (elements[i] && elements[i].data.ind === ind) {
+        this.setElementAsMask(this.elem, elements[i]);
+      }
+
+      i += 1;
+    }
+
+    this.initialized = true;
+  };
+
+  SVGMatte3Effect.prototype.renderFrame = function () {
+    if (!this.initialized) {
+      this.initialize();
+    }
+  };
+
+  function SVGGaussianBlurEffect(filter, filterManager, elem, id) {
+    // Outset the filter region by 100% on all sides to accommodate blur expansion.
+    filter.setAttribute('x', '-100%');
+    filter.setAttribute('y', '-100%');
+    filter.setAttribute('width', '300%');
+    filter.setAttribute('height', '300%');
+    this.filterManager = filterManager;
+    var feGaussianBlur = createNS('feGaussianBlur');
+    feGaussianBlur.setAttribute('result', id);
+    filter.appendChild(feGaussianBlur);
+    this.feGaussianBlur = feGaussianBlur;
+  }
+
+  SVGGaussianBlurEffect.prototype.renderFrame = function (forceRender) {
+    if (forceRender || this.filterManager._mdf) {
+      // Empirical value, matching AE's blur appearance.
+      var kBlurrinessToSigma = 0.3;
+      var sigma = this.filterManager.effectElements[0].p.v * kBlurrinessToSigma; // Dimensions mapping:
+      //
+      //   1 -> horizontal & vertical
+      //   2 -> horizontal only
+      //   3 -> vertical only
+      //
+
+      var dimensions = this.filterManager.effectElements[1].p.v;
+      var sigmaX = dimensions == 3 ? 0 : sigma; // eslint-disable-line eqeqeq
+
+      var sigmaY = dimensions == 2 ? 0 : sigma; // eslint-disable-line eqeqeq
+
+      this.feGaussianBlur.setAttribute('stdDeviation', sigmaX + ' ' + sigmaY); // Repeat edges mapping:
+      //
+      //   0 -> off -> duplicate
+      //   1 -> on  -> wrap
+
+      var edgeMode = this.filterManager.effectElements[2].p.v == 1 ? 'wrap' : 'duplicate'; // eslint-disable-line eqeqeq
+
+      this.feGaussianBlur.setAttribute('edgeMode', edgeMode);
+    }
+  };
 
   registerRenderer('canvas', CanvasRenderer);
   registerRenderer('html', HybridRenderer);
