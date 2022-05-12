@@ -23,28 +23,30 @@ function PXCompElement(data, globalData, comp) {
 
 extendPrototype([PixiRendererBase, ICompElement, PXBaseElement], PXCompElement);
 
-PXCompElement.prototype.renderInnerContent = function () {
-  // console.log('Render Inner Content', this.renderCount);
-  this.renderCount += 1;
-  // const graphics = this.bg;
-  // graphics.clear();
-  // graphics.beginFill(0xFF00FF);
-  // graphics.drawRect(0, 0, this.data.w, this.data.h);
-  // graphics.endFill();
+PXCompElement.prototype.prepareFrame = ICompElement.prototype.prepareFrame;
 
-  // console.log('Transform comp', this.finalTransform, this.transformMat);
-  // const matProps = this.finalTransform.mat.props;
-  // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
-  // graphics.transform.setFromMatrix(matrix);
-
-  var i;
-  var len = this.layers.length;
-  for (i = len - 1; i >= 0; i -= 1) {
-    if (this.completeLayers || this.elements[i]) {
-      this.elements[i].renderFrame();
-    }
-  }
-};
+// PXCompElement.prototype.renderInnerContent = function () {
+//   // console.log('Render Inner Content', this.renderCount);
+//   this.renderCount += 1;
+//   // const graphics = this.bg;
+//   // graphics.clear();
+//   // graphics.beginFill(0xFF00FF);
+//   // graphics.drawRect(0, 0, this.data.w, this.data.h);
+//   // graphics.endFill();
+//
+//   // console.log('Transform comp', this.finalTransform, this.transformMat);
+//   // const matProps = this.finalTransform.mat.props;
+//   // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
+//   // graphics.transform.setFromMatrix(matrix);
+//
+//   var i;
+//   var len = this.layers.length;
+//   for (i = len - 1; i >= 0; i -= 1) {
+//     if (this.completeLayers || this.elements[i]) {
+//       this.elements[i].renderFrame();
+//     }
+//   }
+// };
 
 PXCompElement.prototype.destroy = function () {
   var i;

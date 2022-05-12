@@ -154,6 +154,7 @@ PixiRendererBase.prototype.destroy = function () {
   if (this.animationItem.wrapper) {
     this.animationItem.wrapper.innerText = '';
   }
+  this.layerElement = null;
   var i;
   var len = this.layers ? this.layers.length : 0;
   for (i = len - 1; i >= 0; i -= 1) {
@@ -161,9 +162,9 @@ PixiRendererBase.prototype.destroy = function () {
       this.elements[i].destroy();
     }
   }
-  this.elements.length = 0;
   this.globalData.pixiApplication.destroy();
   this.globalData.pixiApplication = null;
+  this.elements.length = 0;
   this.animationItem.container = null;
   this.destroyed = true;
 };

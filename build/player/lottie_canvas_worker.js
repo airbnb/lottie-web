@@ -65706,9 +65706,8 @@
       if (this.finalTransform && this.finalTransform.mProp.container.data.nm === 'electric_globe.png') {
         console.log('PXBaseElement::renderElement', this.transformedElement, this.finalTransform);
         console.log('PXBaseElement::render alpha >>', this.finalTransform && this.finalTransform.mProp); // TODO: Somehow apply Ae parent linking / transform
-
-        var parentData = this.comp.layers[this.data.parent - 1];
-        console.log('parent layer', parentData);
+        // const parentData = this.comp.layers[this.data.parent - 1];
+        // console.log('parent layer', parentData);
       } // console.log('>> to2DCss', this.finalTransform.mat.to2dCSS());
       // console.log('>> toCss', this.finalTransform.mat.toCSS());
       // var transformedElementStyle = this.transformedElement ? this.transformedElement.style : {};
@@ -66515,6 +66514,7 @@
       this.animationItem.wrapper.innerText = '';
     }
 
+    this.layerElement = null;
     var i;
     var len = this.layers ? this.layers.length : 0;
 
@@ -66524,9 +66524,9 @@
       }
     }
 
-    this.elements.length = 0;
     this.globalData.pixiApplication.destroy();
     this.globalData.pixiApplication = null;
+    this.elements.length = 0;
     this.animationItem.container = null;
     this.destroyed = true;
   };
@@ -66736,28 +66736,28 @@
   }
 
   extendPrototype([PixiRendererBase, ICompElement, PXBaseElement], PXCompElement);
-
-  PXCompElement.prototype.renderInnerContent = function () {
-    // console.log('Render Inner Content', this.renderCount);
-    this.renderCount += 1; // const graphics = this.bg;
-    // graphics.clear();
-    // graphics.beginFill(0xFF00FF);
-    // graphics.drawRect(0, 0, this.data.w, this.data.h);
-    // graphics.endFill();
-    // console.log('Transform comp', this.finalTransform, this.transformMat);
-    // const matProps = this.finalTransform.mat.props;
-    // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
-    // graphics.transform.setFromMatrix(matrix);
-
-    var i;
-    var len = this.layers.length;
-
-    for (i = len - 1; i >= 0; i -= 1) {
-      if (this.completeLayers || this.elements[i]) {
-        this.elements[i].renderFrame();
-      }
-    }
-  };
+  PXCompElement.prototype.prepareFrame = ICompElement.prototype.prepareFrame; // PXCompElement.prototype.renderInnerContent = function () {
+  //   // console.log('Render Inner Content', this.renderCount);
+  //   this.renderCount += 1;
+  //   // const graphics = this.bg;
+  //   // graphics.clear();
+  //   // graphics.beginFill(0xFF00FF);
+  //   // graphics.drawRect(0, 0, this.data.w, this.data.h);
+  //   // graphics.endFill();
+  //
+  //   // console.log('Transform comp', this.finalTransform, this.transformMat);
+  //   // const matProps = this.finalTransform.mat.props;
+  //   // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
+  //   // graphics.transform.setFromMatrix(matrix);
+  //
+  //   var i;
+  //   var len = this.layers.length;
+  //   for (i = len - 1; i >= 0; i -= 1) {
+  //     if (this.completeLayers || this.elements[i]) {
+  //       this.elements[i].renderFrame();
+  //     }
+  //   }
+  // };
 
   PXCompElement.prototype.destroy = function () {
     var i;
