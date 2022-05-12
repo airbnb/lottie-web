@@ -1,7 +1,8 @@
 import { nodeResolve } from '@rollup/plugin-node-resolve';
 import { terser } from 'rollup-plugin-terser';
 import babel from '@rollup/plugin-babel';
-import {version} from './package.json'
+import commonjs from '@rollup/plugin-commonjs';
+import { version } from './package.json'
 
 const injectVersion = (options = {}) => {
   return {
@@ -33,6 +34,18 @@ const noTreeShakingForStandalonePlugin = () => {
 }
 
 const destinationBuildFolder = 'build/player/';
+const globals = {
+  'pixi.js': 'PIXI',
+  '@pixi/core': 'PIXI',
+  '@pixi/settings': 'PIXI',
+  '@pixi/math': 'PIXI',
+  '@pixi/utils': 'PIXI.utils',
+  '@pixi/filter-alpha': 'PIXI.filters',
+  '@pixi/filter-blur': 'PIXI.filters',
+  '@pixi/constants': 'PIXI',
+  '@pixi/display': 'PIXI',
+  '@pixi/runner': 'PIXI',
+};
 
 const builds = [
   {
@@ -101,6 +114,32 @@ const builds = [
     skipTerser: true,
   },
   {
+    input: 'player/js/modules/pixi.js',
+    dest: `${destinationBuildFolder}`,
+    file: 'lottie_pixi.min.js',
+    esm: true,
+  },
+  {
+    input: 'player/js/modules/pixi_light.js',
+    dest: `${destinationBuildFolder}`,
+    file: 'lottie_light_pixi.js',
+    esm: false,
+    skipTerser: true,
+  },
+  {
+    input: 'player/js/modules/pixi_light.js',
+    dest: `${destinationBuildFolder}`,
+    file: 'lottie_light_pixi.min.js',
+    esm: true,
+  },
+  {
+    input: 'player/js/modules/pixi.js',
+    dest: `${destinationBuildFolder}`,
+    file: 'lottie_pixi.js',
+    esm: false,
+    skipTerser: true,
+  },
+  {
     input: 'player/js/modules/html_light.js',
     dest: `${destinationBuildFolder}`,
     file: 'lottie_light_html.min.js',
@@ -129,7 +168,16 @@ const builds = [
 ];
 
 const plugins = [
-  nodeResolve(),
+  nodeResolve({ preferBuiltins: false }),
+  commonjs({
+    namedExports: {
+      'node_modules/pixi.js/dist/browser/pixi.js': [
+        'VERSION',
+        'Application',
+        'Graphics'
+      ]
+    }
+  }),
   babel({
     babelHelpers: 'runtime',
     skipPreflightCheck: true,
@@ -145,6 +193,7 @@ const pluginsWithTerser = [
 
 const UMDModule = {
   output: {
+    globals,
     format: 'umd',
     name: 'lottie', // this is the name of the global object
     esModule: false,
@@ -156,7 +205,18 @@ const UMDModule = {
 };
 
 const ESMModule = {
-  plugins: [nodeResolve()],
+  plugins: [
+    nodeResolve({ preferBuiltins: false }),
+    commonjs({
+      namedExports: {
+        'node_modules/pixi.js/dist/browser/pixi.js': [
+          'VERSION',
+          'Application',
+          'Graphics'
+        ]
+      }
+    }),
+  ],
   treeshake: false,
   output: [
     {
@@ -188,7 +248,7 @@ const exports = builds.reduce((acc, build) => {
       output: [
         {
           ...ESMModule.output[0],
-          file: 'dist/esm/' + build.file,
+          // file: 'dist/esm/' + build.file,
           file: `${destinationBuildFolder}esm/${build.file}`,
         },
         {
@@ -198,7 +258,7 @@ const exports = builds.reduce((acc, build) => {
       ]
     });
   }
-  
+
   acc = acc.concat(builds);
   return acc;
 }, []);

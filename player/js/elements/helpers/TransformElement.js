@@ -24,6 +24,7 @@ TransformElement.prototype = {
     this.finalTransform._opMdf = this.finalTransform.mProp.o._mdf || this._isFirstFrame;
     this.finalTransform._matMdf = this.finalTransform.mProp._mdf || this._isFirstFrame;
 
+    console.log('TransformElement::renderTransform()', this, this.hierarchy);
     if (this.hierarchy) {
       var mat;
       var finalMat = this.finalTransform.mat;

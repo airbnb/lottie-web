@@ -94,6 +94,7 @@ BaseRenderer.prototype.initItems = function () {
   }
 };
 BaseRenderer.prototype.buildElementParenting = function (element, parentName, hierarchy) {
+  console.log('BaseRenderer::buildElementParenting()', element, parentName, hierarchy);
   var elements = this.elements;
   var layers = this.layers;
   var i = 0;

@@ -4,7 +4,7 @@ const UglifyJS = require("uglify-js");
 const rootFolder = 'player/';
 const bm_version = '5.8.1';
 const buildReducedVersion = process.argv[2] === 'reduced'
-const defaultBuilds = ['full','svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker', 'lottie_worker']
+const defaultBuilds = ['full','pixi','pixi_light', 'svg_light','svg','canvas','html', 'canvas_light', 'html_light', 'canvas_worker', 'lottie_worker']
 
 const scripts = [
 	{
@@ -212,6 +212,10 @@ const scripts = [
 		builds: ['full','canvas','canvas_light','canvas_worker', 'lottie_worker']
 	},
 	{
+		src: 'js/renderers/PixiRenderer.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
 		src: 'js/renderers/HybridRenderer.js',
 		builds: ['full','html','html_light']
 	},
@@ -378,6 +382,30 @@ const scripts = [
 	{
 		src: 'js/elements/svgElements/SVGEffectsPlaceholder.js',
 		builds: ['svg_light','html_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXBaseElement.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXCompBaseElement.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXCompElement.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXImageElement.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXMaskElement.js',
+		builds: ['full','pixi','pixi_light']
+	},
+	{
+		src: 'js/elements/pixiElements/PXShapeElement.js',
+		builds: ['full','pixi','pixi_light']
 	},
 	{
 		src: 'js/elements/canvasElements/CVContextData.js',
@@ -582,7 +610,7 @@ function uglifyCode(code) {
 	return new Promise((resolve, reject)=>{
 		try {
 			const result = UglifyJS.minify(code, {
-				output: 
+				output:
 					{
 						ascii_only:true
 					},
@@ -738,7 +766,18 @@ function buildVersions(scripts) {
 			fileName: 'lottie_light_html.min.js',
 			build: 'html_light',
 			process: uglifyCode
+		},
+		{
+			fileName: 'lottie_pixi.js',
+			build: 'pixi',
+			process: noop
+		},
+		{
+			fileName: 'lottie_light_pixi.js',
+			build: 'pixi_light',
+			process: noop
 		}];
+
 
 		if (buildReducedVersion) {
 			versions = versions.splice(0,1);
