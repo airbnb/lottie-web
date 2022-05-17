@@ -43,6 +43,7 @@ GroupEffect.prototype.init = function (data, element) {
   var effects = this.data.ef;
   for (i = 0; i < len; i += 1) {
     eff = null;
+    console.log('EffectsMananger::recursive create', effects[i], element);
     switch (effects[i].ty) {
       case 0:
         eff = new SliderEffect(effects[i], element, this);

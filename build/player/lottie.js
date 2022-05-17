@@ -8522,6 +8522,7 @@
 
     for (i = 0; i < len; i += 1) {
       eff = null;
+      console.log('EffectsMananger::recursive create', effects[i], element);
 
       switch (effects[i].ty) {
         case 0:
@@ -65567,8 +65568,8 @@
       }
     },
     renderElement: function renderElement() {
-      if (this.finalTransform && this.finalTransform.mProp.container.data.nm === 'electric_globe.png') {
-        console.log('PXBaseElement::renderElement', this.transformedElement, this.finalTransform);
+      if (this.finalTransform && this.finalTransform.mProp.container.data.nm === 'fxtex_pack_cut-up_gem.png') {
+        console.log('PXBaseElement::renderElement', this, this.transformedElement, this.finalTransform);
         console.log('PXBaseElement::render alpha >>', this.finalTransform && this.finalTransform.mProp); // TODO: Somehow apply Ae parent linking / transform
         // const parentData = this.comp.layers[this.data.parent - 1];
         // console.log('parent layer', parentData);
