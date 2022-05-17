@@ -52,7 +52,7 @@ PXImageElement.prototype.createContent = function () {
   this.img.y = (imgH - heightCrop) / 2;
   this.img.width = widthCrop;
   this.img.height = heightCrop;
-  this.img.renderable = true;
+  this.img.renderable = false;
 
   this.layerElement.addChild(this.img);
   console.log('PXImageElement:: done created image', this.hidden);
@@ -69,13 +69,15 @@ PXImageElement.prototype.renderInnerContent = function () {
 PXImageElement.prototype.showInnerContent = function () {
   // this.globalData.pixiApplication.stage.addChild(this.img);
   console.log('PXImageElement::showInnerContent()');
-  // this.img.renderable = true;
+  this.baseElement.renderable = true;
+  this.img.renderable = true;
 };
 
 PXImageElement.prototype.hideInnerContent = function () {
   // this.globalData.pixiApplication.stage.addChild(this.img);
   console.log('PXImageElement::hideInnerContent()');
-  // this.img.renderable = false;
+  this.baseElement.renderable = false;
+  this.img.renderable = false;
 };
 
 PXImageElement.prototype.destroy = function () {

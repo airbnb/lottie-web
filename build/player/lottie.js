@@ -65542,6 +65542,7 @@
     createElements: function createElements() {},
     initRendererElement: function initRendererElement() {
       this.baseElement = new Container();
+      this.baseElement.renderable = false;
       this.globalData.pixiApplication.stage.addChild(this.baseElement);
       this.layerElement = this.baseElement;
     },
@@ -65597,9 +65598,11 @@
 
     },
     renderFrame: function renderFrame() {
-      console.log('PXBaseElement::renderFrame', this.hidden, this.data.hd); // if (this.hidden || this.data.hd) {
-      //   return;
-      // }
+      console.log('PXBaseElement::renderFrame', this.hidden, this.data.hd);
+
+      if (this.hidden || this.data.hd) {
+        return;
+      }
 
       this.renderTransform();
       this.renderRenderable();
@@ -65621,7 +65624,8 @@
     console.log('PXBaseElement::prepareFrame() frame:', num);
     this._mdf = false;
     this.prepareRenderableFrame(num);
-    this.prepareProperties(num, this.isInRange); // this.checkTransparency();
+    this.prepareProperties(num, this.isInRange);
+    this.checkTransparency();
   }; // RenderableDOMElement.prototype.prepareFrame;
 
   function PXImageElement(data, globalData, comp) {
@@ -65664,7 +65668,7 @@
     this.img.y = (imgH - heightCrop) / 2;
     this.img.width = widthCrop;
     this.img.height = heightCrop;
-    this.img.renderable = true;
+    this.img.renderable = false;
     this.layerElement.addChild(this.img);
     console.log('PXImageElement:: done created image', this.hidden);
   };
@@ -65679,12 +65683,16 @@
 
   PXImageElement.prototype.showInnerContent = function () {
     // this.globalData.pixiApplication.stage.addChild(this.img);
-    console.log('PXImageElement::showInnerContent()'); // this.img.renderable = true;
+    console.log('PXImageElement::showInnerContent()');
+    this.baseElement.renderable = true;
+    this.img.renderable = true;
   };
 
   PXImageElement.prototype.hideInnerContent = function () {
     // this.globalData.pixiApplication.stage.addChild(this.img);
-    console.log('PXImageElement::hideInnerContent()'); // this.img.renderable = false;
+    console.log('PXImageElement::hideInnerContent()');
+    this.baseElement.renderable = false;
+    this.img.renderable = false;
   };
 
   PXImageElement.prototype.destroy = function () {

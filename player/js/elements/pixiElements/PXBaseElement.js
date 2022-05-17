@@ -13,6 +13,7 @@ PXBaseElement.prototype = {
   createElements: function () {},
   initRendererElement: function () {
     this.baseElement = new PIXI.Container();
+    this.baseElement.renderable = false;
     this.globalData.pixiApplication.stage.addChild(this.baseElement);
     this.layerElement = this.baseElement;
   },
@@ -71,9 +72,9 @@ PXBaseElement.prototype = {
   },
   renderFrame: function () {
     console.log('PXBaseElement::renderFrame', this.hidden, this.data.hd);
-    // if (this.hidden || this.data.hd) {
-    //   return;
-    // }
+    if (this.hidden || this.data.hd) {
+      return;
+    }
     this.renderTransform();
     this.renderRenderable();
     this.setBlendMode(); // ?
@@ -93,7 +94,7 @@ PXBaseElement.prototype.prepareFrame = function (num) {
   this._mdf = false;
   this.prepareRenderableFrame(num);
   this.prepareProperties(num, this.isInRange);
-  // this.checkTransparency();
+  this.checkTransparency();
 };
 // RenderableDOMElement.prototype.prepareFrame;
 
