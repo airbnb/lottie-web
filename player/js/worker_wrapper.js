@@ -549,6 +549,7 @@ var lottie = (function () {
       elements: {},
       callbacks: {},
       pendingCallbacks: [],
+      status: 'init',
     };
     var animInstance = {
       id: animationId,
@@ -675,16 +676,21 @@ var lottie = (function () {
           });
       },
       destroy: function () {
-        animations[animationId] = null;
-        if (animation.container) {
-          animation.container.innerHTML = '';
+        if (animation.status === 'init') {
+          animation.status = 'destroyable';
+        } else {
+          animation.status = 'destroyed';
+          animations[animationId] = null;
+          if (animation.container) {
+            animation.container.innerHTML = '';
+          }
+          workerInstance.postMessage({
+            type: 'destroy',
+            payload: {
+              id: animationId,
+            },
+          });
         }
-        workerInstance.postMessage({
-          type: 'destroy',
-          payload: {
-            id: animationId,
-          },
-        });
       },
       resize: function () {
         workerInstance.postMessage({
@@ -709,6 +715,11 @@ var lottie = (function () {
     animation.animInstance = animInstance;
     resolveAnimationData(params)
       .then(function (animationParams) {
+        if (animation.status === 'destroyable') {
+          animation.animInstance.destroy();
+          return;
+        }
+        animation.status = 'loaded';
         var transferedObjects = [];
         if (animationParams.container) {
           animation.container = animationParams.container;
