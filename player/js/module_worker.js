@@ -666,19 +666,16 @@ var lottie = (function () {
           animation.container = animationParams.container;
           delete animationParams.container;
         }
-        if (animationParams.renderer === 'canvas') {
-          if (!animationParams.rendererSettings.canvas) {
-            var canvas = document.createElement('canvas');
-            animation.container.appendChild(canvas);
-            canvas.width = animationParams.animationData.w;
-            canvas.height = animationParams.animationData.h;
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            var offscreen = canvas.transferControlToOffscreen();
-            animationParams.rendererSettings.canvas = offscreen;
-          }
-
-          transferedObjects.push(animationParams.rendererSettings.canvas);
+        if (animationParams.renderer === 'canvas' && !animationParams.rendererSettings.canvas) {
+          var canvas = document.createElement('canvas');
+          animation.container.appendChild(canvas);
+          canvas.width = animationParams.animationData.w;
+          canvas.height = animationParams.animationData.h;
+          canvas.style.width = '100%';
+          canvas.style.height = '100%';
+          var offscreen = canvas.transferControlToOffscreen();
+          transferedObjects.push(offscreen);
+          animationParams.rendererSettings.canvas = offscreen;
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
