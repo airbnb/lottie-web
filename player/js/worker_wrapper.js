@@ -715,17 +715,16 @@ var lottie = (function () {
           delete animationParams.container;
         }
         if (animationParams.renderer === 'canvas') {
-          var canvas = document.createElement('canvas');
+          var canvas = animationParams.rendererSettings.canvas;
 
           // If no custom canvas was passed
-          if (!animationParams.rendererSettings.canvas) {
+          if (!canvas) {
+            canvas = document.createElement('canvas');
             animation.container.appendChild(canvas);
             canvas.width = animationParams.animationData.w;
             canvas.height = animationParams.animationData.h;
             canvas.style.width = '100%';
             canvas.style.height = '100%';
-          } else {
-            canvas = animationParams.rendererSettings.canvas;
           }
 
           // Transfer control to offscreen if it's not already
