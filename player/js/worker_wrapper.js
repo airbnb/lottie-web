@@ -721,8 +721,8 @@ var lottie = (function () {
           if (!canvas) {
             canvas = document.createElement('canvas');
             animation.container.appendChild(canvas);
-            canvas.width = animationParams.animationData.w;
-            canvas.height = animationParams.animationData.h;
+            canvas.width = animation.container ? animation.container.offsetWidth : animationParams.animationData.w;
+            canvas.height = animation.container ? animation.container.offsetHeight : animationParams.animationData.h;
             canvas.style.width = '100%';
             canvas.style.height = '100%';
           }
