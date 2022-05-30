@@ -719,10 +719,11 @@ var lottie = (function () {
 
           // If no custom canvas was passed
           if (!canvas) {
+            var devicePixelRatio = window.devicePixelRatio || 1;
             canvas = document.createElement('canvas');
             animation.container.appendChild(canvas);
-            canvas.width = animation.container ? animation.container.offsetWidth : animationParams.animationData.w;
-            canvas.height = animation.container ? animation.container.offsetHeight : animationParams.animationData.h;
+            canvas.width = (animation.container ? animation.container.offsetWidth : animationParams.animationData.w) * devicePixelRatio;
+            canvas.height = (animation.container ? animation.container.offsetHeight : animationParams.animationData.h) * devicePixelRatio;
             canvas.style.width = '100%';
             canvas.style.height = '100%';
           }
