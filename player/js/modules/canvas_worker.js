@@ -9,8 +9,8 @@ AnimationItem.prototype.resize = function (width, height) {
 
 CanvasRenderer.prototype.updateContainerSize = function (width, height) {
   this.reset();
-  var elementWidth = (width || this.canvasContext.canvas.width) * this.renderConfig.dpr;
-  var elementHeight = (height || this.canvasContext.canvas.height) * this.renderConfig.dpr;
+  var elementWidth = width || this.canvasContext.canvas.width;
+  var elementHeight = height || this.canvasContext.canvas.height;
 
   // Resize canvas
   this.canvasContext.canvas.width = elementWidth;
@@ -29,35 +29,35 @@ CanvasRenderer.prototype.updateContainerSize = function (width, height) {
     elementRel = elementWidth / elementHeight;
     animationRel = this.transformCanvas.w / this.transformCanvas.h;
     if ((animationRel > elementRel && fillType === 'meet') || (animationRel < elementRel && fillType === 'slice')) {
-      this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
-      this.transformCanvas.sy = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
+      this.transformCanvas.sx = elementWidth / this.transformCanvas.w;
+      this.transformCanvas.sy = elementWidth / this.transformCanvas.w;
     } else {
-      this.transformCanvas.sx = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
-      this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
+      this.transformCanvas.sx = elementHeight / this.transformCanvas.h;
+      this.transformCanvas.sy = elementHeight / this.transformCanvas.h;
     }
 
     if (xPos === 'xMid' && ((animationRel < elementRel && fillType === 'meet') || (animationRel > elementRel && fillType === 'slice'))) {
-      this.transformCanvas.tx = ((elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h)) / 2) * this.renderConfig.dpr;
+      this.transformCanvas.tx = (elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h)) / 2;
     } else if (xPos === 'xMax' && ((animationRel < elementRel && fillType === 'meet') || (animationRel > elementRel && fillType === 'slice'))) {
-      this.transformCanvas.tx = (elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h)) * this.renderConfig.dpr;
+      this.transformCanvas.tx = elementWidth - this.transformCanvas.w * (elementHeight / this.transformCanvas.h);
     } else {
       this.transformCanvas.tx = 0;
     }
     if (yPos === 'YMid' && ((animationRel > elementRel && fillType === 'meet') || (animationRel < elementRel && fillType === 'slice'))) {
-      this.transformCanvas.ty = ((elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w)) / 2) * this.renderConfig.dpr;
+      this.transformCanvas.ty = (elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w)) / 2;
     } else if (yPos === 'YMax' && ((animationRel > elementRel && fillType === 'meet') || (animationRel < elementRel && fillType === 'slice'))) {
-      this.transformCanvas.ty = ((elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w))) * this.renderConfig.dpr;
+      this.transformCanvas.ty = (elementHeight - this.transformCanvas.h * (elementWidth / this.transformCanvas.w));
     } else {
       this.transformCanvas.ty = 0;
     }
   } else if (this.renderConfig.preserveAspectRatio === 'none') {
-    this.transformCanvas.sx = elementWidth / (this.transformCanvas.w / this.renderConfig.dpr);
-    this.transformCanvas.sy = elementHeight / (this.transformCanvas.h / this.renderConfig.dpr);
+    this.transformCanvas.sx = elementWidth / this.transformCanvas.w;
+    this.transformCanvas.sy = elementHeight / this.transformCanvas.h;
     this.transformCanvas.tx = 0;
     this.transformCanvas.ty = 0;
   } else {
-    this.transformCanvas.sx = this.renderConfig.dpr;
-    this.transformCanvas.sy = this.renderConfig.dpr;
+    this.transformCanvas.sx = 1;
+    this.transformCanvas.sy = 1;
     this.transformCanvas.tx = 0;
     this.transformCanvas.ty = 0;
   }
