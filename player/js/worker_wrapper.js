@@ -332,7 +332,7 @@ function workerContent() {
       }
     } else if (type === 'resize') {
       if (animations[payload.id]) {
-        animations[payload.id].animation.resize();
+        animations[payload.id].animation.resize(payload.width, payload.height);
       }
     } else if (type === 'playSegments') {
       if (animations[payload.id]) {
@@ -691,6 +691,9 @@ var lottie = (function () {
           type: 'resize',
           payload: {
             id: animationId,
+            // Till Worker thread knows nothing about container, we've to pass it here
+            width: animation.container.offsetWidth,
+            height: animation.container.offsetHeight,
           },
         });
       },
