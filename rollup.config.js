@@ -93,6 +93,14 @@ const builds = [
     file: 'lottie_light_canvas.min.js',
     esm: true,
   },
+  // Temporary file to wrap code with Worker, it'll be overridden by build_worker.js eventually 
+  {
+    input: 'player/js/modules/canvas_worker.js',
+    dest: `${destinationBuildFolder}`,
+    file: 'lottie_canvas_worker.js',
+    esm: false,
+    skipTerser: true,
+  },
   {
     input: 'player/js/modules/canvas.js',
     dest: `${destinationBuildFolder}`,
