@@ -42,6 +42,8 @@
   "types": "./index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "^6.3.0"
+    "@pixi/gif": "^1.0.2",
+    "@pixi/picture": "^3.0.5",
+    "pixi.js": "^6.3.2"
   }
 }

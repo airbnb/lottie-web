@@ -8452,7 +8452,8 @@
       12: 'hue',
       13: 'saturation',
       14: 'color',
-      15: 'luminosity'
+      15: 'luminosity',
+      16: 'add'
     };
     return function (mode) {
       return blendModeEnums[mode] || '';
@@ -19087,8 +19088,8 @@
   };
 
   /*!
-   * @pixi/polyfill - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/polyfill - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/polyfill is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -19150,10 +19151,10 @@
   var lastTime = Date.now();
   var vendors = ['ms', 'moz', 'webkit', 'o'];
 
-  for (var x = 0; x < vendors.length && !globalThis.requestAnimationFrame; ++x) {
-    var p = vendors[x];
-    globalThis.requestAnimationFrame = globalThis[p + "RequestAnimationFrame"];
-    globalThis.cancelAnimationFrame = globalThis[p + "CancelAnimationFrame"] || globalThis[p + "CancelRequestAnimationFrame"];
+  for (var x$1 = 0; x$1 < vendors.length && !globalThis.requestAnimationFrame; ++x$1) {
+    var p$1 = vendors[x$1];
+    globalThis.requestAnimationFrame = globalThis[p$1 + "RequestAnimationFrame"];
+    globalThis.cancelAnimationFrame = globalThis[p$1 + "CancelAnimationFrame"] || globalThis[p$1 + "CancelRequestAnimationFrame"];
   }
 
   if (!globalThis.requestAnimationFrame) {
@@ -19334,8 +19335,8 @@
   }
 
   /*!
-   * @pixi/settings - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/settings - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/settings is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -19401,8 +19402,8 @@
     return !isMobile.apple.device;
   }
   /*!
-   * @pixi/constants - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/constants - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/constants is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -21980,9 +21981,9 @@
   var resolve = url$1.resolve = urlResolve;
   var resolveObject = url$1.resolveObject = urlResolveObject;
   var format = url$1.format = urlFormat;
-  var Url_1 = url$1.Url = Url$1;
+  var Url_1 = url$1.Url = Url;
 
-  function Url$1() {
+  function Url() {
     this.protocol = null;
     this.slashes = null;
     this.auth = null;
@@ -22046,13 +22047,13 @@
       querystring = querystring$1;
 
   function urlParse(url, parseQueryString, slashesDenoteHost) {
-    if (url && util.isObject(url) && url instanceof Url$1) return url;
-    var u = new Url$1();
+    if (url && util.isObject(url) && url instanceof Url) return url;
+    var u = new Url();
     u.parse(url, parseQueryString, slashesDenoteHost);
     return u;
   }
 
-  Url$1.prototype.parse = function (url, parseQueryString, slashesDenoteHost) {
+  Url.prototype.parse = function (url, parseQueryString, slashesDenoteHost) {
     if (!util.isString(url)) {
       throw new TypeError("Parameter 'url' must be a string, not " + typeof url);
     } // Copy chrome, IE, opera backslash-handling behavior.
@@ -22326,11 +22327,11 @@
     // this way, you can call url_format() on strings
     // to clean up potentially wonky urls.
     if (util.isString(obj)) obj = urlParse(obj);
-    if (!(obj instanceof Url$1)) return Url$1.prototype.format.call(obj);
+    if (!(obj instanceof Url)) return Url.prototype.format.call(obj);
     return obj.format();
   }
 
-  Url$1.prototype.format = function () {
+  Url.prototype.format = function () {
     var auth = this.auth || '';
 
     if (auth) {
@@ -22383,7 +22384,7 @@
     return urlParse(source, false, true).resolve(relative);
   }
 
-  Url$1.prototype.resolve = function (relative) {
+  Url.prototype.resolve = function (relative) {
     return this.resolveObject(urlParse(relative, false, true)).format();
   };
 
@@ -22392,14 +22393,14 @@
     return urlParse(source, false, true).resolveObject(relative);
   }
 
-  Url$1.prototype.resolveObject = function (relative) {
+  Url.prototype.resolveObject = function (relative) {
     if (util.isString(relative)) {
-      var rel = new Url$1();
+      var rel = new Url();
       rel.parse(relative, false, true);
       relative = rel;
     }
 
-    var result = new Url$1();
+    var result = new Url();
     var tkeys = Object.keys(this);
 
     for (var tk = 0; tk < tkeys.length; tk++) {
@@ -22661,7 +22662,7 @@
     return result;
   };
 
-  Url$1.prototype.parseHost = function () {
+  Url.prototype.parseHost = function () {
     var host = this.host;
     var port = portPattern.exec(host);
 
@@ -22679,8 +22680,8 @@
   };
 
   /*!
-   * @pixi/constants - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/constants - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/constants is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -23250,8 +23251,8 @@
   })(BUFFER_TYPE$3 || (BUFFER_TYPE$3 = {}));
 
   /*!
-   * @pixi/utils - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/utils - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/utils is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -23309,7 +23310,7 @@
 
   settings.FAIL_IF_MAJOR_PERFORMANCE_CAVEAT = false;
   var saidHello = false;
-  var VERSION$1 = '6.3.0';
+  var VERSION$1 = '6.3.2';
   /**
    * Skips the hello message of renderers that are created after this is run.
    *
@@ -24590,8 +24591,8 @@
   });
 
   /*!
-   * @pixi/math - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/math - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/math is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -26613,8 +26614,8 @@
   }();
 
   /*!
-   * @pixi/display - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/display - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/display is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -28002,8 +28003,8 @@
 
   DisplayObject.prototype.displayObjectUpdateTransform = DisplayObject.prototype.updateTransform;
   /*!
-   * @pixi/constants - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/constants - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/constants is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -29286,8 +29287,8 @@
   Container.prototype.containerUpdateTransform = Container.prototype.updateTransform;
 
   /*!
-   * @pixi/accessibility - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/accessibility - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/accessibility is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -29928,8 +29929,8 @@
   }();
 
   /*!
-   * @pixi/ticker - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/ticker - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/ticker is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -30795,8 +30796,8 @@
   }();
 
   /*!
-   * @pixi/interaction - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/interaction - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/interaction is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -33039,8 +33040,8 @@
   }(EventEmitter);
 
   /*!
-   * @pixi/runner - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/runner - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/runner is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -33261,8 +33262,8 @@
   });
 
   /*!
-   * @pixi/core - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/core - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/core is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -34805,10 +34806,6 @@
     };
 
     CubeResource.prototype.addBaseTextureAt = function (baseTexture, index, linkBaseTexture) {
-      if (linkBaseTexture === undefined) {
-        linkBaseTexture = this.linkBaseTexture;
-      }
-
       if (!this.items[index]) {
         throw new Error("Index " + index + " is out of bounds");
       }
@@ -36105,6 +36102,20 @@
 
   var DEFAULT_UVS = new TextureUvs();
   /**
+   * Used to remove listeners from WHITE and EMPTY Textures
+   * @ignore
+   */
+
+  function removeAllHandlers(tex) {
+    tex.destroy = function _emptyDestroy() {};
+
+    tex.on = function _emptyOn() {};
+
+    tex.once = function _emptyOnce() {};
+
+    tex.emit = function _emptyEmit() {};
+  }
+  /**
    * A texture stores the information that represents an image or part of an image.
    *
    * It cannot be added to the display list directly; instead use it as the texture for a Sprite.
@@ -36133,6 +36144,7 @@
    * @memberof PIXI
    * @typeParam R - The BaseTexture's Resource type.
    */
+
 
   var Texture =
   /** @class */
@@ -36312,7 +36324,7 @@
      * The source can be - frame id, image url, video url, canvas element, video element, base texture
      *
      * @param {string|HTMLImageElement|HTMLCanvasElement|HTMLVideoElement|PIXI.BaseTexture} source -
-     *        Source to create texture from
+     *        Source or array of sources to create texture from
      * @param options - See {@link PIXI.BaseTexture}'s constructor for options.
      * @param {string} [options.pixiIdPrefix=pixiid] - If a source has no id, this is the prefix of the generated id
      * @param {boolean} [strict] - Enforce strict-mode, see {@link PIXI.settings.STRICT_TEXTURE_CACHE}.
@@ -36379,7 +36391,7 @@
      * it does a better job of handling failed URLs more effectively. This also ignores
      * `PIXI.settings.STRICT_TEXTURE_CACHE`. Works for Videos, SVGs, Images.
      *
-     * @param url - The remote URL to load.
+     * @param url - The remote URL or array of URLs to load.
      * @param options - Optional options to include
      * @return - A Promise that resolves to a Texture.
      */
@@ -36620,53 +36632,48 @@
       return this.baseTexture;
     };
 
+    Object.defineProperty(Texture, "EMPTY", {
+      /**
+       * An empty texture, used often to not have to create multiple empty textures.
+       * Can not be destroyed.
+       */
+      get: function () {
+        if (!Texture._EMPTY) {
+          Texture._EMPTY = new Texture(new BaseTexture());
+          removeAllHandlers(Texture._EMPTY);
+          removeAllHandlers(Texture._EMPTY.baseTexture);
+        }
+
+        return Texture._EMPTY;
+      },
+      enumerable: false,
+      configurable: true
+    });
+    Object.defineProperty(Texture, "WHITE", {
+      /**
+       * A white texture of 16x16 size, used for graphics and other things
+       * Can not be destroyed.
+       */
+      get: function () {
+        if (!Texture._WHITE) {
+          var canvas = document.createElement('canvas');
+          var context = canvas.getContext('2d');
+          canvas.width = 16;
+          canvas.height = 16;
+          context.fillStyle = 'white';
+          context.fillRect(0, 0, 16, 16);
+          Texture._WHITE = new Texture(new BaseTexture(new CanvasResource(canvas)));
+          removeAllHandlers(Texture._WHITE);
+          removeAllHandlers(Texture._WHITE.baseTexture);
+        }
+
+        return Texture._WHITE;
+      },
+      enumerable: false,
+      configurable: true
+    });
     return Texture;
   }(EventEmitter);
-
-  function createWhiteTexture() {
-    var canvas = document.createElement('canvas');
-    canvas.width = 16;
-    canvas.height = 16;
-    var context = canvas.getContext('2d');
-    context.fillStyle = 'white';
-    context.fillRect(0, 0, 16, 16);
-    return new Texture(new BaseTexture(new CanvasResource(canvas)));
-  }
-
-  function removeAllHandlers(tex) {
-    tex.destroy = function _emptyDestroy() {};
-
-    tex.on = function _emptyOn() {};
-
-    tex.once = function _emptyOnce() {};
-
-    tex.emit = function _emptyEmit() {};
-  }
-  /**
-   * An empty texture, used often to not have to create multiple empty textures.
-   * Can not be destroyed.
-   *
-   * @static
-   * @constant
-   * @member {PIXI.Texture}
-   */
-
-
-  Texture.EMPTY = new Texture(new BaseTexture());
-  removeAllHandlers(Texture.EMPTY);
-  removeAllHandlers(Texture.EMPTY.baseTexture);
-  /**
-   * A white texture of 16x16 size, used for graphics and other things
-   * Can not be destroyed.
-   *
-   * @static
-   * @constant
-   * @member {PIXI.Texture}
-   */
-
-  Texture.WHITE = createWhiteTexture();
-  removeAllHandlers(Texture.WHITE);
-  removeAllHandlers(Texture.WHITE.baseTexture);
   /**
    * A RenderTexture is a special texture that allows any PixiJS display object to be rendered to it.
    *
@@ -36706,6 +36713,7 @@
    *
    * @memberof PIXI
    */
+
 
   var RenderTexture =
   /** @class */
@@ -37106,7 +37114,7 @@
     return Attribute;
   }();
 
-  var UID = 0;
+  var UID$4 = 0;
   /**
    * A wrapper for data so that it can be used and uploaded by WebGL
    *
@@ -37135,7 +37143,7 @@
       this._updateID = 0;
       this.index = index;
       this.static = _static;
-      this.id = UID++;
+      this.id = UID$4++;
       this.disposeRunner = new Runner('disposeBuffer');
     } // TODO could explore flagging only a partial upload?
 
@@ -37206,7 +37214,7 @@
   /* eslint-disable object-shorthand */
 
 
-  var map = {
+  var map$1 = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -37233,7 +37241,7 @@
       var type = getBufferType(array);
 
       if (!views[type]) {
-        views[type] = new map[type](buffer);
+        views[type] = new map$1[type](buffer);
       }
 
       out = views[type];
@@ -37250,15 +37258,15 @@
     return new Float32Array(buffer);
   }
 
-  var byteSizeMap = {
+  var byteSizeMap$1 = {
     5126: 4,
     5123: 2,
     5121: 1
   };
-  var UID$1 = 0;
+  var UID$3 = 0;
   /* eslint-disable object-shorthand */
 
-  var map$1 = {
+  var map = {
     Float32Array: Float32Array,
     Uint32Array: Uint32Array,
     Int32Array: Int32Array,
@@ -37306,7 +37314,7 @@
       this.indexBuffer = null;
       this.attributes = attributes;
       this.glVertexArrayObjects = {};
-      this.id = UID$1++;
+      this.id = UID$3++;
       this.instanced = false;
       this.instanceCount = 1;
       this.disposeRunner = new Runner('disposeGeometry');
@@ -37463,7 +37471,7 @@
         var attribute = this.attributes[i];
         var buffer = this.buffers[attribute.buffer];
         arrays.push(buffer.data);
-        sizes.push(attribute.size * byteSizeMap[attribute.type] / 4);
+        sizes.push(attribute.size * byteSizeMap$1[attribute.type] / 4);
         attribute.buffer = 0;
       }
 
@@ -37568,7 +37576,7 @@
 
       for (var i = 0; i < geometry.buffers.length; i++) {
         // TODO types!
-        arrays[i] = new map$1[getBufferType(geometry.buffers[i].data)](sizes[i]);
+        arrays[i] = new map[getBufferType(geometry.buffers[i].data)](sizes[i]);
         geometryOut.buffers[i] = new Buffer(arrays[i]);
       } // pass to set data..
 
@@ -37604,7 +37612,7 @@
           var attribute = geometry.attributes[i];
 
           if ((attribute.buffer | 0) === bufferIndexToCount) {
-            stride += attribute.size * byteSizeMap[attribute.type] / 4;
+            stride += attribute.size * byteSizeMap$1[attribute.type] / 4;
           }
         } // time to off set all indexes..
 
@@ -37873,7 +37881,7 @@
   }();
 
   var tempPoints = [new Point(), new Point(), new Point(), new Point()];
-  var tempMatrix = new Matrix();
+  var tempMatrix$2 = new Matrix();
   /**
    * System plugin to the renderer to manage filters.
    *
@@ -37980,15 +37988,22 @@
       state.target = target;
       state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
       state.sourceFrame.pad(padding);
+      var sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame); // Project source frame into world space (if projection is applied)
+
+      if (renderer.projection.transform) {
+        this.transformAABB(tempMatrix$2.copyFrom(renderer.projection.transform).invert(), sourceFrameProjected);
+      }
 
       if (autoFit) {
-        var sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame); // Project source frame into world space (if projection is applied)
-
-        if (renderer.projection.transform) {
-          this.transformAABB(tempMatrix.copyFrom(renderer.projection.transform).invert(), sourceFrameProjected);
-        }
-
         state.sourceFrame.fit(sourceFrameProjected);
+
+        if (state.sourceFrame.width <= 0 || state.sourceFrame.height <= 0) {
+          state.sourceFrame.width = 0;
+          state.sourceFrame.height = 0;
+        }
+      } else if (!state.sourceFrame.intersects(sourceFrameProjected)) {
+        state.sourceFrame.width = 0;
+        state.sourceFrame.height = 0;
       } // Round sourceFrame in screen space based on render-texture.
 
 
@@ -38315,7 +38330,7 @@
         }
       }
 
-      transform = transform ? tempMatrix.copyFrom(transform) : tempMatrix.identity(); // Get forward transform from world space to screen space
+      transform = transform ? tempMatrix$2.copyFrom(transform) : tempMatrix$2.identity(); // Get forward transform from world space to screen space
 
       transform.translate(-bindingSourceFrame.x, -bindingSourceFrame.y).scale(bindingDestinationFrame.width / bindingSourceFrame.width, bindingDestinationFrame.height / bindingSourceFrame.height).translate(bindingDestinationFrame.x, bindingDestinationFrame.y); // Convert frame to screen space
 
@@ -39350,7 +39365,7 @@
     return FramebufferSystem;
   }();
 
-  var byteSizeMap$1 = {
+  var byteSizeMap = {
     5126: 4,
     5123: 2,
     5121: 1
@@ -39597,7 +39612,7 @@
           console.warn("PIXI Geometry attribute '" + j + "' size cannot be determined (likely the bound shader does not have the attribute)"); // eslint-disable-line
         }
 
-        tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap$1[attributes[j].type];
+        tempStride[attributes[j].buffer] += attributes[j].size * byteSizeMap[attributes[j].type];
       }
 
       for (var j in attributes) {
@@ -39605,7 +39620,7 @@
         var attribSize = attribute.size;
 
         if (attribute.stride === undefined) {
-          if (tempStride[attribute.buffer] === attribSize * byteSizeMap$1[attribute.type]) {
+          if (tempStride[attribute.buffer] === attribSize * byteSizeMap[attribute.type]) {
             attribute.stride = 0;
           } else {
             attribute.stride = tempStride[attribute.buffer];
@@ -39614,7 +39629,7 @@
 
         if (attribute.start === undefined) {
           attribute.start = tempStart[attribute.buffer];
-          tempStart[attribute.buffer] += attribSize * byteSizeMap$1[attribute.type];
+          tempStart[attribute.buffer] += attribSize * byteSizeMap[attribute.type];
         }
       }
 
@@ -40504,9 +40519,9 @@
     return unsafeEval;
   }
 
-  var defaultFragment = "varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void){\n   gl_FragColor *= texture2D(uSampler, vTextureCoord);\n}";
-  var defaultVertex = "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n}\n";
-  var UID$3 = 0;
+  var defaultFragment$2 = "varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void){\n   gl_FragColor *= texture2D(uSampler, vTextureCoord);\n}";
+  var defaultVertex$3 = "attribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void){\n   gl_Position = vec4((projectionMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n   vTextureCoord = aTextureCoord;\n}\n";
+  var UID$1 = 0;
   var nameCache = {};
   /**
    * Helper class to create a shader program.
@@ -40527,7 +40542,7 @@
         name = 'pixi-shader';
       }
 
-      this.id = UID$3++;
+      this.id = UID$1++;
       this.vertexSrc = vertexSrc || Program.defaultVertexSrc;
       this.fragmentSrc = fragmentSrc || Program.defaultFragmentSrc;
       this.vertexSrc = this.vertexSrc.trim();
@@ -40562,7 +40577,7 @@
        * @constant
        */
       get: function () {
-        return defaultVertex;
+        return defaultVertex$3;
       },
       enumerable: false,
       configurable: true
@@ -40574,7 +40589,7 @@
        * @constant
        */
       get: function () {
-        return defaultFragment;
+        return defaultFragment$2;
       },
       enumerable: false,
       configurable: true
@@ -40693,12 +40708,12 @@
   /* eslint-disable max-len */
 
 
-  var BLEND = 0;
-  var OFFSET = 1;
-  var CULLING = 2;
-  var DEPTH_TEST = 3;
-  var WINDING = 4;
-  var DEPTH_MASK = 5;
+  var BLEND$1 = 0;
+  var OFFSET$1 = 1;
+  var CULLING$1 = 2;
+  var DEPTH_TEST$1 = 3;
+  var WINDING$1 = 4;
+  var DEPTH_MASK$1 = 5;
   /**
    * This is a WebGL state, and is is passed to {@link PIXI.StateSystem}.
    *
@@ -40726,11 +40741,11 @@
        * @default true
        */
       get: function () {
-        return !!(this.data & 1 << BLEND);
+        return !!(this.data & 1 << BLEND$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << BLEND) !== value) {
-          this.data ^= 1 << BLEND;
+        if (!!(this.data & 1 << BLEND$1) !== value) {
+          this.data ^= 1 << BLEND$1;
         }
       },
       enumerable: false,
@@ -40743,11 +40758,11 @@
        * @default false
        */
       get: function () {
-        return !!(this.data & 1 << OFFSET);
+        return !!(this.data & 1 << OFFSET$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << OFFSET) !== value) {
-          this.data ^= 1 << OFFSET;
+        if (!!(this.data & 1 << OFFSET$1) !== value) {
+          this.data ^= 1 << OFFSET$1;
         }
       },
       enumerable: false,
@@ -40760,11 +40775,11 @@
        * @default false
        */
       get: function () {
-        return !!(this.data & 1 << CULLING);
+        return !!(this.data & 1 << CULLING$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << CULLING) !== value) {
-          this.data ^= 1 << CULLING;
+        if (!!(this.data & 1 << CULLING$1) !== value) {
+          this.data ^= 1 << CULLING$1;
         }
       },
       enumerable: false,
@@ -40777,11 +40792,11 @@
        * @default false
        */
       get: function () {
-        return !!(this.data & 1 << DEPTH_TEST);
+        return !!(this.data & 1 << DEPTH_TEST$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << DEPTH_TEST) !== value) {
-          this.data ^= 1 << DEPTH_TEST;
+        if (!!(this.data & 1 << DEPTH_TEST$1) !== value) {
+          this.data ^= 1 << DEPTH_TEST$1;
         }
       },
       enumerable: false,
@@ -40794,11 +40809,11 @@
        * @default true
        */
       get: function () {
-        return !!(this.data & 1 << DEPTH_MASK);
+        return !!(this.data & 1 << DEPTH_MASK$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << DEPTH_MASK) !== value) {
-          this.data ^= 1 << DEPTH_MASK;
+        if (!!(this.data & 1 << DEPTH_MASK$1) !== value) {
+          this.data ^= 1 << DEPTH_MASK$1;
         }
       },
       enumerable: false,
@@ -40811,11 +40826,11 @@
        * @default false
        */
       get: function () {
-        return !!(this.data & 1 << WINDING);
+        return !!(this.data & 1 << WINDING$1);
       },
       set: function (value) {
-        if (!!(this.data & 1 << WINDING) !== value) {
-          this.data ^= 1 << WINDING;
+        if (!!(this.data & 1 << WINDING$1) !== value) {
+          this.data ^= 1 << WINDING$1;
         }
       },
       enumerable: false,
@@ -40869,7 +40884,7 @@
     return State;
   }();
 
-  var defaultVertex$1 = "attribute vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition( void )\n{\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n\n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord( void )\n{\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void)\n{\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
+  var defaultVertex$2 = "attribute vec2 aVertexPosition;\n\nuniform mat3 projectionMatrix;\n\nvarying vec2 vTextureCoord;\n\nuniform vec4 inputSize;\nuniform vec4 outputFrame;\n\nvec4 filterVertexPosition( void )\n{\n    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;\n\n    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);\n}\n\nvec2 filterTextureCoord( void )\n{\n    return aVertexPosition * (outputFrame.zw * inputSize.zw);\n}\n\nvoid main(void)\n{\n    gl_Position = filterVertexPosition();\n    vTextureCoord = filterTextureCoord();\n}\n";
   var defaultFragment$1 = "varying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\n\nvoid main(void){\n   gl_FragColor = texture2D(uSampler, vTextureCoord);\n}\n";
   /**
    * A filter is a special shader that applies post-processing effects to an input texture and writes into an output
@@ -41120,7 +41135,7 @@
        * @constant
        */
       get: function () {
-        return defaultVertex$1;
+        return defaultVertex$2;
       },
       enumerable: false,
       configurable: true
@@ -42555,7 +42570,7 @@
     return glProgram;
   }
 
-  var UID$4 = 0; // default sync data so we don't create a new one each time!
+  var UID = 0; // default sync data so we don't create a new one each time!
 
   var defaultSyncData = {
     textureCount: 0,
@@ -42581,7 +42596,7 @@
       this.program = null;
       this.cache = {};
       this._uboCache = {};
-      this.id = UID$4++;
+      this.id = UID++;
     }
     /**
      * Overrideable function by `@pixi/unsafe-eval` to silence
@@ -42861,12 +42876,12 @@
     return array;
   }
 
-  var BLEND$1 = 0;
-  var OFFSET$1 = 1;
-  var CULLING$1 = 2;
-  var DEPTH_TEST$1 = 3;
-  var WINDING$1 = 4;
-  var DEPTH_MASK$1 = 5;
+  var BLEND = 0;
+  var OFFSET = 1;
+  var CULLING = 2;
+  var DEPTH_TEST = 3;
+  var WINDING = 4;
+  var DEPTH_MASK = 5;
   /**
    * System plugin to the renderer to manage WebGL state machines.
    *
@@ -42884,12 +42899,12 @@
       this._blendEq = false; // map functions for when we set state..
 
       this.map = [];
-      this.map[BLEND$1] = this.setBlend;
-      this.map[OFFSET$1] = this.setOffset;
-      this.map[CULLING$1] = this.setCullFace;
-      this.map[DEPTH_TEST$1] = this.setDepthTest;
-      this.map[WINDING$1] = this.setFrontFace;
-      this.map[DEPTH_MASK$1] = this.setDepthMask;
+      this.map[BLEND] = this.setBlend;
+      this.map[OFFSET] = this.setOffset;
+      this.map[CULLING] = this.setCullFace;
+      this.map[DEPTH_TEST] = this.setDepthTest;
+      this.map[WINDING] = this.setFrontFace;
+      this.map[DEPTH_MASK] = this.setDepthMask;
       this.checks = [];
       this.defaultState = new State();
       this.defaultState.blend = true;
@@ -43661,7 +43676,7 @@
     TextureGCSystem: TextureGCSystem,
     TextureSystem: TextureSystem
   };
-  var tempMatrix$2 = new Matrix();
+  var tempMatrix$3 = new Matrix();
   /**
    * The AbstractRenderer is the base for a PixiJS Renderer. It is extended by the {@link PIXI.CanvasRenderer}
    * and {@link PIXI.Renderer} which can be used for rendering a PixiJS scene.
@@ -43946,12 +43961,12 @@
         width: region.width,
         height: region.height
       }, textureOptions));
-      tempMatrix$2.tx = -region.x;
-      tempMatrix$2.ty = -region.y;
+      tempMatrix$3.tx = -region.x;
+      tempMatrix$3.ty = -region.y;
       this.render(displayObject, {
         renderTexture: renderTexture,
         clear: false,
-        transform: tempMatrix$2,
+        transform: tempMatrix$3,
         skipUpdateTransform: !!displayObject.parent
       });
       return renderTexture;
@@ -44657,7 +44672,7 @@
   // NOTE: This black magic is so that @microsoft/api-extractor does not complain! This explicitly specifies the types
   // of defaultVertex, defaultFilterVertex.
 
-  var defaultVertex$2 = $defaultVertex;
+  var defaultVertex$1 = $defaultVertex;
   var defaultFilterVertex = $defaultFilterVertex;
   /**
    * Use the ISystem interface instead.
@@ -45470,8 +45485,8 @@
     return BatchGeometry;
   }(Geometry);
 
-  var defaultVertex$3 = "precision highp float;\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\nuniform vec4 tint;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n    vTextureId = aTextureId;\n    vColor = aColor * tint;\n}\n";
-  var defaultFragment$2 = "varying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\nuniform sampler2D uSamplers[%count%];\n\nvoid main(void){\n    vec4 color;\n    %forloop%\n    gl_FragColor = color * vColor;\n}\n";
+  var defaultVertex = "precision highp float;\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\nattribute vec4 aColor;\nattribute float aTextureId;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\nuniform vec4 tint;\n\nvarying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\n\nvoid main(void){\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = aTextureCoord;\n    vTextureId = aTextureId;\n    vColor = aColor * tint;\n}\n";
+  var defaultFragment = "varying vec2 vTextureCoord;\nvarying vec4 vColor;\nvarying float vTextureId;\nuniform sampler2D uSamplers[%count%];\n\nvoid main(void){\n    vec4 color;\n    %forloop%\n    gl_FragColor = color * vColor;\n}\n";
   /** @memberof PIXI */
 
   var BatchPluginFactory =
@@ -45510,8 +45525,8 @@
 
     BatchPluginFactory.create = function (options) {
       var _a = Object.assign({
-        vertex: defaultVertex$3,
-        fragment: defaultFragment$2,
+        vertex: defaultVertex,
+        fragment: defaultFragment,
         geometryClass: BatchGeometry,
         vertexSize: 6
       }, options),
@@ -45546,7 +45561,7 @@
        * @readonly
        */
       get: function () {
-        return defaultVertex$3;
+        return defaultVertex;
       },
       enumerable: false,
       configurable: true
@@ -45558,7 +45573,7 @@
        * @readonly
        */
       get: function () {
-        return defaultFragment$2;
+        return defaultFragment;
       },
       enumerable: false,
       configurable: true
@@ -45614,8 +45629,8 @@
   }
 
   /*!
-   * @pixi/app - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/app - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/app is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -45916,8 +45931,8 @@
   Application.registerPlugin(ResizePlugin);
 
   /*!
-   * @pixi/extract - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/extract - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/extract is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -46143,8 +46158,8 @@
   }();
 
   /*!
-   * @pixi/loaders - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/loaders - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/loaders is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -46454,7 +46469,7 @@
   } // tests if CORS is supported in XHR, if not we need to use XDR
 
 
-  var useXdr = !!(globalThis.XDomainRequest && !('withCredentials' in new XMLHttpRequest()));
+  var useXdr;
   var tempAnchor = null; // some status constants
 
   var STATUS_NONE = 0;
@@ -46463,7 +46478,7 @@
   var STATUS_IE_BUG_EMPTY = 1223;
   var STATUS_TYPE_OK = 2; // noop
 
-  function _noop() {}
+  function _noop$1() {}
   /**
    * Quick helper to set a value on one of the extension maps. Ensures there is no
    * dot at the start of the extension.
@@ -46535,7 +46550,7 @@
        * @private
        * @member {function}
        */
-      this._dequeue = _noop;
+      this._dequeue = _noop$1;
       /**
        * Used a storage place for the on load binding used privately by the loader.
        *
@@ -46623,7 +46638,7 @@
       this.progressChunk = 0; // The `dequeue` method that will be used a storage place for the async queue dequeue method
       // used privately by the loader.
 
-      this._dequeue = _noop; // Used a storage place for the on load binding used privately by the loader.
+      this._dequeue = _noop$1; // Used a storage place for the on load binding used privately by the loader.
 
       this._onLoadBinding = null; // The timer for element loads to check if they timeout.
 
@@ -46862,6 +46877,10 @@
         /* falls through */
 
         default:
+          if (typeof useXdr === 'undefined') {
+            useXdr = !!(globalThis.XDomainRequest && !('withCredentials' in new XMLHttpRequest()));
+          }
+
           if (useXdr && this.crossOrigin) {
             this._loadXdr();
           } else {
@@ -47370,16 +47389,6 @@
 
 
   (function (LoaderResource) {
-    /**
-     * The types of resources a resource could represent.
-     *
-     * @static
-     * @readonly
-     * @enum {number}
-     * @memberof PIXI.LoaderResource
-     */
-    var STATUS_FLAGS;
-
     (function (STATUS_FLAGS) {
       /** None */
       STATUS_FLAGS[STATUS_FLAGS["NONE"] = 0] = "NONE";
@@ -47392,18 +47401,7 @@
       /** Loading */
 
       STATUS_FLAGS[STATUS_FLAGS["LOADING"] = 4] = "LOADING";
-    })(STATUS_FLAGS = LoaderResource.STATUS_FLAGS || (LoaderResource.STATUS_FLAGS = {}));
-    /**
-     * The types of resources a resource could represent.
-     *
-     * @static
-     * @readonly
-     * @enum {number}
-     * @memberof PIXI.LoaderResource
-     */
-
-
-    var TYPE;
+    })(LoaderResource.STATUS_FLAGS || (LoaderResource.STATUS_FLAGS = {}));
 
     (function (TYPE) {
       /** Unknown */
@@ -47426,18 +47424,7 @@
       /** Plain text */
 
       TYPE[TYPE["TEXT"] = 6] = "TEXT";
-    })(TYPE = LoaderResource.TYPE || (LoaderResource.TYPE = {}));
-    /**
-     * The types of loading a resource can use.
-     *
-     * @static
-     * @readonly
-     * @enum {number}
-     * @memberof PIXI.LoaderResource
-     */
-
-
-    var LOAD_TYPE;
+    })(LoaderResource.TYPE || (LoaderResource.TYPE = {}));
 
     (function (LOAD_TYPE) {
       /** Uses XMLHttpRequest to load the resource. */
@@ -47451,18 +47438,7 @@
       /** Uses a `Video` object to load the resource. */
 
       LOAD_TYPE[LOAD_TYPE["VIDEO"] = 4] = "VIDEO";
-    })(LOAD_TYPE = LoaderResource.LOAD_TYPE || (LoaderResource.LOAD_TYPE = {}));
-    /**
-     * The XHR ready states, used internally.
-     *
-     * @static
-     * @readonly
-     * @enum {string}
-     * @memberof PIXI.LoaderResource
-     */
-
-
-    var XHR_RESPONSE_TYPE;
+    })(LoaderResource.LOAD_TYPE || (LoaderResource.LOAD_TYPE = {}));
 
     (function (XHR_RESPONSE_TYPE) {
       /** string */
@@ -47482,7 +47458,7 @@
       /** String */
 
       XHR_RESPONSE_TYPE["TEXT"] = "text";
-    })(XHR_RESPONSE_TYPE = LoaderResource.XHR_RESPONSE_TYPE || (LoaderResource.XHR_RESPONSE_TYPE = {}));
+    })(LoaderResource.XHR_RESPONSE_TYPE || (LoaderResource.XHR_RESPONSE_TYPE = {}));
 
     LoaderResource._loadTypeMap = {
       // images
@@ -47545,7 +47521,7 @@
    */
 
 
-  function _noop$1() {}
+  function _noop() {}
   /**
    * Ensures a function is only called once.
    * @ignore
@@ -47611,11 +47587,11 @@
       }
 
       this.workers = 0;
-      this.saturated = _noop$1;
-      this.unsaturated = _noop$1;
-      this.empty = _noop$1;
-      this.drain = _noop$1;
-      this.error = _noop$1;
+      this.saturated = _noop;
+      this.unsaturated = _noop;
+      this.empty = _noop;
+      this.drain = _noop;
+      this.error = _noop;
       this.started = false;
       this.paused = false;
       this._tasks = [];
@@ -47635,7 +47611,7 @@
           return;
         }
 
-        var item = new AsyncQueueItem(data, typeof callback === 'function' ? callback : _noop$1);
+        var item = new AsyncQueueItem(data, typeof callback === 'function' ? callback : _noop);
 
         if (insertAtFront) {
           _this._tasks.unshift(item);
@@ -47716,7 +47692,7 @@
 
     AsyncQueue.prototype.kill = function () {
       this.workers = 0;
-      this.drain = _noop$1;
+      this.drain = _noop;
       this.started = false;
       this._tasks = [];
     }; // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
@@ -48521,8 +48497,6 @@
 
     return output;
   }
-
-  var Url = self.URL || self.webkitURL;
   /**
    * A middleware for transforming XHR loaded Blobs into more useful objects
    *
@@ -48535,6 +48509,7 @@
    * @param resource - Current Resource
    * @param next - Callback when complete
    */
+
 
   function parsing(resource, next) {
     if (!resource.data) {
@@ -48563,7 +48538,8 @@
         }
       } // if content type says this is an image, then we should transform the blob into an Image object
       else if (resource.data.type.indexOf('image') === 0) {
-        var src_1 = Url.createObjectURL(resource.data);
+        var Url_1 = globalThis.URL || globalThis.webkitURL;
+        var src_1 = Url_1.createObjectURL(resource.data);
         resource.blob = resource.data;
         resource.data = new Image();
         resource.data.src = src_1;
@@ -48571,7 +48547,7 @@
         // TODO: Is this correct? Will the image be invalid after revoking?
 
         resource.data.onload = function () {
-          Url.revokeObjectURL(src_1);
+          Url_1.revokeObjectURL(src_1);
           resource.data.onload = null;
           next();
         }; // next will be called on load.
@@ -48592,14 +48568,14 @@
   Loader.registerPlugin(TextureLoader);
 
   /*!
-   * @pixi/compressed-textures - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/compressed-textures - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/compressed-textures is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
    */
 
-  var _a$1;
+  var _a$2;
   /**
    * WebGL internal formats, including compressed texture formats provided by extensions
    *
@@ -48682,14 +48658,14 @@
    */
 
 
-  var INTERNAL_FORMAT_TO_BYTES_PER_PIXEL = (_a$1 = {}, // WEBGL_compressed_texture_s3tc
-  _a$1[INTERNAL_FORMATS.COMPRESSED_RGB_S3TC_DXT1_EXT] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT] = 1, // WEBGL_compressed_texture_s3tc
-  _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB_S3TC_DXT1_EXT] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT] = 1, // WEBGL_compressed_texture_etc
-  _a$1[INTERNAL_FORMATS.COMPRESSED_R11_EAC] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_SIGNED_R11_EAC] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RG11_EAC] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_SIGNED_RG11_EAC] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_RGB8_ETC2] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA8_ETC2_EAC] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2] = 0.5, // WEBGL_compressed_texture_pvrtc
-  _a$1[INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG] = 0.25, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG] = 0.25, // WEBGL_compressed_texture_etc1
-  _a$1[INTERNAL_FORMATS.COMPRESSED_RGB_ETC1_WEBGL] = 0.5, // @see https://www.khronos.org/registry/OpenGL/extensions/AMD/AMD_compressed_ATC_texture.txt
+  var INTERNAL_FORMAT_TO_BYTES_PER_PIXEL = (_a$2 = {}, // WEBGL_compressed_texture_s3tc
+  _a$2[INTERNAL_FORMATS.COMPRESSED_RGB_S3TC_DXT1_EXT] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT] = 1, // WEBGL_compressed_texture_s3tc
+  _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB_S3TC_DXT1_EXT] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT] = 1, // WEBGL_compressed_texture_etc
+  _a$2[INTERNAL_FORMATS.COMPRESSED_R11_EAC] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_SIGNED_R11_EAC] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RG11_EAC] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_SIGNED_RG11_EAC] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_RGB8_ETC2] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA8_ETC2_EAC] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB8_ETC2] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB8_ALPHA8_ETC2_EAC] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2] = 0.5, // WEBGL_compressed_texture_pvrtc
+  _a$2[INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_4BPPV1_IMG] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_4BPPV1_IMG] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGB_PVRTC_2BPPV1_IMG] = 0.25, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_PVRTC_2BPPV1_IMG] = 0.25, // WEBGL_compressed_texture_etc1
+  _a$2[INTERNAL_FORMATS.COMPRESSED_RGB_ETC1_WEBGL] = 0.5, // @see https://www.khronos.org/registry/OpenGL/extensions/AMD/AMD_compressed_ATC_texture.txt
   // WEBGL_compressed_texture_atc
-  _a$1[INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL] = 0.5, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL] = 1, _a$1[INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL] = 1, _a$1);
+  _a$2[INTERNAL_FORMATS.COMPRESSED_RGB_ATC_WEBGL] = 0.5, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_EXPLICIT_ALPHA_WEBGL] = 1, _a$2[INTERNAL_FORMATS.COMPRESSED_RGBA_ATC_INTERPOLATED_ALPHA_WEBGL] = 1, _a$2);
   /*! *****************************************************************************
   Copyright (c) Microsoft Corporation. All rights reserved.
   Licensed under the Apache License, Version 2.0 (the "License"); you may not use
@@ -49306,45 +49282,60 @@
         next();
       }
     };
-    /**
-     * Detects the available compressed texture extensions on the device.
-     * @ignore
-     */
 
+    Object.defineProperty(CompressedTextureLoader, "textureExtensions", {
+      /**  Map of available texture extensions. */
+      get: function () {
+        if (!CompressedTextureLoader._textureExtensions) {
+          // Auto-detect WebGL compressed-texture extensions
+          var canvas = document.createElement('canvas');
+          var gl = canvas.getContext('webgl');
 
-    CompressedTextureLoader.add = function () {
-      // Auto-detect WebGL compressed-texture extensions
-      var canvas = document.createElement('canvas');
-      var gl = canvas.getContext('webgl');
+          if (!gl) {
+            console.warn('WebGL not available for compressed textures. Silently failing.');
+            return {};
+          }
 
-      if (!gl) {
-        console.warn('WebGL not available for compressed textures. Silently failing.');
-        return;
-      }
-
-      var extensions = {
-        s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
-        s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'),
-        etc: gl.getExtension('WEBGL_compressed_texture_etc'),
-        etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
-        pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc') || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
-        atc: gl.getExtension('WEBGL_compressed_texture_atc'),
-        astc: gl.getExtension('WEBGL_compressed_texture_astc')
-      };
-      CompressedTextureLoader.textureExtensions = extensions;
-      CompressedTextureLoader.textureFormats = {}; // Assign all available compressed-texture formats
-
-      for (var extensionName in extensions) {
-        var extension = extensions[extensionName];
-
-        if (!extension) {
-          continue;
+          var extensions = {
+            s3tc: gl.getExtension('WEBGL_compressed_texture_s3tc'),
+            s3tc_sRGB: gl.getExtension('WEBGL_compressed_texture_s3tc_srgb'),
+            etc: gl.getExtension('WEBGL_compressed_texture_etc'),
+            etc1: gl.getExtension('WEBGL_compressed_texture_etc1'),
+            pvrtc: gl.getExtension('WEBGL_compressed_texture_pvrtc') || gl.getExtension('WEBKIT_WEBGL_compressed_texture_pvrtc'),
+            atc: gl.getExtension('WEBGL_compressed_texture_atc'),
+            astc: gl.getExtension('WEBGL_compressed_texture_astc')
+          };
+          CompressedTextureLoader._textureExtensions = extensions;
         }
 
-        Object.assign(CompressedTextureLoader.textureFormats, Object.getPrototypeOf(extension));
-      }
-    };
+        return CompressedTextureLoader._textureExtensions;
+      },
+      enumerable: false,
+      configurable: true
+    });
+    Object.defineProperty(CompressedTextureLoader, "textureFormats", {
+      /** Map of available texture formats. */
+      get: function () {
+        if (!CompressedTextureLoader._textureFormats) {
+          var extensions = CompressedTextureLoader.textureExtensions;
+          CompressedTextureLoader._textureFormats = {}; // Assign all available compressed-texture formats
 
+          for (var extensionName in extensions) {
+            var extension = extensions[extensionName];
+
+            if (!extension) {
+              continue;
+            }
+
+            Object.assign(CompressedTextureLoader._textureFormats, Object.getPrototypeOf(extension));
+          }
+        }
+
+        return CompressedTextureLoader._textureFormats;
+      },
+      enumerable: false,
+      configurable: true
+    });
     return CompressedTextureLoader;
   }();
   /**
@@ -49391,7 +49382,7 @@
     return result;
   }
 
-  var _a$1$1, _b; // Set DDS files to be loaded as an ArrayBuffer
+  var _a$1, _b$1; // Set DDS files to be loaded as an ArrayBuffer
 
 
   LoaderResource.setExtensionXhrType('dds', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
@@ -49612,16 +49603,16 @@
    * @ignore
    */
 
-  var FOURCC_TO_FORMAT = (_a$1$1 = {}, _a$1$1[FOURCC_DXT1] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _a$1$1[FOURCC_DXT3] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _a$1$1[FOURCC_DXT5] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, _a$1$1);
+  var FOURCC_TO_FORMAT = (_a$1 = {}, _a$1[FOURCC_DXT1] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _a$1[FOURCC_DXT3] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _a$1[FOURCC_DXT5] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, _a$1);
   /**
    * Maps {@link DXGI_FORMAT} to types/internal-formats (see {@link PIXI.TYPES}, {@link PIXI.INTERNAL_FORMATS})
    *
    * @ignore
    */
 
-  var DXGI_TO_FORMAT = (_b = {}, // WEBGL_compressed_texture_s3tc
-  _b[DXGI_FORMAT.DXGI_FORMAT_BC1_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC1_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC2_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC2_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC3_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC3_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, // WEBGL_compressed_texture_s3tc_srgb
-  _b[DXGI_FORMAT.DXGI_FORMAT_BC1_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC2_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT, _b[DXGI_FORMAT.DXGI_FORMAT_BC3_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT, _b);
+  var DXGI_TO_FORMAT = (_b$1 = {}, // WEBGL_compressed_texture_s3tc
+  _b$1[DXGI_FORMAT.DXGI_FORMAT_BC1_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC1_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT1_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC2_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC2_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT3_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC3_TYPELESS] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC3_UNORM] = INTERNAL_FORMATS.COMPRESSED_RGBA_S3TC_DXT5_EXT, // WEBGL_compressed_texture_s3tc_srgb
+  _b$1[DXGI_FORMAT.DXGI_FORMAT_BC1_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC2_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT, _b$1[DXGI_FORMAT.DXGI_FORMAT_BC3_UNORM_SRGB] = INTERNAL_FORMATS.COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT, _b$1);
   /**
    * @class
    * @memberof PIXI
@@ -49782,7 +49773,7 @@
     return DDSLoader;
   }();
 
-  var _a$2, _b$1, _c; // Set KTX files to be loaded as an ArrayBuffer
+  var _a$3, _b, _c; // Set KTX files to be loaded as an ArrayBuffer
 
 
   LoaderResource.setExtensionXhrType('ktx', LoaderResource.XHR_RESPONSE_TYPE.BUFFER);
@@ -49837,14 +49828,14 @@
    * @ignore
    */
 
-  var TYPES_TO_BYTES_PER_COMPONENT = (_a$2 = {}, _a$2[TYPES$3.UNSIGNED_BYTE] = 1, _a$2[TYPES$3.UNSIGNED_SHORT] = 2, _a$2[TYPES$3.INT] = 4, _a$2[TYPES$3.UNSIGNED_INT] = 4, _a$2[TYPES$3.FLOAT] = 4, _a$2[TYPES$3.HALF_FLOAT] = 8, _a$2);
+  var TYPES_TO_BYTES_PER_COMPONENT = (_a$3 = {}, _a$3[TYPES$3.UNSIGNED_BYTE] = 1, _a$3[TYPES$3.UNSIGNED_SHORT] = 2, _a$3[TYPES$3.INT] = 4, _a$3[TYPES$3.UNSIGNED_INT] = 4, _a$3[TYPES$3.FLOAT] = 4, _a$3[TYPES$3.HALF_FLOAT] = 8, _a$3);
   /**
    * Number of components in each {@link PIXI.FORMATS}
    *
    * @ignore
    */
 
-  var FORMATS_TO_COMPONENTS = (_b$1 = {}, _b$1[FORMATS$3.RGBA] = 4, _b$1[FORMATS$3.RGB] = 3, _b$1[FORMATS$3.RG] = 2, _b$1[FORMATS$3.RED] = 1, _b$1[FORMATS$3.LUMINANCE] = 1, _b$1[FORMATS$3.LUMINANCE_ALPHA] = 2, _b$1[FORMATS$3.ALPHA] = 1, _b$1);
+  var FORMATS_TO_COMPONENTS = (_b = {}, _b[FORMATS$3.RGBA] = 4, _b[FORMATS$3.RGB] = 3, _b[FORMATS$3.RG] = 2, _b[FORMATS$3.RED] = 1, _b[FORMATS$3.LUMINANCE] = 1, _b[FORMATS$3.LUMINANCE_ALPHA] = 2, _b[FORMATS$3.ALPHA] = 1, _b);
   /**
    * Number of bytes per pixel in bit-field types in {@link PIXI.TYPES}
    *
@@ -50127,8 +50118,8 @@
   }();
 
   /*!
-   * @pixi/particle-container - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/particle-container - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/particle-container is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -50906,8 +50897,8 @@
   }(ObjectRenderer);
 
   /*!
-   * @pixi/graphics - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/graphics - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/graphics is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -53117,7 +53108,13 @@
         var lineWidth = 0.0;
 
         if (lineStyle && lineStyle.visible) {
-          lineWidth = lineStyle.width * Math.max(0, lineStyle.alignment);
+          lineWidth = lineStyle.width;
+
+          if (type !== SHAPES.POLY || data.fillStyle.visible) {
+            lineWidth *= Math.max(0, lineStyle.alignment);
+          } else {
+            lineWidth *= Math.max(lineStyle.alignment, 1 - lineStyle.alignment);
+          }
         }
 
         if (curMatrix !== nextMatrix) {
@@ -54261,7 +54258,7 @@
         // and that only gets created if we actually need it..
         // but may be more than one plugins for graphics
         if (!DEFAULT_SHADERS[pluginName]) {
-          var MAX_TEXTURES = renderer.plugins.batch.MAX_TEXTURES;
+          var MAX_TEXTURES = renderer.plugins[pluginName].MAX_TEXTURES;
           var sampleValues = new Int32Array(MAX_TEXTURES);
 
           for (var i = 0; i < MAX_TEXTURES; i++) {
@@ -54500,8 +54497,8 @@
   };
 
   /*!
-   * @pixi/sprite - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/sprite - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/sprite is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -54576,7 +54573,7 @@
    * @memberof PIXI
    */
 
-  var Sprite =
+  var Sprite$1 =
   /** @class */
   function (_super) {
     __extends$d(Sprite, _super);
@@ -55019,8 +55016,8 @@
   }(Container);
 
   /*!
-   * @pixi/text - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/text - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/text is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -56372,6 +56369,57 @@
       }
     };
 
+    Object.defineProperty(TextMetrics, "_canvas", {
+      /**
+       * Cached canvas element for measuring text
+       * TODO: this should be private, but isn't because of backward compat, will fix later.
+       *
+       * @ignore
+       */
+      get: function () {
+        if (!TextMetrics.__canvas) {
+          var canvas = void 0;
+
+          try {
+            // OffscreenCanvas2D measureText can be up to 40% faster.
+            var c = new OffscreenCanvas(0, 0);
+            var context = c.getContext('2d');
+
+            if (context && context.measureText) {
+              TextMetrics.__canvas = c;
+              return c;
+            }
+
+            canvas = document.createElement('canvas');
+          } catch (ex) {
+            canvas = document.createElement('canvas');
+          }
+
+          canvas.width = canvas.height = 10;
+          TextMetrics.__canvas = canvas;
+        }
+
+        return TextMetrics.__canvas;
+      },
+      enumerable: false,
+      configurable: true
+    });
+    Object.defineProperty(TextMetrics, "_context", {
+      /**
+       * TODO: this should be private, but isn't because of backward compat, will fix later.
+       *
+       * @ignore
+       */
+      get: function () {
+        if (!TextMetrics.__context) {
+          TextMetrics.__context = TextMetrics._canvas.getContext('2d');
+        }
+
+        return TextMetrics.__context;
+      },
+      enumerable: false,
+      configurable: true
+    });
     return TextMetrics;
   }();
   /**
@@ -56385,42 +56433,6 @@
    * @private
    */
 
-
-  var canvas = function () {
-    try {
-      // OffscreenCanvas2D measureText can be up to 40% faster.
-      var c = new OffscreenCanvas(0, 0);
-      var context = c.getContext('2d');
-
-      if (context && context.measureText) {
-        return c;
-      }
-
-      return document.createElement('canvas');
-    } catch (ex) {
-      return document.createElement('canvas');
-    }
-  }();
-
-  canvas.width = canvas.height = 10;
-  /**
-   * Cached canvas element for measuring text
-   *
-   * @memberof PIXI.TextMetrics
-   * @type {HTMLCanvasElement}
-   * @private
-   */
-
-  TextMetrics._canvas = canvas;
-  /**
-   * Cache for context to use.
-   *
-   * @memberof PIXI.TextMetrics
-   * @type {CanvasRenderingContext2D}
-   * @private
-   */
-
-  TextMetrics._context = canvas.getContext('2d');
   /**
    * Cache of {@see PIXI.TextMetrics.FontMetrics} objects.
    *
@@ -56428,6 +56440,7 @@
    * @type {Object}
    * @private
    */
+
 
   TextMetrics._fonts = {};
   /**
@@ -57108,11 +57121,11 @@
 
     Text.experimentalLetterSpacing = false;
     return Text;
-  }(Sprite);
+  }(Sprite$1);
 
   /*!
-   * @pixi/prepare - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/prepare - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/prepare is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -57776,8 +57789,8 @@
   }();
 
   /*!
-   * @pixi/spritesheet - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/spritesheet - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/spritesheet is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -58150,8 +58163,8 @@
   }();
 
   /*!
-   * @pixi/sprite-tiling - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/sprite-tiling - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/sprite-tiling is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -58206,7 +58219,7 @@
    * @memberof PIXI
    */
 
-  var TilingSprite =
+  var TilingSprite$1 =
   /** @class */
   function (_super) {
     __extends$a(TilingSprite, _super);
@@ -58440,7 +58453,7 @@
       configurable: true
     });
     return TilingSprite;
-  }(Sprite);
+  }(Sprite$1);
 
   var fragmentSimpleSrc = "#version 100\n#define SHADER_NAME Tiling-Sprite-Simple-100\n\nprecision lowp float;\n\nvarying vec2 vTextureCoord;\n\nuniform sampler2D uSampler;\nuniform vec4 uColor;\n\nvoid main(void)\n{\n    vec4 texSample = texture2D(uSampler, vTextureCoord);\n    gl_FragColor = texSample * uColor;\n}\n";
   var gl1VertexSrc = "#version 100\n#define SHADER_NAME Tiling-Sprite-100\n\nprecision lowp float;\n\nattribute vec2 aVertexPosition;\nattribute vec2 aTextureCoord;\n\nuniform mat3 projectionMatrix;\nuniform mat3 translationMatrix;\nuniform mat3 uTransform;\n\nvarying vec2 vTextureCoord;\n\nvoid main(void)\n{\n    gl_Position = vec4((projectionMatrix * translationMatrix * vec3(aVertexPosition, 1.0)).xy, 0.0, 1.0);\n\n    vTextureCoord = (uTransform * vec3(aTextureCoord, 1.0)).xy;\n}\n";
@@ -58569,8 +58582,8 @@
   }(ObjectRenderer);
 
   /*!
-   * @pixi/mesh - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/mesh - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/mesh is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -59260,8 +59273,8 @@
   }(Geometry);
 
   /*!
-   * @pixi/text-bitmap - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/text-bitmap - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/text-bitmap is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -60341,7 +60354,7 @@
       _this._tint = tint;
       _this._fontName = fontName;
       _this._fontSize = fontSize || BitmapFont.available[fontName].size;
-      _this._text = text;
+      _this.text = text;
       _this._maxWidth = maxWidth;
       _this._maxLineHeight = 0;
       _this._letterSpacing = letterSpacing;
@@ -61105,8 +61118,8 @@
   }();
 
   /*!
-   * @pixi/filter-alpha - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-alpha - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-alpha is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -61185,7 +61198,7 @@
         alpha = 1.0;
       }
 
-      var _this = _super.call(this, defaultVertex$2, fragment$4, {
+      var _this = _super.call(this, defaultVertex$1, fragment$4, {
         uAlpha: 1
       }) || this;
 
@@ -61212,8 +61225,8 @@
   }(Filter);
 
   /*!
-   * @pixi/filter-blur - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-blur - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-blur is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -61323,8 +61336,8 @@
     return fragSource;
   }
   /*!
-   * @pixi/constants - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/constants - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/constants is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -62216,8 +62229,8 @@
   }(Filter);
 
   /*!
-   * @pixi/filter-color-matrix - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-color-matrix - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-color-matrix is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -62758,8 +62771,8 @@
   ColorMatrixFilter.prototype.grayscale = ColorMatrixFilter.prototype.greyscale;
 
   /*!
-   * @pixi/filter-displacement - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-displacement - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-displacement is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -62911,8 +62924,8 @@
   }(Filter);
 
   /*!
-   * @pixi/filter-fxaa - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-fxaa - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-fxaa is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -62985,8 +62998,8 @@
   }(Filter);
 
   /*!
-   * @pixi/filter-noise - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/filter-noise - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/filter-noise is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -63103,15 +63116,15 @@
   }(Filter);
 
   /*!
-   * @pixi/mixin-cache-as-bitmap - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/mixin-cache-as-bitmap - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/mixin-cache-as-bitmap is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
    */
   /*!
-   * @pixi/constants - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/constants - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/constants is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -63935,7 +63948,7 @@
     this.filterArea = null;
     this.alpha = cacheAlpha; // create our cached sprite
 
-    var cachedSprite = new Sprite(renderTexture);
+    var cachedSprite = new Sprite$1(renderTexture);
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -(bounds.x / bounds.width);
     cachedSprite.anchor.y = -(bounds.y / bounds.height);
@@ -64034,7 +64047,7 @@
     this.filterArea = null;
     this.alpha = cacheAlpha; // create our cached sprite
 
-    var cachedSprite = new Sprite(renderTexture);
+    var cachedSprite = new Sprite$1(renderTexture);
     cachedSprite.transform.worldTransform = this.transform.worldTransform;
     cachedSprite.anchor.x = -(bounds.x / bounds.width);
     cachedSprite.anchor.y = -(bounds.y / bounds.height);
@@ -64116,8 +64129,8 @@
   };
 
   /*!
-   * @pixi/mixin-get-child-by-name - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/mixin-get-child-by-name - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/mixin-get-child-by-name is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -64169,8 +64182,8 @@
   };
 
   /*!
-   * @pixi/mixin-get-global-position - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/mixin-get-global-position - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/mixin-get-global-position is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -64207,8 +64220,8 @@
   };
 
   /*!
-   * @pixi/mesh-extras - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/mesh-extras - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/mesh-extras is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -65007,8 +65020,8 @@
   }(SimplePlane);
 
   /*!
-   * @pixi/sprite-animated - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * @pixi/sprite-animated - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * @pixi/sprite-animated is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -65420,11 +65433,11 @@
       configurable: true
     });
     return AnimatedSprite;
-  }(Sprite);
+  }(Sprite$1);
 
   /*!
-   * pixi.js - v6.3.0
-   * Compiled Wed, 23 Mar 2022 18:58:56 UTC
+   * pixi.js - v6.3.2
+   * Compiled Wed, 04 May 2022 17:49:13 UTC
    *
    * pixi.js is licensed under the MIT License.
    * http://www.opensource.org/licenses/mit-license
@@ -65456,7 +65469,7 @@
    * @type {string}
    */
 
-  var VERSION = '6.3.0';
+  var VERSION = '6.3.2';
   /**
    * @namespace PIXI
    */
@@ -65498,6 +65511,1292 @@
     FXAAFilter: FXAAFilter,
     NoiseFilter: NoiseFilter
   };
+
+  /*!
+   * @pixi/gif - v1.0.2
+   * https://github.com/pixijs/gif
+   * Compiled Mon, 07 Feb 2022 16:16:04 UTC
+   *
+   * @pixi/gif is licensed under the MIT license.
+   * http://www.opensource.org/licenses/mit-license
+   */
+
+  var s = function (e, t) {
+    return s = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (e, t) {
+      e.__proto__ = t;
+    } || function (e, t) {
+      for (var r in t) Object.prototype.hasOwnProperty.call(t, r) && (e[r] = t[r]);
+    }, s(e, t);
+  };
+
+  var d = {},
+      c = {},
+      u = {};
+  Object.defineProperty(u, "__esModule", {
+    value: !0
+  }), u.loop = u.conditional = u.parse = void 0;
+
+  u.parse = function e(t, r) {
+    var n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {},
+        i = arguments.length > 3 && void 0 !== arguments[3] ? arguments[3] : n;
+    if (Array.isArray(r)) r.forEach(function (r) {
+      return e(t, r, n, i);
+    });else if ("function" == typeof r) r(t, n, i, e);else {
+      var o = Object.keys(r)[0];
+      Array.isArray(r[o]) ? (i[o] = {}, e(t, r[o], n, i[o])) : i[o] = r[o](t, n, i, e);
+    }
+    return n;
+  };
+
+  u.conditional = function (e, t) {
+    return function (r, n, i, o) {
+      t(r, n, i) && o(r, e, n, i);
+    };
+  };
+
+  u.loop = function (e, t) {
+    return function (r, n, i, o) {
+      for (var a = [], s = r.pos; t(r, n, i);) {
+        var d = {};
+        if (o(r, e, n, d), r.pos === s) break;
+        s = r.pos, a.push(d);
+      }
+
+      return a;
+    };
+  };
+
+  var p = {};
+  Object.defineProperty(p, "__esModule", {
+    value: !0
+  }), p.readBits = p.readArray = p.readUnsigned = p.readString = p.peekBytes = p.readBytes = p.peekByte = p.readByte = p.buildStream = void 0;
+
+  p.buildStream = function (e) {
+    return {
+      data: e,
+      pos: 0
+    };
+  };
+
+  var l = function () {
+    return function (e) {
+      return e.data[e.pos++];
+    };
+  };
+
+  p.readByte = l;
+
+  p.peekByte = function () {
+    var e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : 0;
+    return function (t) {
+      return t.data[t.pos + e];
+    };
+  };
+
+  var h = function (e) {
+    return function (t) {
+      return t.data.subarray(t.pos, t.pos += e);
+    };
+  };
+
+  p.readBytes = h;
+
+  p.peekBytes = function (e) {
+    return function (t) {
+      return t.data.subarray(t.pos, t.pos + e);
+    };
+  };
+
+  p.readString = function (e) {
+    return function (t) {
+      return Array.from(h(e)(t)).map(function (e) {
+        return String.fromCharCode(e);
+      }).join("");
+    };
+  };
+
+  p.readUnsigned = function (e) {
+    return function (t) {
+      var r = h(2)(t);
+      return e ? (r[1] << 8) + r[0] : (r[0] << 8) + r[1];
+    };
+  };
+
+  p.readArray = function (e, t) {
+    return function (r, n, i) {
+      for (var o = "function" == typeof t ? t(r, n, i) : t, a = h(e), s = new Array(o), d = 0; d < o; d++) s[d] = a(r);
+
+      return s;
+    };
+  };
+
+  p.readBits = function (e) {
+    return function (t) {
+      for (var r = function (e) {
+        return e.data[e.pos++];
+      }(t), n = new Array(8), i = 0; i < 8; i++) n[7 - i] = !!(r & 1 << i);
+
+      return Object.keys(e).reduce(function (t, r) {
+        var i = e[r];
+        return i.length ? t[r] = function (e, t, r) {
+          for (var n = 0, i = 0; i < r; i++) n += e[t + i] && Math.pow(2, r - i - 1);
+
+          return n;
+        }(n, i.index, i.length) : t[r] = n[i.index], t;
+      }, {});
+    };
+  }, function (e) {
+    Object.defineProperty(e, "__esModule", {
+      value: !0
+    }), e.default = void 0;
+    var t = u,
+        r = p,
+        n = {
+      blocks: function (e) {
+        for (var t = [], n = e.data.length, i = 0, o = (0, r.readByte)()(e); 0 !== o && o; o = (0, r.readByte)()(e)) {
+          if (e.pos + o >= n) {
+            var a = n - e.pos;
+            t.push((0, r.readBytes)(a)(e)), i += a;
+            break;
+          }
+
+          t.push((0, r.readBytes)(o)(e)), i += o;
+        }
+
+        for (var s = new Uint8Array(i), d = 0, c = 0; c < t.length; c++) s.set(t[c], d), d += t[c].length;
+
+        return s;
+      }
+    },
+        i = (0, t.conditional)({
+      gce: [{
+        codes: (0, r.readBytes)(2)
+      }, {
+        byteSize: (0, r.readByte)()
+      }, {
+        extras: (0, r.readBits)({
+          future: {
+            index: 0,
+            length: 3
+          },
+          disposal: {
+            index: 3,
+            length: 3
+          },
+          userInput: {
+            index: 6
+          },
+          transparentColorGiven: {
+            index: 7
+          }
+        })
+      }, {
+        delay: (0, r.readUnsigned)(!0)
+      }, {
+        transparentColorIndex: (0, r.readByte)()
+      }, {
+        terminator: (0, r.readByte)()
+      }]
+    }, function (e) {
+      var t = (0, r.peekBytes)(2)(e);
+      return 33 === t[0] && 249 === t[1];
+    }),
+        o = (0, t.conditional)({
+      image: [{
+        code: (0, r.readByte)()
+      }, {
+        descriptor: [{
+          left: (0, r.readUnsigned)(!0)
+        }, {
+          top: (0, r.readUnsigned)(!0)
+        }, {
+          width: (0, r.readUnsigned)(!0)
+        }, {
+          height: (0, r.readUnsigned)(!0)
+        }, {
+          lct: (0, r.readBits)({
+            exists: {
+              index: 0
+            },
+            interlaced: {
+              index: 1
+            },
+            sort: {
+              index: 2
+            },
+            future: {
+              index: 3,
+              length: 2
+            },
+            size: {
+              index: 5,
+              length: 3
+            }
+          })
+        }]
+      }, (0, t.conditional)({
+        lct: (0, r.readArray)(3, function (e, t, r) {
+          return Math.pow(2, r.descriptor.lct.size + 1);
+        })
+      }, function (e, t, r) {
+        return r.descriptor.lct.exists;
+      }), {
+        data: [{
+          minCodeSize: (0, r.readByte)()
+        }, n]
+      }]
+    }, function (e) {
+      return 44 === (0, r.peekByte)()(e);
+    }),
+        a = (0, t.conditional)({
+      text: [{
+        codes: (0, r.readBytes)(2)
+      }, {
+        blockSize: (0, r.readByte)()
+      }, {
+        preData: function (e, t, n) {
+          return (0, r.readBytes)(n.text.blockSize)(e);
+        }
+      }, n]
+    }, function (e) {
+      var t = (0, r.peekBytes)(2)(e);
+      return 33 === t[0] && 1 === t[1];
+    }),
+        s = (0, t.conditional)({
+      application: [{
+        codes: (0, r.readBytes)(2)
+      }, {
+        blockSize: (0, r.readByte)()
+      }, {
+        id: function (e, t, n) {
+          return (0, r.readString)(n.blockSize)(e);
+        }
+      }, n]
+    }, function (e) {
+      var t = (0, r.peekBytes)(2)(e);
+      return 33 === t[0] && 255 === t[1];
+    }),
+        d = (0, t.conditional)({
+      comment: [{
+        codes: (0, r.readBytes)(2)
+      }, n]
+    }, function (e) {
+      var t = (0, r.peekBytes)(2)(e);
+      return 33 === t[0] && 254 === t[1];
+    }),
+        c = [{
+      header: [{
+        signature: (0, r.readString)(3)
+      }, {
+        version: (0, r.readString)(3)
+      }]
+    }, {
+      lsd: [{
+        width: (0, r.readUnsigned)(!0)
+      }, {
+        height: (0, r.readUnsigned)(!0)
+      }, {
+        gct: (0, r.readBits)({
+          exists: {
+            index: 0
+          },
+          resolution: {
+            index: 1,
+            length: 3
+          },
+          sort: {
+            index: 4
+          },
+          size: {
+            index: 5,
+            length: 3
+          }
+        })
+      }, {
+        backgroundColorIndex: (0, r.readByte)()
+      }, {
+        pixelAspectRatio: (0, r.readByte)()
+      }]
+    }, (0, t.conditional)({
+      gct: (0, r.readArray)(3, function (e, t) {
+        return Math.pow(2, t.lsd.gct.size + 1);
+      })
+    }, function (e, t) {
+      return t.lsd.gct.exists;
+    }), {
+      frames: (0, t.loop)([i, s, d, o, a], function (e) {
+        var t = (0, r.peekByte)()(e);
+        return 33 === t || 44 === t;
+      })
+    }];
+    e.default = c;
+  }(c);
+  var f = {};
+  Object.defineProperty(f, "__esModule", {
+    value: !0
+  }), f.deinterlace = void 0;
+
+  f.deinterlace = function (e, t) {
+    for (var r = new Array(e.length), n = e.length / t, i = function (n, i) {
+      var o = e.slice(i * t, (i + 1) * t);
+      r.splice.apply(r, [n * t, t].concat(o));
+    }, o = [0, 4, 2, 1], a = [8, 8, 4, 2], s = 0, d = 0; d < 4; d++) for (var c = o[d]; c < n; c += a[d]) i(c, s), s++;
+
+    return r;
+  };
+
+  var y = {};
+  Object.defineProperty(y, "__esModule", {
+    value: !0
+  }), y.lzw = void 0;
+  y.lzw = function (e, t, r) {
+    var n,
+        i,
+        o,
+        a,
+        s,
+        d,
+        c,
+        u,
+        p,
+        l,
+        h,
+        f,
+        y,
+        g,
+        m,
+        v,
+        _ = 4096,
+        x = r,
+        b = new Array(r),
+        w = new Array(_),
+        B = new Array(_),
+        T = new Array(4097);
+
+    for (s = (i = 1 << (l = e)) + 1, n = i + 2, c = -1, o = (1 << (a = l + 1)) - 1, u = 0; u < i; u++) w[u] = 0, B[u] = u;
+
+    for (h = f = y = g = m = v = 0, p = 0; p < x;) {
+      if (0 === g) {
+        if (f < a) {
+          h += t[v] << f, f += 8, v++;
+          continue;
+        }
+
+        if (u = h & o, h >>= a, f -= a, u > n || u == s) break;
+
+        if (u == i) {
+          o = (1 << (a = l + 1)) - 1, n = i + 2, c = -1;
+          continue;
+        }
+
+        if (-1 == c) {
+          T[g++] = B[u], c = u, y = u;
+          continue;
+        }
+
+        for (d = u, u == n && (T[g++] = y, u = c); u > i;) T[g++] = B[u], u = w[u];
+
+        y = 255 & B[u], T[g++] = y, n < _ && (w[n] = c, B[n] = y, 0 == (++n & o) && n < _ && (a++, o += n)), c = d;
+      }
+
+      g--, b[m++] = T[g], p++;
+    }
+
+    for (p = m; p < x; p++) b[p] = 0;
+
+    return b;
+  }, Object.defineProperty(d, "__esModule", {
+    value: !0
+  });
+  var g,
+      m = d.decompressFrames = d.decompressFrame = B = d.parseGIF = void 0,
+      v = (g = c) && g.__esModule ? g : {
+    default: g
+  },
+      _ = u,
+      x = p,
+      b = f,
+      w = y;
+
+  var B = d.parseGIF = function (e) {
+    var t = new Uint8Array(e);
+    return (0, _.parse)((0, x.buildStream)(t), v.default);
+  },
+      T = function (e, t, r) {
+    if (e.image) {
+      var n = e.image,
+          i = n.descriptor.width * n.descriptor.height,
+          o = (0, w.lzw)(n.data.minCodeSize, n.data.blocks, i);
+      n.descriptor.lct.interlaced && (o = (0, b.deinterlace)(o, n.descriptor.width));
+      var a = {
+        pixels: o,
+        dims: {
+          top: e.image.descriptor.top,
+          left: e.image.descriptor.left,
+          width: e.image.descriptor.width,
+          height: e.image.descriptor.height
+        }
+      };
+      return n.descriptor.lct && n.descriptor.lct.exists ? a.colorTable = n.lct : a.colorTable = t, e.gce && (a.delay = 10 * (e.gce.delay || 10), a.disposalType = e.gce.extras.disposal, e.gce.extras.transparentColorGiven && (a.transparentIndex = e.gce.transparentColorIndex)), r && (a.patch = function (e) {
+        for (var t = e.pixels.length, r = new Uint8ClampedArray(4 * t), n = 0; n < t; n++) {
+          var i = 4 * n,
+              o = e.pixels[n],
+              a = e.colorTable[o] || [0, 0, 0];
+          r[i] = a[0], r[i + 1] = a[1], r[i + 2] = a[2], r[i + 3] = o !== e.transparentIndex ? 255 : 0;
+        }
+
+        return r;
+      }(a)), a;
+    }
+  };
+
+  d.decompressFrame = T;
+
+  m = d.decompressFrames = function (e, t) {
+    return e.frames.filter(function (e) {
+      return e.image;
+    }).map(function (r) {
+      return T(r, e.gct, t);
+    });
+  };
+
+  var C = function (e) {
+    function t(n, i) {
+      var o = this,
+          a = Object.assign({}, t.defaultOptions, i),
+          s = a.scaleMode,
+          d = function (e, t) {
+        var r = {};
+
+        for (var n in e) Object.prototype.hasOwnProperty.call(e, n) && t.indexOf(n) < 0 && (r[n] = e[n]);
+
+        if (null != e && "function" == typeof Object.getOwnPropertySymbols) {
+          var i = 0;
+
+          for (n = Object.getOwnPropertySymbols(e); i < n.length; i++) t.indexOf(n[i]) < 0 && Object.prototype.propertyIsEnumerable.call(e, n[i]) && (r[n[i]] = e[n[i]]);
+        }
+
+        return r;
+      }(a, ["scaleMode"]),
+          c = document.createElement("canvas"),
+          u = c.getContext("2d");
+
+      return c.width = n[0].imageData.width, c.height = n[0].imageData.height, (o = e.call(this, Texture.from(c, {
+        scaleMode: s
+      })) || this).duration = n[n.length - 1].end, o._frames = n, o._context = u, o._playing = !1, o._currentTime = 0, o._isConnectedToTicker = !1, Object.assign(o, d), o.currentFrame = 0, o.autoPlay && o.play(), o;
+    }
+
+    return function (e, t) {
+      if ("function" != typeof t && null !== t) throw new TypeError("Class extends value " + String(t) + " is not a constructor or null");
+
+      function r() {
+        this.constructor = e;
+      }
+
+      s(e, t), e.prototype = null === t ? Object.create(t) : (r.prototype = t.prototype, new r());
+    }(t, e), t.fromBuffer = function (e, r) {
+      if (!e || 0 === e.byteLength) throw new Error("Invalid buffer");
+      var n = B(e),
+          i = m(n, !0),
+          o = [],
+          a = document.createElement("canvas"),
+          s = a.getContext("2d"),
+          d = document.createElement("canvas"),
+          c = d.getContext("2d");
+      a.width = i[0].dims.width, a.height = i[0].dims.height;
+
+      for (var u = 0, p = 1e3 / Object.assign({}, t.defaultOptions, r).fps, l = 0; l < i.length; l++) {
+        var h = i[l],
+            f = h.disposalType,
+            y = void 0 === f ? 2 : f,
+            g = h.delay,
+            v = void 0 === g ? p : g,
+            _ = h.patch,
+            x = h.dims,
+            b = x.width,
+            w = x.height,
+            T = x.left,
+            C = x.top;
+        d.width = b, d.height = w, c.clearRect(0, 0, b, w);
+        var O = c.createImageData(b, w);
+        O.data.set(_), c.putImageData(O, 0, 0), s.drawImage(d, T, C);
+        var F = s.getImageData(0, 0, a.width, a.height);
+        2 === y && s.clearRect(0, 0, b, w), o.push({
+          start: u,
+          end: u + v,
+          imageData: F
+        }), u += v;
+      }
+
+      return a.width = a.height = 0, d.width = d.height = 0, new t(o, r);
+    }, t.prototype.stop = function () {
+      this._playing && (this._playing = !1, this._autoUpdate && this._isConnectedToTicker && (Ticker.shared.remove(this.update, this), this._isConnectedToTicker = !1));
+    }, t.prototype.play = function () {
+      this._playing || (this._playing = !0, this._autoUpdate && !this._isConnectedToTicker && (Ticker.shared.add(this.update, this, UPDATE_PRIORITY.HIGH), this._isConnectedToTicker = !0), this.loop || this.currentFrame !== this._frames.length - 1 || (this._currentTime = 0));
+    }, Object.defineProperty(t.prototype, "progress", {
+      get: function () {
+        return this._currentTime / this.duration;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(t.prototype, "playing", {
+      get: function () {
+        return this._playing;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), t.prototype.update = function (e) {
+      var t, r;
+
+      if (this._playing) {
+        var i = this.animationSpeed * e / settings.TARGET_FPMS,
+            o = this._currentTime + i,
+            a = o % this.duration,
+            s = this._frames.findIndex(function (e) {
+          return e.start <= a && e.end > a;
+        });
+
+        o >= this.duration ? this.loop ? (this._currentTime = a, this.updateFrameIndex(s), null === (t = this.onLoop) || void 0 === t || t.call(this)) : (this._currentTime = this.duration, this.updateFrameIndex(this._frames.length - 1), null === (r = this.onComplete) || void 0 === r || r.call(this), this.stop()) : (this._currentTime = a, this.updateFrameIndex(s));
+      }
+    }, t.prototype.updateFrame = function () {
+      if (this.dirty) {
+        var e = this._frames[this._currentFrame].imageData;
+        this._context.putImageData(e, 0, 0), this._context.fillStyle = "transparent", this._context.fillRect(0, 0, 0, 1), this.texture.update(), this.dirty = !1;
+      }
+    }, t.prototype._render = function (t) {
+      this.updateFrame(), e.prototype._render.call(this, t);
+    }, t.prototype._renderCanvas = function (t) {
+      this.updateFrame(), e.prototype._renderCanvas.call(this, t);
+    }, Object.defineProperty(t.prototype, "autoUpdate", {
+      get: function () {
+        return this._autoUpdate;
+      },
+      set: function (e) {
+        e !== this._autoUpdate && (this._autoUpdate = e, !this._autoUpdate && this._isConnectedToTicker ? (Ticker.shared.remove(this.update, this), this._isConnectedToTicker = !1) : this._autoUpdate && !this._isConnectedToTicker && this._playing && (Ticker.shared.add(this.update, this), this._isConnectedToTicker = !0));
+      },
+      enumerable: !1,
+      configurable: !0
+    }), Object.defineProperty(t.prototype, "currentFrame", {
+      get: function () {
+        return this._currentFrame;
+      },
+      set: function (e) {
+        this.updateFrameIndex(e), this._currentTime = this._frames[e].start;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), t.prototype.updateFrameIndex = function (e) {
+      var t;
+      if (e < 0 || e >= this._frames.length) throw new Error("Frame index out of range, expecting 0 to " + this.totalFrames + ", got " + e);
+      this._currentFrame !== e && (this._currentFrame = e, this.dirty = !0, null === (t = this.onFrameChange) || void 0 === t || t.call(this, e));
+    }, Object.defineProperty(t.prototype, "totalFrames", {
+      get: function () {
+        return this._frames.length;
+      },
+      enumerable: !1,
+      configurable: !0
+    }), t.prototype.destroy = function () {
+      this.stop(), e.prototype.destroy.call(this, !0), this._context = null, this._frames = null, this.onComplete = null, this.onFrameChange = null, this.onLoop = null;
+    }, t.prototype.clone = function () {
+      return new t(function (e, t, r) {
+        if (r || 2 === arguments.length) for (var n, i = 0, o = t.length; i < o; i++) !n && i in t || (n || (n = Array.prototype.slice.call(t, 0, i)), n[i] = t[i]);
+        return e.concat(n || Array.prototype.slice.call(t));
+      }([], this._frames, !0), {
+        autoUpdate: this._autoUpdate,
+        loop: this.loop,
+        autoPlay: this.autoPlay,
+        scaleMode: this.texture.baseTexture.scaleMode,
+        animationSpeed: this.animationSpeed,
+        onComplete: this.onComplete,
+        onFrameChange: this.onFrameChange,
+        onLoop: this.onLoop
+      });
+    }, t.defaultOptions = {
+      scaleMode: SCALE_MODES$3.LINEAR,
+      fps: Ticker.shared.FPS,
+      loop: !0,
+      animationSpeed: 1,
+      autoPlay: !0,
+      autoUpdate: !0,
+      onComplete: null,
+      onFrameChange: null,
+      onLoop: null
+    }, t;
+  }(Sprite$1),
+      O = {
+    add: function () {
+      LoaderResource.setExtensionXhrType("gif", LoaderResource.XHR_RESPONSE_TYPE.BUFFER), LoaderResource.setExtensionLoadType("gif", LoaderResource.LOAD_TYPE.XHR);
+    },
+    use: function (e, t) {
+      "gif" === e.extension && (e.animation = C.fromBuffer(e.data)), t();
+    }
+  };
+
+  /* eslint-disable */
+
+  class BackdropFilter extends Filter {
+    constructor() {
+      super(...arguments);
+      this.backdropUniformName = null;
+      this._backdropActive = false;
+      this.clearColor = null;
+    }
+
+  }
+
+  const filterFrag = `
+varying vec2 vTextureCoord;
+
+uniform sampler2D uSampler;
+uniform sampler2D uBackdrop;
+uniform vec2 uBackdrop_flipY;
+
+%UNIFORM_CODE%
+
+void main(void)
+{
+   vec2 backdropCoord = vec2(vTextureCoord.x, uBackdrop_flipY.x + uBackdrop_flipY.y * vTextureCoord.y);
+   vec4 b_src = texture2D(uSampler, vTextureCoord);
+   vec4 b_dest = texture2D(uBackdrop, backdropCoord);
+   vec4 b_res = b_dest;
+   
+   %BLEND_CODE%
+
+   gl_FragColor = b_res;
+}`;
+
+  class BlendFilter extends BackdropFilter {
+    constructor(shaderParts) {
+      let fragCode = filterFrag;
+      fragCode = fragCode.replace('%UNIFORM_CODE%', shaderParts.uniformCode || "");
+      fragCode = fragCode.replace('%BLEND_CODE%', shaderParts.blendCode || "");
+      super(undefined, fragCode, shaderParts.uniforms);
+      this.backdropUniformName = 'uBackdrop';
+    }
+
+  }
+
+  const vert = `
+attribute vec2 aVertexPosition;
+
+uniform mat3 projectionMatrix;
+
+varying vec2 vTextureCoord;
+
+uniform vec4 inputSize;
+uniform vec4 outputFrame;
+uniform vec2 flipY;
+
+vec4 filterVertexPosition( void )
+{
+    vec2 position = aVertexPosition * max(outputFrame.zw, vec2(0.)) + outputFrame.xy;
+
+    return vec4((projectionMatrix * vec3(position, 1.0)).xy, 0.0, 1.0);
+}
+
+vec2 filterTextureCoord( void )
+{
+    return aVertexPosition * (outputFrame.zw * inputSize.zw);
+}
+
+void main(void)
+{
+    gl_Position = filterVertexPosition();
+    vTextureCoord = filterTextureCoord();
+    vTextureCoord.y = flipY.x + flipY.y * vTextureCoord.y;
+}
+
+`;
+
+  class FlipYFilter extends Filter {
+    constructor(frag, uniforms) {
+      const uni = uniforms || {};
+
+      if (!uni.flipY) {
+        uni.flipY = new Float32Array([0.0, 1.0]);
+      }
+
+      super(vert, frag, uni);
+    }
+
+  }
+
+  var MASK_CHANNEL;
+
+  (function (MASK_CHANNEL) {
+    MASK_CHANNEL[MASK_CHANNEL["RED"] = 0] = "RED";
+    MASK_CHANNEL[MASK_CHANNEL["GREEN"] = 1] = "GREEN";
+    MASK_CHANNEL[MASK_CHANNEL["BLUE"] = 2] = "BLUE";
+    MASK_CHANNEL[MASK_CHANNEL["ALPHA"] = 3] = "ALPHA";
+  })(MASK_CHANNEL || (MASK_CHANNEL = {}));
+
+  class MaskConfig {
+    constructor(maskBefore = false, channel = MASK_CHANNEL.ALPHA) {
+      this.maskBefore = maskBefore;
+      this.uniformCode = 'uniform vec4 uChannel;';
+      this.uniforms = {
+        uChannel: new Float32Array([0, 0, 0, 0])
+      };
+      this.blendCode = `b_res = dot(b_src, uChannel) * b_dest;`;
+      this.safeFlipY = false;
+      this.uniforms.uChannel[channel] = 1.0;
+    }
+
+  }
+
+  const tmpArray = new Float32Array([0, 1]);
+
+  class MaskFilter extends BlendFilter {
+    constructor(baseFilter, config = new MaskConfig()) {
+      super(config);
+      this.baseFilter = baseFilter;
+      this.config = config;
+      this.padding = baseFilter.padding;
+      this.safeFlipY = config.safeFlipY;
+    }
+
+    apply(filterManager, input, output, clearMode) {
+      const target = filterManager.getFilterTexture(input);
+
+      if (this.config.maskBefore) {
+        const {
+          blendMode
+        } = this.state;
+        this.state.blendMode = BLEND_MODES$3.NONE;
+        filterManager.applyFilter(this, input, target, CLEAR_MODES$3.YES);
+        this.baseFilter.blendMode = blendMode;
+        this.baseFilter.apply(filterManager, target, output, clearMode);
+        this.state.blendMode = blendMode;
+      } else {
+        const {
+          uBackdrop,
+          uBackdrop_flipY
+        } = this.uniforms;
+
+        if (uBackdrop_flipY[1] > 0 || this.safeFlipY) {
+          this.baseFilter.apply(filterManager, uBackdrop, target, CLEAR_MODES$3.YES);
+        } else {
+          const targetFlip = filterManager.getFilterTexture(input);
+
+          if (!MaskFilter._flipYFilter) {
+            MaskFilter._flipYFilter = new FlipYFilter();
+          }
+
+          MaskFilter._flipYFilter.uniforms.flipY[0] = uBackdrop_flipY[0];
+          MaskFilter._flipYFilter.uniforms.flipY[1] = uBackdrop_flipY[1];
+
+          MaskFilter._flipYFilter.apply(filterManager, uBackdrop, targetFlip, CLEAR_MODES$3.YES);
+
+          this.baseFilter.apply(filterManager, targetFlip, target, CLEAR_MODES$3.YES);
+          filterManager.returnFilterTexture(targetFlip);
+          this.uniforms.uBackdrop_flipY = tmpArray;
+        }
+
+        this.uniforms.uBackdrop = target;
+        filterManager.applyFilter(this, input, output, clearMode);
+        this.uniforms.uBackdrop = uBackdrop;
+        this.uniforms.uBackdrop_flipY = uBackdrop_flipY;
+      }
+
+      filterManager.returnFilterTexture(target);
+    }
+
+  }
+
+  MaskFilter._flipYFilter = null;
+  const NPM_BLEND = `if (b_src.a == 0.0) {
+  gl_FragColor = vec4(0, 0, 0, 0);
+  return;
+}
+if (b_dest.a == 0.0) {
+  gl_FragColor = b_src;
+  return;
+}
+vec3 Cb = b_dest.rgb / b_dest.a;
+vec3 Cs = b_src.rgb / b_src.a;
+%NPM_BLEND%
+b_res.a = b_src.a + b_dest.a * (1.0-b_src.a);
+b_res.rgb = (1.0 - b_dest.a) * Cs + b_dest.a * B;
+b_res.rgb *= b_res.a;
+`;
+  const OVERLAY_PART = `vec3 multiply = Cb * Cs * 2.0;
+vec3 Cb2 = Cb * 2.0 - 1.0;
+vec3 screen = Cb2 + Cs - Cb2 * Cs;
+vec3 B;
+if (Cs.r <= 0.5) {
+  B.r = multiply.r;
+} else {
+  B.r = screen.r;
+}
+if (Cs.g <= 0.5) {
+  B.g = multiply.g;
+} else {
+  B.g = screen.g;
+}
+if (Cs.b <= 0.5) {
+  B.b = multiply.b;
+} else {
+  B.b = screen.b;
+}
+`;
+  const HARDLIGHT_PART = `vec3 multiply = Cb * Cs * 2.0;
+vec3 Cs2 = Cs * 2.0 - 1.0;
+vec3 screen = Cb + Cs2 - Cb * Cs2;
+vec3 B;
+if (Cb.r <= 0.5) {
+  B.r = multiply.r;
+} else {
+  B.r = screen.r;
+}
+if (Cb.g <= 0.5) {
+  B.g = multiply.g;
+} else {
+  B.g = screen.g;
+}
+if (Cb.b <= 0.5) {
+  B.b = multiply.b;
+} else {
+  B.b = screen.b;
+}
+`;
+  const SOFTLIGHT_PART = `vec3 first = Cb - (1.0 - 2.0 * Cs) * Cb * (1.0 - Cb);
+vec3 B;
+vec3 D;
+if (Cs.r <= 0.5)
+{
+  B.r = first.r;
+}
+else
+{
+  if (Cb.r <= 0.25)
+  {
+    D.r = ((16.0 * Cb.r - 12.0) * Cb.r + 4.0) * Cb.r;    
+  }
+  else
+  {
+    D.r = sqrt(Cb.r);
+  }
+  B.r = Cb.r + (2.0 * Cs.r - 1.0) * (D.r - Cb.r);
+}
+if (Cs.g <= 0.5)
+{
+  B.g = first.g;
+}
+else
+{
+  if (Cb.g <= 0.25)
+  {
+    D.g = ((16.0 * Cb.g - 12.0) * Cb.g + 4.0) * Cb.g;    
+  }
+  else
+  {
+    D.g = sqrt(Cb.g);
+  }
+  B.g = Cb.g + (2.0 * Cs.g - 1.0) * (D.g - Cb.g);
+}
+if (Cs.b <= 0.5)
+{
+  B.b = first.b;
+}
+else
+{
+  if (Cb.b <= 0.25)
+  {
+    D.b = ((16.0 * Cb.b - 12.0) * Cb.b + 4.0) * Cb.b;    
+  }
+  else
+  {
+    D.b = sqrt(Cb.b);
+  }
+  B.b = Cb.b + (2.0 * Cs.b - 1.0) * (D.b - Cb.b);
+}
+`;
+  const MULTIPLY_PART = `vec3 B = Cs * Cb;
+`;
+  const OVERLAY_FULL = NPM_BLEND.replace(`%NPM_BLEND%`, OVERLAY_PART);
+  const HARDLIGHT_FULL = NPM_BLEND.replace(`%NPM_BLEND%`, HARDLIGHT_PART);
+  const SOFTLIGHT_FULL = NPM_BLEND.replace(`%NPM_BLEND%`, SOFTLIGHT_PART);
+  const MULTIPLY_FULL = NPM_BLEND.replace(`%NPM_BLEND%`, MULTIPLY_PART);
+  const blendFullArray = [];
+  blendFullArray[BLEND_MODES$3.MULTIPLY] = MULTIPLY_FULL;
+  blendFullArray[BLEND_MODES$3.OVERLAY] = OVERLAY_FULL;
+  blendFullArray[BLEND_MODES$3.HARD_LIGHT] = HARDLIGHT_FULL;
+  blendFullArray[BLEND_MODES$3.SOFT_LIGHT] = SOFTLIGHT_FULL;
+  let filterCache = [];
+  let filterCacheArray = [];
+
+  function getBlendFilter(blendMode) {
+    if (!blendFullArray[blendMode]) {
+      return null;
+    }
+
+    if (!filterCache[blendMode]) {
+      filterCache[blendMode] = new BlendFilter({
+        blendCode: blendFullArray[blendMode]
+      });
+    }
+
+    return filterCache[blendMode];
+  }
+
+  function getBlendFilterArray(blendMode) {
+    if (!blendFullArray[blendMode]) {
+      return null;
+    }
+
+    if (!filterCacheArray[blendMode]) {
+      filterCacheArray[blendMode] = [getBlendFilter(blendMode)];
+    }
+
+    return filterCacheArray[blendMode];
+  }
+
+  class Sprite extends Sprite$1 {
+    _render(renderer) {
+      const texture = this._texture;
+
+      if (!texture || !texture.valid) {
+        return;
+      }
+
+      const blendFilterArray = getBlendFilterArray(this.blendMode);
+      const cacheBlend = this.blendMode;
+
+      if (blendFilterArray) {
+        renderer.batch.flush();
+
+        if (!renderer.filter.pushWithCheck(this, blendFilterArray)) {
+          return;
+        }
+
+        this.blendMode = BLEND_MODES$3.NORMAL;
+      }
+
+      this.calculateVertices();
+      renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+      renderer.plugins[this.pluginName].render(this);
+
+      if (blendFilterArray) {
+        renderer.batch.flush();
+        renderer.filter.pop();
+        this.blendMode = cacheBlend;
+      }
+    }
+
+  }
+
+  class TilingSprite extends TilingSprite$1 {
+    _render(renderer) {
+      const texture = this._texture;
+
+      if (!texture || !texture.valid) {
+        return;
+      }
+
+      const blendFilterArray = getBlendFilterArray(this.blendMode);
+
+      if (blendFilterArray) {
+        renderer.batch.flush();
+
+        if (!renderer.filter.pushWithCheck(this, blendFilterArray)) {
+          return;
+        }
+      }
+
+      this.tileTransform.updateLocalTransform();
+      this.uvMatrix.update();
+      renderer.batch.setObjectRenderer(renderer.plugins[this.pluginName]);
+      renderer.plugins[this.pluginName].render(this);
+
+      if (blendFilterArray) {
+        renderer.batch.flush();
+        renderer.filter.pop();
+      }
+    }
+
+  }
+
+  function containsRect(rectOut, rectIn) {
+    let r1 = rectIn.x + rectIn.width;
+    let b1 = rectIn.y + rectIn.height;
+    let r2 = rectOut.x + rectOut.width;
+    let b2 = rectOut.y + rectOut.height;
+    return rectIn.x >= rectOut.x && rectIn.x <= r2 && rectIn.y >= rectOut.y && rectIn.y <= b2 && r1 >= rectOut.x && r1 <= r2 && b1 >= rectOut.y && b1 <= b2;
+  }
+
+  function bindForceLocation(texture, location = 0) {
+    const {
+      gl
+    } = this;
+
+    if (this.currentLocation !== location) {
+      this.currentLocation = location;
+      gl.activeTexture(gl.TEXTURE0 + location);
+    }
+
+    this.bind(texture, location);
+  }
+
+  const tempMatrix = new Matrix();
+
+  function pushWithCheck(target, filters, checkEmptyBounds = true) {
+    const renderer = this.renderer;
+    const filterStack = this.defaultFilterStack;
+    const state = this.statePool.pop() || new FilterState();
+    const renderTextureSystem = this.renderer.renderTexture;
+    let resolution = filters[0].resolution;
+    let padding = filters[0].padding;
+    let autoFit = filters[0].autoFit;
+    let legacy = filters[0].legacy;
+
+    for (let i = 1; i < filters.length; i++) {
+      const filter = filters[i];
+      resolution = Math.min(resolution, filter.resolution);
+      padding = this.useMaxPadding ? Math.max(padding, filter.padding) : padding + filter.padding;
+      autoFit = autoFit && filter.autoFit;
+      legacy = legacy || filter.legacy;
+    }
+
+    if (filterStack.length === 1) {
+      this.defaultFilterStack[0].renderTexture = renderTextureSystem.current;
+    }
+
+    filterStack.push(state);
+    state.resolution = resolution;
+    state.legacy = legacy;
+    state.target = target;
+    state.sourceFrame.copyFrom(target.filterArea || target.getBounds(true));
+    state.sourceFrame.pad(padding);
+    let canUseBackdrop = true;
+
+    if (autoFit) {
+      const sourceFrameProjected = this.tempRect.copyFrom(renderTextureSystem.sourceFrame);
+
+      if (renderer.projection.transform) {
+        this.transformAABB(tempMatrix.copyFrom(renderer.projection.transform).invert(), sourceFrameProjected);
+      }
+
+      state.sourceFrame.fit(sourceFrameProjected);
+    } else {
+      canUseBackdrop = containsRect(this.renderer.renderTexture.sourceFrame, state.sourceFrame);
+    }
+
+    if (checkEmptyBounds && state.sourceFrame.width <= 1 && state.sourceFrame.height <= 1) {
+      filterStack.pop();
+      state.clear();
+      this.statePool.push(state);
+      return false;
+    }
+
+    this.roundFrame(state.sourceFrame, renderTextureSystem.current ? renderTextureSystem.current.resolution : renderer.resolution, renderTextureSystem.sourceFrame, renderTextureSystem.destinationFrame, renderer.projection.transform);
+    state.sourceFrame.ceil(resolution);
+
+    if (canUseBackdrop) {
+      let backdrop = null;
+      let backdropFlip = null;
+
+      for (let i = 0; i < filters.length; i++) {
+        const bName = filters[i].backdropUniformName;
+
+        if (bName) {
+          const {
+            uniforms
+          } = filters[i];
+
+          if (!uniforms[bName + '_flipY']) {
+            uniforms[bName + '_flipY'] = new Float32Array([0.0, 1.0]);
+          }
+
+          const flip = uniforms[bName + '_flipY'];
+
+          if (backdrop === null) {
+            backdrop = this.prepareBackdrop(state.sourceFrame, flip);
+            backdropFlip = flip;
+          } else {
+            flip[0] = backdropFlip[0];
+            flip[1] = backdropFlip[1];
+          }
+
+          uniforms[bName] = backdrop;
+
+          if (backdrop) {
+            filters[i]._backdropActive = true;
+          }
+        }
+      }
+
+      if (backdrop) {
+        resolution = state.resolution = backdrop.resolution;
+      }
+    }
+
+    state.renderTexture = this.getOptimalFilterTexture(state.sourceFrame.width, state.sourceFrame.height, resolution);
+    state.filters = filters;
+    state.destinationFrame.width = state.renderTexture.width;
+    state.destinationFrame.height = state.renderTexture.height;
+    const destinationFrame = this.tempRect;
+    destinationFrame.x = 0;
+    destinationFrame.y = 0;
+    destinationFrame.width = state.sourceFrame.width;
+    destinationFrame.height = state.sourceFrame.height;
+    state.renderTexture.filterFrame = state.sourceFrame;
+    state.bindingSourceFrame.copyFrom(renderTextureSystem.sourceFrame);
+    state.bindingDestinationFrame.copyFrom(renderTextureSystem.destinationFrame);
+    state.transform = renderer.projection.transform;
+    renderer.projection.transform = null;
+    renderTextureSystem.bind(state.renderTexture, state.sourceFrame, destinationFrame);
+    const cc = filters[filters.length - 1].clearColor;
+
+    if (cc) {
+      renderer.framebuffer.clear(cc[0], cc[1], cc[2], cc[3]);
+    } else {
+      renderer.framebuffer.clear(0, 0, 0, 0);
+    }
+
+    return true;
+  }
+
+  function push(target, filters) {
+    return this.pushWithCheck(target, filters, false);
+  }
+
+  function pop() {
+    const filterStack = this.defaultFilterStack;
+    const state = filterStack.pop();
+    const filters = state.filters;
+    this.activeState = state;
+    const globalUniforms = this.globalUniforms.uniforms;
+    globalUniforms.outputFrame = state.sourceFrame;
+    globalUniforms.resolution = state.resolution;
+    const inputSize = globalUniforms.inputSize;
+    const inputPixel = globalUniforms.inputPixel;
+    const inputClamp = globalUniforms.inputClamp;
+    inputSize[0] = state.destinationFrame.width;
+    inputSize[1] = state.destinationFrame.height;
+    inputSize[2] = 1.0 / inputSize[0];
+    inputSize[3] = 1.0 / inputSize[1];
+    inputPixel[0] = inputSize[0] * state.resolution;
+    inputPixel[1] = inputSize[1] * state.resolution;
+    inputPixel[2] = 1.0 / inputPixel[0];
+    inputPixel[3] = 1.0 / inputPixel[1];
+    inputClamp[0] = 0.5 * inputPixel[2];
+    inputClamp[1] = 0.5 * inputPixel[3];
+    inputClamp[2] = state.sourceFrame.width * inputSize[2] - 0.5 * inputPixel[2];
+    inputClamp[3] = state.sourceFrame.height * inputSize[3] - 0.5 * inputPixel[3];
+
+    if (state.legacy) {
+      const filterArea = globalUniforms.filterArea;
+      filterArea[0] = state.destinationFrame.width;
+      filterArea[1] = state.destinationFrame.height;
+      filterArea[2] = state.sourceFrame.x;
+      filterArea[3] = state.sourceFrame.y;
+      globalUniforms.filterClamp = globalUniforms.inputClamp;
+    }
+
+    this.globalUniforms.update();
+    const lastState = filterStack[filterStack.length - 1];
+
+    if (state.renderTexture.framebuffer.multisample > 1) {
+      this.renderer.framebuffer.blit();
+    }
+
+    if (filters.length === 1) {
+      filters[0].apply(this, state.renderTexture, lastState.renderTexture, CLEAR_MODES$3.BLEND, state);
+      this.returnFilterTexture(state.renderTexture);
+    } else {
+      let flip = state.renderTexture;
+      let flop = this.getOptimalFilterTexture(flip.width, flip.height, state.resolution);
+      flop.filterFrame = flip.filterFrame;
+      let i = 0;
+
+      for (i = 0; i < filters.length - 1; ++i) {
+        filters[i].apply(this, flip, flop, CLEAR_MODES$3.CLEAR, state);
+        const t = flip;
+        flip = flop;
+        flop = t;
+      }
+
+      filters[i].apply(this, flip, lastState.renderTexture, CLEAR_MODES$3.BLEND, state);
+      this.returnFilterTexture(flip);
+      this.returnFilterTexture(flop);
+    }
+
+    let backdropFree = false;
+
+    for (let i = 0; i < filters.length; i++) {
+      if (filters[i]._backdropActive) {
+        const bName = filters[i].backdropUniformName;
+
+        if (!backdropFree) {
+          this.returnFilterTexture(filters[i].uniforms[bName]);
+          backdropFree = true;
+        }
+
+        filters[i].uniforms[bName] = null;
+        filters[i]._backdropActive = false;
+      }
+    }
+
+    state.clear();
+    this.statePool.push(state);
+  }
+
+  let hadBackbufferError = false;
+
+  function prepareBackdrop(bounds, flipY) {
+    const renderer = this.renderer;
+    const renderTarget = renderer.renderTexture.current;
+    const fr = this.renderer.renderTexture.sourceFrame;
+    const tf = renderer.projection.transform || Matrix.IDENTITY;
+    let resolution = 1;
+
+    if (renderTarget) {
+      resolution = renderTarget.baseTexture.resolution;
+      flipY[1] = 1.0;
+    } else {
+      if (!renderer.useContextAlpha) {
+        if (!hadBackbufferError) {
+          hadBackbufferError = true;
+          console.warn('pixi-picture: you are trying to use Blend Filter on main framebuffer! That wont work.');
+        }
+
+        return null;
+      }
+
+      resolution = renderer.resolution;
+      flipY[1] = -1.0;
+    }
+
+    const x = Math.round((bounds.x - fr.x + tf.tx) * resolution);
+    const dy = bounds.y - fr.y + tf.ty;
+    const y = Math.round((flipY[1] < 0.0 ? fr.height - (dy + bounds.height) : dy) * resolution);
+    const w = Math.round(bounds.width * resolution);
+    const h = Math.round(bounds.height * resolution);
+    const gl = renderer.gl;
+    const rt = this.getOptimalFilterTexture(w, h, 1);
+
+    if (flipY[1] < 0) {
+      flipY[0] = h / rt.height;
+    }
+
+    rt.filterFrame = fr;
+    rt.setResolution(resolution);
+    renderer.texture.bindForceLocation(rt.baseTexture, 0);
+    gl.copyTexSubImage2D(gl.TEXTURE_2D, 0, 0, 0, x, y, w, h);
+    return rt;
+  }
+
+  function applyMixins() {
+    TextureSystem.prototype.bindForceLocation = bindForceLocation;
+    FilterSystem.prototype.push = push;
+    FilterSystem.prototype.pushWithCheck = pushWithCheck;
+    FilterSystem.prototype.pop = pop;
+    FilterSystem.prototype.prepareBackdrop = prepareBackdrop;
+  }
+
+  applyMixins();
 
   /* global */
 
@@ -65548,9 +66847,47 @@
     },
     createContainerElements: function createContainerElements() {
       this.transformedElement = this.layerElement;
+      this.setBlendMode();
     },
     createContent: function createContent() {},
-    setBlendMode: function setBlendMode() {},
+    setBlendMode: function setBlendMode(target) {
+      // console.log('PXBaseElement::setBlendMode()', this.data.nm, this.data.bm, target);
+      if (this.data.bm) {
+        var blendTarget = target || this.baseElement || this.layerElement;
+        var blendModeValue = getBlendMode(this.data.bm);
+
+        switch (blendModeValue) {
+          case 'screen':
+            blendTarget.blendMode = BLEND_MODES$3.NORMAL;
+            break;
+
+          case 'lighten':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$3.LIGHTEN);
+            break;
+
+          case 'add':
+            blendTarget.blendMode = BLEND_MODES$3.ADD;
+            break;
+
+          case 'multiply':
+            blendTarget.blendMode = BLEND_MODES$3.MULTIPLY;
+            break;
+
+          case 'hard-light':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$3.HARD_LIGHT);
+            break;
+
+          case 'soft-light':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$3.SOFT_LIGHT);
+            break;
+
+          case 'normal':
+          default:
+            blendTarget.blendMode = BLEND_MODES$3.NORMAL;
+            break;
+        }
+      }
+    },
     createRenderableComponents: function createRenderableComponents() {
       this.maskManager = new PXMaskElement(this.data, this);
     },
@@ -65569,16 +66906,6 @@
       }
     },
     renderElement: function renderElement() {
-      if (this.finalTransform && this.finalTransform.mProp.container.data.nm === 'fxtex_pack_cut-up_gem.png') {
-        console.log('PXBaseElement::renderElement', this, this.transformedElement, this.finalTransform);
-        console.log('PXBaseElement::render alpha >>', this.finalTransform && this.finalTransform.mProp); // TODO: Somehow apply Ae parent linking / transform
-        // const parentData = this.comp.layers[this.data.parent - 1];
-        // console.log('parent layer', parentData);
-      } // console.log('>> to2DCss', this.finalTransform.mat.to2dCSS());
-      // console.log('>> toCss', this.finalTransform.mat.toCSS());
-      // var transformedElementStyle = this.transformedElement ? this.transformedElement.style : {};
-
-
       if (this.finalTransform._matMdf) {
         var matProps = this.finalTransform.mat.props;
         var matrix = new Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
@@ -65587,27 +66914,15 @@
 
       if (this.finalTransform._opMdf) {
         this.transformedElement.alpha = this.finalTransform.mProp.o.v;
-      } // if (this.finalTransform._matMdf) {
-      //   var matrixValue = this.finalTransform.mat.toCSS();
-      //   transformedElementStyle.transform = matrixValue;
-      //   transformedElementStyle.webkitTransform = matrixValue;
-      // }
-      // if (this.finalTransform._opMdf) {
-      //   transformedElementStyle.opacity = this.finalTransform.mProp.o.v;
-      // }
-
+      }
     },
     renderFrame: function renderFrame() {
-      console.log('PXBaseElement::renderFrame', this.hidden, this.data.hd);
-
       if (this.hidden || this.data.hd) {
         return;
       }
 
       this.renderTransform();
       this.renderRenderable();
-      this.setBlendMode(); // ?
-
       this.renderElement();
       this.renderInnerContent();
     },
@@ -65621,32 +66936,58 @@
   PXBaseElement.prototype.buildElementParenting = BaseRenderer.prototype.buildElementParenting;
 
   PXBaseElement.prototype.prepareFrame = function (num) {
-    console.log('PXBaseElement::prepareFrame() frame:', num);
+    // console.log('PXBaseElement::prepareFrame() frame:', num);
     this._mdf = false;
     this.prepareRenderableFrame(num);
     this.prepareProperties(num, this.isInRange);
     this.checkTransparency();
-  }; // RenderableDOMElement.prototype.prepareFrame;
+  };
+
+  /**
+   * Blend Mode: Lighten
+   * This blend mode is using pixi/picture to define the full shader code.
+   */
+  // Blending code for lighten blend mode
+
+  var LIGHTEN_SHADER_PART = "\nvec3 B = max(Cs, Cb);\n"; // Create globally shared instance of blend filter. This is a
+  // good optimization if you're going to use the filter on multiple
+  // objects.
+
+  var LIGHTEN_SHADER_FULL = NPM_BLEND.replace('%NPM_BLEND%', LIGHTEN_SHADER_PART);
+  var lightenBlendFilter = new BlendFilter({
+    blendCode: LIGHTEN_SHADER_FULL
+  });
+  blendFullArray[BLEND_MODES$3.LIGHTEN] = LIGHTEN_SHADER_FULL;
+
+  // eslint-disable-next-line no-unused-vars
+
+  var blends = [lightenBlendFilter];
 
   function PXImageElement(data, globalData, comp) {
-    console.log('PXImageElement::constructor', data);
+    this.isAnimation = false;
     this.assetData = globalData.getAssetData(data.refId);
     this.initElement(data, globalData, comp);
   }
 
   extendPrototype([BaseElement, TransformElement, PXBaseElement, HierarchyElement, FrameElement, RenderableElement], PXImageElement);
   PXImageElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
+  PXImageElement.prototype.setBlendMode = PXBaseElement.prototype.setBlendMode;
 
   PXImageElement.prototype.createContent = function () {
-    console.log('PXImageElement::createContent', this.assetData, this.data.hasMask); // const imageAsset = this.globalData.imageLoader.getAsset(this.assetData);
-    // console.log('PXImageElement:: Image Asset', imageAsset, this.assetData);
-
+    // const imageAsset = this.globalData.imageLoader.getAsset(this.assetData);
     var pixiLoader = Loader.shared;
-    var pixiTexture = pixiLoader.resources[this.assetData.id].texture; // console.log('Check pixi loader', pixiTexture, pixiLoader, imageAsset);
-    // this.img = PIXI.Sprite.from(pixiTexture); // new PIXI.Sprite();
 
-    this.img = new Sprite(pixiTexture); // this.img.width = this.assetData.w;
-    // this.img.height = this.assetData.h;
+    if (this.assetData.p.indexOf('.gif') >= 0) {
+      this.isAnimation = true; // TODO: Sync the gif frame to the renderFrame method
+
+      var animation = pixiLoader.resources[this.assetData.id].animation; // animation.autoUpdate = false;
+      // animation.currentFrame = 5;
+
+      this.img = animation.clone(); // new PIXI.Sprite(animation.texture);
+    } else {
+      var pixiTexture = pixiLoader.resources[this.assetData.id].texture;
+      this.img = new Sprite$1(pixiTexture);
+    }
 
     var imgW = this.img.width;
     var imgH = this.img.height;
@@ -65670,29 +67011,25 @@
     this.img.height = heightCrop;
     this.img.renderable = false;
     this.layerElement.addChild(this.img);
-    console.log('PXImageElement:: done created image', this.hidden);
+    this.setBlendMode(this.img);
   };
 
-  PXImageElement.prototype.renderInnerContent = function () {
-    // const matProps = this.finalTransform.mat.props;
-    // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
-    // this.img.transform.setFromMatrix(matrix);
-    // console.log('PXImage::renderInnerConent', matrix);
-    console.log('PXImageElement::renderInnerContent()', this.img.renderable, this.img.width);
-  };
+  PXImageElement.prototype.renderInnerContent = function () {};
 
   PXImageElement.prototype.showInnerContent = function () {
-    // this.globalData.pixiApplication.stage.addChild(this.img);
-    console.log('PXImageElement::showInnerContent()');
+    // console.log('PXImageElement::showInnerContent()');
     this.baseElement.renderable = true;
     this.img.renderable = true;
   };
 
   PXImageElement.prototype.hideInnerContent = function () {
-    // this.globalData.pixiApplication.stage.addChild(this.img);
-    console.log('PXImageElement::hideInnerContent()');
+    // console.log('PXImageElement::hideInnerContent()');
     this.baseElement.renderable = false;
     this.img.renderable = false;
+  };
+
+  PXImageElement.prototype.createContainerElements = function () {
+    this.transformedElement = this.layerElement;
   };
 
   PXImageElement.prototype.destroy = function () {
@@ -66242,8 +67579,10 @@
     this.itemsData.length = 0;
   };
 
+  Loader.registerPlugin(O);
+
   function PixiRendererBase(animationItem, config) {
-    console.log('PIXIRendererBase::constructor', animationItem, config);
+    // console.log('PIXIRendererBase::constructor', animationItem, config);
     this.animationItem = animationItem;
     this.layers = null;
     this.renderConfig = {
@@ -66294,18 +67633,15 @@
   PixiRendererBase.prototype.configAnimation = function (animData) {
     var _this = this;
 
-    console.log('PixiRendererBase::configAnimation() Pixi Animation', animData, this.renderConfig);
-
+    // console.log('PixiRendererBase::configAnimation() Pixi Animation', animData, this.renderConfig);
     if (!this.renderConfig.preserveAspectRatio) {
       this.renderConfig.preserveAspectRatio = 'none';
     }
 
     if (this.renderConfig.pixiApplication) {
       // Use existing pixi
-      console.log('PixiRendererBase::use existing pixi!');
       this.pixiApplication = this.renderConfig.pixiApplication;
     } else {
-      console.log('PixiRendererBase::new pixi');
       this.pixiApplication = new Application({
         width: animData.w,
         height: animData.h,
@@ -66344,20 +67680,21 @@
     this.globalData.transformCanvas = this.transformCanvas;
     this.elements = createSizedArray(animData.layers.length);
     this.updateContainerSize(); // Preload the assets
+    // console.log('PixiRendererBase::configAnimation()', animData, this.pixiApplication);
 
-    console.log('PixiRendererBase::configAnimation()', animData, this.pixiApplication);
     var pixiLoader = Loader.shared;
     animData.assets.forEach(function (asset) {
       if (asset.u) {
         // const assetPath = `${asset.u}${asset.p}`;
-        var assetPath = _this.globalData.getAssetsPath(asset);
+        var assetPath = _this.globalData.getAssetsPath(asset); // console.log(`PixiRendererBase::load asset, ${asset.id}, ${assetPath}`, asset);
 
-        console.log("PixiRendererBase::load asset, ".concat(asset.id, ", ").concat(assetPath), asset);
+
         pixiLoader.add(asset.id, assetPath);
       }
     });
-    pixiLoader.load(function (loader, resources) {
-      console.log('PixiLoader::Assets loaded!', loader, resources);
+    pixiLoader.load(function () {
+      // loader, resources
+      // console.log('PixiLoader::Assets loaded!', loader, resources);
       _this.globalData.isAssetsLoaded = true;
 
       _this.animationItem.checkLoaded();
@@ -66365,21 +67702,13 @@
   };
 
   PixiRendererBase.prototype.ctxTransform = function (props) {
-    console.log('PixiRendererBase::ctxTransform()', props, this.canvasContext);
-
+    // console.log('PixiRendererBase::ctxTransform()', props, this.canvasContext);
     if (props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {
       return;
     }
 
     if (!this.renderConfig.clearCanvas) {// this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
-    } // this.transformMat.cloneFromProps(props);
-    // var cProps = this.contextData.cTr.props;
-    // this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]);
-    // // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-    // this.contextData.cTr.cloneFromProps(this.transformMat.props);
-    // var trProps = this.contextData.cTr.props;
-    // this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
-
+    }
   };
 
   PixiRendererBase.prototype.destroy = function () {
@@ -66405,7 +67734,7 @@
   };
 
   PixiRendererBase.prototype.updateContainerSize = function () {
-    console.log('PixiRendererBase::updateContainerSize()');
+    // console.log('PixiRendererBase::updateContainerSize()');
     var elementWidth;
     var elementHeight;
 
@@ -66417,26 +67746,18 @@
     } else {
       elementWidth = this.data.w * (this.renderConfig.dpr || 1);
       elementHeight = this.data.h * (this.renderConfig.dpr || 1);
-    }
+    } // var ratio = this.data.w / this.data.h;
+    // var w = 1;
+    // var h = 1;
+    // if (window.innerWidth / window.innerHeight >= ratio) {
+    //   w = window.innerHeight * ratio;
+    //   h = window.innerHeight;
+    // } else {
+    //   w = window.innerWidth;
+    //   h = window.innerWidth / ratio;
+    // }
 
-    var ratio = this.data.w / this.data.h;
-    var w = 1;
-    var h = 1;
 
-    if (window.innerWidth / window.innerHeight >= ratio) {
-      w = window.innerHeight * ratio;
-      h = window.innerHeight;
-    } else {
-      w = window.innerWidth;
-      h = window.innerWidth / ratio;
-    }
-
-    console.log('PixiRendererBase::resize', w, h, ratio, this.renderConfig, this.data, this.pixiApplication); // elementWidth = w;
-    // elementHeight = h;
-
-    console.log('PixiRendererBase::has container', this.animationItem.wrapper, this.animationItem.container);
-    console.log('PixiRendererBase::resize next', elementWidth, elementHeight);
-    console.log('PixiRendererBase::resize current', this.pixiApplication.width, this.pixiApplication.height);
     var elementRel;
     var animationRel;
 
@@ -66484,25 +67805,10 @@
       this.transformCanvas.ty = 0;
     }
 
-    this.transformCanvas.props = [this.transformCanvas.sx, 0, 0, 0, 0, this.transformCanvas.sy, 0, 0, 0, 0, 1, 0, this.transformCanvas.tx, this.transformCanvas.ty, 0, 1]; // var i, len = this.elements.length;
-    // for(i=0;i<len;i+=1){
-    //     if(this.elements[i] && this.elements[i].data.ty === 0){
-    //         this.elements[i].resize(this.globalData.transformCanvas);
-    //     }
-    // }
-    // this.ctxTransform(this.transformCanvas.props);
-    // this.pixiApplication.renderer.resize(this.transformCanvas.w, this.transformCanvas.h);
-
-    console.log('Updating size', w, h, this.transformCanvas);
+    this.transformCanvas.props = [this.transformCanvas.sx, 0, 0, 0, 0, this.transformCanvas.sy, 0, 0, 0, 0, 1, 0, this.transformCanvas.tx, this.transformCanvas.ty, 0, 1];
     this.pixiApplication.renderer.view.style.width = '100%'; // elementWidth + 'px';
 
     this.pixiApplication.renderer.view.style.height = '100%'; // elementHeight + 'px';
-    // this.canvasContext.beginPath();
-    // this.canvasContext.rect(0, 0, this.transformCanvas.w, this.transformCanvas.h);
-    // this.canvasContext.closePath();
-    // this.canvasContext.clip();
-
-    console.log('Render frame next!'); // this.renderFrame(this.renderedFrame, true);
   };
 
   PixiRendererBase.prototype.buildItem = function (pos) {
@@ -66512,17 +67818,14 @@
       return;
     }
 
-    console.log('PixiRendererBase::buildItem()', pos, this.layers[pos], this.globalData);
     var element = this.createItem(this.layers[pos], this, this.globalData);
     elements[pos] = element;
     element.initExpressions();
     this.appendElementInPos(element, pos);
-    console.log('PIXIRendererBase::buildItem() tt', this.layers[pos].tt);
   };
 
   PixiRendererBase.prototype.checkPendingElements = function () {
-    console.log('PixiRendererBase::checkPendingElements()', this.pendingElements);
-
+    // console.log('PixiRendererBase::checkPendingElements()', this.pendingElements);
     while (this.pendingElements.length) {
       var element = this.pendingElements.pop();
       element.checkParenting();
@@ -66538,17 +67841,15 @@
     this.globalData.frameNum = num - this.animationItem._isFirstFrame;
     this.globalData.frameId += 1;
     this.globalData._mdf = !this.renderConfig.clearCanvas || forceRender;
-    this.globalData.projectInterface.currentFrame = num;
-    console.log('--------');
-    console.log('PixiRendererBase::render frame: ', num, this.layers, this.globalData._mdf);
+    this.globalData.projectInterface.currentFrame = num; // console.log('--------');
+    // console.log('PixiRendererBase::render frame: ', num, this.layers, this.globalData._mdf);
+
     var i;
     var len = this.layers.length;
 
     if (!this.completeLayers) {
       this.checkLayers(num);
     }
-
-    console.log('prep and render..');
 
     for (i = 0; i < len; i += 1) {
       if (this.completeLayers && this.elements[i]) {

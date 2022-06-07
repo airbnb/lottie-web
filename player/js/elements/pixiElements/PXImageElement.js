@@ -9,29 +9,37 @@ import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import RenderableElement from '../helpers/RenderableElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
+import lightenBlendFilter from './blendModes/Lighten';
+
+// TODO: Find a nicer home for custom blend modes to be included
+// eslint-disable-next-line no-unused-vars
+const blends = [lightenBlendFilter];
 
 function PXImageElement(data, globalData, comp) {
-  console.log('PXImageElement::constructor', data);
+  this.isAnimation = false;
   this.assetData = globalData.getAssetData(data.refId);
   this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, PXBaseElement, HierarchyElement, FrameElement, RenderableElement], PXImageElement);
 
 PXImageElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
+PXImageElement.prototype.setBlendMode = PXBaseElement.prototype.setBlendMode;
 
 PXImageElement.prototype.createContent = function () {
-  console.log('PXImageElement::createContent', this.assetData, this.data.hasMask);
-
   // const imageAsset = this.globalData.imageLoader.getAsset(this.assetData);
-  // console.log('PXImageElement:: Image Asset', imageAsset, this.assetData);
 
   const pixiLoader = PIXI.Loader.shared;
-  const pixiTexture = pixiLoader.resources[this.assetData.id].texture;
-  // console.log('Check pixi loader', pixiTexture, pixiLoader, imageAsset);
-  // this.img = PIXI.Sprite.from(pixiTexture); // new PIXI.Sprite();
-  this.img = new PIXI.Sprite(pixiTexture);
-  // this.img.width = this.assetData.w;
-  // this.img.height = this.assetData.h;
+  if (this.assetData.p.indexOf('.gif') >= 0) {
+    this.isAnimation = true;
+    // TODO: Sync the gif frame to the renderFrame method
+    const animation = pixiLoader.resources[this.assetData.id].animation;
+    // animation.autoUpdate = false;
+    // animation.currentFrame = 5;
+    this.img = animation.clone(); // new PIXI.Sprite(animation.texture);
+  } else {
+    const pixiTexture = pixiLoader.resources[this.assetData.id].texture;
+    this.img = new PIXI.Sprite(pixiTexture);
+  }
 
   var imgW = this.img.width;
   var imgH = this.img.height;
@@ -55,29 +63,26 @@ PXImageElement.prototype.createContent = function () {
   this.img.renderable = false;
 
   this.layerElement.addChild(this.img);
-  console.log('PXImageElement:: done created image', this.hidden);
+  this.setBlendMode(this.img);
 };
 
 PXImageElement.prototype.renderInnerContent = function () {
-  // const matProps = this.finalTransform.mat.props;
-  // const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
-  // this.img.transform.setFromMatrix(matrix);
-  // console.log('PXImage::renderInnerConent', matrix);
-  console.log('PXImageElement::renderInnerContent()', this.img.renderable, this.img.width);
 };
 
 PXImageElement.prototype.showInnerContent = function () {
-  // this.globalData.pixiApplication.stage.addChild(this.img);
-  console.log('PXImageElement::showInnerContent()');
+  // console.log('PXImageElement::showInnerContent()');
   this.baseElement.renderable = true;
   this.img.renderable = true;
 };
 
 PXImageElement.prototype.hideInnerContent = function () {
-  // this.globalData.pixiApplication.stage.addChild(this.img);
-  console.log('PXImageElement::hideInnerContent()');
+  // console.log('PXImageElement::hideInnerContent()');
   this.baseElement.renderable = false;
   this.img.renderable = false;
+};
+
+PXImageElement.prototype.createContainerElements = function () {
+  this.transformedElement = this.layerElement;
 };
 
 PXImageElement.prototype.destroy = function () {

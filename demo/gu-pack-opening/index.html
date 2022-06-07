@@ -49,8 +49,9 @@
     };
 
     document.addEventListener('click', (event) => {
-        console.log('doc click');
-        anim.stop();
+        console.log('Reset animation');
+        anim.goToAndStop(1);
+        anim.play();
     });
 </script>
 </body>
