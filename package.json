@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "npx http-server -o /demo/gu-pack-opening",
+    "start:audio": "npx http-server -o /demo/gu-pack-opening-audio",
     "build": "npx eslint ./player/js/**/* && rollup -c && node tasks/build_worker",
     "build_test": "node tasks/build.js",
     "lint": "npx eslint ./player/js/**/*",
