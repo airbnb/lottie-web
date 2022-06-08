@@ -10,10 +10,13 @@ import FrameElement from '../helpers/FrameElement';
 import RenderableElement from '../helpers/RenderableElement';
 import RenderableDOMElement from '../helpers/RenderableDOMElement';
 import lightenBlendFilter from './blendModes/Lighten';
+import colorDodgeBlendFilter from './blendModes/ColorDodge';
+import colorBurnBlendFilter from './blendModes/ColorBurn';
+import linearBurnBlendFilter from './blendModes/LinearBurn';
 
 // TODO: Find a nicer home for custom blend modes to be included
 // eslint-disable-next-line no-unused-vars
-const blends = [lightenBlendFilter];
+const blends = [lightenBlendFilter, colorDodgeBlendFilter, colorBurnBlendFilter, linearBurnBlendFilter];
 
 function PXImageElement(data, globalData, comp) {
   this.isAnimation = false;
