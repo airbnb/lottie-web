@@ -39,6 +39,19 @@ PXBaseElement.prototype = {
           blendTarget.filters = getBlendFilterArray(BLEND_MODES.LIGHTEN);
           break;
 
+        case 'color-dodge':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.COLOR_DODGE);
+          break;
+
+        case 'color-burn':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.COLOR_BURN);
+          break;
+
+        case 'linear-burn':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.LINEAR_BURN);
+          break;
+
+        case 'linear-dodge':
         case 'add':
           blendTarget.blendMode = BLEND_MODES.ADD;
           break;
