@@ -9,8 +9,7 @@ import BaseRenderer from '../../renderers/BaseRenderer';
 import HBaseElement from '../htmlElements/HBaseElement';
 import getBlendMode from '../../utils/helpers/blendModes';
 
-function PXBaseElement() {
-}
+function PXBaseElement() {}
 
 PXBaseElement.prototype = {
   createElements: function () {},
@@ -39,6 +38,10 @@ PXBaseElement.prototype = {
           blendTarget.filters = getBlendFilterArray(BLEND_MODES.LIGHTEN);
           break;
 
+        case 'darken':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.DARKEN);
+          break;
+
         case 'color-dodge':
           blendTarget.filters = getBlendFilterArray(BLEND_MODES.COLOR_DODGE);
           break;
@@ -51,7 +54,6 @@ PXBaseElement.prototype = {
           blendTarget.filters = getBlendFilterArray(BLEND_MODES.LINEAR_BURN);
           break;
 
-        case 'linear-dodge':
         case 'add':
           blendTarget.blendMode = BLEND_MODES.ADD;
           break;
@@ -68,7 +70,14 @@ PXBaseElement.prototype = {
           blendTarget.filters = getBlendFilterArray(BLEND_MODES.SOFT_LIGHT);
           break;
 
-        case 'normal':
+        case 'difference':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.DIFFERENCE);
+          break;
+
+        case 'exclusion':
+          blendTarget.filters = getBlendFilterArray(BLEND_MODES.EXCLUSION);
+          break;
+
         default:
           blendTarget.blendMode = BLEND_MODES.NORMAL;
           break;
@@ -95,7 +104,14 @@ PXBaseElement.prototype = {
   renderElement: function () {
     if (this.finalTransform._matMdf) {
       const matProps = this.finalTransform.mat.props;
-      const matrix = new PIXI.Matrix(matProps[0], matProps[1], matProps[4], matProps[5], matProps[12], matProps[13]);
+      const matrix = new PIXI.Matrix(
+        matProps[0],
+        matProps[1],
+        matProps[4],
+        matProps[5],
+        matProps[12],
+        matProps[13]
+      );
       this.transformedElement.transform.setFromMatrix(matrix);
       // this.transformedElement.updateTransform();
     }

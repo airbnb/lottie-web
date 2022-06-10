@@ -69312,6 +69312,10 @@ else
             blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.LIGHTEN);
             break;
 
+          case 'darken':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.DARKEN);
+            break;
+
           case 'color-dodge':
             blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.COLOR_DODGE);
             break;
@@ -69324,7 +69328,6 @@ else
             blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.LINEAR_BURN);
             break;
 
-          case 'linear-dodge':
           case 'add':
             blendTarget.blendMode = BLEND_MODES$4.ADD;
             break;
@@ -69341,7 +69344,14 @@ else
             blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.SOFT_LIGHT);
             break;
 
-          case 'normal':
+          case 'difference':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.DIFFERENCE);
+            break;
+
+          case 'exclusion':
+            blendTarget.filters = getBlendFilterArray(BLEND_MODES$4.EXCLUSION);
+            break;
+
           default:
             blendTarget.blendMode = BLEND_MODES$4.NORMAL;
             break;
@@ -69467,9 +69477,57 @@ else
   });
   blendFullArray[BLEND_MODES$4.LINEAR_BURN] = LINEAR_BURN_SHADER_FULL;
 
+  /**
+   * Blend Mode: Darken
+   * This blend mode is using pixi/picture to define the full shader code.
+   */
+  // Blending code for darken blend mode
+
+  var DARKEN_SHADER_PART = "\nvec3 B = min(Cs, Cb);\n"; // Create globally shared instance of blend filter. This is a
+  // good optimization if you're going to use the filter on multiple
+  // objects.
+
+  var DARKEN_SHADER_FULL = NPM_BLEND.replace('%NPM_BLEND%', DARKEN_SHADER_PART);
+  var darkenBlendFilter = new BlendFilter({
+    blendCode: DARKEN_SHADER_FULL
+  });
+  blendFullArray[BLEND_MODES$4.DARKEN] = DARKEN_SHADER_FULL;
+
+  /**
+   * Blend Mode: Difference
+   * This blend mode is using pixi/picture to define the full shader code.
+   */
+  // Blending code for difference blend mode
+
+  var DIFFERENCE_SHADER_PART = "\nvec3 B = abs(Cs, Cb);\n"; // Create globally shared instance of blend filter. This is a
+  // good optimization if you're going to use the filter on multiple
+  // objects.
+
+  var DIFFERENCE_SHADER_FULL = NPM_BLEND.replace('%NPM_BLEND%', DIFFERENCE_SHADER_PART);
+  var differenceBlendFilter = new BlendFilter({
+    blendCode: DIFFERENCE_SHADER_FULL
+  });
+  blendFullArray[BLEND_MODES$4.DIFFERENCE] = DIFFERENCE_SHADER_FULL;
+
+  /**
+   * Blend Mode: Exclusion
+   * This blend mode is using pixi/picture to define the full shader code.
+   */
+  // Blending code for exclusion blend mode
+
+  var EXCLUSION_SHADER_PART = "\nvec3 B = abs(Cs, Cb);\n"; // Create globally shared instance of blend filter. This is a
+  // good optimization if you're going to use the filter on multiple
+  // objects.
+
+  var EXCLUSION_SHADER_FULL = NPM_BLEND.replace('%NPM_BLEND%', EXCLUSION_SHADER_PART);
+  var exclusionBlendFilter = new BlendFilter({
+    blendCode: EXCLUSION_SHADER_FULL
+  });
+  blendFullArray[BLEND_MODES$4.EXCLUSION] = EXCLUSION_SHADER_FULL;
+
   // eslint-disable-next-line no-unused-vars
 
-  var blends = [lightenBlendFilter, colorDodgeBlendFilter, colorBurnBlendFilter, linearBurnBlendFilter];
+  var blends = [lightenBlendFilter, colorDodgeBlendFilter, colorBurnBlendFilter, linearBurnBlendFilter, darkenBlendFilter, differenceBlendFilter, exclusionBlendFilter];
 
   function PXImageElement(data, globalData, comp) {
     this.isAnimation = false;

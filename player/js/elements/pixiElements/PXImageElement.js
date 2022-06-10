@@ -1,7 +1,5 @@
 import * as PIXI from 'pixi.js';
-import {
-  extendPrototype,
-} from '../../utils/functionExtensions';
+import { extendPrototype } from '../../utils/functionExtensions';
 import PXBaseElement from './PXBaseElement';
 import BaseElement from '../BaseElement';
 import TransformElement from '../helpers/TransformElement';
@@ -13,17 +11,38 @@ import lightenBlendFilter from './blendModes/Lighten';
 import colorDodgeBlendFilter from './blendModes/ColorDodge';
 import colorBurnBlendFilter from './blendModes/ColorBurn';
 import linearBurnBlendFilter from './blendModes/LinearBurn';
+import darkenBlendFilter from './blendModes/Darken';
+import differenceBlendFilter from './blendModes/Difference';
+import exclusionBlendFilter from './blendModes/Exclusion';
 
 // TODO: Find a nicer home for custom blend modes to be included
 // eslint-disable-next-line no-unused-vars
-const blends = [lightenBlendFilter, colorDodgeBlendFilter, colorBurnBlendFilter, linearBurnBlendFilter];
+const blends = [
+  lightenBlendFilter,
+  colorDodgeBlendFilter,
+  colorBurnBlendFilter,
+  linearBurnBlendFilter,
+  darkenBlendFilter,
+  differenceBlendFilter,
+  exclusionBlendFilter,
+];
 
 function PXImageElement(data, globalData, comp) {
   this.isAnimation = false;
   this.assetData = globalData.getAssetData(data.refId);
   this.initElement(data, globalData, comp);
 }
-extendPrototype([BaseElement, TransformElement, PXBaseElement, HierarchyElement, FrameElement, RenderableElement], PXImageElement);
+extendPrototype(
+  [
+    BaseElement,
+    TransformElement,
+    PXBaseElement,
+    HierarchyElement,
+    FrameElement,
+    RenderableElement,
+  ],
+  PXImageElement
+);
 
 PXImageElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
 PXImageElement.prototype.setBlendMode = PXBaseElement.prototype.setBlendMode;
@@ -51,7 +70,10 @@ PXImageElement.prototype.createContent = function () {
   var widthCrop;
   var heightCrop;
   var par = this.assetData.pr || this.globalData.renderConfig.imagePreserveAspectRatio;
-  if ((imgRel > canvasRel && par === 'xMidYMid slice') || (imgRel < canvasRel && par !== 'xMidYMid slice')) {
+  if (
+    (imgRel > canvasRel && par === 'xMidYMid slice')
+    || (imgRel < canvasRel && par !== 'xMidYMid slice')
+  ) {
     heightCrop = imgH;
     widthCrop = heightCrop * canvasRel;
   } else {
@@ -69,8 +91,7 @@ PXImageElement.prototype.createContent = function () {
   this.setBlendMode(this.img);
 };
 
-PXImageElement.prototype.renderInnerContent = function () {
-};
+PXImageElement.prototype.renderInnerContent = function () {};
 
 PXImageElement.prototype.showInnerContent = function () {
   // console.log('PXImageElement::showInnerContent()');
