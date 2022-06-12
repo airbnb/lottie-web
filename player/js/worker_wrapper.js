@@ -725,16 +725,23 @@ var lottie = (function () {
           animation.container = animationParams.container;
           delete animationParams.container;
         }
-        if (animationParams.renderer === 'canvas' && !animationParams.rendererSettings.canvas) {
-          var canvas = document.createElement('canvas');
-          animation.container.appendChild(canvas);
-          canvas.width = animationParams.animationData.w;
-          canvas.height = animationParams.animationData.h;
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          var offscreen = canvas.transferControlToOffscreen();
-          transferedObjects.push(offscreen);
+        if (animationParams.renderer === 'canvas') {
+          var canvas = animationParams.rendererSettings.canvas;
+
+          // If no custom canvas was passed
+          if (!canvas) {
+            canvas = document.createElement('canvas');
+            animation.container.appendChild(canvas);
+            canvas.width = animationParams.animationData.w;
+            canvas.height = animationParams.animationData.h;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+          }
+
+          // Transfer control to offscreen if it's not already
+          var offscreen = canvas instanceof OffscreenCanvas ? canvas : canvas.transferControlToOffscreen();
           animationParams.rendererSettings.canvas = offscreen;
+          transferedObjects.push(animationParams.rendererSettings.canvas);
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
