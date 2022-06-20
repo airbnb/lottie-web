@@ -9,11 +9,12 @@ import {
 } from '../../../utils/functionExtensions';
 
 function SVGDropShadowEffect(filter, filterManager, elem, id, source) {
-  var filterSize = filterManager.container.globalData.renderConfig.filterSize;
-  filter.setAttribute('x', filterSize.x);
-  filter.setAttribute('y', filterSize.y);
-  filter.setAttribute('width', filterSize.width);
-  filter.setAttribute('height', filterSize.height);
+  var globalFilterSize = filterManager.container.globalData.renderConfig.filterSize;
+  var filterSize = filterManager.data.fs || globalFilterSize;
+  filter.setAttribute('x', filterSize.x || globalFilterSize.x);
+  filter.setAttribute('y', filterSize.y || globalFilterSize.y);
+  filter.setAttribute('width', filterSize.width || globalFilterSize.width);
+  filter.setAttribute('height', filterSize.height || globalFilterSize.height);
   this.filterManager = filterManager;
 
   var feGaussianBlur = createNS('feGaussianBlur');
