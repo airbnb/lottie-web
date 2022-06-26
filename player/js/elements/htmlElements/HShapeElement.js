@@ -191,7 +191,13 @@ HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox)
 HShapeElement.prototype.expandStrokeBoundingBox = function (widthProperty, boundingBox) {
   var width = 0;
   if (widthProperty.keyframes) {
-    width = Math.max(...widthProperty.keyframes.map(kf => (kf.s ?? 0) * widthProperty.mult));
+    for ( var i = 0; i < widthProperty.keyframes.length; i++ ) {
+      var kfw = widthProperty.keyframes[i].s;
+      if ( kfw > width ) {
+        width = kfw;
+      }
+    }
+    width *= widthProperty.mult;
   } else {
     width = widthProperty.v * widthProperty.mult;
   }
