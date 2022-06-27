@@ -195,7 +195,7 @@ CanvasRendererBase.prototype.configAnimation = function (animData) {
   this.updateContainerSize();
 };
 
-CanvasRendererBase.prototype.updateContainerSize = function () {
+CanvasRendererBase.prototype.updateContainerSize = function (width, height) {
   this.reset();
   var elementWidth;
   var elementHeight;
@@ -205,8 +205,8 @@ CanvasRendererBase.prototype.updateContainerSize = function () {
     this.animationItem.container.setAttribute('width', elementWidth * this.renderConfig.dpr);
     this.animationItem.container.setAttribute('height', elementHeight * this.renderConfig.dpr);
   } else {
-    elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
-    elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
+    elementWidth = width || this.canvasContext.canvas.width * this.renderConfig.dpr;
+    elementHeight = height || this.canvasContext.canvas.height * this.renderConfig.dpr;
   }
   var elementRel;
   var animationRel;
