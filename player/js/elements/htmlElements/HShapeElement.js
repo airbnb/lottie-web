@@ -182,8 +182,30 @@ HShapeElement.prototype.calculateBoundingBox = function (itemsData, boundingBox)
       this.calculateShapeBoundingBox(itemsData[i], boundingBox);
     } else if (itemsData[i] && itemsData[i].it) {
       this.calculateBoundingBox(itemsData[i].it, boundingBox);
+    } else if (itemsData[i] && itemsData[i].style && itemsData[i].w ) {
+      this.expandStrokeBoundingBox(itemsData[i].w, boundingBox);
     }
   }
+};
+
+HShapeElement.prototype.expandStrokeBoundingBox = function (widthProperty, boundingBox) {
+  var width = 0;
+  if (widthProperty.keyframes) {
+    for ( var i = 0; i < widthProperty.keyframes.length; i++ ) {
+      var kfw = widthProperty.keyframes[i].s;
+      if ( kfw > width ) {
+        width = kfw;
+      }
+    }
+    width *= widthProperty.mult;
+  } else {
+    width = widthProperty.v * widthProperty.mult;
+  }
+
+  boundingBox.x -= width;
+  boundingBox.xMax += width;
+  boundingBox.y -= width;
+  boundingBox.yMax += width;
 };
 
 HShapeElement.prototype.currentBoxContains = function (box) {
