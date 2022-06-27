@@ -5218,7 +5218,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.4';
+  lottie.version = '5.9.5';
 
   function checkReady() {
     if (document.readyState === 'complete') {

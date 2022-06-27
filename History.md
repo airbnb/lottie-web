@@ -1,3 +1,11 @@
+## V 5.9.5
+- FIX: Expand the hybrid shape bounding box on stroke (thanks @mbasaglia)
+- FEATURE: support filter size on drop shadow property
+- FIX: canvas worker - handle destroying animation instance before data is loaded
+- FIX: canvas worker = pass own canvas fix (thanks @knenkne)
+- FIX: bodymovin extension out of storage
+- FEATURE: integration with canilottie
+
 ## V 5.9.4
 - FIX: support for all marker definitions
 - FIX: improve composable filters

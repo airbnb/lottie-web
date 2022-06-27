@@ -5354,7 +5354,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.9.4';
+  lottie.version = '5.9.5';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -15365,8 +15365,33 @@
         this.calculateShapeBoundingBox(itemsData[i], boundingBox);
       } else if (itemsData[i] && itemsData[i].it) {
         this.calculateBoundingBox(itemsData[i].it, boundingBox);
+      } else if (itemsData[i] && itemsData[i].style && itemsData[i].w) {
+        this.expandStrokeBoundingBox(itemsData[i].w, boundingBox);
       }
     }
+  };
+
+  HShapeElement.prototype.expandStrokeBoundingBox = function (widthProperty, boundingBox) {
+    var width = 0;
+
+    if (widthProperty.keyframes) {
+      for (var i = 0; i < widthProperty.keyframes.length; i += 1) {
+        var kfw = widthProperty.keyframes[i].s;
+
+        if (kfw > width) {
+          width = kfw;
+        }
+      }
+
+      width *= widthProperty.mult;
+    } else {
+      width = widthProperty.v * widthProperty.mult;
+    }
+
+    boundingBox.x -= width;
+    boundingBox.xMax += width;
+    boundingBox.y -= width;
+    boundingBox.yMax += width;
   };
 
   HShapeElement.prototype.currentBoxContains = function (box) {
@@ -18545,11 +18570,12 @@
   };
 
   function SVGDropShadowEffect(filter, filterManager, elem, id, source) {
-    var filterSize = filterManager.container.globalData.renderConfig.filterSize;
-    filter.setAttribute('x', filterSize.x);
-    filter.setAttribute('y', filterSize.y);
-    filter.setAttribute('width', filterSize.width);
-    filter.setAttribute('height', filterSize.height);
+    var globalFilterSize = filterManager.container.globalData.renderConfig.filterSize;
+    var filterSize = filterManager.data.fs || globalFilterSize;
+    filter.setAttribute('x', filterSize.x || globalFilterSize.x);
+    filter.setAttribute('y', filterSize.y || globalFilterSize.y);
+    filter.setAttribute('width', filterSize.width || globalFilterSize.width);
+    filter.setAttribute('height', filterSize.height || globalFilterSize.height);
     this.filterManager = filterManager;
     var feGaussianBlur = createNS('feGaussianBlur');
     feGaussianBlur.setAttribute('in', 'SourceAlpha');
@@ -19213,6 +19239,7 @@ var lottie = (function () {
       elements: {},
       callbacks: {},
       pendingCallbacks: [],
+      status: 'init',
     };
     var animInstance = {
       id: animationId,
@@ -19339,16 +19366,21 @@ var lottie = (function () {
           });
       },
       destroy: function () {
-        animations[animationId] = null;
-        if (animation.container) {
-          animation.container.innerHTML = '';
+        if (animation.status === 'init') {
+          animation.status = 'destroyable';
+        } else {
+          animation.status = 'destroyed';
+          animations[animationId] = null;
+          if (animation.container) {
+            animation.container.innerHTML = '';
+          }
+          workerInstance.postMessage({
+            type: 'destroy',
+            payload: {
+              id: animationId,
+            },
+          });
         }
-        workerInstance.postMessage({
-          type: 'destroy',
-          payload: {
-            id: animationId,
-          },
-        });
       },
       resize: function () {
         workerInstance.postMessage({
@@ -19373,21 +19405,33 @@ var lottie = (function () {
     animation.animInstance = animInstance;
     resolveAnimationData(params)
       .then(function (animationParams) {
+        if (animation.status === 'destroyable') {
+          animation.animInstance.destroy();
+          return;
+        }
+        animation.status = 'loaded';
         var transferedObjects = [];
         if (animationParams.container) {
           animation.container = animationParams.container;
           delete animationParams.container;
         }
-        if (animationParams.renderer === 'canvas' && !animationParams.rendererSettings.canvas) {
-          var canvas = document.createElement('canvas');
-          animation.container.appendChild(canvas);
-          canvas.width = animationParams.animationData.w;
-          canvas.height = animationParams.animationData.h;
-          canvas.style.width = '100%';
-          canvas.style.height = '100%';
-          var offscreen = canvas.transferControlToOffscreen();
-          transferedObjects.push(offscreen);
+        if (animationParams.renderer === 'canvas') {
+          var canvas = animationParams.rendererSettings.canvas;
+
+          // If no custom canvas was passed
+          if (!canvas) {
+            canvas = document.createElement('canvas');
+            animation.container.appendChild(canvas);
+            canvas.width = animationParams.animationData.w;
+            canvas.height = animationParams.animationData.h;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+          }
+
+          // Transfer control to offscreen if it's not already
+          var offscreen = canvas instanceof OffscreenCanvas ? canvas : canvas.transferControlToOffscreen();
           animationParams.rendererSettings.canvas = offscreen;
+          transferedObjects.push(animationParams.rendererSettings.canvas);
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
