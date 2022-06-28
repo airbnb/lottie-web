@@ -686,15 +686,15 @@ var lottie = (function () {
           },
         });
       },
-      resize: function () {
+      resize: function (width, height) {
         var devicePixelRatio = window.devicePixelRatio || 1;
         workerInstance.postMessage({
           type: 'resize',
           payload: {
             id: animationId,
             // Till Worker thread knows nothing about container, we've to pass it here
-            width: animation.container.offsetWidth * devicePixelRatio,
-            height: animation.container.offsetHeight * devicePixelRatio,
+            width: width || (animation.container ? animation.container.offsetWidth * devicePixelRatio : 0),
+            height: height || (animation.container ? animation.container.offsetHeight * devicePixelRatio : 0),
           },
         });
       },
