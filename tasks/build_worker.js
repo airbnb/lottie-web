@@ -72,7 +72,6 @@ return lottie;
 async function getCode() {
 	try {
 		let scriptsString = '';
-		// Get code for Worker from rollup build
 		scriptsString += fs.readFileSync(`${buildFolder}lottie.js`, {encoding: 'utf8'});
 		scriptsString += '\r\n';
 		return scriptsString;
