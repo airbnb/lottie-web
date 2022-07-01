@@ -1,3 +1,8 @@
+## V 5.9.6
+- FIX: Bodymovin export missing comps
+- FIX: Disambiguate bevelEmboss properties (thanks @mbasaglia)
+- FEATURE: Add support for image export individual settings via annotations
+
 ## V 5.9.5
 - FIX: Expand the hybrid shape bounding box on stroke (thanks @mbasaglia)
 - FEATURE: support filter size on drop shadow property
