@@ -25,6 +25,7 @@ export type AnimationItem = {
     segmentPos: number;
     isSubframeEnabled: boolean;
     segments: AnimationSegment | AnimationSegment[];
+    initialSegment?: AnimationSegment;
     play(name?: string): void;
     stop(name?: string): void;
     togglePause(name?: string): void;
