@@ -2,15 +2,21 @@ const assetLoader = (function () {
   function formatResponse(xhr) {
     // using typeof doubles the time of execution of this method,
     // so if available, it's better to use the header to validate the type
-    var contentTypeHeader = xhr.getResponseHeader('content-type');
-    if (contentTypeHeader && xhr.responseType === 'json' && contentTypeHeader.indexOf('json') !== -1) {
+    var contentTypeHeader = xhr.getResponseHeader("content-type");
+    if (
+      contentTypeHeader &&
+      xhr.responseType === "json" &&
+      contentTypeHeader.indexOf("json") !== -1
+    ) {
+      return JSON.parse(xhr.response);
+    }
+    if (xhr.response && typeof xhr.response === "object") {
       return xhr.response;
     }
-    if (xhr.response && typeof xhr.response === 'object') {
-      return xhr.response;
-    } if (xhr.response && typeof xhr.response === 'string') {
+    if (xhr.response && typeof xhr.response === "string") {
       return JSON.parse(xhr.response);
-    } if (xhr.responseText) {
+    }
+    if (xhr.responseText) {
       return JSON.parse(xhr.responseText);
     }
     return null;
@@ -22,7 +28,7 @@ const assetLoader = (function () {
     // set responseType after calling open or IE will break.
     try {
       // This crashes on Android WebView prior to KitKat
-      xhr.responseType = 'json';
+      xhr.responseType = "json";
     } catch (err) {} // eslint-disable-line no-empty
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -41,12 +47,12 @@ const assetLoader = (function () {
         }
       }
     };
-    xhr.open('GET', path, true);
+    xhr.open("GET", path, true);
     xhr.send();
   }
   return {
     load: loadAsset,
   };
-}());
+})();
 
 export default assetLoader;
