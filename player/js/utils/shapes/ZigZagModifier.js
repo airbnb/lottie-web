@@ -74,7 +74,7 @@ ZigZagModifier.prototype.processShapes = function (_isFirstFrame) {
   var j;
   var jLen;
   var amplitude = this.amplitude.v;
-  var frequency = this.frequency.v;
+  var frequency = Math.max(1, Math.round(this.frequency.v));
 
   if (amplitude !== 0) {
     var shapeData;
