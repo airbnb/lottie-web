@@ -236,6 +236,28 @@ function bezFunction() {
     return bezierSegmentPoints;
   }
 
+  function polynomialCoefficients(k0, k1, k2, k3) {
+    if (k1 === k0 && k2 === k3) {
+      k1 = k0 * (2 / 3) + k3 / 3;
+      k2 = k0 / 3 + k3 * (2 / 3);
+    }
+
+    return [
+      -k0 + 3 * k1 - 3 * k2 + k3,
+      3 * k0 - 6 * k1 + 3 * k2,
+      -3 * k0 + 3 * k1,
+      k0,
+    ];
+  }
+
+  function polynomialDerivative(t, a, b, c) {
+    return (a * 3 * t + b * 2) * t + c;
+  }
+
+  function polynomialValue(t, a, b, c, d) {
+    return (((a * t + b) * t + c) * t) + d;
+  }
+
   return {
     getSegmentsLength: getSegmentsLength,
     getNewSegment: getNewSegment,
@@ -243,6 +265,9 @@ function bezFunction() {
     buildBezierData: buildBezierData,
     pointOnLine2D: pointOnLine2D,
     pointOnLine3D: pointOnLine3D,
+    polynomialCoefficients: polynomialCoefficients,
+    polynomialDerivative: polynomialDerivative,
+    polynomialValue: polynomialValue,
   };
 }
 

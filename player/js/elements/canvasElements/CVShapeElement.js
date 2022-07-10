@@ -219,7 +219,7 @@ CVShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData, 
       if (!processedPos) {
         itemsData[i] = this.createShapeElement(arr[i]);
       }
-    } else if (arr[i].ty === 'tm' || arr[i].ty === 'rd' || arr[i].ty === 'pb') {
+    } else if (arr[i].ty === 'tm' || arr[i].ty === 'rd' || arr[i].ty === 'pb' || arr[i].ty === 'zz') {
       if (!processedPos) {
         modifier = ShapeModifiers.getModifier(arr[i].ty);
         modifier.init(this, arr[i]);
