@@ -6,7 +6,7 @@ import shapePool from '../pooling/shape_pool';
 import {
   ShapeModifier,
 } from './ShapeModifiers';
-import bez from '../bez';
+import { PolynomialBezier } from '../PolynomialBezier';
 
 function ZigZagModifier() {}
 extendPrototype([ShapeModifier], ZigZagModifier);
@@ -24,45 +24,34 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
   var vX;
   var vY;
   var direction = 1;
-  var j = 0;
-  var next;
 
   if (!path.c) {
     pathLength -= 1;
   }
 
   for (var cur = 0; cur < pathLength; cur += 1) {
-    next = (cur + 1) % pathLength;
+    var bez = PolynomialBezier.shapeSegment(path, cur);
 
-    var coeffx = bez.polynomialCoefficients(path.v[cur][0], path.o[cur][0], path.i[next][0], path.v[next][0]);
-    var coeffy = bez.polynomialCoefficients(path.v[cur][1], path.o[cur][1], path.i[next][1], path.v[next][1]);
-
-    vX = path.v[cur][0];
-    vY = path.v[cur][1];
-    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, j);
-    j += 1;
+    vX = bez.points[0][0];
+    vY = bez.points[0][1];
+    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
 
     for (var i = 0; i < frequency; i += 1) {
       var t = (i + 0.5) / frequency;
-      var dervx = bez.polynomialDerivative(t, coeffx[0], coeffx[1], coeffx[2]);
-      var dervy = bez.polynomialDerivative(t, coeffy[0], coeffy[1], coeffy[2]);
-      var px = bez.polynomialValue(t, coeffx[0], coeffx[1], coeffx[2], coeffx[3]);
-      var py = bez.polynomialValue(t, coeffy[0], coeffy[1], coeffy[2], coeffy[3]);
-      var normal = Math.atan2(dervx, dervy);
-      vX = px + Math.cos(normal) * direction * amplitude;
-      vY = py - Math.sin(normal) * direction * amplitude;
+      var pt = bez.point(t);
+      var normal = bez.normalAngle(t);
+      vX = pt[0] + Math.cos(normal) * direction * amplitude;
+      vY = pt[1] - Math.sin(normal) * direction * amplitude;
 
-      clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, j);
-      j += 1;
+      clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
       direction = -direction;
     }
 
     direction = -direction;
 
-    vX = path.v[next][0];
-    vY = path.v[next][1];
-    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, j);
-    j += 1;
+    vX = bez.points[3][0];
+    vY = bez.points[3][1];
+    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
   }
   return clonedPath;
 };

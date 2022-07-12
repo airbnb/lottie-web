@@ -8,6 +8,7 @@ import PuckerAndBloatModifier from '../utils/shapes/PuckerAndBloatModifier';
 import RepeaterModifier from '../utils/shapes/RepeaterModifier';
 import RoundCornersModifier from '../utils/shapes/RoundCornersModifier';
 import ZigZagModifier from '../utils/shapes/ZigZagModifier';
+import OffsetPathModifier from '../utils/shapes/OffsetPathModifier';
 import CanvasRenderer from '../renderers/CanvasRenderer';
 import HybridRenderer from '../renderers/HybridRenderer';
 import SVGRenderer from '../renderers/SVGRenderer';
@@ -39,6 +40,7 @@ ShapeModifiers.registerModifier('pb', PuckerAndBloatModifier);
 ShapeModifiers.registerModifier('rp', RepeaterModifier);
 ShapeModifiers.registerModifier('rd', RoundCornersModifier);
 ShapeModifiers.registerModifier('zz', ZigZagModifier);
+ShapeModifiers.registerModifier('op', OffsetPathModifier);
 
 // Registering expression plugin
 setExpressionsPlugin(Expressions);

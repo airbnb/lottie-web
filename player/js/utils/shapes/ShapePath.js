@@ -93,4 +93,8 @@ ShapePath.prototype.reverse = function () {
   return newPath;
 };
 
+ShapePath.prototype.length = function () {
+  return this._length;
+};
+
 export default ShapePath;
