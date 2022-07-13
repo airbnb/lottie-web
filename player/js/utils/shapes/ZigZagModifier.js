@@ -13,7 +13,7 @@ extendPrototype([ShapeModifier], ZigZagModifier);
 ZigZagModifier.prototype.initModifierProperties = function (elem, data) {
   this.getValue = this.processKeys;
   this.amplitude = PropertyFactory.getProp(elem, data.s, 0, null, this);
-  this.frequency = PropertyFactory.getProp(elem, data.pt, 0, null, this);
+  this.frequency = PropertyFactory.getProp(elem, data.r, 0, null, this);
   this._isAnimated = this.amplitude.effectsSequence.length !== 0 && this.frequency.effectsSequence.length !== 0;
 };
 
@@ -23,7 +23,7 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
   clonedPath.c = path.c;
   var vX;
   var vY;
-  var direction = 1;
+  var direction = -1;
 
   if (!path.c) {
     pathLength -= 1;
@@ -36,8 +36,10 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
     vY = bez.points[0][1];
     clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
 
+    direction = -direction;
+
     for (var i = 0; i < frequency; i += 1) {
-      var t = (i + 0.5) / frequency;
+      var t = (i + 1) / (frequency + 1);
       var pt = bez.point(t);
       var normal = bez.normalAngle(t);
       vX = pt[0] + Math.cos(normal) * direction * amplitude;
@@ -46,8 +48,6 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
       clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
       direction = -direction;
     }
-
-    direction = -direction;
 
     vX = bez.points[3][0];
     vY = bez.points[3][1];
@@ -63,7 +63,7 @@ ZigZagModifier.prototype.processShapes = function (_isFirstFrame) {
   var j;
   var jLen;
   var amplitude = this.amplitude.v;
-  var frequency = Math.max(1, Math.round(this.frequency.v));
+  var frequency = Math.max(0, Math.round(this.frequency.v));
 
   if (amplitude !== 0) {
     var shapeData;
