@@ -17,42 +17,79 @@ ZigZagModifier.prototype.initModifierProperties = function (elem, data) {
   this._isAnimated = this.amplitude.effectsSequence.length !== 0 && this.frequency.effectsSequence.length !== 0;
 };
 
-ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
-  var pathLength = path._length;
-  var clonedPath = shapePool.newElement();
-  clonedPath.c = path.c;
-  var vX;
-  var vY;
-  var direction = -1;
+function angleMean(a, b) {
+  if (Math.abs(a - b) > Math.PI) return (a + b) / 2 + Math.PI;
 
-  if (!path.c) {
-    pathLength -= 1;
+  return (a + b) / 2;
+}
+
+function zigZagCorner(outputBezier, segmentBefore, segmentAfter, amplitude, direction) {
+  var point;
+  var angle;
+
+  if (!segmentBefore) {
+    point = segmentAfter.points[0];
+    angle = segmentAfter.normalAngle(0);
+  } else if (!segmentAfter) {
+    point = segmentBefore.points[3];
+    angle = segmentBefore.normalAngle(1);
+  } else {
+    point = segmentAfter.points[0];
+    angle = angleMean(segmentAfter.normalAngle(0), segmentBefore.normalAngle(1));
   }
 
-  for (var cur = 0; cur < pathLength; cur += 1) {
-    var bez = PolynomialBezier.shapeSegment(path, cur);
+  var px = point[0] + Math.cos(angle) * direction * amplitude;
+  var py = point[1] - Math.sin(angle) * direction * amplitude;
+  outputBezier.setTripleAt(px, py, px, py, px, py, outputBezier.length());
+}
 
-    vX = bez.points[0][0];
-    vY = bez.points[0][1];
-    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
+function zigZagSegment(outputBezier, segment, amplitude, frequency, direction) {
+  for (var i = 0; i < frequency; i += 1) {
+    var t = (i + 1) / (frequency + 1);
+    var angle = segment.normalAngle(t);
+    var point = segment.point(t);
+    var px = point[0] + Math.cos(angle) * direction * amplitude;
+    var py = point[1] - Math.sin(angle) * direction * amplitude;
+
+    outputBezier.setTripleAt(px, py, px, py, px, py, outputBezier.length());
 
     direction = -direction;
+  }
 
-    for (var i = 0; i < frequency; i += 1) {
-      var t = (i + 1) / (frequency + 1);
-      var pt = bez.point(t);
-      var normal = bez.normalAngle(t);
-      vX = pt[0] + Math.cos(normal) * direction * amplitude;
-      vY = pt[1] - Math.sin(normal) * direction * amplitude;
+  return direction;
+}
 
-      clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
-      direction = -direction;
+ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
+  var count = path._length;
+  var clonedPath = shapePool.newElement();
+  clonedPath.c = path.c;
+
+  if (!path.c) {
+    count -= 1;
+  }
+
+  if (count === 0) return clonedPath;
+
+  var direction = -1;
+  var segment = path.c ? PolynomialBezier.shapeSegment(path, count - 1) : null;
+  var nextSegment = PolynomialBezier.shapeSegment(path, 0);
+
+  zigZagCorner(clonedPath, segment, nextSegment, amplitude, -1);
+
+  for (var i = 0; i < count; i += 1) {
+    segment = nextSegment;
+
+    direction = zigZagSegment(clonedPath, segment, amplitude, frequency, -direction);
+
+    if (i === count - 1 && !path.c) {
+      nextSegment = null;
+    } else {
+      nextSegment = PolynomialBezier.shapeSegment(path, (i + 1) % count);
     }
 
-    vX = bez.points[3][0];
-    vY = bez.points[3][1];
-    clonedPath.setTripleAt(vX, vY, vX, vY, vX, vY, clonedPath.length());
+    zigZagCorner(clonedPath, segment, nextSegment, amplitude, direction);
   }
+
   return clonedPath;
 };
 
