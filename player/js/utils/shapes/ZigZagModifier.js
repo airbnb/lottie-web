@@ -14,10 +14,28 @@ ZigZagModifier.prototype.initModifierProperties = function (elem, data) {
   this.getValue = this.processKeys;
   this.amplitude = PropertyFactory.getProp(elem, data.s, 0, null, this);
   this.frequency = PropertyFactory.getProp(elem, data.r, 0, null, this);
-  this._isAnimated = this.amplitude.effectsSequence.length !== 0 && this.frequency.effectsSequence.length !== 0;
+  this.pointsType = PropertyFactory.getProp(elem, data.pt, 0, null, this);
+  this._isAnimated = this.amplitude.effectsSequence.length !== 0 || this.frequency.effectsSequence.length !== 0 || this.pointsType.effectsSequence.length !== 0;
 };
 
-function getNormalNormalizedVector(pt1, pt2) {
+function setPoint(outputBezier, point, angle, direction, amplitude, outAmplitude, inAmplitude) {
+  var angO = angle - Math.PI / 2;
+  var angI = angle + Math.PI / 2;
+  var px = point[0] + Math.cos(angle) * direction * amplitude;
+  var py = point[1] - Math.sin(angle) * direction * amplitude;
+
+  outputBezier.setTripleAt(
+    px,
+    py,
+    px + Math.cos(angO) * outAmplitude,
+    py - Math.sin(angO) * outAmplitude,
+    px + Math.cos(angI) * inAmplitude,
+    py - Math.sin(angI) * inAmplitude,
+    outputBezier.length()
+  );
+}
+
+function getPerpendicularVector(pt1, pt2) {
   var vector = [
     pt2[0] - pt1[0],
     pt2[1] - pt1[1],
@@ -27,38 +45,62 @@ function getNormalNormalizedVector(pt1, pt2) {
     Math.cos(rot) * vector[0] - Math.sin(rot) * vector[1],
     Math.sin(rot) * vector[0] + Math.cos(rot) * vector[1],
   ];
-  var length = Math.sqrt(rotatedVector[0] * rotatedVector[0] + rotatedVector[1] * rotatedVector[1]);
-  var normalizedVector = [
-    rotatedVector[0] / length,
-    rotatedVector[1] / length,
-  ];
-  return normalizedVector;
+  return rotatedVector;
 }
 
-function getSurroundingVector(path, cur) {
+function getProjectingAngle(path, cur) {
   var prevIndex = cur === 0 ? path.length() - 1 : cur - 1;
   var nextIndex = (cur + 1) % path.length();
   var prevPoint = path.v[prevIndex];
   var nextPoint = path.v[nextIndex];
-  return getNormalNormalizedVector(prevPoint, nextPoint);
+  var pVector = getPerpendicularVector(prevPoint, nextPoint);
+  return Math.atan2(0, 1) - Math.atan2(pVector[1], pVector[0]);
 }
 
-function zigZagCorner(outputBezier, path, cur, direction, amplitude) {
-  var normalizedVector = getSurroundingVector(path, cur);
-  var vX = path.v[cur % path._length][0] + normalizedVector[0] * direction * amplitude;
-  var vY = path.v[cur % path._length][1] + normalizedVector[1] * direction * amplitude;
-  outputBezier.setTripleAt(vX, vY, vX, vY, vX, vY, outputBezier.length());
+function zigZagCorner(outputBezier, path, cur, amplitude, frequency, pointType, direction) {
+  var angle = getProjectingAngle(path, cur);
+  var point = path.v[cur % path._length];
+  var prevPoint = path.v[cur === 0 ? path._length - 1 : cur - 1];
+  var nextPoint = path.v[(cur + 1) % path._length];
+  var prevDist = pointType === 2
+    ? Math.sqrt(Math.pow(point[0] - prevPoint[0], 2) + Math.pow(point[1] - prevPoint[1], 2))
+    : 0;
+  var nextDist = pointType === 2
+    ? Math.sqrt(Math.pow(point[0] - nextPoint[0], 2) + Math.pow(point[1] - nextPoint[1], 2))
+    : 0;
+
+  setPoint(
+    outputBezier,
+    path.v[cur % path._length],
+    angle,
+    direction,
+    amplitude,
+    nextDist / ((frequency + 1) * 2),
+    prevDist / ((frequency + 1) * 2),
+    pointType
+  );
 }
 
-function zigZagSegment(outputBezier, segment, amplitude, frequency, direction) {
+function zigZagSegment(outputBezier, segment, amplitude, frequency, pointType, direction) {
   for (var i = 0; i < frequency; i += 1) {
     var t = (i + 1) / (frequency + 1);
+
+    var dist = pointType === 2
+      ? Math.sqrt(Math.pow(segment.points[3][0] - segment.points[0][0], 2) + Math.pow(segment.points[3][1] - segment.points[0][1], 2))
+      : 0;
+
     var angle = segment.normalAngle(t);
     var point = segment.point(t);
-    var px = point[0] + Math.cos(angle) * direction * amplitude;
-    var py = point[1] - Math.sin(angle) * direction * amplitude;
-
-    outputBezier.setTripleAt(px, py, px, py, px, py, outputBezier.length());
+    setPoint(
+      outputBezier,
+      point,
+      angle,
+      direction,
+      amplitude,
+      dist / ((frequency + 1) * 2),
+      dist / ((frequency + 1) * 2),
+      pointType
+    );
 
     direction = -direction;
   }
@@ -66,7 +108,7 @@ function zigZagSegment(outputBezier, segment, amplitude, frequency, direction) {
   return direction;
 }
 
-ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
+ZigZagModifier.prototype.processPath = function (path, amplitude, frequency, pointType) {
   var count = path._length;
   var clonedPath = shapePool.newElement();
   clonedPath.c = path.c;
@@ -79,10 +121,10 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
 
   var direction = -1;
   var segment = PolynomialBezier.shapeSegment(path, 0);
-  zigZagCorner(clonedPath, path, 0, amplitude, direction);
+  zigZagCorner(clonedPath, path, 0, amplitude, frequency, pointType, direction);
 
   for (var i = 0; i < count; i += 1) {
-    direction = zigZagSegment(clonedPath, segment, amplitude, frequency, -direction);
+    direction = zigZagSegment(clonedPath, segment, amplitude, frequency, pointType, -direction);
 
     if (i === count - 1 && !path.c) {
       segment = null;
@@ -90,7 +132,7 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
       segment = PolynomialBezier.shapeSegment(path, (i + 1) % count);
     }
 
-    zigZagCorner(clonedPath, path, i + 1, amplitude, direction);
+    zigZagCorner(clonedPath, path, i + 1, amplitude, frequency, pointType, direction);
   }
 
   return clonedPath;
@@ -104,6 +146,7 @@ ZigZagModifier.prototype.processShapes = function (_isFirstFrame) {
   var jLen;
   var amplitude = this.amplitude.v;
   var frequency = Math.max(0, Math.round(this.frequency.v));
+  var pointType = this.pointsType.v;
 
   if (amplitude !== 0) {
     var shapeData;
@@ -117,7 +160,7 @@ ZigZagModifier.prototype.processShapes = function (_isFirstFrame) {
         shapePaths = shapeData.shape.paths.shapes;
         jLen = shapeData.shape.paths._length;
         for (j = 0; j < jLen; j += 1) {
-          localShapeCollection.addShape(this.processPath(shapePaths[j], amplitude, frequency));
+          localShapeCollection.addShape(this.processPath(shapePaths[j], amplitude, frequency, pointType));
         }
       }
       shapeData.shape.paths = shapeData.localShapeCollection;
