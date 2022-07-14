@@ -17,30 +17,37 @@ ZigZagModifier.prototype.initModifierProperties = function (elem, data) {
   this._isAnimated = this.amplitude.effectsSequence.length !== 0 && this.frequency.effectsSequence.length !== 0;
 };
 
-function angleMean(a, b) {
-  if (Math.abs(a - b) > Math.PI) return (a + b) / 2 + Math.PI;
-
-  return (a + b) / 2;
+function getNormalNormalizedVector(pt1, pt2) {
+  var vector = [
+    pt2[0] - pt1[0],
+    pt2[1] - pt1[1],
+  ];
+  var rot = -Math.PI * 0.5;
+  var rotatedVector = [
+    Math.cos(rot) * vector[0] - Math.sin(rot) * vector[1],
+    Math.sin(rot) * vector[0] + Math.cos(rot) * vector[1],
+  ];
+  var length = Math.sqrt(rotatedVector[0] * rotatedVector[0] + rotatedVector[1] * rotatedVector[1]);
+  var normalizedVector = [
+    rotatedVector[0] / length,
+    rotatedVector[1] / length,
+  ];
+  return normalizedVector;
 }
 
-function zigZagCorner(outputBezier, segmentBefore, segmentAfter, amplitude, direction) {
-  var point;
-  var angle;
+function getSurroundingVector(path, cur) {
+  var prevIndex = cur === 0 ? path.length() - 1 : cur - 1;
+  var nextIndex = (cur + 1) % path.length();
+  var prevPoint = path.v[prevIndex];
+  var nextPoint = path.v[nextIndex];
+  return getNormalNormalizedVector(prevPoint, nextPoint);
+}
 
-  if (!segmentBefore) {
-    point = segmentAfter.points[0];
-    angle = segmentAfter.normalAngle(0);
-  } else if (!segmentAfter) {
-    point = segmentBefore.points[3];
-    angle = segmentBefore.normalAngle(1);
-  } else {
-    point = segmentAfter.points[0];
-    angle = angleMean(segmentAfter.normalAngle(0), segmentBefore.normalAngle(1));
-  }
-
-  var px = point[0] + Math.cos(angle) * direction * amplitude;
-  var py = point[1] - Math.sin(angle) * direction * amplitude;
-  outputBezier.setTripleAt(px, py, px, py, px, py, outputBezier.length());
+function zigZagCorner(outputBezier, path, cur, direction, amplitude) {
+  var normalizedVector = getSurroundingVector(path, cur);
+  var vX = path.v[cur % path._length][0] + normalizedVector[0] * direction * amplitude;
+  var vY = path.v[cur % path._length][1] + normalizedVector[1] * direction * amplitude;
+  outputBezier.setTripleAt(vX, vY, vX, vY, vX, vY, outputBezier.length());
 }
 
 function zigZagSegment(outputBezier, segment, amplitude, frequency, direction) {
@@ -71,23 +78,19 @@ ZigZagModifier.prototype.processPath = function (path, amplitude, frequency) {
   if (count === 0) return clonedPath;
 
   var direction = -1;
-  var segment = path.c ? PolynomialBezier.shapeSegment(path, count - 1) : null;
-  var nextSegment = PolynomialBezier.shapeSegment(path, 0);
-
-  zigZagCorner(clonedPath, segment, nextSegment, amplitude, -1);
+  var segment = PolynomialBezier.shapeSegment(path, 0);
+  zigZagCorner(clonedPath, path, 0, amplitude, direction);
 
   for (var i = 0; i < count; i += 1) {
-    segment = nextSegment;
-
     direction = zigZagSegment(clonedPath, segment, amplitude, frequency, -direction);
 
     if (i === count - 1 && !path.c) {
-      nextSegment = null;
+      segment = null;
     } else {
-      nextSegment = PolynomialBezier.shapeSegment(path, (i + 1) % count);
+      segment = PolynomialBezier.shapeSegment(path, (i + 1) % count);
     }
 
-    zigZagCorner(clonedPath, segment, nextSegment, amplitude, direction);
+    zigZagCorner(clonedPath, path, i + 1, amplitude, direction);
   }
 
   return clonedPath;
