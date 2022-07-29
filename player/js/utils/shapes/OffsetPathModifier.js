@@ -145,6 +145,49 @@ function pruneIntersections(segments) {
   return segments;
 }
 
+function offsetSegmentSplit(segment, amount) {
+  /*
+    We split each bezier segment into smaller pieces based
+    on inflection points, this ensures the control point
+    polygon is convex.
+
+    (A cubic bezier can have none, one, or two inflection points)
+  */
+  var flex = segment.inflectionPoints();
+  var left;
+  var right;
+  var split;
+  var mid;
+
+  if (flex.length === 0) {
+    return [offsetSegment(segment, amount)];
+  }
+
+  if (flex.length === 1 || floatEqual(flex[1], 1)) {
+    split = segment.split(flex[0]);
+    left = split[0];
+    right = split[1];
+
+    return [
+      offsetSegment(left, amount),
+      offsetSegment(right, amount),
+    ];
+  }
+
+  split = segment.split(flex[0]);
+  left = split[0];
+  var t = (flex[1] - flex[0]) / (1 - flex[0]);
+  split = split[1].split(t);
+  mid = split[0];
+  right = split[1];
+
+  return [
+    offsetSegment(left, amount),
+    offsetSegment(mid, amount),
+    offsetSegment(right, amount),
+  ];
+}
+
 function OffsetPathModifier() {}
 
 extendPrototype([ShapeModifier], OffsetPathModifier);
@@ -163,45 +206,18 @@ OffsetPathModifier.prototype.processPath = function (inputBezier, amount, lineJo
   if (!inputBezier.c) {
     count -= 1;
   }
-  var left; var right; var mid; var split;
   var i; var j; var segment;
   var multiSegments = [];
 
   for (i = 0; i < count; i += 1) {
     segment = PolynomialBezier.shapeSegment(inputBezier, i);
-    /*
-      We split each bezier segment into smaller pieces based
-      on inflection points, this ensures the control point
-      polygon is convex.
+    multiSegments.push(offsetSegmentSplit(segment, amount));
+  }
 
-      (A cubic bezier can have none, one, or two inflection points)
-    */
-    var flex = segment.inflectionPoints();
-
-    if (flex.length === 0) {
-      multiSegments.push([offsetSegment(segment, amount)]);
-    } else if (flex.length === 1 || floatEqual(flex[1], 1)) {
-      split = segment.split(flex[0]);
-      left = split[0];
-      right = split[1];
-
-      multiSegments.push([
-        offsetSegment(left, amount),
-        offsetSegment(right, amount),
-      ]);
-    } else {
-      split = segment.split(flex[0]);
-      left = split[0];
-      var t = (flex[1] - flex[0]) / (1 - flex[0]);
-      split = split[1].split(t);
-      mid = split[0];
-      right = split[1];
-
-      multiSegments.push([
-        offsetSegment(left, amount),
-        offsetSegment(mid, amount),
-        offsetSegment(right, amount),
-      ]);
+  if (!inputBezier.c) {
+    for (i = count - 1; i >= 0; i -= 1) {
+      segment = PolynomialBezier.shapeSegmentInverted(inputBezier, i);
+      multiSegments.push(offsetSegmentSplit(segment, amount));
     }
   }
 
@@ -249,7 +265,7 @@ OffsetPathModifier.prototype.processPath = function (inputBezier, amount, lineJo
     }
   }
 
-  if (inputBezier.c && multiSegments.length) joinLines(outputBezier, lastSeg, multiSegments[0][0], lineJoin, miterLimit);
+  if (multiSegments.length) joinLines(outputBezier, lastSeg, multiSegments[0][0], lineJoin, miterLimit);
 
   return outputBezier;
 };
