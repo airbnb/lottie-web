@@ -199,6 +199,11 @@ PolynomialBezier.shapeSegment = function (shapePath, index) {
   return new PolynomialBezier(shapePath.v[index], shapePath.o[index], shapePath.i[nextIndex], shapePath.v[nextIndex], true);
 };
 
+PolynomialBezier.shapeSegmentInverted = function (shapePath, index) {
+  var nextIndex = (index + 1) % shapePath.length();
+  return new PolynomialBezier(shapePath.v[nextIndex], shapePath.i[nextIndex], shapePath.o[index], shapePath.v[index], true);
+};
+
 function crossProduct(a, b) {
   return [
     a[1] * b[2] - a[2] * b[1],
