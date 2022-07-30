@@ -29,13 +29,13 @@ function zigZagCorner(outputBezier, segmentBefore, segmentAfter, amplitude, dire
 
   if (!segmentBefore) {
     point = segmentAfter.points[0];
-    angle = segmentAfter.normalAngle(0);
+    angle = segmentAfter.normalAngle(0.01);
   } else if (!segmentAfter) {
     point = segmentBefore.points[3];
-    angle = segmentBefore.normalAngle(1);
+    angle = segmentBefore.normalAngle(0.99);
   } else {
     point = segmentAfter.points[0];
-    angle = angleMean(segmentAfter.normalAngle(0), segmentBefore.normalAngle(1));
+    angle = angleMean(segmentAfter.normalAngle(0.01), segmentBefore.normalAngle(0.99));
   }
 
   var px = point[0] + Math.cos(angle) * direction * amplitude;
@@ -45,7 +45,8 @@ function zigZagCorner(outputBezier, segmentBefore, segmentAfter, amplitude, dire
 
 function zigZagSegment(outputBezier, segment, amplitude, frequency, direction) {
   for (var i = 0; i < frequency; i += 1) {
-    var t = (i + 1) / (frequency + 1);
+    var f = (i + 1) / (frequency + 1);
+    var t = segment.tAtLengthPercent(f);
     var angle = segment.normalAngle(t);
     var point = segment.point(t);
     var px = point[0] + Math.cos(angle) * direction * amplitude;

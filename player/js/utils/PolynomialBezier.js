@@ -55,7 +55,14 @@ function PolynomialBezier(p0, p1, p2, p3, linearize) {
   this.c = [coeffx[2], coeffy[2]];
   this.d = [coeffx[3], coeffy[3]];
   this.points = [p0, p1, p2, p3];
+
+  this.lengthData = [];
+  this.length = -1;
 }
+
+// Splitting in ~20 chunks yields fairly accurate results in most circumstances
+PolynomialBezier.lengthDefaultChunks = 20;
+
 PolynomialBezier.prototype.point = function (t) {
   return [
     (((this.a[0] * t) + this.b[0]) * t + this.c[0]) * t + this.d[0],
@@ -202,6 +209,56 @@ PolynomialBezier.shapeSegment = function (shapePath, index) {
 PolynomialBezier.shapeSegmentInverted = function (shapePath, index) {
   var nextIndex = (index + 1) % shapePath.length();
   return new PolynomialBezier(shapePath.v[nextIndex], shapePath.i[nextIndex], shapePath.o[index], shapePath.v[index], true);
+};
+
+PolynomialBezier.prototype.calculateLengthData = function (chunks) {
+  if (chunks === undefined) chunks = PolynomialBezier.lengthDefaultChunks;
+  if (this.lengthData.length >= chunks) return this.lengthData;
+
+  var lastPoint = this.points[0];
+  this.length = 0;
+  this.lengthData = [];
+  for (var i = 1; i <= chunks; i += 1) {
+    var t = i / chunks;
+    var point = this.point(t);
+    this.length += pointDistance(point, lastPoint);
+    this.lengthData.push([t, this.length]);
+    lastPoint = point;
+  }
+
+  return this.lengthData;
+};
+
+PolynomialBezier.prototype.tAtLength = function (length, chunks) {
+  this.calculateLengthData(chunks);
+
+  if (length <= 0) return 0;
+
+  var prevT = 0;
+  var prevLen = 0;
+
+  for (var i = 0; i < this.lengthData.length; i += 1) {
+    var t = this.lengthData[i][0];
+    var len = this.lengthData[i][1];
+
+    if (len > length) {
+      var f = (length - prevLen) / (len - prevLen);
+      return prevT * (1 - f) + t * f;
+    }
+
+    prevT = t;
+    prevLen = len;
+  }
+
+  return 1;
+};
+
+PolynomialBezier.prototype.tAtLengthPercent = function (percent, chunks) {
+  this.calculateLengthData(chunks);
+
+  if (this.lengthData.length === 0 && chunks <= 0) return percent;
+
+  return this.tAtLength(this.length * percent, chunks);
 };
 
 function crossProduct(a, b) {
