@@ -17,6 +17,7 @@ function CanvasRenderer(animationItem, config) {
     contentVisibility: (config && config.contentVisibility) || 'visible',
     className: (config && config.className) || '',
     id: (config && config.id) || '',
+    runExpressions: !config || config.runExpressions === undefined || config.runExpressions,
   };
   this.renderConfig.dpr = (config && config.dpr) || 1;
   if (this.animationItem.wrapper) {

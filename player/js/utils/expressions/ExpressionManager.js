@@ -666,6 +666,14 @@ const ExpressionManager = (function () {
     var parent;
     var randSeed = Math.floor(Math.random() * 1000000);
     var globalData = elem.globalData;
+
+    function noOp(_value) {
+      return _value;
+    }
+    if (!globalData.renderConfig.runExpressions) {
+      return noOp;
+    }
+
     function executeExpression(_value) {
       // globalData.pushExpression();
       value = _value;
