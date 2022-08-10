@@ -382,6 +382,14 @@ const ExpressionManager = (function () {
   }
 
   function initiateExpression(elem, data, property) {
+    // Bail out if we don't want expressions
+    function noOp(_value) {
+      return _value;
+    }
+    if (!elem.globalData.renderConfig.runExpressions) {
+      return noOp;
+    }
+
     var val = data.x;
     var needsVelocity = /velocity(?![\w\d])/.test(val);
     var _needsRandom = val.indexOf('random') !== -1;
@@ -666,13 +674,6 @@ const ExpressionManager = (function () {
     var parent;
     var randSeed = Math.floor(Math.random() * 1000000);
     var globalData = elem.globalData;
-
-    function noOp(_value) {
-      return _value;
-    }
-    if (!globalData.renderConfig.runExpressions) {
-      return noOp;
-    }
 
     function executeExpression(_value) {
       // globalData.pushExpression();
