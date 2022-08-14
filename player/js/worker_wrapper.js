@@ -332,7 +332,7 @@ function workerContent() {
       }
     } else if (type === 'resize') {
       if (animations[payload.id]) {
-        animations[payload.id].animation.resize();
+        animations[payload.id].animation.resize(payload.width, payload.height);
       }
     } else if (type === 'playSegments') {
       if (animations[payload.id]) {
@@ -692,11 +692,15 @@ var lottie = (function () {
           });
         }
       },
-      resize: function () {
+      resize: function (width, height) {
+        var devicePixelRatio = window.devicePixelRatio || 1;
         workerInstance.postMessage({
           type: 'resize',
           payload: {
             id: animationId,
+            // Till Worker thread knows nothing about container, we've to pass it here
+            width: width || (animation.container ? animation.container.offsetWidth * devicePixelRatio : 0),
+            height: height || (animation.container ? animation.container.offsetHeight * devicePixelRatio : 0),
           },
         });
       },
@@ -730,10 +734,11 @@ var lottie = (function () {
 
           // If no custom canvas was passed
           if (!canvas) {
+            var devicePixelRatio = window.devicePixelRatio || 1;
             canvas = document.createElement('canvas');
             animation.container.appendChild(canvas);
-            canvas.width = animationParams.animationData.w;
-            canvas.height = animationParams.animationData.h;
+            canvas.width = (animation.container ? animation.container.offsetWidth : animationParams.animationData.w) * devicePixelRatio;
+            canvas.height = (animation.container ? animation.container.offsetHeight : animationParams.animationData.h) * devicePixelRatio;
             canvas.style.width = '100%';
             canvas.style.height = '100%';
           }

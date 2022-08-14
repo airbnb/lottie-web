@@ -44,6 +44,7 @@ SVGRendererBase.prototype.createSolid = function (data) {
 
 SVGRendererBase.prototype.configAnimation = function (animData) {
   this.svgElement.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  this.svgElement.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
   if (this.renderConfig.viewBoxSize) {
     this.svgElement.setAttribute('viewBox', this.renderConfig.viewBoxSize);
   } else {

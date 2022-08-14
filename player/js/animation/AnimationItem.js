@@ -350,8 +350,8 @@ AnimationItem.prototype.checkLoaded = function () {
   }
 };
 
-AnimationItem.prototype.resize = function () {
-  this.renderer.updateContainerSize();
+AnimationItem.prototype.resize = function (width, height) {
+  this.renderer.updateContainerSize(width, height);
 };
 
 AnimationItem.prototype.setSubframe = function (flag) {
