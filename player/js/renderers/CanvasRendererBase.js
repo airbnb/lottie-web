@@ -195,19 +195,21 @@ CanvasRendererBase.prototype.configAnimation = function (animData) {
   this.updateContainerSize();
 };
 
-CanvasRendererBase.prototype.updateContainerSize = function () {
+CanvasRendererBase.prototype.updateContainerSize = function (width, height) {
   this.reset();
   var elementWidth;
   var elementHeight;
   if (this.animationItem.wrapper && this.animationItem.container) {
-    elementWidth = this.animationItem.wrapper.offsetWidth;
-    elementHeight = this.animationItem.wrapper.offsetHeight;
-    this.animationItem.container.setAttribute('width', elementWidth * this.renderConfig.dpr);
-    this.animationItem.container.setAttribute('height', elementHeight * this.renderConfig.dpr);
+    elementWidth = this.animationItem.wrapper.offsetWidth * this.renderConfig.dpr;
+    elementHeight = this.animationItem.wrapper.offsetHeight * this.renderConfig.dpr;
   } else {
-    elementWidth = this.canvasContext.canvas.width * this.renderConfig.dpr;
-    elementHeight = this.canvasContext.canvas.height * this.renderConfig.dpr;
+    elementWidth = width || this.canvasContext.canvas.width * this.renderConfig.dpr;
+    elementHeight = height || this.canvasContext.canvas.height * this.renderConfig.dpr;
   }
+
+  this.canvasContext.canvas.width = elementWidth;
+  this.canvasContext.canvas.height = elementHeight;
+
   var elementRel;
   var animationRel;
   if (this.renderConfig.preserveAspectRatio.indexOf('meet') !== -1 || this.renderConfig.preserveAspectRatio.indexOf('slice') !== -1) {
