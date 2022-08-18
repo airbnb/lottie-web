@@ -351,7 +351,10 @@ AnimationItem.prototype.checkLoaded = function () {
 };
 
 AnimationItem.prototype.resize = function (width, height) {
-  this.renderer.updateContainerSize(width, height);
+  // Adding this validation for backwards compatibility in case an event object was being passed down
+  var _width = typeof width === 'number' ? width : undefined;
+  var _height = typeof height === 'number' ? height : undefined;
+  this.renderer.updateContainerSize(_width, _height);
 };
 
 AnimationItem.prototype.setSubframe = function (flag) {
