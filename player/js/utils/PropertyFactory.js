@@ -173,7 +173,14 @@ const PropertyFactory = (function () {
           }
 
           endValue = nextKeyData.s || keyData.e;
-          keyValue = keyData.h === 1 ? keyData.s[i] : keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
+
+          if (keyData.h === 1) {
+            keyValue = keyData.s[i];
+          } else if (endValue[i] === keyData.s[i]) {
+            keyValue = keyData.s[i] + perc;
+          } else {
+            keyValue = keyData.s[i] + (endValue[i] - keyData.s[i]) * perc;
+          }
 
           if (this.propType === 'multidimensional') {
             newValue[i] = keyValue;
