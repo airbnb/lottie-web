@@ -5,7 +5,7 @@ SlotManager.prototype.getProp = function (data) {
   if (this.animationData.slots
     && this.animationData.slots[data.pid]
   ) {
-    return Object.assign(data, this.animationData.slots[data.pid]);
+    return Object.assign(data, this.animationData.slots[data.pid].p);
   }
   return data;
 };
