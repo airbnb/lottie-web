@@ -110,7 +110,7 @@ SVGRendererBase.prototype.destroy = function () {
   var i;
   var len = this.layers ? this.layers.length : 0;
   for (i = 0; i < len; i += 1) {
-    if (this.elements[i]) {
+    if (this.elements[i] && this.elements[i].destroy) {
       this.elements[i].destroy();
     }
   }
