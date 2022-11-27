@@ -1,11 +1,7 @@
 import {
   createElementID,
+  getExpressionInterfaces,
 } from '../utils/common';
-import LayerExpressionInterface from '../utils/expressions/LayerInterface';
-import EffectsExpressionInterface from '../utils/expressions/EffectInterface';
-import CompExpressionInterface from '../utils/expressions/CompInterface';
-import ShapeExpressionInterface from '../utils/expressions/ShapeInterface';
-import TextExpressionInterface from '../utils/expressions/TextInterface';
 import getBlendMode from '../utils/helpers/blendModes';
 import EffectsManager from '../EffectsManager';
 
@@ -28,6 +24,15 @@ BaseElement.prototype = {
     return false;
   },
   initExpressions: function () {
+    const expressionsInterfaces = getExpressionInterfaces();
+    if (!expressionsInterfaces) {
+      return;
+    }
+    const LayerExpressionInterface = expressionsInterfaces('layer');
+    const EffectsExpressionInterface = expressionsInterfaces('effects');
+    const ShapeExpressionInterface = expressionsInterfaces('shape');
+    const TextExpressionInterface = expressionsInterfaces('text');
+    const CompExpressionInterface = expressionsInterfaces('comp');
     this.layerInterface = LayerExpressionInterface(this);
     if (this.data.hasMask && this.maskManager) {
       this.layerInterface.registerMaskInterface(this.maskManager);

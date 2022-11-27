@@ -1,8 +1,10 @@
 import lottie from './html_light';
 import {
   setExpressionsPlugin,
+  setExpressionInterfaces,
 } from '../utils/common';
 import Expressions from '../utils/expressions/Expressions';
+import interfacesProvider from '../utils/expressions/InterfacesProvider';
 import expressionPropertyDecorator from '../utils/expressions/ExpressionPropertyDecorator';
 import expressionTextPropertyDecorator from '../utils/expressions/ExpressionTextPropertyDecorator';
 // SVG effects
@@ -18,6 +20,7 @@ import SVGGaussianBlurEffect from '../elements/svgElements/effects/SVGGaussianBl
 
 // Registering expression plugin
 setExpressionsPlugin(Expressions);
+setExpressionInterfaces(interfacesProvider);
 expressionPropertyDecorator();
 expressionTextPropertyDecorator();
 registerEffect(20, SVGTintFilter, true);
