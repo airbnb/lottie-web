@@ -1,3 +1,11 @@
+## V 5.10.0
+- FIX: light versions referencing expressions interfaces
+- FEATURE: Add support for new track masks by layer index
+- FEATURE: Add support for zigzag (thanks @mbasaglia)
+- FEATURE: Add support for offset path (thanks @mbasaglia)
+- FEATURE: Customizable canvas renderer width and height
+- FIX: Workaround for banner validation
+
 ## V 5.9.6
 - FIX: Bodymovin export missing comps
 - FIX: Disambiguate bevelEmboss properties (thanks @mbasaglia)
