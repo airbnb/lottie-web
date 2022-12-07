@@ -199,16 +199,22 @@ CanvasRendererBase.prototype.updateContainerSize = function (width, height) {
   this.reset();
   var elementWidth;
   var elementHeight;
-  if (this.animationItem.wrapper && this.animationItem.container) {
-    elementWidth = this.animationItem.wrapper.offsetWidth * this.renderConfig.dpr;
-    elementHeight = this.animationItem.wrapper.offsetHeight * this.renderConfig.dpr;
+  if (width) {
+    elementWidth = width;
+    elementHeight = height;
+    this.canvasContext.canvas.width = elementWidth;
+    this.canvasContext.canvas.height = elementHeight;
   } else {
-    elementWidth = width || this.canvasContext.canvas.width * this.renderConfig.dpr;
-    elementHeight = height || this.canvasContext.canvas.height * this.renderConfig.dpr;
+    if (this.animationItem.wrapper && this.animationItem.container) {
+      elementWidth = this.animationItem.wrapper.offsetWidth;
+      elementHeight = this.animationItem.wrapper.offsetHeight;
+    } else {
+      elementWidth = this.canvasContext.canvas.width;
+      elementHeight = this.canvasContext.canvas.height;
+    }
+    this.canvasContext.canvas.width = elementWidth * this.renderConfig.dpr;
+    this.canvasContext.canvas.height = elementHeight * this.renderConfig.dpr;
   }
-
-  this.canvasContext.canvas.width = elementWidth;
-  this.canvasContext.canvas.height = elementHeight;
 
   var elementRel;
   var animationRel;

@@ -1,6 +1,7 @@
 import lottie from './main';
 import {
   setExpressionsPlugin,
+  setExpressionInterfaces,
 } from '../utils/common';
 import { ShapeModifiers } from '../utils/shapes/ShapeModifiers';
 import TrimModifier from '../utils/shapes/TrimModifier';
@@ -16,6 +17,7 @@ import {
   registerRenderer,
 } from '../renderers/renderersManager';
 import Expressions from '../utils/expressions/Expressions';
+import interfacesProvider from '../utils/expressions/InterfacesProvider';
 import expressionPropertyDecorator from '../utils/expressions/ExpressionPropertyDecorator';
 import expressionTextPropertyDecorator from '../utils/expressions/ExpressionTextPropertyDecorator';
 // SVG effects
@@ -44,6 +46,7 @@ ShapeModifiers.registerModifier('op', OffsetPathModifier);
 
 // Registering expression plugin
 setExpressionsPlugin(Expressions);
+setExpressionInterfaces(interfacesProvider);
 expressionPropertyDecorator();
 expressionTextPropertyDecorator();
 

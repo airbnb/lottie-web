@@ -49,9 +49,6 @@ const dataManager = (function () {
               layerData = layers[i];
               if (('ks' in layerData) && !layerData.completed) {
                 layerData.completed = true;
-                if (layerData.tt) {
-                  layers[i - 1].td = layerData.tt;
-                }
                 if (layerData.hasMask) {
                   var maskProps = layerData.masksProperties;
                   jLen = maskProps.length;

@@ -4,6 +4,7 @@ import {
 
 let subframeEnabled = true;
 let expressionsPlugin = null;
+let expressionsInterfaces = null;
 let idPrefix = '';
 const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 let _shouldRoundValues = false;
@@ -232,6 +233,8 @@ const setSubframeEnabled = (flag) => { subframeEnabled = !!flag; };
 const getSubframeEnabled = () => subframeEnabled;
 const setExpressionsPlugin = (value) => { expressionsPlugin = value; };
 const getExpressionsPlugin = () => expressionsPlugin;
+const setExpressionInterfaces = (value) => { expressionsInterfaces = value; };
+const getExpressionInterfaces = () => expressionsInterfaces;
 const setDefaultCurveSegments = (value) => { defaultCurveSegments = value; };
 const getDefaultCurveSegments = () => defaultCurveSegments;
 const setIdPrefix = (value) => { idPrefix = value; };
@@ -242,6 +245,8 @@ export {
   getSubframeEnabled,
   setExpressionsPlugin,
   getExpressionsPlugin,
+  setExpressionInterfaces,
+  getExpressionInterfaces,
   setDefaultCurveSegments,
   getDefaultCurveSegments,
   isSafari,

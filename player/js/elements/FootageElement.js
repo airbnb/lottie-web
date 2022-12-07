@@ -1,10 +1,12 @@
 import {
   extendPrototype,
 } from '../utils/functionExtensions';
+import {
+  getExpressionInterfaces,
+} from '../utils/common';
 import RenderableElement from './helpers/RenderableElement';
 import BaseElement from './BaseElement';
 import FrameElement from './helpers/FrameElement';
-import FootageInterface from '../utils/expressions/FootageInterface';
 
 function FootageElement(data, globalData, comp) {
   this.initFrame();
@@ -30,6 +32,11 @@ FootageElement.prototype.destroy = function () {
 };
 
 FootageElement.prototype.initExpressions = function () {
+  const expressionsInterfaces = getExpressionInterfaces();
+  if (!expressionsInterfaces) {
+    return;
+  }
+  const FootageInterface = expressionsInterfaces('footage');
   this.layerInterface = FootageInterface(this);
 };
 
