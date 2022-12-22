@@ -454,7 +454,7 @@ function KeyframedMultidimensionalProperty(elem, data, mult, container) {
 
 const PropertyFactory = (function () {
   function getProp(elem, data, type, mult, container) {
-    if (data.pid) {
+    if (data.sid) {
       data = elem.globalData.slotManager.getProp(data);
     }
     var p;

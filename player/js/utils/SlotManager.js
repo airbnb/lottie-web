@@ -3,9 +3,9 @@ function SlotManager(animationData) {
 }
 SlotManager.prototype.getProp = function (data) {
   if (this.animationData.slots
-    && this.animationData.slots[data.pid]
+    && this.animationData.slots[data.sid]
   ) {
-    return Object.assign(data, this.animationData.slots[data.pid].p);
+    return Object.assign(data, this.animationData.slots[data.sid].p);
   }
   return data;
 };
