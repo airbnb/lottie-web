@@ -1,3 +1,6 @@
+## V 5.10.1
+- FIX: track matte masks transform fix
+
 ## V 5.10.0
 - FIX: light versions referencing expressions interfaces
 - FEATURE: Add support for new track masks by layer index
