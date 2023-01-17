@@ -211,12 +211,10 @@ function workerContent() {
           var serialized = wrapper.serialize();
           addElementToList(wrapper, elements);
           self.postMessage({
-            type: 'loaded',
+            type: 'SVGloaded',
             payload: {
               id: payload.id,
               tree: serialized.children[0],
-              totalFrames: animation.totalFrames,
-              frameRate: animation.frameRate,
             },
           });
         });
@@ -242,7 +240,7 @@ function workerContent() {
             }
           }
           self.postMessage({
-            type: 'updated',
+            type: 'SVGupdated',
             payload: {
               elements: changedElements,
               id: payload.id,
@@ -251,6 +249,16 @@ function workerContent() {
           });
         });
       }
+      animation.addEventListener('DOMLoaded', function () {
+        self.postMessage({
+          type: 'DOMLoaded',
+          payload: {
+            id: payload.id,
+            totalFrames: animation.totalFrames,
+            frameRate: animation.frameRate,
+          },
+        });
+      });
       animations[payload.id] = {
         animation: animation,
         events: {},
@@ -411,6 +419,12 @@ var lottie = (function () {
       });
       animation.animInstance.totalFrames = payload.totalFrames;
       animation.animInstance.frameRate = payload.frameRate;
+    };
+  }());
+
+  var handleSVGLoaded = (function () {
+    return function (payload) {
+      var animation = animations[payload.id];
       var container = animation.container;
       var elements = animation.elements;
       createTree(payload.tree, container, elements);
@@ -499,8 +513,9 @@ var lottie = (function () {
   }
 
   var messageHandlers = {
-    loaded: handleAnimationLoaded,
-    updated: handleAnimationUpdate,
+    DOMLoaded: handleAnimationLoaded,
+    SVGloaded: handleSVGLoaded,
+    SVGupdated: handleAnimationUpdate,
     event: handleEvent,
     playing: handlePlaying,
     paused: handlePaused,

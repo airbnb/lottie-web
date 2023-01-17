@@ -24,13 +24,11 @@ SVGBaseElement.prototype = {
     // If this layer acts as a mask for the following layer
     if (this.data.td) {
       this.matteMasks = {};
-      var symbolElement = createNS('symbol');
-      symbolElement.setAttribute('id', this.layerId);
       var gg = createNS('g');
+      gg.setAttribute('id', this.layerId);
       gg.appendChild(this.layerElement);
-      symbolElement.appendChild(gg);
       layerElementParent = gg;
-      this.globalData.defs.appendChild(symbolElement);
+      this.globalData.defs.appendChild(gg);
     } else if (this.data.tt) {
       this.matteElement.appendChild(this.layerElement);
       layerElementParent = this.matteElement;
