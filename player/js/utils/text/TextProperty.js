@@ -11,6 +11,9 @@ function TextProperty(elem, data) {
   this.kf = false;
   this._isFirstFrame = true;
   this._mdf = false;
+  if (data.d && data.d.sid) {
+    data.d = elem.globalData.slotManager.getProp(data.d);
+  }
   this.data = data;
   this.elem = elem;
   this.comp = this.elem.comp;
