@@ -47,7 +47,6 @@ const assetLoader = (function () {
   }
 
   function loadLuma() {
-    console.log('load Luma');
     if (!lumaBuffer) {
       svg = createLumaSvgFilter();
       document.body.appendChild(svg);
