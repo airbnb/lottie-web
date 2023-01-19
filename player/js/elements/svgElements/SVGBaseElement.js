@@ -94,6 +94,12 @@ SVGBaseElement.prototype = {
     this.renderableEffectsManager = new SVGEffects(this);
   },
   getMatte: function (matteType) {
+    // This should not be a common case. But for backward compatibility, we'll create the matte object.
+    // It solves animations that have two consecutive layers marked as matte masks.
+    // Which is an undefined behavior in AE.
+    if (!this.matteMasks) {
+      this.matteMasks = {};
+    }
     if (!this.matteMasks[matteType]) {
       var id = this.layerId + '_' + matteType;
       var filId;
