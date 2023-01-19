@@ -89,7 +89,7 @@ CVBaseElement.prototype = {
       this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
       this.canvasContext.setTransform(this.currentTransform);
       // We draw the mask
-      const mask = this.comp.getElementById(this.data.tp);
+      const mask = this.comp.getElementById('tp' in this.data ? this.data.tp : this.data.ind - 1);
       mask.renderFrame(true);
       // We draw the second buffer (that contains the content of this layer)
       this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
