@@ -35,6 +35,7 @@ CVBaseElement.prototype = {
       }
     }
     this.canvasContext = this.globalData.canvasContext;
+    this.transformCanvas = this.globalData.transformCanvas;
     this.renderableEffectsManager = new CVEffects(this);
   },
   createContent: function () {},
@@ -61,35 +62,41 @@ CVBaseElement.prototype = {
       this.maskManager._isFirstFrame = true;
     }
   },
+  clearCanvas: function (canvasContext) {
+    canvasContext.clearRect(
+      this.transformCanvas.tx,
+      this.transformCanvas.ty,
+      this.transformCanvas.w * this.transformCanvas.sx,
+      this.transformCanvas.h * this.transformCanvas.sy
+    );
+  },
   prepareLayer: function () {
     if (this.data.tt >= 1) {
       var buffer = this.buffers[0];
-      // eslint-disable-next-line no-self-assign
-      buffer.width = buffer.width;
       var bufferCtx = buffer.getContext('2d');
+      this.clearCanvas(bufferCtx);
       // on the first buffer we store the current state of the global drawing
       bufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
       // The next four lines are to clear the canvas
       // TODO: Check if there is a way to clear the canvas without resetting the transform
       this.currentTransform = this.canvasContext.getTransform();
       this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
-      this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+      this.clearCanvas(this.canvasContext);
       this.canvasContext.setTransform(this.currentTransform);
     }
   },
   exitLayer: function () {
     if (this.data.tt >= 1) {
       var buffer = this.buffers[1];
-      // eslint-disable-next-line no-self-assign
-      buffer.width = buffer.width;
       // On the second buffer we store the current state of the global drawing
       // that only contains the content of this layer
       // (if it is a composition, it also includes the nested layers)
       var bufferCtx = buffer.getContext('2d');
+      this.clearCanvas(bufferCtx);
       bufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
       // We clear the canvas again
       this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
-      this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+      this.clearCanvas(this.canvasContext);
       this.canvasContext.setTransform(this.currentTransform);
       // We draw the mask
       const mask = this.comp.getElementById('tp' in this.data ? this.data.tp : this.data.ind - 1);
@@ -105,7 +112,7 @@ CVBaseElement.prototype = {
         var lumaBuffer = assetManager.getLumaCanvas(this.canvasContext.canvas);
         var lumaBufferCtx = lumaBuffer.getContext('2d');
         lumaBufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
-        this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+        this.clearCanvas(this.canvasContext);
         // we repaint the context with the mask applied to to
         this.canvasContext.drawImage(lumaBuffer, 0, 0);
       }
