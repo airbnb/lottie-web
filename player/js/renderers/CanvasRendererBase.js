@@ -72,12 +72,17 @@ CanvasRendererBase.prototype.ctxTransform = function (props) {
     this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
     return;
   }
+  // Resetting the canvas transform matrix to the new transform
   this.transformMat.cloneFromProps(props);
-  var cProps = this.contextData.cTr.props;
+  // Taking the last transform value from the stored stack of transforms
+  var currentTransform = this.contextData.getTransform();
+  var cProps = currentTransform.props;
+  // Applying the last transform value after the new transform to respect the order of transformations
   this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]);
-  // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
-  this.contextData.cTr.cloneFromProps(this.transformMat.props);
-  var trProps = this.contextData.cTr.props;
+  // Storing the new transformed value in the stored transform
+  currentTransform.cloneFromProps(this.transformMat.props);
+  var trProps = currentTransform.props;
+  // Applying the new transform to the canvas
   this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
 };
 
@@ -85,15 +90,17 @@ CanvasRendererBase.prototype.ctxOpacity = function (op) {
   /* if(op === 1){
         return;
     } */
+  var currentOpacity = this.contextData.getOpacity();
   if (!this.renderConfig.clearCanvas) {
     this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-    this.globalData.currentGlobalAlpha = this.contextData.cO;
+    this.globalData.currentGlobalAlpha = currentOpacity;
     return;
   }
-  this.contextData.cO *= op < 0 ? 0 : op;
-  if (this.globalData.currentGlobalAlpha !== this.contextData.cO) {
-    this.canvasContext.globalAlpha = this.contextData.cO;
-    this.globalData.currentGlobalAlpha = this.contextData.cO;
+  currentOpacity *= op < 0 ? 0 : op;
+  this.contextData.setOpacity(currentOpacity);
+  if (this.globalData.currentGlobalAlpha !== currentOpacity) {
+    this.canvasContext.globalAlpha = currentOpacity;
+    this.globalData.currentGlobalAlpha = currentOpacity;
   }
 };
 
@@ -113,17 +120,7 @@ CanvasRendererBase.prototype.save = function (actionFlag) {
   if (actionFlag) {
     this.canvasContext.save();
   }
-  var props = this.contextData.cTr.props;
-  if (this.contextData._length <= this.contextData.cArrPos) {
-    this.contextData.duplicate();
-  }
-  var i;
-  var arr = this.contextData.saved[this.contextData.cArrPos];
-  for (i = 0; i < 16; i += 1) {
-    arr[i] = props[i];
-  }
-  this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
-  this.contextData.cArrPos += 1;
+  this.contextData.push();
 };
 
 CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -135,19 +132,13 @@ CanvasRendererBase.prototype.restore = function (actionFlag) {
     this.canvasContext.restore();
     this.globalData.blendMode = 'source-over';
   }
-  this.contextData.cArrPos -= 1;
-  var popped = this.contextData.saved[this.contextData.cArrPos];
-  var i;
-  var arr = this.contextData.cTr.props;
-  for (i = 0; i < 16; i += 1) {
-    arr[i] = popped[i];
-  }
-  this.canvasContext.setTransform(popped[0], popped[1], popped[4], popped[5], popped[12], popped[13]);
-  popped = this.contextData.savedOp[this.contextData.cArrPos];
-  this.contextData.cO = popped;
-  if (this.globalData.currentGlobalAlpha !== popped) {
-    this.canvasContext.globalAlpha = popped;
-    this.globalData.currentGlobalAlpha = popped;
+  var popped = this.contextData.pop();
+  var transform = popped.transform;
+  var opacity = popped.opacity;
+  this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
+  if (this.globalData.currentGlobalAlpha !== opacity) {
+    this.canvasContext.globalAlpha = opacity;
+    this.globalData.currentGlobalAlpha = opacity;
   }
 };
 
