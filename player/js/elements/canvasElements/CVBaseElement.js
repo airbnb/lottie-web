@@ -1,5 +1,5 @@
+import assetManager from '../../utils/helpers/assetManager';
 import getBlendMode from '../../utils/helpers/blendModes';
-import createTag from '../../utils/helpers/html_elements';
 import Matrix from '../../3rd_party/transformation-matrix';
 import CVEffects from './CVEffects';
 import CVMaskElement from './CVMaskElement';
@@ -10,8 +10,8 @@ function CVBaseElement() {
 var operationsMap = {
   1: 'source-in',
   2: 'source-out',
-  3: 'color',
-  4: 'color',
+  3: 'source-in',
+  4: 'source-out',
 };
 
 CVBaseElement.prototype = {
@@ -19,18 +19,20 @@ CVBaseElement.prototype = {
   initRendererElement: function () {},
   createContainerElements: function () {
     // If the layer is masked we will use two buffers to store each different states of the drawing
+    // This solution is not ideal for several reason. But unfortunately, because of the recursive
+    // nature of the render tree, it's the only simple way to make sure one inner mask doesn't override an outer mask.
     // TODO: try to reduce the size of these buffers to the size of the composition contaning the layer
     // It might be challenging because there layer most likely is transformed in some way
     if (this.data.tt >= 1) {
       this.buffers = [];
-      var bufferCanvas = createTag('canvas');
-      bufferCanvas.width = this.globalData.canvasContext.canvas.width;
-      bufferCanvas.height = this.globalData.canvasContext.canvas.height;
+      var canvasContext = this.globalData.canvasContext;
+      var bufferCanvas = new OffscreenCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
       this.buffers.push(bufferCanvas);
-      var bufferCanvas2 = createTag('canvas');
-      bufferCanvas2.width = this.globalData.canvasContext.canvas.width;
-      bufferCanvas2.height = this.globalData.canvasContext.canvas.height;
+      var bufferCanvas2 = new OffscreenCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
       this.buffers.push(bufferCanvas2);
+      if (this.data.tt >= 3 && !document._isProxy) {
+        assetManager.loadLumaCanvas();
+      }
     }
     this.canvasContext = this.globalData.canvasContext;
     this.renderableEffectsManager = new CVEffects(this);
@@ -80,7 +82,8 @@ CVBaseElement.prototype = {
       var buffer = this.buffers[1];
       // eslint-disable-next-line no-self-assign
       buffer.width = buffer.width;
-      // On the second buffer we store the current state of the global drawing that only contains the content of this layer
+      // On the second buffer we store the current state of the global drawing
+      // that only contains the content of this layer
       // (if it is a composition, it also includes the nested layers)
       var bufferCtx = buffer.getContext('2d');
       bufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
@@ -93,6 +96,19 @@ CVBaseElement.prototype = {
       mask.renderFrame(true);
       // We draw the second buffer (that contains the content of this layer)
       this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+
+      // If the mask is a Luma matte, we need to do two extra painting operations
+      // the _isProxy check is to avoid drawing a fake canvas in workers that will throw an error
+      if (this.data.tt >= 3 && !document._isProxy) {
+        // We copy the painted mask to a buffer that has a color matrix filter applied to it
+        // that applies the rgb values to the alpha channel
+        var lumaBuffer = assetManager.getLumaCanvas(this.canvasContext.canvas);
+        var lumaBufferCtx = lumaBuffer.getContext('2d');
+        lumaBufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
+        this.canvasContext.clearRect(0, 0, this.canvasContext.canvas.width, this.canvasContext.canvas.height);
+        // we repaint the context with the mask applied to to
+        this.canvasContext.drawImage(lumaBuffer, 0, 0);
+      }
       this.canvasContext.globalCompositeOperation = operationsMap[this.data.tt];
       this.canvasContext.drawImage(buffer, 0, 0);
       // We finally draw the first buffer (that contains the content of the global drawing)

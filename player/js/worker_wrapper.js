@@ -4,9 +4,6 @@ function workerContent() {
 
   var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
   function createElement(namespace, type) {
-    if (type === 'canvas') {
-      return new OffscreenCanvas(1, 1);
-    }
     var style = {
       serialize: function () {
         var obj = {};
@@ -86,7 +83,7 @@ function workerContent() {
           textContent: this._textContent,
         };
       },
-      getContext: function () { return { fillRect: function () {} }; },
+      getContext: function () { return { fillRect: function () {}, drawImage: function () {} }; },
       addEventListener: function (_, callback) {
         setTimeout(callback, 1);
       },
@@ -120,6 +117,8 @@ function workerContent() {
     getElementsByTagName: function () {
       return [];
     },
+    body: createElement('', 'body'),
+    _isProxy: true,
   };
   /* eslint-enable */
   var lottieInternal = (function () {
