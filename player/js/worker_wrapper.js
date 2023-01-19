@@ -4,6 +4,9 @@ function workerContent() {
 
   var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
   function createElement(namespace, type) {
+    if (type === 'canvas') {
+      return new OffscreenCanvas(1, 1);
+    }
     var style = {
       serialize: function () {
         var obj = {};
