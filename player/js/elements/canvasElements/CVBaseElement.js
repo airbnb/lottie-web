@@ -26,9 +26,9 @@ CVBaseElement.prototype = {
     if (this.data.tt >= 1) {
       this.buffers = [];
       var canvasContext = this.globalData.canvasContext;
-      var bufferCanvas = new OffscreenCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+      var bufferCanvas = assetManager.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
       this.buffers.push(bufferCanvas);
-      var bufferCanvas2 = new OffscreenCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+      var bufferCanvas2 = assetManager.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
       this.buffers.push(bufferCanvas2);
       if (this.data.tt >= 3 && !document._isProxy) {
         assetManager.loadLumaCanvas();

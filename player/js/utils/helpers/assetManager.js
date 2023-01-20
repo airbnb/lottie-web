@@ -2,7 +2,7 @@ import createTag from './html_elements';
 import createNS from './svg_elements';
 import featureSupport from '../featureSupport';
 
-const assetLoader = (function () {
+var lumaLoader = (function () {
   var id = '__lottie_element_luma_buffer';
   var lumaBuffer = null;
   var lumaBufferCtx = null;
@@ -69,10 +69,27 @@ const assetLoader = (function () {
     lumaBufferCtx.filter = 'url(#' + id + ')';
     return lumaBuffer;
   }
-
   return {
-    loadLumaCanvas: loadLuma,
-    getLumaCanvas: getLuma,
+    load: loadLuma,
+    get: getLuma,
+  };
+});
+
+function createCanvas(width, height) {
+  if (featureSupport.offscreenCanvas) {
+    return new OffscreenCanvas(width, height);
+  }
+  var canvas = createTag('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  return canvas;
+}
+
+const assetLoader = (function () {
+  return {
+    loadLumaCanvas: lumaLoader.load,
+    getLumaCanvas: lumaLoader.get,
+    createCanvas: createCanvas,
   };
 }());
 
