@@ -1,32 +1,41 @@
-/* eslint-disable max-classes-per-file */
 function workerContent() {
-  class ProxyElement {
-    constructor(type, namespace) {
-      this._state = 'init';
-      this._isDirty = false;
-      this._isProxy = true;
-      this._changedStyles = [];
-      this._changedAttributes = [];
-      this._changedElements = [];
-      this._textContent = null;
-      this.type = type;
-      this.namespace = namespace;
-      this.children = [];
-      localIdCounter += 1;
-      this.attributes = {
-        id: 'l_d_' + localIdCounter,
-      };
-      this.style = new Style(this);
+  function extendPrototype(sources, destination) {
+    var i;
+    var len = sources.length;
+    var sourcePrototype;
+    for (i = 0; i < len; i += 1) {
+      sourcePrototype = sources[i].prototype;
+      for (var attr in sourcePrototype) {
+        if (Object.prototype.hasOwnProperty.call(sourcePrototype, attr)) destination.prototype[attr] = sourcePrototype[attr];
+      }
     }
-
-    appendChild(_child) {
+  }
+  function ProxyElement(type, namespace) {
+    this._state = 'init';
+    this._isDirty = false;
+    this._isProxy = true;
+    this._changedStyles = [];
+    this._changedAttributes = [];
+    this._changedElements = [];
+    this._textContent = null;
+    this.type = type;
+    this.namespace = namespace;
+    this.children = [];
+    localIdCounter += 1;
+    this.attributes = {
+      id: 'l_d_' + localIdCounter,
+    };
+    this.style = new Style(this);
+  }
+  ProxyElement.prototype = {
+    appendChild: function (_child) {
       _child.parentNode = this;
       this.children.push(_child);
       this._isDirty = true;
       this._changedElements.push([_child, this.attributes.id]);
-    }
+    },
 
-    insertBefore(_newElement, _nextElement) {
+    insertBefore: function (_newElement, _nextElement) {
       var children = this.children;
       for (var i = 0; i < children.length; i += 1) {
         if (children[i] === _nextElement) {
@@ -37,17 +46,17 @@ function workerContent() {
         }
       }
       children.push(_nextElement);
-    }
+    },
 
-    setAttribute(_attribute, _value) {
+    setAttribute: function (_attribute, _value) {
       this.attributes[_attribute] = _value;
       if (!this._isDirty) {
         this._isDirty = true;
       }
       this._changedAttributes.push(_attribute);
-    }
+    },
 
-    serialize() {
+    serialize: function () {
       return {
         type: this.type,
         namespace: this.namespace,
@@ -56,26 +65,30 @@ function workerContent() {
         children: this.children.map(function (child) { return child.serialize(); }),
         textContent: this._textContent,
       };
-    }
+    },
 
     // eslint-disable-next-line class-methods-use-this
-    addEventListener(_, _callback) {
+    addEventListener: function (_, _callback) {
       setTimeout(_callback, 1);
-    }
+    },
 
-    setAttributeNS(_, _attribute, _value) {
+    setAttributeNS: function (_, _attribute, _value) {
       this.attributes[_attribute] = _value;
       if (!this._isDirty) {
         this._isDirty = true;
       }
       this._changedAttributes.push(_attribute);
-    }
+    },
 
-    set textContent(_value) {
+  };
+
+  Object.defineProperty(ProxyElement.prototype, 'textContent', {
+    set: function (_value) {
       this._isDirty = true;
       this._textContent = _value;
-    }
-  }
+    },
+  });
+
   var localIdCounter = 0;
   var animations = {};
 
@@ -94,16 +107,18 @@ function workerContent() {
   function Style(element) {
     this.element = element;
   }
-  Style.prototype.serialize = function () {
-    var obj = {};
-    for (var i = 0; i < styleProperties.length; i += 1) {
-      var propertyKey = styleProperties[i];
-      var keyName = '_' + propertyKey;
-      if (keyName in this) {
-        obj[propertyKey] = this[keyName];
+  Style.prototype = {
+    serialize: function () {
+      var obj = {};
+      for (var i = 0; i < styleProperties.length; i += 1) {
+        var propertyKey = styleProperties[i];
+        var keyName = '_' + propertyKey;
+        if (keyName in this) {
+          obj[propertyKey] = this[keyName];
+        }
       }
-    }
-    return obj;
+      return obj;
+    },
   };
   styleProperties.forEach(function (propertyKey) {
     Object.defineProperty(Style.prototype, propertyKey, {
@@ -122,12 +137,12 @@ function workerContent() {
     });
   });
 
-  class CanvasContext {
-    constructor(element) {
-      this.element = element;
-    }
+  function CanvasContext(element) {
+    this.element = element;
+  }
 
-    createRadialGradient() {
+  CanvasContext.prototype = {
+    createRadialGradient: function () {
       function addColorStop() {
         instruction.stops.push(convertArguments(arguments));
       }
@@ -140,9 +155,9 @@ function workerContent() {
       return {
         addColorStop: addColorStop,
       };
-    }
+    },
 
-    createLinearGradient() {
+    createLinearGradient: function () {
       function addColorStop() {
         instruction.stops.push(convertArguments(arguments));
       }
@@ -155,14 +170,20 @@ function workerContent() {
       return {
         addColorStop: addColorStop,
       };
-    }
+    },
 
-    get canvas() {
-      return this.element;
-    }
-  }
+  };
 
-  const canvasContextMethods = [
+  Object.defineProperties(CanvasContext.prototype, {
+    canvas: {
+      enumerable: true,
+      get: function () {
+        return this.element;
+      },
+    },
+  });
+
+  var canvasContextMethods = [
     'fillRect',
     'setTransform',
     'drawImage',
@@ -191,7 +212,7 @@ function workerContent() {
     };
   });
 
-  const canvasContextProperties = [
+  var canvasContextProperties = [
     'globalAlpha',
     'strokeStyle',
     'fillStyle',
@@ -215,39 +236,25 @@ function workerContent() {
       });
   });
 
-  class CanvasElement extends ProxyElement {
-    constructor(type, namespace) {
-      super(type, namespace);
-      this.instructions = [];
-      this._width = 0;
-      this._height = 0;
-      this.context = new CanvasContext(this);
-    }
-
-    set width(_value) {
-      this._width = _value;
-    }
-
-    set height(_value) {
-      this._height = _value;
-    }
-
-    get width() {
-      return this._width;
-    }
-
-    get height() {
-      return this._height;
-    }
-
-    getContext() {
-      return this.context;
-    }
-
-    resetInstructions() {
-      this.instructions.length = 0;
-    }
+  function CanvasElement(type, namespace) {
+    ProxyElement.call(this, type, namespace);
+    this.instructions = [];
+    this.width = 0;
+    this.height = 0;
+    this.context = new CanvasContext(this);
   }
+
+  CanvasElement.prototype = {
+
+    getContext: function () {
+      return this.context;
+    },
+
+    resetInstructions: function () {
+      this.instructions.length = 0;
+    },
+  };
+  extendPrototype([ProxyElement], CanvasElement);
 
   function createElement(namespace, type) {
     if (type === 'canvas') {
@@ -529,7 +536,7 @@ function createWorker(fn) {
   return new Worker(url);
 }
 // eslint-disable-next-line no-unused-vars
-const lottie = (function () {
+var lottie = (function () {
   'use strict';
 
   var workerInstance = createWorker(workerContent);
@@ -676,7 +683,7 @@ const lottie = (function () {
       restore: ctx.restore,
     };
     return function (instructions) {
-      for (let i = 0; i < instructions.length; i += 1) {
+      for (var i = 0; i < instructions.length; i += 1) {
         var instruction = instructions[i];
         var fn = map[instruction.t];
         if (fn) {
