@@ -973,15 +973,15 @@ var lottie = (function () {
 
           // Transfer control to offscreen if it's not already
           var transferCanvas = canvas;
-          if ((typeof OffscreenCanvas !== 'undefined')
-            && !(canvas instanceof OffscreenCanvas)
-            && canvas.transferControlToOffscreen) {
-            transferCanvas = canvas.transferControlToOffscreen();
-            animationParams.rendererSettings.canvas = transferCanvas;
-            transferedObjects.push(transferCanvas);
-          } else {
+          if (typeof OffscreenCanvas === 'undefined') {
             animation.canvas = canvas;
             animation.instructionsHandler = createInstructionsHandler(canvas);
+          } else {
+            if (!(canvas instanceof OffscreenCanvas)) {
+              transferCanvas = canvas.transferControlToOffscreen();
+              animationParams.rendererSettings.canvas = transferCanvas;
+            }
+            transferedObjects.push(transferCanvas);
           }
         }
         animations[animationId] = animation;
