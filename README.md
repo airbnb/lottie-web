@@ -1,12 +1,12 @@
 # Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), [React Native](https://github.com/airbnb/lottie-react-native), and [Windows](https://aka.ms/lottie)
 
-Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](http://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
+Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](https://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
 
 For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
 
 
 
-# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](http://airbnb.io/lottie/)
+# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](https://airbnb.io/lottie/)
 
 
 
@@ -29,7 +29,7 @@ For the first time, designers can create **and ship** beautiful animations witho
 
 ### Option 1 (Recommended):
 **Download it from from aescripts + aeplugins:**
-http://aescripts.com/bodymovin/
+https://aescripts.com/bodymovin/
 
 ### Option 2:
 **Or get it from the adobe store**
@@ -41,7 +41,7 @@ CC 2014 and up.
 ### Option 3:
 - download the ZIP from the repo.
 - Extract content and get the .zxp file from '/build/extension'
-- Use the [ZXP installer](http://aescripts.com/learn/zxp-installer/) from aescripts.com.
+- Use the [ZXP installer](https://aescripts.com/learn/zxp-installer/) from aescripts.com.
 
 ### Option 4:
 - Close After Effects<br/>
@@ -71,7 +71,7 @@ Skip directly to "Install third-party extensions"
 
 ### Option 6:
 
-Install with [Homebrew](http://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
+Install with [Homebrew](https://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
 ```bash
 brew tap danielbayley/adobe
 brew cask install lottie
@@ -101,7 +101,7 @@ Or get it directly from the AE plugin clicking on Get Player
 [See a basic implementation here.](https://codepen.io/airnan/project/editor/ZeNONO/) <br/>
 
 # Examples
-[See examples on codepen.](http://codepen.io/collection/nVYWZR/) <br/>
+[See examples on codepen.](https://codepen.io/collection/nVYWZR/) <br/>
 
 ## How it works
 [Here's](https://www.youtube.com/watch?v=5XMUJdjI0L8) a video tutorial explaining how to export a basic animation and load it in an html page <br />
@@ -311,7 +311,7 @@ my email is **hernantorrisi@gmail.com**
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
-- look at the great animations exported on codepen [See examples on codepen.](http://codepen.io/collection/nVYWZR/)
+- look at the great animations exported on codepen [See examples on codepen.](https://codepen.io/collection/nVYWZR/)
 - gzipping the animation jsons and the player have a huge reduction on the filesize. I recommend doing it if you use it for a project.
 
 ## Issues
