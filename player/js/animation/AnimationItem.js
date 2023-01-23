@@ -646,6 +646,10 @@ AnimationItem.prototype.setDirection = function (val) {
   this.updaFrameModifier();
 };
 
+AnimationItem.prototype.setLoop = function (isLooping) {
+  this.loop = isLooping;
+};
+
 AnimationItem.prototype.setVolume = function (val, name) {
   if (name && this.name !== name) {
     return;
