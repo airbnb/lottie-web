@@ -1,108 +1,266 @@
 function workerContent() {
+  function extendPrototype(sources, destination) {
+    var i;
+    var len = sources.length;
+    var sourcePrototype;
+    for (i = 0; i < len; i += 1) {
+      sourcePrototype = sources[i].prototype;
+      for (var attr in sourcePrototype) {
+        if (Object.prototype.hasOwnProperty.call(sourcePrototype, attr)) destination.prototype[attr] = sourcePrototype[attr];
+      }
+    }
+  }
+  function ProxyElement(type, namespace) {
+    this._state = 'init';
+    this._isDirty = false;
+    this._isProxy = true;
+    this._changedStyles = [];
+    this._changedAttributes = [];
+    this._changedElements = [];
+    this._textContent = null;
+    this.type = type;
+    this.namespace = namespace;
+    this.children = [];
+    localIdCounter += 1;
+    this.attributes = {
+      id: 'l_d_' + localIdCounter,
+    };
+    this.style = new Style(this);
+  }
+  ProxyElement.prototype = {
+    appendChild: function (_child) {
+      _child.parentNode = this;
+      this.children.push(_child);
+      this._isDirty = true;
+      this._changedElements.push([_child, this.attributes.id]);
+    },
+
+    insertBefore: function (_newElement, _nextElement) {
+      var children = this.children;
+      for (var i = 0; i < children.length; i += 1) {
+        if (children[i] === _nextElement) {
+          children.splice(i, 0, _newElement);
+          this._isDirty = true;
+          this._changedElements.push([_newElement, this.attributes.id, _nextElement.attributes.id]);
+          return;
+        }
+      }
+      children.push(_nextElement);
+    },
+
+    setAttribute: function (_attribute, _value) {
+      this.attributes[_attribute] = _value;
+      if (!this._isDirty) {
+        this._isDirty = true;
+      }
+      this._changedAttributes.push(_attribute);
+    },
+
+    serialize: function () {
+      return {
+        type: this.type,
+        namespace: this.namespace,
+        style: this.style.serialize(),
+        attributes: this.attributes,
+        children: this.children.map(function (child) { return child.serialize(); }),
+        textContent: this._textContent,
+      };
+    },
+
+    // eslint-disable-next-line class-methods-use-this
+    addEventListener: function (_, _callback) {
+      setTimeout(_callback, 1);
+    },
+
+    setAttributeNS: function (_, _attribute, _value) {
+      this.attributes[_attribute] = _value;
+      if (!this._isDirty) {
+        this._isDirty = true;
+      }
+      this._changedAttributes.push(_attribute);
+    },
+
+  };
+
+  Object.defineProperty(ProxyElement.prototype, 'textContent', {
+    set: function (_value) {
+      this._isDirty = true;
+      this._textContent = _value;
+    },
+  });
+
   var localIdCounter = 0;
   var animations = {};
 
   var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
-  function createElement(namespace, type) {
-    var style = {
-      serialize: function () {
-        var obj = {};
-        for (var i = 0; i < styleProperties.length; i += 1) {
-          var propertyKey = styleProperties[i];
-          var keyName = '_' + propertyKey;
-          if (keyName in this) {
-            obj[propertyKey] = this[keyName];
-          }
+
+  function convertArguments(args) {
+    var arr = [];
+    var i;
+    var len = args.length;
+    for (i = 0; i < len; i += 1) {
+      arr.push(args[i]);
+    }
+    return arr;
+  }
+
+  function Style(element) {
+    this.element = element;
+  }
+  Style.prototype = {
+    serialize: function () {
+      var obj = {};
+      for (var i = 0; i < styleProperties.length; i += 1) {
+        var propertyKey = styleProperties[i];
+        var keyName = '_' + propertyKey;
+        if (keyName in this) {
+          obj[propertyKey] = this[keyName];
         }
-        return obj;
+      }
+      return obj;
+    },
+  };
+  styleProperties.forEach(function (propertyKey) {
+    Object.defineProperty(Style.prototype, propertyKey, {
+      set: function (value) {
+        if (!this.element._isDirty) {
+          this.element._isDirty = true;
+        }
+        this.element._changedStyles.push(propertyKey);
+        var keyName = '_' + propertyKey;
+        this[keyName] = value;
       },
+      get: function () {
+        var keyName = '_' + propertyKey;
+        return this[keyName];
+      },
+    });
+  });
+
+  function CanvasContext(element) {
+    this.element = element;
+  }
+
+  CanvasContext.prototype = {
+    createRadialGradient: function () {
+      function addColorStop() {
+        instruction.stops.push(convertArguments(arguments));
+      }
+      var instruction = {
+        t: 'rGradient',
+        a: convertArguments(arguments),
+        stops: [],
+      };
+      this.element.instructions.push(instruction);
+      return {
+        addColorStop: addColorStop,
+      };
+    },
+
+    createLinearGradient: function () {
+      function addColorStop() {
+        instruction.stops.push(convertArguments(arguments));
+      }
+      var instruction = {
+        t: 'lGradient',
+        a: convertArguments(arguments),
+        stops: [],
+      };
+      this.element.instructions.push(instruction);
+      return {
+        addColorStop: addColorStop,
+      };
+    },
+
+  };
+
+  Object.defineProperties(CanvasContext.prototype, {
+    canvas: {
+      enumerable: true,
+      get: function () {
+        return this.element;
+      },
+    },
+  });
+
+  var canvasContextMethods = [
+    'fillRect',
+    'setTransform',
+    'drawImage',
+    'beginPath',
+    'moveTo',
+    'save',
+    'restore',
+    'fillText',
+    'setLineDash',
+    'clearRect',
+    'clip',
+    'rect',
+    'stroke',
+    'fill',
+    'closePath',
+    'bezierCurveTo',
+    'lineTo',
+  ];
+
+  canvasContextMethods.forEach(function (method) {
+    CanvasContext.prototype[method] = function () {
+      this.element.instructions.push({
+        t: method,
+        a: convertArguments(arguments),
+      });
     };
-    styleProperties.forEach(function (propertyKey) {
-      Object.defineProperty(style, propertyKey, {
-        set: function (value) {
-          if (!element._isDirty) {
-            element._isDirty = true;
-          }
-          element._changedStyles.push(propertyKey);
-          var keyName = '_' + propertyKey;
-          this[keyName] = value;
-        },
-        get: function () {
-          var keyName = '_' + propertyKey;
-          return this[keyName];
+  });
+
+  var canvasContextProperties = [
+    'globalAlpha',
+    'strokeStyle',
+    'fillStyle',
+    'lineCap',
+    'lineJoin',
+    'lineWidth',
+    'miterLimit',
+    'lineDashOffset',
+    'globalCompositeOperation',
+  ];
+
+  canvasContextProperties.forEach(function (property) {
+    Object.defineProperty(CanvasContext.prototype, property,
+      {
+        set: function (_value) {
+          this.element.instructions.push({
+            t: property,
+            a: _value,
+          });
         },
       });
-    });
-    localIdCounter += 1;
-    var element = {
-      _state: 'init',
-      _isDirty: false,
-      _changedStyles: [],
-      _changedAttributes: [],
-      _changedElements: [],
-      _textContent: null,
-      type: type,
-      namespace: namespace,
-      children: [],
-      attributes: {
-        id: 'l_d_' + localIdCounter,
-      },
-      style: style,
-      appendChild: function (child) {
-        child.parentNode = this;
-        this.children.push(child);
-        this._isDirty = true;
-        this._changedElements.push([child, this.attributes.id]);
-      },
-      insertBefore: function (newElement, nextElement) {
-        var children = this.children;
-        for (var i = 0; i < children.length; i += 1) {
-          if (children[i] === nextElement) {
-            children.splice(i, 0, newElement);
-            this._isDirty = true;
-            this._changedElements.push([newElement, this.attributes.id, nextElement.attributes.id]);
-            return;
-          }
-        }
-        children.push(nextElement);
-      },
-      setAttribute: function (attribute, value) {
-        this.attributes[attribute] = value;
-        if (!element._isDirty) {
-          element._isDirty = true;
-        }
-        element._changedAttributes.push(attribute);
-      },
-      serialize: function () {
-        return {
-          type: this.type,
-          namespace: this.namespace,
-          style: this.style.serialize(),
-          attributes: this.attributes,
-          children: this.children.map(function (child) { return child.serialize(); }),
-          textContent: this._textContent,
-        };
-      },
-      getContext: function () { return { fillRect: function () {} }; },
-      addEventListener: function (_, callback) {
-        setTimeout(callback, 1);
-      },
-      setAttributeNS: function (_, attribute, value) {
-        this.attributes[attribute] = value;
-        if (!element._isDirty) {
-          element._isDirty = true;
-        }
-        element._changedAttributes.push(attribute);
-      },
-    };
-    element.style = style;
-    Object.defineProperty(element, 'textContent', {
-      set: function (value) {
-        element._isDirty = true;
-        element._textContent = value;
-      },
-    });
-    return element;
+  });
+
+  function CanvasElement(type, namespace) {
+    ProxyElement.call(this, type, namespace);
+    this.instructions = [];
+    this.width = 0;
+    this.height = 0;
+    this.context = new CanvasContext(this);
+  }
+
+  CanvasElement.prototype = {
+
+    getContext: function () {
+      return this.context;
+    },
+
+    resetInstructions: function () {
+      this.instructions.length = 0;
+    },
+  };
+  extendPrototype([ProxyElement], CanvasElement);
+
+  function createElement(namespace, type) {
+    if (type === 'canvas') {
+      return new CanvasElement(type, namespace);
+    }
+    return new ProxyElement(type, namespace);
   }
 
   var window = self; // eslint-disable-line no-redeclare, no-unused-vars
@@ -117,6 +275,8 @@ function workerContent() {
     getElementsByTagName: function () {
       return [];
     },
+    body: createElement('', 'body'),
+    _isProxy: true,
   };
   /* eslint-enable */
   var lottieInternal = (function () {
@@ -175,11 +335,17 @@ function workerContent() {
       var wrapper;
       var animation;
       var elements = [];
+      var canvas;
       if (params.renderer === 'svg') {
         wrapper = document.createElement('div');
         params.container = wrapper;
       } else {
-        var canvas = params.rendererSettings.canvas;
+        canvas = params.rendererSettings.canvas;
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          canvas.width = params.animationData.w;
+          canvas.height = params.animationData.h;
+        }
         var ctx = canvas.getContext('2d');
         params.rendererSettings.context = ctx;
       }
@@ -247,6 +413,18 @@ function workerContent() {
               currentTime: event.currentTime,
             },
           });
+        });
+      } else if (canvas._isProxy) {
+        animation.addEventListener('drawnFrame', function (event) {
+          self.postMessage({
+            type: 'CanvasUpdated',
+            payload: {
+              instructions: canvas.instructions,
+              id: payload.id,
+              currentTime: event.currentTime,
+            },
+          });
+          canvas.resetInstructions();
         });
       }
       animation.addEventListener('DOMLoaded', function () {
@@ -488,6 +666,40 @@ var lottie = (function () {
     }
   }
 
+  function createInstructionsHandler(canvas) {
+    var ctx = canvas.getContext('2d');
+    var map = {
+      beginPath: ctx.beginPath,
+      closePath: ctx.closePath,
+      rect: ctx.rect,
+      clip: ctx.clip,
+      clearRect: ctx.clearRect,
+      setTransform: ctx.setTransform,
+      moveTo: ctx.moveTo,
+      bezierCurveTo: ctx.bezierCurveTo,
+      lineTo: ctx.lineTo,
+      fill: ctx.fill,
+      save: ctx.save,
+      restore: ctx.restore,
+    };
+    return function (instructions) {
+      for (var i = 0; i < instructions.length; i += 1) {
+        var instruction = instructions[i];
+        var fn = map[instruction.t];
+        if (fn) {
+          fn.apply(ctx, instruction.a);
+        } else {
+          ctx[instruction.t] = instruction.a;
+        }
+      }
+    };
+  }
+
+  function handleCanvasAnimationUpdate(payload) {
+    var animation = animations[payload.id];
+    animation.instructionsHandler(payload.instructions);
+  }
+
   function handleEvent(payload) {
     var animation = animations[payload.id];
     if (animation) {
@@ -516,6 +728,7 @@ var lottie = (function () {
     DOMLoaded: handleAnimationLoaded,
     SVGloaded: handleSVGLoaded,
     SVGupdated: handleAnimationUpdate,
+    CanvasUpdated: handleCanvasAnimationUpdate,
     event: handleEvent,
     playing: handlePlaying,
     paused: handlePaused,
@@ -759,9 +972,17 @@ var lottie = (function () {
           }
 
           // Transfer control to offscreen if it's not already
-          var offscreen = canvas instanceof OffscreenCanvas ? canvas : canvas.transferControlToOffscreen();
-          animationParams.rendererSettings.canvas = offscreen;
-          transferedObjects.push(animationParams.rendererSettings.canvas);
+          var transferCanvas = canvas;
+          if (typeof OffscreenCanvas === 'undefined') {
+            animation.canvas = canvas;
+            animation.instructionsHandler = createInstructionsHandler(canvas);
+          } else {
+            if (!(canvas instanceof OffscreenCanvas)) {
+              transferCanvas = canvas.transferControlToOffscreen();
+              animationParams.rendererSettings.canvas = transferCanvas;
+            }
+            transferedObjects.push(transferCanvas);
+          }
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
