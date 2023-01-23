@@ -473,9 +473,9 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].animation.setDirection(payload.value);
       }
-    } else if (type === 'setDirection') {
+    } else if (type === 'setLoop') {
       if (animations[payload.id]) {
-        animations[payload.id].animation.setDirection(payload.value);
+        animations[payload.id].animation.setLoop(payload.value);
       }
     } else if (type === 'goToAndPlay') {
       if (animations[payload.id]) {
@@ -818,6 +818,15 @@ var lottie = (function () {
       setDirection: function (value) {
         workerInstance.postMessage({
           type: 'setDirection',
+          payload: {
+            id: animationId,
+            value: value,
+          },
+        });
+      },
+      setLoop: function (value) {
+        workerInstance.postMessage({
+          type: 'setLoop',
           payload: {
             id: animationId,
             value: value,
