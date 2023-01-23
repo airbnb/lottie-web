@@ -22,7 +22,7 @@ CVBaseElement.prototype = {
     // This solution is not ideal for several reason. But unfortunately, because of the recursive
     // nature of the render tree, it's the only simple way to make sure one inner mask doesn't override an outer mask.
     // TODO: try to reduce the size of these buffers to the size of the composition contaning the layer
-    // It might be challenging because there layer most likely is transformed in some way
+    // It might be challenging because the layer most likely is transformed in some way
     if (this.data.tt >= 1) {
       this.buffers = [];
       var canvasContext = this.globalData.canvasContext;
@@ -113,7 +113,7 @@ CVBaseElement.prototype = {
         var lumaBufferCtx = lumaBuffer.getContext('2d');
         lumaBufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
         this.clearCanvas(this.canvasContext);
-        // we repaint the context with the mask applied to to
+        // we repaint the context with the mask applied to it
         this.canvasContext.drawImage(lumaBuffer, 0, 0);
       }
       this.canvasContext.globalCompositeOperation = operationsMap[this.data.tt];
