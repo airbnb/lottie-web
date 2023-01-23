@@ -220,6 +220,7 @@ Animation instances have these main methods:
 you can also use addEventListener with the following events:
 - complete
 - loopComplete
+- drawnFrame
 - enterFrame
 - segmentStart
 - config_ready (when initial config is done)

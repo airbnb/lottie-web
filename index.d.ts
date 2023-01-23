@@ -1,7 +1,54 @@
 export type AnimationDirection = 1 | -1;
 export type AnimationSegment = [number, number];
-export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
+export type AnimationEventName = 'drawnFrame' | 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
 export type AnimationEventCallback<T = any> = (args: T) => void;
+
+/** Specifies the data for each event type. */
+export interface AnimationEvents {
+  DOMLoaded: undefined;
+  complete: BMCompleteEvent;
+  config_ready: undefined;
+  data_failed: undefined;
+  data_ready: undefined;
+  destroy: BMDestroyEvent;
+  drawnFrame: BMEnterFrameEvent;
+  enterFrame: BMEnterFrameEvent;
+  error: undefined;
+  loaded_images: undefined;
+  loopComplete: BMCompleteLoopEvent;
+  segmentStart: BMSegmentStartEvent;
+}
+
+export interface BMCompleteEvent {
+  direction: number;
+  type: "complete";
+}
+
+export interface BMCompleteLoopEvent {
+  currentLoop: number;
+  direction: number;
+  totalLoops: number;
+  type: "loopComplete";
+}
+
+export interface BMDestroyEvent {
+  type: "destroy";
+}
+
+export interface BMEnterFrameEvent {
+  /** The current time in frames. */
+  currentTime: number;
+  direction: number;
+  /** The total number of frames. */
+  totalTime: number;
+  type: "enterFrame";
+}
+
+export interface BMSegmentStartEvent {
+  firstFrame: number;
+  totalFrames: number;
+  type: "segmentStart";
+}
 
 export type AnimationItem = {
     name: string;
@@ -44,9 +91,9 @@ export type AnimationItem = {
     playSegments(segments: AnimationSegment | AnimationSegment[], forceFlag?: boolean): void;
     setSubframe(useSubFrames: boolean): void;
     getDuration(inFrames?: boolean): number;
-    triggerEvent<T = any>(name: AnimationEventName, args: T): void;
-    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): () => void;
-    removeEventListener<T = any>(name: AnimationEventName, callback?: AnimationEventCallback<T>): void;
+    triggerEvent<T extends AnimationEventName>(name: T, args: AnimationEvents[T]): void;
+    addEventListener<T extends AnimationEventName>(name: T, callback: AnimationEventCallback<AnimationEvents[T]>): () => void;
+    removeEventListener<T extends AnimationEventName>(name: T, callback?: AnimationEventCallback<AnimationEvents[T]>): void;
 }
 
 export type BaseRendererConfig = {
