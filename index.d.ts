@@ -1,7 +1,54 @@
 export type AnimationDirection = 1 | -1;
 export type AnimationSegment = [number, number];
-export type AnimationEventName = 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
+export type AnimationEventName = 'drawnFrame' | 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
 export type AnimationEventCallback<T = any> = (args: T) => void;
+
+/** Specifies the data for each event type. */
+export interface AnimationEvents {
+  DOMLoaded: undefined;
+  complete: BMCompleteEvent;
+  config_ready: undefined;
+  data_failed: undefined;
+  data_ready: undefined;
+  destroy: BMDestroyEvent;
+  drawnFrame: BMEnterFrameEvent;
+  enterFrame: BMEnterFrameEvent;
+  error: undefined;
+  loaded_images: undefined;
+  loopComplete: BMCompleteLoopEvent;
+  segmentStart: BMSegmentStartEvent;
+}
+
+export interface BMCompleteEvent {
+  direction: number;
+  type: "complete";
+}
+
+export interface BMCompleteLoopEvent {
+  currentLoop: number;
+  direction: number;
+  totalLoops: number;
+  type: "loopComplete";
+}
+
+export interface BMDestroyEvent {
+  type: "destroy";
+}
+
+export interface BMEnterFrameEvent {
+  /** The current time in frames. */
+  currentTime: number;
+  direction: number;
+  /** The total number of frames. */
+  totalTime: number;
+  type: "enterFrame";
+}
+
+export interface BMSegmentStartEvent {
+  firstFrame: number;
+  totalFrames: number;
+  type: "segmentStart";
+}
 
 export type AnimationItem = {
     name: string;
@@ -44,17 +91,17 @@ export type AnimationItem = {
     playSegments(segments: AnimationSegment | AnimationSegment[], forceFlag?: boolean): void;
     setSubframe(useSubFrames: boolean): void;
     getDuration(inFrames?: boolean): number;
-    triggerEvent<T = any>(name: AnimationEventName, args: T): void;
-    addEventListener<T = any>(name: AnimationEventName, callback: AnimationEventCallback<T>): () => void;
-    removeEventListener<T = any>(name: AnimationEventName, callback?: AnimationEventCallback<T>): void;
+    triggerEvent<T extends AnimationEventName>(name: T, args: AnimationEvents[T]): void;
+    addEventListener<T extends AnimationEventName>(name: T, callback: AnimationEventCallback<AnimationEvents[T]>): () => void;
+    removeEventListener<T extends AnimationEventName>(name: T, callback?: AnimationEventCallback<AnimationEvents[T]>): void;
 }
 
-export type BaseRendererConfig = {
+export interface BaseRendererConfig {
     imagePreserveAspectRatio?: string;
     className?: string;
-};
+}
 
-export type SVGRendererConfig = BaseRendererConfig & {
+export interface SVGRendererConfig extends BaseRendererConfig {
     title?: string;
     description?: string;
     preserveAspectRatio?: string;
@@ -64,22 +111,22 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxSize?: string;
     focusable?: boolean;
     filterSize?: FilterSizeConfig;
-};
+}
 
-export type CanvasRendererConfig = BaseRendererConfig & {
+export interface CanvasRendererConfig extends BaseRendererConfig {
     clearCanvas?: boolean;
     context?: CanvasRenderingContext2D;
     progressiveLoad?: boolean;
     preserveAspectRatio?: string;
-};
+}
 
-export type HTMLRendererConfig = BaseRendererConfig & {
+export interface HTMLRendererConfig extends BaseRendererConfig {
     hideOnTransparent?: boolean;
-};
+}
 
 export type RendererType = 'svg' | 'canvas' | 'html';
 
-export type AnimationConfig<T extends RendererType = 'svg'> = {
+export interface AnimationConfig<T extends RendererType = 'svg'> {
     container: Element;
     renderer?: T;
     loop?: boolean | number;
@@ -101,7 +148,7 @@ export type AnimationConfig<T extends RendererType = 'svg'> = {
     }
 }
 
-export type TextDocumentData = {
+export interface TextDocumentData {
     t?: string;
     s?: number;
     f?: string;
@@ -113,22 +160,22 @@ export type TextDocumentData = {
     fc?: [number, number, number];
 }
 
-export type AnimationConfigWithPath<T extends RendererType = 'svg'> = AnimationConfig<T> & {
+export interface AnimationConfigWithPath<T extends RendererType = 'svg'> extends AnimationConfig<T> {
     path?: string;
 }
 
-export type AnimationConfigWithData<T extends RendererType = 'svg'> = AnimationConfig<T> & {
+export interface AnimationConfigWithData<T extends RendererType = 'svg'> extends AnimationConfig<T> {
     animationData?: any;
 }
 
-export type FilterSizeConfig = {
+export interface FilterSizeConfig {
     width: string;
     height: string;
     x: string;
     y: string;
-};
+}
 
-export type LottiePlayer = {
+export interface LottiePlayer {
     play(name?: string): void;
     pause(name?: string): void;
     stop(name?: string): void;
@@ -142,7 +189,7 @@ export type LottiePlayer = {
     setLocationHref(href: string): void;
     setIDPrefix(prefix: string): void;
     updateDocumentData(path: (string|number)[], documentData: TextDocumentData, index: number): void;
-};
+}
 
 declare const Lottie: LottiePlayer;
 
