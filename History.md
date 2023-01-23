@@ -1,3 +1,11 @@
+## V 5.10.2
+- FEATURE: add setLoop method
+- FEATURE: support for all matte masks in canvas
+- FEATURE: support for alpha matte in canvas worker
+- FEATURE: support for canvas renderer in Safari
+- FEATURE: add DOM loaded event for canvas worker
+- FIX: tint effect opacity
+
 ## V 5.10.1
 - FIX: track matte masks transform fix
 

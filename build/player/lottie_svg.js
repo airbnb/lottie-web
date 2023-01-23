@@ -2336,6 +2336,10 @@
     this.updaFrameModifier();
   };
 
+  AnimationItem.prototype.setLoop = function (isLooping) {
+    this.loop = isLooping;
+  };
+
   AnimationItem.prototype.setVolume = function (val, name) {
     if (name && this.name !== name) {
       return;
@@ -5234,7 +5238,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.10.1';
+  lottie.version = '5.10.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -8205,6 +8209,19 @@
     }
   };
 
+  BaseRenderer.prototype.getElementById = function (ind) {
+    var i;
+    var len = this.elements.length;
+
+    for (i = 0; i < len; i += 1) {
+      if (this.elements[i].data.ind === ind) {
+        return this.elements[i];
+      }
+    }
+
+    return null;
+  };
+
   BaseRenderer.prototype.getElementByPath = function (path) {
     var pathValue = path.shift();
     var element;
@@ -8611,11 +8628,17 @@
 
   var featureSupport = function () {
     var ob = {
-      maskType: true
+      maskType: true,
+      svgLumaHidden: true,
+      offscreenCanvas: typeof OffscreenCanvas !== 'undefined'
     };
 
     if (/MSIE 10/i.test(navigator.userAgent) || /MSIE 9/i.test(navigator.userAgent) || /rv:11.0/i.test(navigator.userAgent) || /Edge\/\d./i.test(navigator.userAgent)) {
       ob.maskType = false;
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      ob.svgLumaHidden = false;
     }
 
     return ob;
@@ -8771,6 +8794,13 @@
       this.renderableEffectsManager = new SVGEffects(this);
     },
     getMatte: function getMatte(matteType) {
+      // This should not be a common case. But for backward compatibility, we'll create the matte object.
+      // It solves animations that have two consecutive layers marked as matte masks.
+      // Which is an undefined behavior in AE.
+      if (!this.matteMasks) {
+        this.matteMasks = {};
+      }
+
       if (!this.matteMasks[matteType]) {
         var id = this.layerId + '_' + matteType;
         var filId;
@@ -13991,11 +14021,19 @@
           var stringValue = elem.textProperty.currentData.t;
 
           if (stringValue !== _prevValue) {
-            elem.textProperty.currentData.t = _prevValue;
+            _prevValue = elem.textProperty.currentData.t;
             _sourceText = new String(stringValue); // eslint-disable-line no-new-wrappers
             // If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
 
             _sourceText.value = stringValue || new String(stringValue); // eslint-disable-line no-new-wrappers
+
+            Object.defineProperty(_sourceText, 'style', {
+              get: function get() {
+                return {
+                  fillColor: elem.textProperty.currentData.fc
+                };
+              }
+            });
           }
 
           return _sourceText;
@@ -15891,12 +15929,15 @@
     }
   };
 
+  var linearFilterValue = '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0';
+
   function SVGTintFilter(filter, filterManager, elem, id, source) {
     this.filterManager = filterManager;
     var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type', 'matrix');
     feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
-    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('values', linearFilterValue + ' 1 0');
+    this.linearFilter = feColorMatrix;
     feColorMatrix.setAttribute('result', id + '_tint_1');
     filter.appendChild(feColorMatrix);
     feColorMatrix = createNS('feColorMatrix');
@@ -15917,7 +15958,8 @@
       var colorBlack = this.filterManager.effectElements[0].p.v;
       var colorWhite = this.filterManager.effectElements[1].p.v;
       var opacity = this.filterManager.effectElements[2].p.v / 100;
-      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
+      this.linearFilter.setAttribute('values', linearFilterValue + ' ' + opacity + ' 0');
+      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 1 0');
     }
   };
 

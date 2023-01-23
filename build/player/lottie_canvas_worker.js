@@ -11,110 +11,268 @@
     }
 }((self || {}), function(window) {
 	function workerContent() {
+  function extendPrototype(sources, destination) {
+    var i;
+    var len = sources.length;
+    var sourcePrototype;
+    for (i = 0; i < len; i += 1) {
+      sourcePrototype = sources[i].prototype;
+      for (var attr in sourcePrototype) {
+        if (Object.prototype.hasOwnProperty.call(sourcePrototype, attr)) destination.prototype[attr] = sourcePrototype[attr];
+      }
+    }
+  }
+  function ProxyElement(type, namespace) {
+    this._state = 'init';
+    this._isDirty = false;
+    this._isProxy = true;
+    this._changedStyles = [];
+    this._changedAttributes = [];
+    this._changedElements = [];
+    this._textContent = null;
+    this.type = type;
+    this.namespace = namespace;
+    this.children = [];
+    localIdCounter += 1;
+    this.attributes = {
+      id: 'l_d_' + localIdCounter,
+    };
+    this.style = new Style(this);
+  }
+  ProxyElement.prototype = {
+    appendChild: function (_child) {
+      _child.parentNode = this;
+      this.children.push(_child);
+      this._isDirty = true;
+      this._changedElements.push([_child, this.attributes.id]);
+    },
+
+    insertBefore: function (_newElement, _nextElement) {
+      var children = this.children;
+      for (var i = 0; i < children.length; i += 1) {
+        if (children[i] === _nextElement) {
+          children.splice(i, 0, _newElement);
+          this._isDirty = true;
+          this._changedElements.push([_newElement, this.attributes.id, _nextElement.attributes.id]);
+          return;
+        }
+      }
+      children.push(_nextElement);
+    },
+
+    setAttribute: function (_attribute, _value) {
+      this.attributes[_attribute] = _value;
+      if (!this._isDirty) {
+        this._isDirty = true;
+      }
+      this._changedAttributes.push(_attribute);
+    },
+
+    serialize: function () {
+      return {
+        type: this.type,
+        namespace: this.namespace,
+        style: this.style.serialize(),
+        attributes: this.attributes,
+        children: this.children.map(function (child) { return child.serialize(); }),
+        textContent: this._textContent,
+      };
+    },
+
+    // eslint-disable-next-line class-methods-use-this
+    addEventListener: function (_, _callback) {
+      setTimeout(_callback, 1);
+    },
+
+    setAttributeNS: function (_, _attribute, _value) {
+      this.attributes[_attribute] = _value;
+      if (!this._isDirty) {
+        this._isDirty = true;
+      }
+      this._changedAttributes.push(_attribute);
+    },
+
+  };
+
+  Object.defineProperty(ProxyElement.prototype, 'textContent', {
+    set: function (_value) {
+      this._isDirty = true;
+      this._textContent = _value;
+    },
+  });
+
   var localIdCounter = 0;
   var animations = {};
 
   var styleProperties = ['width', 'height', 'display', 'transform', 'opacity', 'contentVisibility', 'mix-blend-mode'];
-  function createElement(namespace, type) {
-    var style = {
-      serialize: function () {
-        var obj = {};
-        for (var i = 0; i < styleProperties.length; i += 1) {
-          var propertyKey = styleProperties[i];
-          var keyName = '_' + propertyKey;
-          if (keyName in this) {
-            obj[propertyKey] = this[keyName];
-          }
+
+  function convertArguments(args) {
+    var arr = [];
+    var i;
+    var len = args.length;
+    for (i = 0; i < len; i += 1) {
+      arr.push(args[i]);
+    }
+    return arr;
+  }
+
+  function Style(element) {
+    this.element = element;
+  }
+  Style.prototype = {
+    serialize: function () {
+      var obj = {};
+      for (var i = 0; i < styleProperties.length; i += 1) {
+        var propertyKey = styleProperties[i];
+        var keyName = '_' + propertyKey;
+        if (keyName in this) {
+          obj[propertyKey] = this[keyName];
         }
-        return obj;
+      }
+      return obj;
+    },
+  };
+  styleProperties.forEach(function (propertyKey) {
+    Object.defineProperty(Style.prototype, propertyKey, {
+      set: function (value) {
+        if (!this.element._isDirty) {
+          this.element._isDirty = true;
+        }
+        this.element._changedStyles.push(propertyKey);
+        var keyName = '_' + propertyKey;
+        this[keyName] = value;
       },
+      get: function () {
+        var keyName = '_' + propertyKey;
+        return this[keyName];
+      },
+    });
+  });
+
+  function CanvasContext(element) {
+    this.element = element;
+  }
+
+  CanvasContext.prototype = {
+    createRadialGradient: function () {
+      function addColorStop() {
+        instruction.stops.push(convertArguments(arguments));
+      }
+      var instruction = {
+        t: 'rGradient',
+        a: convertArguments(arguments),
+        stops: [],
+      };
+      this.element.instructions.push(instruction);
+      return {
+        addColorStop: addColorStop,
+      };
+    },
+
+    createLinearGradient: function () {
+      function addColorStop() {
+        instruction.stops.push(convertArguments(arguments));
+      }
+      var instruction = {
+        t: 'lGradient',
+        a: convertArguments(arguments),
+        stops: [],
+      };
+      this.element.instructions.push(instruction);
+      return {
+        addColorStop: addColorStop,
+      };
+    },
+
+  };
+
+  Object.defineProperties(CanvasContext.prototype, {
+    canvas: {
+      enumerable: true,
+      get: function () {
+        return this.element;
+      },
+    },
+  });
+
+  var canvasContextMethods = [
+    'fillRect',
+    'setTransform',
+    'drawImage',
+    'beginPath',
+    'moveTo',
+    'save',
+    'restore',
+    'fillText',
+    'setLineDash',
+    'clearRect',
+    'clip',
+    'rect',
+    'stroke',
+    'fill',
+    'closePath',
+    'bezierCurveTo',
+    'lineTo',
+  ];
+
+  canvasContextMethods.forEach(function (method) {
+    CanvasContext.prototype[method] = function () {
+      this.element.instructions.push({
+        t: method,
+        a: convertArguments(arguments),
+      });
     };
-    styleProperties.forEach(function (propertyKey) {
-      Object.defineProperty(style, propertyKey, {
-        set: function (value) {
-          if (!element._isDirty) {
-            element._isDirty = true;
-          }
-          element._changedStyles.push(propertyKey);
-          var keyName = '_' + propertyKey;
-          this[keyName] = value;
-        },
-        get: function () {
-          var keyName = '_' + propertyKey;
-          return this[keyName];
+  });
+
+  var canvasContextProperties = [
+    'globalAlpha',
+    'strokeStyle',
+    'fillStyle',
+    'lineCap',
+    'lineJoin',
+    'lineWidth',
+    'miterLimit',
+    'lineDashOffset',
+    'globalCompositeOperation',
+  ];
+
+  canvasContextProperties.forEach(function (property) {
+    Object.defineProperty(CanvasContext.prototype, property,
+      {
+        set: function (_value) {
+          this.element.instructions.push({
+            t: property,
+            a: _value,
+          });
         },
       });
-    });
-    localIdCounter += 1;
-    var element = {
-      _state: 'init',
-      _isDirty: false,
-      _changedStyles: [],
-      _changedAttributes: [],
-      _changedElements: [],
-      _textContent: null,
-      type: type,
-      namespace: namespace,
-      children: [],
-      attributes: {
-        id: 'l_d_' + localIdCounter,
-      },
-      style: style,
-      appendChild: function (child) {
-        child.parentNode = this;
-        this.children.push(child);
-        this._isDirty = true;
-        this._changedElements.push([child, this.attributes.id]);
-      },
-      insertBefore: function (newElement, nextElement) {
-        var children = this.children;
-        for (var i = 0; i < children.length; i += 1) {
-          if (children[i] === nextElement) {
-            children.splice(i, 0, newElement);
-            this._isDirty = true;
-            this._changedElements.push([newElement, this.attributes.id, nextElement.attributes.id]);
-            return;
-          }
-        }
-        children.push(nextElement);
-      },
-      setAttribute: function (attribute, value) {
-        this.attributes[attribute] = value;
-        if (!element._isDirty) {
-          element._isDirty = true;
-        }
-        element._changedAttributes.push(attribute);
-      },
-      serialize: function () {
-        return {
-          type: this.type,
-          namespace: this.namespace,
-          style: this.style.serialize(),
-          attributes: this.attributes,
-          children: this.children.map(function (child) { return child.serialize(); }),
-          textContent: this._textContent,
-        };
-      },
-      getContext: function () { return { fillRect: function () {} }; },
-      addEventListener: function (_, callback) {
-        setTimeout(callback, 1);
-      },
-      setAttributeNS: function (_, attribute, value) {
-        this.attributes[attribute] = value;
-        if (!element._isDirty) {
-          element._isDirty = true;
-        }
-        element._changedAttributes.push(attribute);
-      },
-    };
-    element.style = style;
-    Object.defineProperty(element, 'textContent', {
-      set: function (value) {
-        element._isDirty = true;
-        element._textContent = value;
-      },
-    });
-    return element;
+  });
+
+  function CanvasElement(type, namespace) {
+    ProxyElement.call(this, type, namespace);
+    this.instructions = [];
+    this.width = 0;
+    this.height = 0;
+    this.context = new CanvasContext(this);
+  }
+
+  CanvasElement.prototype = {
+
+    getContext: function () {
+      return this.context;
+    },
+
+    resetInstructions: function () {
+      this.instructions.length = 0;
+    },
+  };
+  extendPrototype([ProxyElement], CanvasElement);
+
+  function createElement(namespace, type) {
+    if (type === 'canvas') {
+      return new CanvasElement(type, namespace);
+    }
+    return new ProxyElement(type, namespace);
   }
 
   var window = self; // eslint-disable-line no-redeclare, no-unused-vars
@@ -129,6 +287,8 @@
     getElementsByTagName: function () {
       return [];
     },
+    body: createElement('', 'body'),
+    _isProxy: true,
   };
   /* eslint-enable */
   var lottieInternal = (function () {
@@ -2470,6 +2630,10 @@
   AnimationItem.prototype.setDirection = function (val) {
     this.playDirection = val < 0 ? -1 : 1;
     this.updaFrameModifier();
+  };
+
+  AnimationItem.prototype.setLoop = function (isLooping) {
+    this.loop = isLooping;
   };
 
   AnimationItem.prototype.setVolume = function (val, name) {
@@ -5370,7 +5534,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.10.1';
+  lottie.version = '5.10.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -8341,6 +8505,19 @@
     }
   };
 
+  BaseRenderer.prototype.getElementById = function (ind) {
+    var i;
+    var len = this.elements.length;
+
+    for (i = 0; i < len; i += 1) {
+      if (this.elements[i].data.ind === ind) {
+        return this.elements[i];
+      }
+    }
+
+    return null;
+  };
+
   BaseRenderer.prototype.getElementByPath = function (path) {
     var pathValue = path.shift();
     var element;
@@ -8747,11 +8924,17 @@
 
   var featureSupport = function () {
     var ob = {
-      maskType: true
+      maskType: true,
+      svgLumaHidden: true,
+      offscreenCanvas: typeof OffscreenCanvas !== 'undefined'
     };
 
     if (/MSIE 10/i.test(navigator.userAgent) || /MSIE 9/i.test(navigator.userAgent) || /rv:11.0/i.test(navigator.userAgent) || /Edge\/\d./i.test(navigator.userAgent)) {
       ob.maskType = false;
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      ob.svgLumaHidden = false;
     }
 
     return ob;
@@ -8907,6 +9090,13 @@
       this.renderableEffectsManager = new SVGEffects(this);
     },
     getMatte: function getMatte(matteType) {
+      // This should not be a common case. But for backward compatibility, we'll create the matte object.
+      // It solves animations that have two consecutive layers marked as matte masks.
+      // Which is an undefined behavior in AE.
+      if (!this.matteMasks) {
+        this.matteMasks = {};
+      }
+
       if (!this.matteMasks[matteType]) {
         var id = this.layerId + '_' + matteType;
         var filId;
@@ -12721,6 +12911,64 @@
     this.cO = 1;
   };
 
+  CVContextData.prototype.popTransform = function () {
+    var popped = this.saved[this.cArrPos];
+    var i;
+    var arr = this.cTr.props;
+
+    for (i = 0; i < 16; i += 1) {
+      arr[i] = popped[i];
+    }
+
+    return popped;
+  };
+
+  CVContextData.prototype.popOpacity = function () {
+    var popped = this.savedOp[this.cArrPos];
+    this.cO = popped;
+    return popped;
+  };
+
+  CVContextData.prototype.pop = function () {
+    this.cArrPos -= 1;
+    var transform = this.popTransform();
+    var opacity = this.popOpacity();
+    return {
+      transform: transform,
+      opacity: opacity
+    };
+  };
+
+  CVContextData.prototype.push = function () {
+    var props = this.cTr.props;
+
+    if (this._length <= this.cArrPos) {
+      this.duplicate();
+    }
+
+    var i;
+    var arr = this.saved[this.cArrPos];
+
+    for (i = 0; i < 16; i += 1) {
+      arr[i] = props[i];
+    }
+
+    this.savedOp[this.cArrPos] = this.cO;
+    this.cArrPos += 1;
+  };
+
+  CVContextData.prototype.getTransform = function () {
+    return this.cTr;
+  };
+
+  CVContextData.prototype.getOpacity = function () {
+    return this.cO;
+  };
+
+  CVContextData.prototype.setOpacity = function (value) {
+    this.cO = value;
+  };
+
   function ShapeTransformManager() {
     this.sequences = {};
     this.sequenceList = [];
@@ -12790,6 +13038,104 @@
       return '_' + this.transform_key_count;
     }
   };
+
+  var lumaLoader = function lumaLoader() {
+    var id = '__lottie_element_luma_buffer';
+    var lumaBuffer = null;
+    var lumaBufferCtx = null;
+    var svg = null; // This alternate solution has a slight delay before the filter is applied, resulting in a flicker on the first frame.
+    // Keeping this here for reference, and in the future, if offscreen canvas supports url filters, this can be used.
+    // For now, neither of them work for offscreen canvas, so canvas workers can't support the luma track matte mask.
+    // Naming it solution 2 to mark the extra comment lines.
+
+    /*
+    var svgString = [
+      '<svg xmlns="http://www.w3.org/2000/svg">',
+      '<filter id="' + id + '">',
+      '<feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0',
+      '"/>',
+      '</filter>',
+      '</svg>',
+    ].join('');
+    var blob = new Blob([svgString], { type: 'image/svg+xml' });
+    var url = URL.createObjectURL(blob);
+    */
+
+    function createLumaSvgFilter() {
+      var _svg = createNS('svg');
+
+      var fil = createNS('filter');
+      var matrix = createNS('feColorMatrix');
+      fil.setAttribute('id', id);
+      matrix.setAttribute('type', 'matrix');
+      matrix.setAttribute('color-interpolation-filters', 'sRGB');
+      matrix.setAttribute('values', '0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0');
+      fil.appendChild(matrix);
+
+      _svg.appendChild(fil);
+
+      _svg.setAttribute('id', id + '_svg');
+
+      if (featureSupport.svgLumaHidden) {
+        _svg.style.display = 'none';
+      }
+
+      return _svg;
+    }
+
+    function loadLuma() {
+      if (!lumaBuffer) {
+        svg = createLumaSvgFilter();
+        document.body.appendChild(svg);
+        lumaBuffer = createTag('canvas');
+        lumaBufferCtx = lumaBuffer.getContext('2d'); // lumaBufferCtx.filter = `url('${url}#__lottie_element_luma_buffer')`; // part of solution 2
+
+        lumaBufferCtx.filter = 'url(#' + id + ')';
+        lumaBufferCtx.fillStyle = 'rgba(0,0,0,0)';
+        lumaBufferCtx.fillRect(0, 0, 1, 1);
+      }
+    }
+
+    function getLuma(canvas) {
+      if (!lumaBuffer) {
+        loadLuma();
+      }
+
+      lumaBuffer.width = canvas.width;
+      lumaBuffer.height = canvas.height; // lumaBufferCtx.filter = `url('${url}#__lottie_element_luma_buffer')`; // part of solution 2
+
+      lumaBufferCtx.filter = 'url(#' + id + ')';
+      return lumaBuffer;
+    }
+
+    return {
+      load: loadLuma,
+      get: getLuma
+    };
+  };
+
+  function createCanvas(width, height) {
+    if (featureSupport.offscreenCanvas) {
+      return new OffscreenCanvas(width, height);
+    }
+
+    var canvas = createTag('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+  }
+
+  var assetLoader = function () {
+    return {
+      loadLumaCanvas: lumaLoader.load,
+      getLumaCanvas: lumaLoader.get,
+      createCanvas: createCanvas
+    };
+  }();
 
   function CVEffects() {}
 
@@ -12871,11 +13217,36 @@
 
   function CVBaseElement() {}
 
+  var operationsMap = {
+    1: 'source-in',
+    2: 'source-out',
+    3: 'source-in',
+    4: 'source-out'
+  };
   CVBaseElement.prototype = {
     createElements: function createElements() {},
     initRendererElement: function initRendererElement() {},
     createContainerElements: function createContainerElements() {
+      // If the layer is masked we will use two buffers to store each different states of the drawing
+      // This solution is not ideal for several reason. But unfortunately, because of the recursive
+      // nature of the render tree, it's the only simple way to make sure one inner mask doesn't override an outer mask.
+      // TODO: try to reduce the size of these buffers to the size of the composition contaning the layer
+      // It might be challenging because the layer most likely is transformed in some way
+      if (this.data.tt >= 1) {
+        this.buffers = [];
+        var canvasContext = this.globalData.canvasContext;
+        var bufferCanvas = assetLoader.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+        this.buffers.push(bufferCanvas);
+        var bufferCanvas2 = assetLoader.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+        this.buffers.push(bufferCanvas2);
+
+        if (this.data.tt >= 3 && !document._isProxy) {
+          assetLoader.loadLumaCanvas();
+        }
+      }
+
       this.canvasContext = this.globalData.canvasContext;
+      this.transformCanvas = this.globalData.transformCanvas;
       this.renderableEffectsManager = new CVEffects(this);
     },
     createContent: function createContent() {},
@@ -12903,8 +13274,72 @@
         this.maskManager._isFirstFrame = true;
       }
     },
-    renderFrame: function renderFrame() {
+    clearCanvas: function clearCanvas(canvasContext) {
+      canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w * this.transformCanvas.sx, this.transformCanvas.h * this.transformCanvas.sy);
+    },
+    prepareLayer: function prepareLayer() {
+      if (this.data.tt >= 1) {
+        var buffer = this.buffers[0];
+        var bufferCtx = buffer.getContext('2d');
+        this.clearCanvas(bufferCtx); // on the first buffer we store the current state of the global drawing
+
+        bufferCtx.drawImage(this.canvasContext.canvas, 0, 0); // The next four lines are to clear the canvas
+        // TODO: Check if there is a way to clear the canvas without resetting the transform
+
+        this.currentTransform = this.canvasContext.getTransform();
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+        this.clearCanvas(this.canvasContext);
+        this.canvasContext.setTransform(this.currentTransform);
+      }
+    },
+    exitLayer: function exitLayer() {
+      if (this.data.tt >= 1) {
+        var buffer = this.buffers[1]; // On the second buffer we store the current state of the global drawing
+        // that only contains the content of this layer
+        // (if it is a composition, it also includes the nested layers)
+
+        var bufferCtx = buffer.getContext('2d');
+        this.clearCanvas(bufferCtx);
+        bufferCtx.drawImage(this.canvasContext.canvas, 0, 0); // We clear the canvas again
+
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+        this.clearCanvas(this.canvasContext);
+        this.canvasContext.setTransform(this.currentTransform); // We draw the mask
+
+        var mask = this.comp.getElementById('tp' in this.data ? this.data.tp : this.data.ind - 1);
+        mask.renderFrame(true); // We draw the second buffer (that contains the content of this layer)
+
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0); // If the mask is a Luma matte, we need to do two extra painting operations
+        // the _isProxy check is to avoid drawing a fake canvas in workers that will throw an error
+
+        if (this.data.tt >= 3 && !document._isProxy) {
+          // We copy the painted mask to a buffer that has a color matrix filter applied to it
+          // that applies the rgb values to the alpha channel
+          var lumaBuffer = assetLoader.getLumaCanvas(this.canvasContext.canvas);
+          var lumaBufferCtx = lumaBuffer.getContext('2d');
+          lumaBufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
+          this.clearCanvas(this.canvasContext); // we repaint the context with the mask applied to it
+
+          this.canvasContext.drawImage(lumaBuffer, 0, 0);
+        }
+
+        this.canvasContext.globalCompositeOperation = operationsMap[this.data.tt];
+        this.canvasContext.drawImage(buffer, 0, 0); // We finally draw the first buffer (that contains the content of the global drawing)
+        // We use destination-over to draw the global drawing below the current layer
+
+        this.canvasContext.globalCompositeOperation = 'destination-over';
+        this.canvasContext.drawImage(this.buffers[0], 0, 0);
+        this.canvasContext.setTransform(this.currentTransform); // We reset the globalCompositeOperation to source-over, the standard type of operation
+
+        this.canvasContext.globalCompositeOperation = 'source-over';
+      }
+    },
+    renderFrame: function renderFrame(forceRender) {
       if (this.hidden || this.data.hd) {
+        return;
+      }
+
+      if (this.data.td === 1 && !forceRender) {
         return;
       }
 
@@ -12912,11 +13347,13 @@
       this.renderRenderable();
       this.setBlendMode();
       var forceRealStack = this.data.ty === 0;
+      this.prepareLayer();
       this.globalData.renderer.save(forceRealStack);
       this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
       this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
       this.renderInnerContent();
       this.globalData.renderer.restore(forceRealStack);
+      this.exitLayer();
 
       if (this.maskManager.hasMasks) {
         this.globalData.renderer.restore(true);
@@ -13875,14 +14312,19 @@
     if (!this.renderConfig.clearCanvas) {
       this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
       return;
-    }
+    } // Resetting the canvas transform matrix to the new transform
 
-    this.transformMat.cloneFromProps(props);
-    var cProps = this.contextData.cTr.props;
-    this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]); // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
 
-    this.contextData.cTr.cloneFromProps(this.transformMat.props);
-    var trProps = this.contextData.cTr.props;
+    this.transformMat.cloneFromProps(props); // Taking the last transform value from the stored stack of transforms
+
+    var currentTransform = this.contextData.getTransform();
+    var cProps = currentTransform.props; // Applying the last transform value after the new transform to respect the order of transformations
+
+    this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]); // Storing the new transformed value in the stored transform
+
+    currentTransform.cloneFromProps(this.transformMat.props);
+    var trProps = currentTransform.props; // Applying the new transform to the canvas
+
     this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
   };
 
@@ -13890,17 +14332,20 @@
     /* if(op === 1){
           return;
       } */
+    var currentOpacity = this.contextData.getOpacity();
+
     if (!this.renderConfig.clearCanvas) {
       this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-      this.globalData.currentGlobalAlpha = this.contextData.cO;
+      this.globalData.currentGlobalAlpha = currentOpacity;
       return;
     }
 
-    this.contextData.cO *= op < 0 ? 0 : op;
+    currentOpacity *= op < 0 ? 0 : op;
+    this.contextData.setOpacity(currentOpacity);
 
-    if (this.globalData.currentGlobalAlpha !== this.contextData.cO) {
-      this.canvasContext.globalAlpha = this.contextData.cO;
-      this.globalData.currentGlobalAlpha = this.contextData.cO;
+    if (this.globalData.currentGlobalAlpha !== currentOpacity) {
+      this.canvasContext.globalAlpha = currentOpacity;
+      this.globalData.currentGlobalAlpha = currentOpacity;
     }
   };
 
@@ -13923,21 +14368,7 @@
       this.canvasContext.save();
     }
 
-    var props = this.contextData.cTr.props;
-
-    if (this.contextData._length <= this.contextData.cArrPos) {
-      this.contextData.duplicate();
-    }
-
-    var i;
-    var arr = this.contextData.saved[this.contextData.cArrPos];
-
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = props[i];
-    }
-
-    this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
-    this.contextData.cArrPos += 1;
+    this.contextData.push();
   };
 
   CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -13951,22 +14382,14 @@
       this.globalData.blendMode = 'source-over';
     }
 
-    this.contextData.cArrPos -= 1;
-    var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i;
-    var arr = this.contextData.cTr.props;
+    var popped = this.contextData.pop();
+    var transform = popped.transform;
+    var opacity = popped.opacity;
+    this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
 
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = popped[i];
-    }
-
-    this.canvasContext.setTransform(popped[0], popped[1], popped[4], popped[5], popped[12], popped[13]);
-    popped = this.contextData.savedOp[this.contextData.cArrPos];
-    this.contextData.cO = popped;
-
-    if (this.globalData.currentGlobalAlpha !== popped) {
-      this.canvasContext.globalAlpha = popped;
-      this.globalData.currentGlobalAlpha = popped;
+    if (this.globalData.currentGlobalAlpha !== opacity) {
+      this.canvasContext.globalAlpha = opacity;
+      this.globalData.currentGlobalAlpha = opacity;
     }
   };
 
@@ -17033,11 +17456,19 @@
           var stringValue = elem.textProperty.currentData.t;
 
           if (stringValue !== _prevValue) {
-            elem.textProperty.currentData.t = _prevValue;
+            _prevValue = elem.textProperty.currentData.t;
             _sourceText = new String(stringValue); // eslint-disable-line no-new-wrappers
             // If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
 
             _sourceText.value = stringValue || new String(stringValue); // eslint-disable-line no-new-wrappers
+
+            Object.defineProperty(_sourceText, 'style', {
+              get: function get() {
+                return {
+                  fillColor: elem.textProperty.currentData.fc
+                };
+              }
+            });
           }
 
           return _sourceText;
@@ -18933,12 +19364,15 @@
     }
   };
 
+  var linearFilterValue = '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0';
+
   function SVGTintFilter(filter, filterManager, elem, id, source) {
     this.filterManager = filterManager;
     var feColorMatrix = createNS('feColorMatrix');
     feColorMatrix.setAttribute('type', 'matrix');
     feColorMatrix.setAttribute('color-interpolation-filters', 'linearRGB');
-    feColorMatrix.setAttribute('values', '0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0');
+    feColorMatrix.setAttribute('values', linearFilterValue + ' 1 0');
+    this.linearFilter = feColorMatrix;
     feColorMatrix.setAttribute('result', id + '_tint_1');
     filter.appendChild(feColorMatrix);
     feColorMatrix = createNS('feColorMatrix');
@@ -18959,7 +19393,8 @@
       var colorBlack = this.filterManager.effectElements[0].p.v;
       var colorWhite = this.filterManager.effectElements[1].p.v;
       var opacity = this.filterManager.effectElements[2].p.v / 100;
-      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 ' + opacity + ' 0');
+      this.linearFilter.setAttribute('values', linearFilterValue + ' ' + opacity + ' 0');
+      this.matrixFilter.setAttribute('values', colorWhite[0] - colorBlack[0] + ' 0 0 0 ' + colorBlack[0] + ' ' + (colorWhite[1] - colorBlack[1]) + ' 0 0 0 ' + colorBlack[1] + ' ' + (colorWhite[2] - colorBlack[2]) + ' 0 0 0 ' + colorBlack[2] + ' 0 0 0 1 0');
     }
   };
 
@@ -19569,11 +20004,17 @@
       var wrapper;
       var animation;
       var elements = [];
+      var canvas;
       if (params.renderer === 'svg') {
         wrapper = document.createElement('div');
         params.container = wrapper;
       } else {
-        var canvas = params.rendererSettings.canvas;
+        canvas = params.rendererSettings.canvas;
+        if (!canvas) {
+          canvas = document.createElement('canvas');
+          canvas.width = params.animationData.w;
+          canvas.height = params.animationData.h;
+        }
         var ctx = canvas.getContext('2d');
         params.rendererSettings.context = ctx;
       }
@@ -19605,12 +20046,10 @@
           var serialized = wrapper.serialize();
           addElementToList(wrapper, elements);
           self.postMessage({
-            type: 'loaded',
+            type: 'SVGloaded',
             payload: {
               id: payload.id,
               tree: serialized.children[0],
-              totalFrames: animation.totalFrames,
-              frameRate: animation.frameRate,
             },
           });
         });
@@ -19636,7 +20075,7 @@
             }
           }
           self.postMessage({
-            type: 'updated',
+            type: 'SVGupdated',
             payload: {
               elements: changedElements,
               id: payload.id,
@@ -19644,7 +20083,29 @@
             },
           });
         });
+      } else if (canvas._isProxy) {
+        animation.addEventListener('drawnFrame', function (event) {
+          self.postMessage({
+            type: 'CanvasUpdated',
+            payload: {
+              instructions: canvas.instructions,
+              id: payload.id,
+              currentTime: event.currentTime,
+            },
+          });
+          canvas.resetInstructions();
+        });
       }
+      animation.addEventListener('DOMLoaded', function () {
+        self.postMessage({
+          type: 'DOMLoaded',
+          payload: {
+            id: payload.id,
+            totalFrames: animation.totalFrames,
+            frameRate: animation.frameRate,
+          },
+        });
+      });
       animations[payload.id] = {
         animation: animation,
         events: {},
@@ -19805,6 +20266,12 @@ var lottie = (function () {
       });
       animation.animInstance.totalFrames = payload.totalFrames;
       animation.animInstance.frameRate = payload.frameRate;
+    };
+  }());
+
+  var handleSVGLoaded = (function () {
+    return function (payload) {
+      var animation = animations[payload.id];
       var container = animation.container;
       var elements = animation.elements;
       createTree(payload.tree, container, elements);
@@ -19868,6 +20335,40 @@ var lottie = (function () {
     }
   }
 
+  function createInstructionsHandler(canvas) {
+    var ctx = canvas.getContext('2d');
+    var map = {
+      beginPath: ctx.beginPath,
+      closePath: ctx.closePath,
+      rect: ctx.rect,
+      clip: ctx.clip,
+      clearRect: ctx.clearRect,
+      setTransform: ctx.setTransform,
+      moveTo: ctx.moveTo,
+      bezierCurveTo: ctx.bezierCurveTo,
+      lineTo: ctx.lineTo,
+      fill: ctx.fill,
+      save: ctx.save,
+      restore: ctx.restore,
+    };
+    return function (instructions) {
+      for (var i = 0; i < instructions.length; i += 1) {
+        var instruction = instructions[i];
+        var fn = map[instruction.t];
+        if (fn) {
+          fn.apply(ctx, instruction.a);
+        } else {
+          ctx[instruction.t] = instruction.a;
+        }
+      }
+    };
+  }
+
+  function handleCanvasAnimationUpdate(payload) {
+    var animation = animations[payload.id];
+    animation.instructionsHandler(payload.instructions);
+  }
+
   function handleEvent(payload) {
     var animation = animations[payload.id];
     if (animation) {
@@ -19893,8 +20394,10 @@ var lottie = (function () {
   }
 
   var messageHandlers = {
-    loaded: handleAnimationLoaded,
-    updated: handleAnimationUpdate,
+    DOMLoaded: handleAnimationLoaded,
+    SVGloaded: handleSVGLoaded,
+    SVGupdated: handleAnimationUpdate,
+    CanvasUpdated: handleCanvasAnimationUpdate,
     event: handleEvent,
     playing: handlePlaying,
     paused: handlePaused,
@@ -20138,9 +20641,17 @@ var lottie = (function () {
           }
 
           // Transfer control to offscreen if it's not already
-          var offscreen = canvas instanceof OffscreenCanvas ? canvas : canvas.transferControlToOffscreen();
-          animationParams.rendererSettings.canvas = offscreen;
-          transferedObjects.push(animationParams.rendererSettings.canvas);
+          var transferCanvas = canvas;
+          if (typeof OffscreenCanvas === 'undefined') {
+            animation.canvas = canvas;
+            animation.instructionsHandler = createInstructionsHandler(canvas);
+          } else {
+            if (!(canvas instanceof OffscreenCanvas)) {
+              transferCanvas = canvas.transferControlToOffscreen();
+              animationParams.rendererSettings.canvas = transferCanvas;
+            }
+            transferedObjects.push(transferCanvas);
+          }
         }
         animations[animationId] = animation;
         workerInstance.postMessage({
