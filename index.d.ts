@@ -96,12 +96,12 @@ export type AnimationItem = {
     removeEventListener<T extends AnimationEventName>(name: T, callback?: AnimationEventCallback<AnimationEvents[T]>): void;
 }
 
-export interface BaseRendererConfig {
+export type BaseRendererConfig = {
     imagePreserveAspectRatio?: string;
     className?: string;
-}
+};
 
-export interface SVGRendererConfig extends BaseRendererConfig {
+export type SVGRendererConfig = BaseRendererConfig & {
     title?: string;
     description?: string;
     preserveAspectRatio?: string;
@@ -111,22 +111,22 @@ export interface SVGRendererConfig extends BaseRendererConfig {
     viewBoxSize?: string;
     focusable?: boolean;
     filterSize?: FilterSizeConfig;
-}
+};
 
-export interface CanvasRendererConfig extends BaseRendererConfig {
+export type CanvasRendererConfig = BaseRendererConfig & {
     clearCanvas?: boolean;
     context?: CanvasRenderingContext2D;
     progressiveLoad?: boolean;
     preserveAspectRatio?: string;
-}
+};
 
-export interface HTMLRendererConfig extends BaseRendererConfig {
+export type HTMLRendererConfig = BaseRendererConfig & {
     hideOnTransparent?: boolean;
-}
+};
 
 export type RendererType = 'svg' | 'canvas' | 'html';
 
-export interface AnimationConfig<T extends RendererType = 'svg'> {
+export type AnimationConfig<T extends RendererType = 'svg'> = {
     container: Element;
     renderer?: T;
     loop?: boolean | number;
@@ -148,7 +148,7 @@ export interface AnimationConfig<T extends RendererType = 'svg'> {
     }
 }
 
-export interface TextDocumentData {
+export type TextDocumentData = {
     t?: string;
     s?: number;
     f?: string;
@@ -160,22 +160,22 @@ export interface TextDocumentData {
     fc?: [number, number, number];
 }
 
-export interface AnimationConfigWithPath<T extends RendererType = 'svg'> extends AnimationConfig<T> {
+export type AnimationConfigWithPath<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     path?: string;
 }
 
-export interface AnimationConfigWithData<T extends RendererType = 'svg'> extends AnimationConfig<T> {
+export type AnimationConfigWithData<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     animationData?: any;
 }
 
-export interface FilterSizeConfig {
+export type FilterSizeConfig = {
     width: string;
     height: string;
     x: string;
     y: string;
-}
+};
 
-export interface LottiePlayer {
+export type LottiePlayer = {
     play(name?: string): void;
     pause(name?: string): void;
     stop(name?: string): void;
@@ -189,7 +189,7 @@ export interface LottiePlayer {
     setLocationHref(href: string): void;
     setIDPrefix(prefix: string): void;
     updateDocumentData(path: (string|number)[], documentData: TextDocumentData, index: number): void;
-}
+};
 
 declare const Lottie: LottiePlayer;
 
