@@ -214,8 +214,6 @@ Or you can call `lottie.searchAnimations()` after page load and it will search a
  <div style="width:1067px;height:600px"  class="lottie" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
 ```
 
-
-
 ## Preview
 You can preview or take an svg snapshot of the animation to use as poster. After you render your animation, you can take a snapshot of any frame in the animation and save it to your disk. I recommend to pass the svg through an svg optimizer like https://jakearchibald.github.io/svgomg/ and play around with their settings.<br/>
 
@@ -245,6 +243,8 @@ my email is **hernantorrisi@gmail.com**
 - Expressions. Check the wiki page for [more info.](https://github.com/bodymovin/bodymovin/wiki/Expressions)
 - Not supported: image sequences, videos and audio are not supported
 - **No  negative layer stretching**! No idea why, but stretching a layer messes with all the data.
+
+For more detailed information on which features are supported across players, check [Can I Lottie](https://canilottie.com/).
 
 ## Development
 `npm install` or `bower install` first
