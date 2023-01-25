@@ -248,7 +248,7 @@ my email is **hernantorrisi@gmail.com**
 
 ## Development
 `npm install` or `bower install` first
-`npm start`
+`npm run build`
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
