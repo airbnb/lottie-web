@@ -9056,6 +9056,7 @@
         if (this.shapeModifiers[i].isAnimatedWithShape(data)) {
           return true;
         }
+        i += 1;
       }
 
       return false;
