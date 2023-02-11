@@ -273,7 +273,7 @@ CanvasRendererBase.prototype.destroy = function () {
   var i;
   var len = this.layers ? this.layers.length : 0;
   for (i = len - 1; i >= 0; i -= 1) {
-    if (this.elements[i] && this.elements[i].destroy()) {
+    if (this.elements[i] && this.elements[i].destroy) {
       this.elements[i].destroy();
     }
   }
