@@ -2336,6 +2336,10 @@
     this.updaFrameModifier();
   };
 
+  AnimationItem.prototype.setLoop = function (isLooping) {
+    this.loop = isLooping;
+  };
+
   AnimationItem.prototype.setVolume = function (val, name) {
     if (name && this.name !== name) {
       return;
@@ -5234,7 +5238,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.10.1';
+  lottie.version = '5.10.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -8205,6 +8209,19 @@
     }
   };
 
+  BaseRenderer.prototype.getElementById = function (ind) {
+    var i;
+    var len = this.elements.length;
+
+    for (i = 0; i < len; i += 1) {
+      if (this.elements[i].data.ind === ind) {
+        return this.elements[i];
+      }
+    }
+
+    return null;
+  };
+
   BaseRenderer.prototype.getElementByPath = function (path) {
     var pathValue = path.shift();
     var element;
@@ -8611,11 +8628,17 @@
 
   var featureSupport = function () {
     var ob = {
-      maskType: true
+      maskType: true,
+      svgLumaHidden: true,
+      offscreenCanvas: typeof OffscreenCanvas !== 'undefined'
     };
 
     if (/MSIE 10/i.test(navigator.userAgent) || /MSIE 9/i.test(navigator.userAgent) || /rv:11.0/i.test(navigator.userAgent) || /Edge\/\d./i.test(navigator.userAgent)) {
       ob.maskType = false;
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      ob.svgLumaHidden = false;
     }
 
     return ob;
@@ -8771,6 +8794,13 @@
       this.renderableEffectsManager = new SVGEffects(this);
     },
     getMatte: function getMatte(matteType) {
+      // This should not be a common case. But for backward compatibility, we'll create the matte object.
+      // It solves animations that have two consecutive layers marked as matte masks.
+      // Which is an undefined behavior in AE.
+      if (!this.matteMasks) {
+        this.matteMasks = {};
+      }
+
       if (!this.matteMasks[matteType]) {
         var id = this.layerId + '_' + matteType;
         var filId;

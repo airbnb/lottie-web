@@ -2336,6 +2336,10 @@
     this.updaFrameModifier();
   };
 
+  AnimationItem.prototype.setLoop = function (isLooping) {
+    this.loop = isLooping;
+  };
+
   AnimationItem.prototype.setVolume = function (val, name) {
     if (name && this.name !== name) {
       return;
@@ -5234,7 +5238,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.10.1';
+  lottie.version = '5.10.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -8205,6 +8209,19 @@
     }
   };
 
+  BaseRenderer.prototype.getElementById = function (ind) {
+    var i;
+    var len = this.elements.length;
+
+    for (i = 0; i < len; i += 1) {
+      if (this.elements[i].data.ind === ind) {
+        return this.elements[i];
+      }
+    }
+
+    return null;
+  };
+
   BaseRenderer.prototype.getElementByPath = function (path) {
     var pathValue = path.shift();
     var element;
@@ -8611,11 +8628,17 @@
 
   var featureSupport = function () {
     var ob = {
-      maskType: true
+      maskType: true,
+      svgLumaHidden: true,
+      offscreenCanvas: typeof OffscreenCanvas !== 'undefined'
     };
 
     if (/MSIE 10/i.test(navigator.userAgent) || /MSIE 9/i.test(navigator.userAgent) || /rv:11.0/i.test(navigator.userAgent) || /Edge\/\d./i.test(navigator.userAgent)) {
       ob.maskType = false;
+    }
+
+    if (/firefox/i.test(navigator.userAgent)) {
+      ob.svgLumaHidden = false;
     }
 
     return ob;
@@ -8771,6 +8794,13 @@
       this.renderableEffectsManager = new SVGEffects(this);
     },
     getMatte: function getMatte(matteType) {
+      // This should not be a common case. But for backward compatibility, we'll create the matte object.
+      // It solves animations that have two consecutive layers marked as matte masks.
+      // Which is an undefined behavior in AE.
+      if (!this.matteMasks) {
+        this.matteMasks = {};
+      }
+
       if (!this.matteMasks[matteType]) {
         var id = this.layerId + '_' + matteType;
         var filId;
@@ -12585,6 +12615,64 @@
     this.cO = 1;
   };
 
+  CVContextData.prototype.popTransform = function () {
+    var popped = this.saved[this.cArrPos];
+    var i;
+    var arr = this.cTr.props;
+
+    for (i = 0; i < 16; i += 1) {
+      arr[i] = popped[i];
+    }
+
+    return popped;
+  };
+
+  CVContextData.prototype.popOpacity = function () {
+    var popped = this.savedOp[this.cArrPos];
+    this.cO = popped;
+    return popped;
+  };
+
+  CVContextData.prototype.pop = function () {
+    this.cArrPos -= 1;
+    var transform = this.popTransform();
+    var opacity = this.popOpacity();
+    return {
+      transform: transform,
+      opacity: opacity
+    };
+  };
+
+  CVContextData.prototype.push = function () {
+    var props = this.cTr.props;
+
+    if (this._length <= this.cArrPos) {
+      this.duplicate();
+    }
+
+    var i;
+    var arr = this.saved[this.cArrPos];
+
+    for (i = 0; i < 16; i += 1) {
+      arr[i] = props[i];
+    }
+
+    this.savedOp[this.cArrPos] = this.cO;
+    this.cArrPos += 1;
+  };
+
+  CVContextData.prototype.getTransform = function () {
+    return this.cTr;
+  };
+
+  CVContextData.prototype.getOpacity = function () {
+    return this.cO;
+  };
+
+  CVContextData.prototype.setOpacity = function (value) {
+    this.cO = value;
+  };
+
   function ShapeTransformManager() {
     this.sequences = {};
     this.sequenceList = [];
@@ -12654,6 +12742,104 @@
       return '_' + this.transform_key_count;
     }
   };
+
+  var lumaLoader = function lumaLoader() {
+    var id = '__lottie_element_luma_buffer';
+    var lumaBuffer = null;
+    var lumaBufferCtx = null;
+    var svg = null; // This alternate solution has a slight delay before the filter is applied, resulting in a flicker on the first frame.
+    // Keeping this here for reference, and in the future, if offscreen canvas supports url filters, this can be used.
+    // For now, neither of them work for offscreen canvas, so canvas workers can't support the luma track matte mask.
+    // Naming it solution 2 to mark the extra comment lines.
+
+    /*
+    var svgString = [
+      '<svg xmlns="http://www.w3.org/2000/svg">',
+      '<filter id="' + id + '">',
+      '<feColorMatrix type="matrix" color-interpolation-filters="sRGB" values="',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0, ',
+      '0.3, 0.3, 0.3, 0, 0',
+      '"/>',
+      '</filter>',
+      '</svg>',
+    ].join('');
+    var blob = new Blob([svgString], { type: 'image/svg+xml' });
+    var url = URL.createObjectURL(blob);
+    */
+
+    function createLumaSvgFilter() {
+      var _svg = createNS('svg');
+
+      var fil = createNS('filter');
+      var matrix = createNS('feColorMatrix');
+      fil.setAttribute('id', id);
+      matrix.setAttribute('type', 'matrix');
+      matrix.setAttribute('color-interpolation-filters', 'sRGB');
+      matrix.setAttribute('values', '0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0, 0.3, 0.3, 0.3, 0, 0');
+      fil.appendChild(matrix);
+
+      _svg.appendChild(fil);
+
+      _svg.setAttribute('id', id + '_svg');
+
+      if (featureSupport.svgLumaHidden) {
+        _svg.style.display = 'none';
+      }
+
+      return _svg;
+    }
+
+    function loadLuma() {
+      if (!lumaBuffer) {
+        svg = createLumaSvgFilter();
+        document.body.appendChild(svg);
+        lumaBuffer = createTag('canvas');
+        lumaBufferCtx = lumaBuffer.getContext('2d'); // lumaBufferCtx.filter = `url('${url}#__lottie_element_luma_buffer')`; // part of solution 2
+
+        lumaBufferCtx.filter = 'url(#' + id + ')';
+        lumaBufferCtx.fillStyle = 'rgba(0,0,0,0)';
+        lumaBufferCtx.fillRect(0, 0, 1, 1);
+      }
+    }
+
+    function getLuma(canvas) {
+      if (!lumaBuffer) {
+        loadLuma();
+      }
+
+      lumaBuffer.width = canvas.width;
+      lumaBuffer.height = canvas.height; // lumaBufferCtx.filter = `url('${url}#__lottie_element_luma_buffer')`; // part of solution 2
+
+      lumaBufferCtx.filter = 'url(#' + id + ')';
+      return lumaBuffer;
+    }
+
+    return {
+      load: loadLuma,
+      get: getLuma
+    };
+  };
+
+  function createCanvas(width, height) {
+    if (featureSupport.offscreenCanvas) {
+      return new OffscreenCanvas(width, height);
+    }
+
+    var canvas = createTag('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    return canvas;
+  }
+
+  var assetLoader = function () {
+    return {
+      loadLumaCanvas: lumaLoader.load,
+      getLumaCanvas: lumaLoader.get,
+      createCanvas: createCanvas
+    };
+  }();
 
   function CVEffects() {}
 
@@ -12735,11 +12921,36 @@
 
   function CVBaseElement() {}
 
+  var operationsMap = {
+    1: 'source-in',
+    2: 'source-out',
+    3: 'source-in',
+    4: 'source-out'
+  };
   CVBaseElement.prototype = {
     createElements: function createElements() {},
     initRendererElement: function initRendererElement() {},
     createContainerElements: function createContainerElements() {
+      // If the layer is masked we will use two buffers to store each different states of the drawing
+      // This solution is not ideal for several reason. But unfortunately, because of the recursive
+      // nature of the render tree, it's the only simple way to make sure one inner mask doesn't override an outer mask.
+      // TODO: try to reduce the size of these buffers to the size of the composition contaning the layer
+      // It might be challenging because the layer most likely is transformed in some way
+      if (this.data.tt >= 1) {
+        this.buffers = [];
+        var canvasContext = this.globalData.canvasContext;
+        var bufferCanvas = assetLoader.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+        this.buffers.push(bufferCanvas);
+        var bufferCanvas2 = assetLoader.createCanvas(canvasContext.canvas.width, canvasContext.canvas.height);
+        this.buffers.push(bufferCanvas2);
+
+        if (this.data.tt >= 3 && !document._isProxy) {
+          assetLoader.loadLumaCanvas();
+        }
+      }
+
       this.canvasContext = this.globalData.canvasContext;
+      this.transformCanvas = this.globalData.transformCanvas;
       this.renderableEffectsManager = new CVEffects(this);
     },
     createContent: function createContent() {},
@@ -12767,8 +12978,72 @@
         this.maskManager._isFirstFrame = true;
       }
     },
-    renderFrame: function renderFrame() {
+    clearCanvas: function clearCanvas(canvasContext) {
+      canvasContext.clearRect(this.transformCanvas.tx, this.transformCanvas.ty, this.transformCanvas.w * this.transformCanvas.sx, this.transformCanvas.h * this.transformCanvas.sy);
+    },
+    prepareLayer: function prepareLayer() {
+      if (this.data.tt >= 1) {
+        var buffer = this.buffers[0];
+        var bufferCtx = buffer.getContext('2d');
+        this.clearCanvas(bufferCtx); // on the first buffer we store the current state of the global drawing
+
+        bufferCtx.drawImage(this.canvasContext.canvas, 0, 0); // The next four lines are to clear the canvas
+        // TODO: Check if there is a way to clear the canvas without resetting the transform
+
+        this.currentTransform = this.canvasContext.getTransform();
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+        this.clearCanvas(this.canvasContext);
+        this.canvasContext.setTransform(this.currentTransform);
+      }
+    },
+    exitLayer: function exitLayer() {
+      if (this.data.tt >= 1) {
+        var buffer = this.buffers[1]; // On the second buffer we store the current state of the global drawing
+        // that only contains the content of this layer
+        // (if it is a composition, it also includes the nested layers)
+
+        var bufferCtx = buffer.getContext('2d');
+        this.clearCanvas(bufferCtx);
+        bufferCtx.drawImage(this.canvasContext.canvas, 0, 0); // We clear the canvas again
+
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0);
+        this.clearCanvas(this.canvasContext);
+        this.canvasContext.setTransform(this.currentTransform); // We draw the mask
+
+        var mask = this.comp.getElementById('tp' in this.data ? this.data.tp : this.data.ind - 1);
+        mask.renderFrame(true); // We draw the second buffer (that contains the content of this layer)
+
+        this.canvasContext.setTransform(1, 0, 0, 1, 0, 0); // If the mask is a Luma matte, we need to do two extra painting operations
+        // the _isProxy check is to avoid drawing a fake canvas in workers that will throw an error
+
+        if (this.data.tt >= 3 && !document._isProxy) {
+          // We copy the painted mask to a buffer that has a color matrix filter applied to it
+          // that applies the rgb values to the alpha channel
+          var lumaBuffer = assetLoader.getLumaCanvas(this.canvasContext.canvas);
+          var lumaBufferCtx = lumaBuffer.getContext('2d');
+          lumaBufferCtx.drawImage(this.canvasContext.canvas, 0, 0);
+          this.clearCanvas(this.canvasContext); // we repaint the context with the mask applied to it
+
+          this.canvasContext.drawImage(lumaBuffer, 0, 0);
+        }
+
+        this.canvasContext.globalCompositeOperation = operationsMap[this.data.tt];
+        this.canvasContext.drawImage(buffer, 0, 0); // We finally draw the first buffer (that contains the content of the global drawing)
+        // We use destination-over to draw the global drawing below the current layer
+
+        this.canvasContext.globalCompositeOperation = 'destination-over';
+        this.canvasContext.drawImage(this.buffers[0], 0, 0);
+        this.canvasContext.setTransform(this.currentTransform); // We reset the globalCompositeOperation to source-over, the standard type of operation
+
+        this.canvasContext.globalCompositeOperation = 'source-over';
+      }
+    },
+    renderFrame: function renderFrame(forceRender) {
       if (this.hidden || this.data.hd) {
+        return;
+      }
+
+      if (this.data.td === 1 && !forceRender) {
         return;
       }
 
@@ -12776,11 +13051,13 @@
       this.renderRenderable();
       this.setBlendMode();
       var forceRealStack = this.data.ty === 0;
+      this.prepareLayer();
       this.globalData.renderer.save(forceRealStack);
       this.globalData.renderer.ctxTransform(this.finalTransform.mat.props);
       this.globalData.renderer.ctxOpacity(this.finalTransform.mProp.o.v);
       this.renderInnerContent();
       this.globalData.renderer.restore(forceRealStack);
+      this.exitLayer();
 
       if (this.maskManager.hasMasks) {
         this.globalData.renderer.restore(true);
@@ -13739,14 +14016,19 @@
     if (!this.renderConfig.clearCanvas) {
       this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
       return;
-    }
+    } // Resetting the canvas transform matrix to the new transform
 
-    this.transformMat.cloneFromProps(props);
-    var cProps = this.contextData.cTr.props;
-    this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]); // this.contextData.cTr.transform(props[0],props[1],props[2],props[3],props[4],props[5],props[6],props[7],props[8],props[9],props[10],props[11],props[12],props[13],props[14],props[15]);
 
-    this.contextData.cTr.cloneFromProps(this.transformMat.props);
-    var trProps = this.contextData.cTr.props;
+    this.transformMat.cloneFromProps(props); // Taking the last transform value from the stored stack of transforms
+
+    var currentTransform = this.contextData.getTransform();
+    var cProps = currentTransform.props; // Applying the last transform value after the new transform to respect the order of transformations
+
+    this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]); // Storing the new transformed value in the stored transform
+
+    currentTransform.cloneFromProps(this.transformMat.props);
+    var trProps = currentTransform.props; // Applying the new transform to the canvas
+
     this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
   };
 
@@ -13754,17 +14036,20 @@
     /* if(op === 1){
           return;
       } */
+    var currentOpacity = this.contextData.getOpacity();
+
     if (!this.renderConfig.clearCanvas) {
       this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-      this.globalData.currentGlobalAlpha = this.contextData.cO;
+      this.globalData.currentGlobalAlpha = currentOpacity;
       return;
     }
 
-    this.contextData.cO *= op < 0 ? 0 : op;
+    currentOpacity *= op < 0 ? 0 : op;
+    this.contextData.setOpacity(currentOpacity);
 
-    if (this.globalData.currentGlobalAlpha !== this.contextData.cO) {
-      this.canvasContext.globalAlpha = this.contextData.cO;
-      this.globalData.currentGlobalAlpha = this.contextData.cO;
+    if (this.globalData.currentGlobalAlpha !== currentOpacity) {
+      this.canvasContext.globalAlpha = currentOpacity;
+      this.globalData.currentGlobalAlpha = currentOpacity;
     }
   };
 
@@ -13787,21 +14072,7 @@
       this.canvasContext.save();
     }
 
-    var props = this.contextData.cTr.props;
-
-    if (this.contextData._length <= this.contextData.cArrPos) {
-      this.contextData.duplicate();
-    }
-
-    var i;
-    var arr = this.contextData.saved[this.contextData.cArrPos];
-
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = props[i];
-    }
-
-    this.contextData.savedOp[this.contextData.cArrPos] = this.contextData.cO;
-    this.contextData.cArrPos += 1;
+    this.contextData.push();
   };
 
   CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -13815,22 +14086,14 @@
       this.globalData.blendMode = 'source-over';
     }
 
-    this.contextData.cArrPos -= 1;
-    var popped = this.contextData.saved[this.contextData.cArrPos];
-    var i;
-    var arr = this.contextData.cTr.props;
+    var popped = this.contextData.pop();
+    var transform = popped.transform;
+    var opacity = popped.opacity;
+    this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
 
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = popped[i];
-    }
-
-    this.canvasContext.setTransform(popped[0], popped[1], popped[4], popped[5], popped[12], popped[13]);
-    popped = this.contextData.savedOp[this.contextData.cArrPos];
-    this.contextData.cO = popped;
-
-    if (this.globalData.currentGlobalAlpha !== popped) {
-      this.canvasContext.globalAlpha = popped;
-      this.globalData.currentGlobalAlpha = popped;
+    if (this.globalData.currentGlobalAlpha !== opacity) {
+      this.canvasContext.globalAlpha = opacity;
+      this.globalData.currentGlobalAlpha = opacity;
     }
   };
 
@@ -15592,11 +15855,19 @@
           var stringValue = elem.textProperty.currentData.t;
 
           if (stringValue !== _prevValue) {
-            elem.textProperty.currentData.t = _prevValue;
+            _prevValue = elem.textProperty.currentData.t;
             _sourceText = new String(stringValue); // eslint-disable-line no-new-wrappers
             // If stringValue is an empty string, eval returns undefined, so it has to be returned as a String primitive
 
             _sourceText.value = stringValue || new String(stringValue); // eslint-disable-line no-new-wrappers
+
+            Object.defineProperty(_sourceText, 'style', {
+              get: function get() {
+                return {
+                  fillColor: elem.textProperty.currentData.fc
+                };
+              }
+            });
           }
 
           return _sourceText;

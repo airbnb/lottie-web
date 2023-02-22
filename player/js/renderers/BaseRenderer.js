@@ -134,6 +134,17 @@ BaseRenderer.prototype.searchExtraCompositions = function (assets) {
   }
 };
 
+BaseRenderer.prototype.getElementById = function (ind) {
+  var i;
+  var len = this.elements.length;
+  for (i = 0; i < len; i += 1) {
+    if (this.elements[i].data.ind === ind) {
+      return this.elements[i];
+    }
+  }
+  return null;
+};
+
 BaseRenderer.prototype.getElementByPath = function (path) {
   var pathValue = path.shift();
   var element;
