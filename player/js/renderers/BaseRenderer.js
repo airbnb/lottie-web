@@ -1,4 +1,5 @@
 import FontManager from '../utils/FontManager';
+import slotFactory from '../utils/SlotManager';
 import FootageElement from '../elements/FootageElement';
 import AudioElement from '../elements/AudioElement';
 
@@ -167,6 +168,7 @@ BaseRenderer.prototype.getElementByPath = function (path) {
 
 BaseRenderer.prototype.setupGlobalData = function (animData, fontsContainer) {
   this.globalData.fontManager = new FontManager();
+  this.globalData.slotManager = slotFactory(animData);
   this.globalData.fontManager.addChars(animData.chars);
   this.globalData.fontManager.addFonts(animData.fonts, fontsContainer);
   this.globalData.getAssetData = this.animationItem.getAssetData.bind(this.animationItem);
