@@ -4,7 +4,7 @@ Lottie is a library that parses [Adobe After Effects](https://www.adobe.com/prod
 animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile, web, and other platforms!
 
 
-# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](https://airbnb.io/lottie/)
+# View documentation, FAQ, help, examples, and more at the [lottie-web wiki](https://github.com/airbnb/lottie-web/wiki)
 
 For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
 
