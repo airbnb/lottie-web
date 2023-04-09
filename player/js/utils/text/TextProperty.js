@@ -424,6 +424,7 @@ TextProperty.prototype.updateDocumentData = function (newData, index) {
   dData = this.copyData(dData, newData);
   this.data.d.k[index].s = dData;
   this.recalculate(index);
+  this.setCurrentData(dData);
   this.elem.addDynamicProperty(this);
 };
 
