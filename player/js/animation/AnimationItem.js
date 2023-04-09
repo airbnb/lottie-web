@@ -20,7 +20,7 @@ import BaseEvent from '../utils/BaseEvent';
 import dataManager from '../utils/DataManager';
 import markerParser from '../utils/markers/markerParser';
 import ProjectInterface from '../utils/expressions/ProjectInterface';
-import { getRenderer } from '../renderers/renderersManager';
+import { getRenderer, getRegisteredRenderer } from '../renderers/renderersManager';
 
 const AnimationItem = function () {
   this._cbs = [];
@@ -153,7 +153,7 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
           ? wrapperAttributes.getNamedItem('data-bm-renderer').value
           : wrapperAttributes.getNamedItem('bm-renderer')
             ? wrapperAttributes.getNamedItem('bm-renderer').value
-            : 'canvas';
+            : getRegisteredRenderer() || 'canvas';
 
   var loop = wrapperAttributes.getNamedItem('data-anim-loop') // eslint-disable-line no-nested-ternary
     ? wrapperAttributes.getNamedItem('data-anim-loop').value
@@ -196,7 +196,11 @@ AnimationItem.prototype.setData = function (wrapper, animationData) {
   if (prerender === 'false') {
     params.prerender = false;
   }
-  this.setParams(params);
+  if (!params.path) {
+    this.trigger('destroy');
+  } else {
+    this.setParams(params);
+  }
 };
 
 AnimationItem.prototype.includeLayers = function (data) {
