@@ -1,3 +1,11 @@
+## V 5.11.0
+- FEATURE: Essential Graphics support
+- FEATURE: slots support
+- FIX: update data when updateDocumentData is called
+- FIX: using unregistered renderer or missing path
+- FIX: added destroy null check
+- FEATURE: Implement setLoop in Web Worker
+
 ## V 5.10.2
 - FEATURE: add setLoop method
 - FEATURE: support for all matte masks in canvas
