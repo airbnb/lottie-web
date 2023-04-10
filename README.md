@@ -1,14 +1,12 @@
-# Lottie for Web, [Android](https://github.com/airbnb/lottie-android), [iOS](https://github.com/airbnb/lottie-ios), [React Native](https://github.com/airbnb/lottie-react-native), and [Windows](https://aka.ms/lottie)
+# Lottie for Web
 
-Lottie is a mobile library for Web,  and iOS that parses [Adobe After Effects](https://www.adobe.com/products/aftereffects.html) animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile!
+Lottie is a library that parses [Adobe After Effects](https://www.adobe.com/products/aftereffects.html)
+animations exported as json with [Bodymovin](https://github.com/airbnb/lottie-web) and renders them natively on mobile, web, and other platforms!
+
+
+# View documentation, FAQ, help, examples, and more at the [lottie-web wiki](https://github.com/airbnb/lottie-web/wiki)
 
 For the first time, designers can create **and ship** beautiful animations without an engineer painstakingly recreating it by hand. They say a picture is worth 1,000 words so here are 13,000:
-
-
-
-# View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](https://airbnb.io/lottie/)
-
-
 
 ![Example1](gifs/Example1.gif)
 
@@ -25,67 +23,8 @@ For the first time, designers can create **and ship** beautiful animations witho
 ![Example4](gifs/Example4.gif)
 
 
-# Plugin installation
+# Installation
 
-### Option 1 (Recommended):
-**Download it from from aescripts + aeplugins:**
-https://aescripts.com/bodymovin/
-
-### Option 2:
-**Or get it from the adobe store**
-https://exchange.adobe.com/creativecloud.details.12557.html
-CC 2014 and up.
-
-## Other installation options:
-
-### Option 3:
-- download the ZIP from the repo.
-- Extract content and get the .zxp file from '/build/extension'
-- Use the [ZXP installer](https://aescripts.com/learn/zxp-installer/) from aescripts.com.
-
-### Option 4:
-- Close After Effects<br/>
-- Extract the zipped file on `build/extension/bodymovin.zxp` to the adobe CEP folder:<br/>
-WINDOWS:<br/>
-`C:\Program Files (x86)\Common Files\Adobe\CEP\extensions or`<br/>
-`C:\<username>\AppData\Roaming\Adobe\CEP\extensions`<br/>
-MAC:<br/>
-`/Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
-(you can open the terminal and type:<br/>
-`$ cp -R YOURUNZIPEDFOLDERPATH/extension /Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
-then type:<br/>
-`$ ls /Library/Application\ Support/Adobe/CEP/extensions/bodymovin`<br/>
-to make sure it was copied correctly type)<br/>
-
-- Edit the registry key:<br/>
-WINDOWS:<br/>
-open the registry key `HKEY_CURRENT_USER/Software/Adobe/CSXS.6` and add a key named `PlayerDebugMode`, of type String, and value `1`.<br/>
-MAC:<br/>
-open the file `~/Library/Preferences/com.adobe.CSXS.6.plist` and add a row with key `PlayerDebugMode`, of type String, and value `1`.<br/>
-
-### Option 5:
-
-Install the zxp manually following the instructions here:
-https://helpx.adobe.com/x-productkb/global/installingextensionsandaddons.html
-Skip directly to "Install third-party extensions"
-
-### Option 6:
-
-Install with [Homebrew](https://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
-```bash
-brew tap danielbayley/adobe
-brew cask install lottie
-```
-
-### After installing
-- **Windows:** Go to Edit > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
-- **Mac:** Go to Adobe After Effects > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
-
-**Old Versions**
-- **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
-- **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
-
-# HTML player installation
 ```bash
 # with npm
 npm install lottie-web
@@ -97,23 +36,13 @@ Or you can use the script file from here:
 https://cdnjs.com/libraries/bodymovin
 Or get it directly from the AE plugin clicking on Get Player
 
-# Demo
-[See a basic implementation here.](https://codepen.io/airnan/project/editor/ZeNONO/) <br/>
+If you want to install the AE plugin, see the [wiki](https://github.com/airbnb/lottie-web/wiki/AfterEffects-Plugin-Information).
 
-# Examples
-[See examples on codepen.](https://codepen.io/collection/nVYWZR/) <br/>
+## Getting Started
 
-## How it works
-[Here's](https://www.youtube.com/watch?v=5XMUJdjI0L8) a video tutorial explaining how to export a basic animation and load it in an html page <br />
-### After Effects
-- Open your AE project and select the bodymovin extension on Window > Extensions > bodymovin
-- A Panel will open with a Compositions tab listing all of your Project Compositions.
-- Select the composition you want to export.
-- Select a Destination Folder.
-- Click Render
-- look for the exported json file (if you had images or AI layers on your animation, there will be an images folder with the exported files)
+[Here's](https://www.youtube.com/watch?v=5XMUJdjI0L8) a video tutorial explaining how to export a basic animation and load it in an html page
 
-### HTML
+
 - get the lottie.js file from the build/player/ folder for the latest build
 - include the .js file on your html (remember to gzip it for production)
 ```html
@@ -142,138 +71,13 @@ lottie.loadAnimation({
 });
 ```
 
-#### Composition Settings:
-Check this wiki page for an explanation for each setting.
-https://github.com/airbnb/lottie-web/wiki/Composition-Settings
+For advanced usage, more options, and available methods check the [documentation](https://github.com/airbnb/lottie-web/wiki/Usage).
 
-## Usage
-Animation instances have these main methods:
-### play
+# Demo
+[See a basic implementation here.](https://codepen.io/airnan/project/editor/ZeNONO/)
 
-***
-### stop
-
-***
-### pause
-
-***
-### setSpeed(speed)
-- `speed`: 1 is normal speed.
-
-***
-### goToAndStop(value, isFrame)
-- `value`: numeric value.
-- `isFrame`: defines if first argument is a time based value or a frame based (default false).
-
-***
-### goToAndPlay(value, isFrame)
-- `value`: numeric value.
-- `isFrame`: defines if first argument is a time based value or a frame based (default false).
-
-***
-### setDirection(direction)
-- `direction`: 1 is forward, -1 is reverse.
-
-***
-### playSegments(segments, forceFlag)
-- `segments`: array. Can contain 2 numeric values that will be used as first and last frame of the animation. Or can contain a sequence of arrays each with 2 numeric values.
-- `forceFlag`: boolean. If set to false, it will wait until the current segment is complete. If true, it will update values immediately.
-***
-### setSubframe(useSubFrames)
-- `useSubFrames`:  If false, it will respect the original AE fps. If true, it will update on every requestAnimationFrame with intermediate values. Default is true.
-***
-### destroy()
-***
-### getDuration(inFrames)
-- `inFrames`:  If true, returns duration in frames, if false, in seconds.
-***
-
-### Additional methods:
-- updateDocumentData -- updates a text layer's data
-[More Info](https://github.com/airbnb/lottie-web/wiki/TextLayer.updateDocumentData)
-***
-
-### Lottie has several global methods that will affect all animations:
-**lottie.play()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.stop()** -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.goToAndStop(value, isFrame, name)** -- Moves an animation with the specified name playback to the defined time. If name is omitted, moves all animation instances.<br />
-**lottie.setSpeed()** -- first argument speed (1 is normal speed) -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.setDirection()** -- first argument direction (1 is normal direction.) -- with 1 optional parameter **name** to target a specific animation <br/>
-**lottie.searchAnimations()** -- looks for elements with class "lottie" or "bodymovin" <br/>
-**lottie.loadAnimation()** -- Explained above. returns an animation instance to control individually. <br/>
-**lottie.destroy(name)** -- Destroys an animation with the specified name. If name is omitted, destroys all animation instances. The DOM element will be emptied.<br />
-**lottie.registerAnimation()** -- you can register an element directly with registerAnimation. It must have the "data-animation-path" attribute pointing at the data.json url<br />
-**lottie.getRegisteredAnimations()** -- returns all animations instances<br />
-**lottie.setQuality()** -- default 'high', set 'high','medium','low', or a number > 1 to improve player performance. In some animations as low as 2 won't show any difference.<br />
-**lottie.setLocationHref()** -- Sets the relative location from where svg elements with ids are referenced. It's useful when you experience mask issues in Safari.<br />
-**lottie.freeze()** -- Freezes all playing animations or animations that will be loaded<br />
-**lottie.unfreeze()** -- Unfreezes all animations<br />
-**lottie.inBrowser()** -- true if the library is being run in a browser<br />
-**lottie.resize()** -- Resizes all animation instances<br />
-
-## Events
-- onComplete
-- onLoopComplete
-- onEnterFrame
-- onSegmentStart
-
-you can also use addEventListener with the following events:
-- complete
-- loopComplete
-- drawnFrame
-- enterFrame
-- segmentStart
-- config_ready (when initial config is done)
-- data_ready (when all parts of the animation have been loaded)
-- data_failed (when part of the animation can not be loaded)
-- loaded_images (when all image loads have either succeeded or errored)
-- DOMLoaded (when elements have been added to the DOM)
-- destroy
-
-#### Other loading options
-- if you want to use an existing canvas to draw, you can pass an extra object: 'rendererSettings' with the following configuration:
-```js
-lottie.loadAnimation({
-  container: element, // the dom element
-  renderer: 'svg',
-  loop: true,
-  autoplay: true,
-  animationData: animationData, // the animation data
-  // ...or if your animation contains repeaters:
-  // animationData: cloneDeep(animationData), // e.g. lodash.clonedeep
-  rendererSettings: {
-    context: canvasContext, // the canvas context, only support "2d" context
-    preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
-    clearCanvas: false,
-    progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
-    hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)
-    className: 'some-css-class-name',
-    id: 'some-id',
-  }
-});
-```
-Doing this you will have to handle the canvas clearing after each frame
-<br/>
-Another way to load animations is adding specific attributes to a dom element.
-You have to include a div and set it's class to "lottie".
-If you do it before page load, it will automatically search for all tags with the class "lottie".
-Or you can call `lottie.searchAnimations()` after page load and it will search all elements with the class "lottie".
-<br/>
-- Add the data.json to a folder relative to the html
-- Create a div that will contain the animation.
-- **Required**
-  - A class called "lottie"
-  - A "data-animation-path" attribute with relative path to the data.json
-- **Optional**
-  - A "data-anim-loop" attribute
-  - A "data-name" attribute to specify a name to target play controls specifically
-
-**Example**
-
-```html
- <div style="width:1067px;height:600px"  class="lottie" data-animation-path="animation/" data-anim-loop="true" data-name="ninja"></div>
-```
-
+# Examples
+[See examples on codepen.](https://codepen.io/collection/nVYWZR/)
 
 
 ## Preview
@@ -306,9 +110,11 @@ my email is **hernantorrisi@gmail.com**
 - Not supported: image sequences, videos and audio are not supported
 - **No  negative layer stretching**! No idea why, but stretching a layer messes with all the data.
 
+For more detailed information on which features are supported across players, check [Can I Lottie](https://canilottie.com/).
+
 ## Development
 `npm install` or `bower install` first
-`npm start`
+`npm run build`
 
 ## Notes
 - If you want to modify the parser or the player, there are some gulp commands that can simplify the task
@@ -317,6 +123,15 @@ my email is **hernantorrisi@gmail.com**
 
 ## Issues
 - For missing mask in Safari browser, please call lottie.setLocationHref(locationHref) before animation is generated. It usually caused by usage of base tag in html. (see above for description of setLocationHref)
+
+
+## Other Libraries
+
+* [Android](https://github.com/airbnb/lottie-android)
+* [iOS](https://github.com/airbnb/lottie-ios)
+* [React Native](https://github.com/airbnb/lottie-react-native)
+* [Windows](https://aka.ms/lottie)
+
 
 ## Contributors
 
