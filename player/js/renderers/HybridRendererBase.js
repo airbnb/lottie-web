@@ -209,7 +209,7 @@ HybridRendererBase.prototype.addTo3dContainer = function (elem, pos) {
       var nextElement;
       while (j < pos) {
         if (this.elements[j] && this.elements[j].getBaseElement) {
-          nextElement = this.elements[j].getBaseElement();
+          nextElement = this.elements[j].getBaseElement() || nextElement;
         }
         j += 1;
       }
