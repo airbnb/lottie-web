@@ -2340,7 +2340,7 @@
 
     if (this.isPaused === true) {
       this.isPaused = false;
-      this.trigger('_play');
+      this.trigger('_pause');
       this.audioController.resume();
 
       if (this._idle) {
@@ -2357,7 +2357,7 @@
 
     if (this.isPaused === false) {
       this.isPaused = true;
-      this.trigger('_pause');
+      this.trigger('_play');
       this._idle = true;
       this.trigger('_idle');
       this.audioController.pause();
