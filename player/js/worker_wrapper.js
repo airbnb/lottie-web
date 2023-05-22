@@ -434,6 +434,12 @@ function workerContent() {
             id: payload.id,
             totalFrames: animation.totalFrames,
             frameRate: animation.frameRate,
+            firstFrame: animation.firstFrame,
+            currentFrame: animation.currentFrame,
+            playDirection: animation.playDirection,
+            isSubframeEnabled: animation.isSubframeEnabled,
+            currentRawFrame: animation.currentRawFrame,
+            timeCompleted: animation.timeCompleted,
           },
         });
       });
@@ -597,6 +603,13 @@ var lottie = (function () {
       });
       animation.animInstance.totalFrames = payload.totalFrames;
       animation.animInstance.frameRate = payload.frameRate;
+      animation.animInstance.firstFrame = payload.firstFrame;
+      animation.animInstance.playDirection = payload.playDirection;
+      animation.animInstance.currentFrame = payload.isSubframeEnabled ? payload.currentRawFrame : ~~payload.currentRawFrame; // eslint-disable-line no-bitwise
+
+      if (payload.timeCompleted !== payload.totalFrames && payload.currentFrame > payload.timeCompleted) {
+        animation.animInstance.currentFrame = payload.timeCompleted;
+      }
     };
   }());
 
