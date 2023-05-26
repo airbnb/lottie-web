@@ -76,9 +76,8 @@ CanvasRendererBase.prototype.ctxTransform = function (props) {
   this.transformMat.cloneFromProps(props);
   // Taking the last transform value from the stored stack of transforms
   var currentTransform = this.contextData.getTransform();
-  var cProps = currentTransform.props;
   // Applying the last transform value after the new transform to respect the order of transformations
-  this.transformMat.transform(cProps[0], cProps[1], cProps[2], cProps[3], cProps[4], cProps[5], cProps[6], cProps[7], cProps[8], cProps[9], cProps[10], cProps[11], cProps[12], cProps[13], cProps[14], cProps[15]);
+  this.transformMat.multiply(currentTransform);
   // Storing the new transformed value in the stored transform
   currentTransform.cloneFromProps(this.transformMat.props);
   var trProps = currentTransform.props;

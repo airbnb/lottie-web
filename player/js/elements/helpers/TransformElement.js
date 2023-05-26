@@ -1,15 +1,20 @@
 import Matrix from '../../3rd_party/transformation-matrix';
 import TransformPropertyFactory from '../../utils/TransformProperty';
+import effectTypes from '../../utils/helpers/effectTypes';
 
 function TransformElement() {}
 
 TransformElement.prototype = {
   initTransform: function () {
+    var mat = new Matrix();
     this.finalTransform = {
       mProp: this.data.ks ? TransformPropertyFactory.getTransformProperty(this, this.data.ks, this) : { o: 0 },
       _matMdf: false,
+      _localMatMdf: false,
       _opMdf: false,
-      mat: new Matrix(),
+      mat: mat,
+      localMat: mat,
+      localOpacity: 1,
     };
     if (this.data.ao) {
       this.finalTransform.mProp.autoOriented = true;
@@ -44,8 +49,61 @@ TransformElement.prototype = {
         mat = this.finalTransform.mProp.v.props;
         finalMat.cloneFromProps(mat);
         for (i = 0; i < len; i += 1) {
-          mat = this.hierarchy[i].finalTransform.mProp.v.props;
-          finalMat.transform(mat[0], mat[1], mat[2], mat[3], mat[4], mat[5], mat[6], mat[7], mat[8], mat[9], mat[10], mat[11], mat[12], mat[13], mat[14], mat[15]);
+          finalMat.multiply(this.hierarchy[i].finalTransform.mProp.v);
+        }
+      }
+    }
+    if (this.finalTransform._matMdf) {
+      this.finalTransform._localMatMdf = this.finalTransform._matMdf;
+    }
+    if (this.finalTransform._opMdf) {
+      this.finalTransform.localOpacity = this.finalTransform.mProp.o.v;
+    }
+  },
+  renderLocalTransform: function () {
+    if (this.localTransforms) {
+      var i = 0;
+      var len = this.localTransforms.length;
+      this.finalTransform._localMatMdf = this.finalTransform._matMdf;
+      if (!this.finalTransform._localMatMdf || !this.finalTransform._opMdf) {
+        while (i < len) {
+          if (this.localTransforms[i]._mdf) {
+            this.finalTransform._localMatMdf = true;
+          }
+          if (this.localTransforms[i]._opMdf) {
+            this.finalTransform._opMdf = true;
+          }
+          i += 1;
+        }
+      }
+      if (this.finalTransform._localMatMdf) {
+        var localMat = this.finalTransform.localMat;
+        this.localTransforms[0].matrix.clone(localMat);
+        for (i = 1; i < len; i += 1) {
+          var lmat = this.localTransforms[i].matrix;
+          localMat.multiply(lmat);
+        }
+        localMat.multiply(this.finalTransform.mat);
+      }
+      if (this.finalTransform._opMdf) {
+        var localOp = this.finalTransform.localOpacity;
+        for (i = 0; i < len; i += 1) {
+          localOp *= this.localTransforms[i].opacity * 0.01;
+        }
+        this.finalTransform.localOpacity = localOp;
+      }
+    }
+  },
+  searchEffectTransforms: function () {
+    if (this.renderableEffectsManager) {
+      var transformEffects = this.renderableEffectsManager.getEffects(effectTypes.TRANSFORM_EFFECT);
+      if (transformEffects.length) {
+        this.localTransforms = [];
+        this.finalTransform.localMat = new Matrix();
+        var i = 0;
+        var len = transformEffects.length;
+        for (i = 0; i < len; i += 1) {
+          this.localTransforms.push(transformEffects[i]);
         }
       }
     }

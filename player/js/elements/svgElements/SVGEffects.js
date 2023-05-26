@@ -48,6 +48,18 @@ SVGEffects.prototype.renderFrame = function (_isFirstFrame) {
   }
 };
 
+SVGEffects.prototype.getEffects = function (type) {
+  var i;
+  var len = this.filters.length;
+  var effects = [];
+  for (i = 0; i < len; i += 1) {
+    if (this.filters[i].type === type) {
+      effects.push(this.filters[i]);
+    }
+  }
+  return effects;
+};
+
 export function registerEffect(id, effect, countsAsEffect) {
   registeredEffects[id] = {
     effect,

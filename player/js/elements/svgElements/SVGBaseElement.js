@@ -71,11 +71,11 @@ SVGBaseElement.prototype = {
     }
   },
   renderElement: function () {
-    if (this.finalTransform._matMdf) {
-      this.transformedElement.setAttribute('transform', this.finalTransform.mat.to2dCSS());
+    if (this.finalTransform._localMatMdf) {
+      this.transformedElement.setAttribute('transform', this.finalTransform.localMat.to2dCSS());
     }
     if (this.finalTransform._opMdf) {
-      this.transformedElement.setAttribute('opacity', this.finalTransform.mProp.o.v);
+      this.transformedElement.setAttribute('opacity', this.finalTransform.localOpacity);
     }
   },
   destroyBaseElement: function () {
@@ -92,6 +92,7 @@ SVGBaseElement.prototype = {
   createRenderableComponents: function () {
     this.maskManager = new MaskElement(this.data, this, this.globalData);
     this.renderableEffectsManager = new SVGEffects(this);
+    this.searchEffectTransforms();
   },
   getMatte: function (matteType) {
     // This should not be a common case. But for backward compatibility, we'll create the matte object.

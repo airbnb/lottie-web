@@ -209,6 +209,28 @@ const Matrix = (function () {
     return this;
   }
 
+  function multiply(matrix) {
+    var matrixProps = matrix.props;
+    return this.transform(
+      matrixProps[0],
+      matrixProps[1],
+      matrixProps[2],
+      matrixProps[3],
+      matrixProps[4],
+      matrixProps[5],
+      matrixProps[6],
+      matrixProps[7],
+      matrixProps[8],
+      matrixProps[9],
+      matrixProps[10],
+      matrixProps[11],
+      matrixProps[12],
+      matrixProps[13],
+      matrixProps[14],
+      matrixProps[15]
+    );
+  }
+
   function isIdentity() {
     if (!this._identityCalculated) {
       this._identity = !(this.props[0] !== 1 || this.props[1] !== 0 || this.props[2] !== 0 || this.props[3] !== 0 || this.props[4] !== 0 || this.props[5] !== 1 || this.props[6] !== 0 || this.props[7] !== 0 || this.props[8] !== 0 || this.props[9] !== 0 || this.props[10] !== 1 || this.props[11] !== 0 || this.props[12] !== 0 || this.props[13] !== 0 || this.props[14] !== 0 || this.props[15] !== 1);
@@ -398,6 +420,7 @@ const Matrix = (function () {
     this.setTransform = setTransform;
     this.translate = translate;
     this.transform = transform;
+    this.multiply = multiply;
     this.applyToPoint = applyToPoint;
     this.applyToX = applyToX;
     this.applyToY = applyToY;

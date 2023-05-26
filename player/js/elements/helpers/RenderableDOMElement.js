@@ -47,6 +47,7 @@ function RenderableDOMElement() {}
       }
       this.renderTransform();
       this.renderRenderable();
+      this.renderLocalTransform();
       this.renderElement();
       this.renderInnerContent();
       if (this._isFirstFrame) {
