@@ -393,7 +393,7 @@ AnimationItem.prototype.play = function (name) {
   }
   if (this.isPaused === true) {
     this.isPaused = false;
-    this.trigger('_pause');
+    this.trigger('_play');
     this.audioController.resume();
     if (this._idle) {
       this._idle = false;
@@ -408,7 +408,7 @@ AnimationItem.prototype.pause = function (name) {
   }
   if (this.isPaused === false) {
     this.isPaused = true;
-    this.trigger('_play');
+    this.trigger('_pause');
     this._idle = true;
     this.trigger('_idle');
     this.audioController.pause();
