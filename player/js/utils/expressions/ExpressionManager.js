@@ -22,7 +22,12 @@ const ExpressionManager = (function () {
   var XMLHttpRequest = null;
   var fetch = null;
   var frames = null;
+  var _lottieGlobal = {};
   seedrandom(BMMath);
+
+  function resetFrame() {
+    _lottieGlobal = {};
+  }
 
   function $bm_isInstanceOfArray(arr) {
     return arr.constructor === Array || arr.constructor === Float32Array;
@@ -741,7 +746,8 @@ const ExpressionManager = (function () {
   }
 
   ob.initiateExpression = initiateExpression;
-  ob.__preventDeadCodeRemoval = [window, document, XMLHttpRequest, fetch, frames, $bm_neg, add, $bm_sum, $bm_sub, $bm_mul, $bm_div, $bm_mod, clamp, radians_to_degrees, degreesToRadians, degrees_to_radians, normalize, rgbToHsl, hslToRgb, linear, random, createPath];
+  ob.__preventDeadCodeRemoval = [window, document, XMLHttpRequest, fetch, frames, $bm_neg, add, $bm_sum, $bm_sub, $bm_mul, $bm_div, $bm_mod, clamp, radians_to_degrees, degreesToRadians, degrees_to_radians, normalize, rgbToHsl, hslToRgb, linear, random, createPath, _lottieGlobal];
+  ob.resetFrame = resetFrame;
   return ob;
 }());
 

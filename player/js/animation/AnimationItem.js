@@ -58,6 +58,7 @@ const AnimationItem = function () {
   this.onSetupError = this.onSetupError.bind(this);
   this.onSegmentComplete = this.onSegmentComplete.bind(this);
   this.drawnFrameEvent = new BMEnterFrameEvent('drawnFrame', 0, 0, 0);
+  this.expressionsPlugin = getExpressionsPlugin();
 };
 
 extendPrototype([BaseEvent], AnimationItem);
@@ -381,6 +382,9 @@ AnimationItem.prototype.renderFrame = function () {
     return;
   }
   try {
+    if (this.expressionsPlugin) {
+      this.expressionsPlugin.resetFrame();
+    }
     this.renderer.renderFrame(this.currentFrame + this.firstFrame);
   } catch (error) {
     this.triggerRenderFrameError(error);
@@ -630,7 +634,7 @@ AnimationItem.prototype.destroy = function (name) {
   this.onSegmentStart = null;
   this.onDestroy = null;
   this.renderer = null;
-  this.renderer = null;
+  this.expressionsPlugin = null;
   this.imagePreloader = null;
   this.projectInterface = null;
 };

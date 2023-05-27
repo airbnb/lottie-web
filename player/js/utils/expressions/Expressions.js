@@ -1,8 +1,10 @@
 import CompExpressionInterface from './CompInterface';
+import ExpressionManager from './ExpressionManager';
 
 const Expressions = (function () {
   var ob = {};
   ob.initExpressions = initExpressions;
+  ob.resetFrame = ExpressionManager.resetFrame;
 
   function initExpressions(animation) {
     var stackCount = 0;
