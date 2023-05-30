@@ -2,7 +2,7 @@
 - FEATURE: Transform Effect support
 - FIX: play / pause behavior on worker
 - IMPROVEMENT: move text rendering to render phase
-- FEATURE: expose global object _lottieObject for expressions
+- FEATURE: expose global object _lottieGlobal for expressions
 
 ## V 5.11.0
 - FEATURE: Essential Graphics support
