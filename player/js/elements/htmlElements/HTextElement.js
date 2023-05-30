@@ -198,6 +198,7 @@ HTextElement.prototype.buildNewText = function () {
 };
 
 HTextElement.prototype.renderInnerContent = function () {
+  this.validateText();
   var svgStyle;
   if (this.data.singleShape) {
     if (!this._isFirstFrame && !this.lettersChangedFlag) {

@@ -27,11 +27,6 @@ ITextElement.prototype.prepareFrame = function (num) {
   this._mdf = false;
   this.prepareRenderableFrame(num);
   this.prepareProperties(num, this.isInRange);
-  if (this.textProperty._mdf || this.textProperty._isFirstFrame) {
-    this.buildNewText();
-    this.textProperty._isFirstFrame = false;
-    this.textProperty._mdf = false;
-  }
 };
 
 ITextElement.prototype.createPathShape = function (matrixHelper, shapes) {
@@ -86,6 +81,14 @@ ITextElement.prototype.emptyProp = new LetterProps();
 
 ITextElement.prototype.destroy = function () {
 
+};
+
+ITextElement.prototype.validateText = function () {
+  if (this.textProperty._mdf || this.textProperty._isFirstFrame) {
+    this.buildNewText();
+    this.textProperty._isFirstFrame = false;
+    this.textProperty._mdf = false;
+  }
 };
 
 export default ITextElement;

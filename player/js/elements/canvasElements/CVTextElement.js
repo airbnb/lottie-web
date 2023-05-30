@@ -127,6 +127,7 @@ CVTextElement.prototype.buildNewText = function () {
 };
 
 CVTextElement.prototype.renderInnerContent = function () {
+  this.validateText();
   var ctx = this.canvasContext;
   ctx.font = this.values.fValue;
   ctx.lineCap = 'butt';

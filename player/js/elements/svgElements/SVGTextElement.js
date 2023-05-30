@@ -275,6 +275,7 @@ SVGTextLottieElement.prototype.getValue = function () {
 };
 
 SVGTextLottieElement.prototype.renderInnerContent = function () {
+  this.validateText();
   if (!this.data.singleShape || this._mdf) {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
     if (this.lettersChangedFlag || this.textAnimator.lettersChangedFlag) {
