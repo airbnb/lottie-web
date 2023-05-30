@@ -49,12 +49,12 @@
 
 <script>
     var anim;
-    import('./js/modules/html.js').then(({default: lottie }) => {
+    import('./js/modules/full.js').then(({default: lottie }) => {
         var elem = document.getElementById('lottie');
         var animData = {
             container: elem,
-            renderer: 'html',
-            loop: true,
+            renderer: 'svg',
+            loop: 3,
             autoplay: true,
             rendererSettings: {
                 progressiveLoad:false,
@@ -69,7 +69,7 @@
                     y: '-200%',
                 }
             },
-            path: 'exports/gumball/data.json',
+            path: 'exports/render/data.json',
             audioFactory: createAudio,
         };
         // lottie.setQuality('low');
@@ -93,10 +93,10 @@
             })
             
             anim.addEventListener('DOMLoaded', function() {
-                setTimeout(()=>{
-                    console.log('UPDATEING TEXT');
-                    anim.updateDocumentData(['a_text','adwqd'], {t: 'eeee'});
-                }, 100)
+                // setTimeout(()=>{
+                //     console.log('UPDATEING TEXT');
+                //     anim.updateDocumentData(['a_text','adwqd'], {t: 'eeee'});
+                // }, 100)
             })
         }, 1)
     });
