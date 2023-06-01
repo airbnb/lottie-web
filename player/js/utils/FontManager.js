@@ -18,6 +18,15 @@ const FontManager = (function () {
     2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379,
     2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
 
+  var BLACK_FLAG_CODE_POINT = 127988;
+  var CANCEL_TAG_CODE_POINT = 917631;
+  var A_TAG_CODE_POINT = 917601;
+  var Z_TAG_CODE_POINT = 917626;
+  var VARIATION_SELECTOR_16_CODE_POINT = 65039;
+  var ZERO_WIDTH_JOINER_CODE_POINT = 8205;
+  var REGIONAL_CHARACTER_A_CODE_POINT = 127462;
+  var REGIONAL_CHARACTER_Z_CODE_POINT = 127487;
+
   var surrogateModifiers = [
     'd83cdffb',
     'd83cdffc',
@@ -25,8 +34,6 @@ const FontManager = (function () {
     'd83cdffe',
     'd83cdfff',
   ];
-
-  var zeroWidthJoiner = [65039, 8205];
 
   function trimFontOptions(font) {
     var familyArray = font.split(',');
@@ -296,18 +303,20 @@ const FontManager = (function () {
 
   function measureText(char, fontName, size) {
     var fontData = this.getFontByName(fontName);
-    var index = char.charCodeAt(0);
-    if (!fontData.cache[index + 1]) {
+    // Using the char instead of char.charCodeAt(0)
+    // to avoid collisions between equal chars
+    var index = char;
+    if (!fontData.cache[index]) {
       var tHelper = fontData.helper;
       if (char === ' ') {
         var doubleSize = tHelper.measureText('|' + char + '|');
         var singleSize = tHelper.measureText('||');
-        fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
+        fontData.cache[index] = (doubleSize - singleSize) / 100;
       } else {
-        fontData.cache[index + 1] = tHelper.measureText(char) / 100;
+        fontData.cache[index] = tHelper.measureText(char) / 100;
       }
     }
-    return fontData.cache[index + 1] * size;
+    return fontData.cache[index] * size;
   }
 
   function getFontByName(name) {
@@ -322,20 +331,75 @@ const FontManager = (function () {
     return this.fonts[0];
   }
 
+  function getCodePoint(string) {
+    var codePoint = 0;
+    var first = string.charCodeAt(0);
+    if (first >= 0xD800 && first <= 0xDBFF) {
+      var second = string.charCodeAt(1);
+      if (second >= 0xDC00 && second <= 0xDFFF) {
+        codePoint = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+      }
+    }
+    return codePoint;
+  }
+
+  // Skin tone modifiers
   function isModifier(firstCharCode, secondCharCode) {
     var sum = firstCharCode.toString(16) + secondCharCode.toString(16);
     return surrogateModifiers.indexOf(sum) !== -1;
   }
 
-  function isZeroWidthJoiner(firstCharCode, secondCharCode) {
-    if (!secondCharCode) {
-      return firstCharCode === zeroWidthJoiner[1];
+  function isZeroWidthJoiner(charCode) {
+    return charCode === ZERO_WIDTH_JOINER_CODE_POINT;
+  }
+
+  // This codepoint may change the appearance of the preceding character.
+  // If that is a symbol, dingbat or emoji, U+FE0F forces it to be rendered
+  // as a colorful image as compared to a monochrome text variant.
+  function isVariationSelector(charCode) {
+    return charCode === VARIATION_SELECTOR_16_CODE_POINT;
+  }
+
+  // The regional indicator symbols are a set of 26 alphabetic Unicode
+  /// characters (A–Z) intended to be used to encode ISO 3166-1 alpha-2
+  // two-letter country codes in a way that allows optional special treatment.
+  function isRegionalCode(string) {
+    var codePoint = getCodePoint(string);
+    if (codePoint >= REGIONAL_CHARACTER_A_CODE_POINT && codePoint <= REGIONAL_CHARACTER_Z_CODE_POINT) {
+      return true;
     }
-    return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
+    return false;
+  }
+
+  // Some Emoji implementations represent combinations of
+  // two “regional indicator” letters as a single flag symbol.
+  function isFlagEmoji(string) {
+    return isRegionalCode(string.substr(0, 2)) && isRegionalCode(string.substr(2, 2));
   }
 
   function isCombinedCharacter(char) {
     return combinedCharacters.indexOf(char) !== -1;
+  }
+
+  // Regional flags start with a BLACK_FLAG_CODE_POINT
+  // folowed by 5 chars in the TAG range
+  // and end with a CANCEL_TAG_CODE_POINT
+  function isRegionalFlag(text, index) {
+    var codePoint = getCodePoint(text.substr(index, 2));
+    if (codePoint !== BLACK_FLAG_CODE_POINT) {
+      return false;
+    }
+    var count = 0;
+    index += 2;
+    while (count < 5) {
+      codePoint = getCodePoint(text.substr(index, 2));
+      if (codePoint < A_TAG_CODE_POINT || codePoint > Z_TAG_CODE_POINT) {
+        return false;
+      }
+      count += 1;
+      index += 2;
+    }
+    return getCodePoint(text.substr(index, 2)) === CANCEL_TAG_CODE_POINT;
   }
 
   function setIsLoaded() {
@@ -354,7 +418,12 @@ const FontManager = (function () {
   };
   Font.isModifier = isModifier;
   Font.isZeroWidthJoiner = isZeroWidthJoiner;
+  Font.isFlagEmoji = isFlagEmoji;
+  Font.isRegionalCode = isRegionalCode;
   Font.isCombinedCharacter = isCombinedCharacter;
+  Font.isRegionalFlag = isRegionalFlag;
+  Font.isVariationSelector = isVariationSelector;
+  Font.BLACK_FLAG_CODE_POINT = BLACK_FLAG_CODE_POINT;
 
   var fontPrototype = {
     addChars: addChars,

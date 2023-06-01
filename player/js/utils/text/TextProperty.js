@@ -153,39 +153,49 @@ TextProperty.prototype.buildFinalText = function (text) {
   var charCode;
   var secondCharCode;
   var shouldCombine = false;
+  var shouldCombineNext = false;
+  var currentChars = '';
   while (i < len) {
+    shouldCombine = shouldCombineNext;
+    shouldCombineNext = false;
     charCode = text.charCodeAt(i);
+    currentChars = text.charAt(i);
     if (FontManager.isCombinedCharacter(charCode)) {
-      charactersArray[charactersArray.length - 1] += text.charAt(i);
+      shouldCombine = true;
+      // It's a potential surrogate pair (this is the High surrogate)
     } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-      secondCharCode = text.charCodeAt(i + 1);
-      if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
-        if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
-          charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-          shouldCombine = false;
-        } else {
-          charactersArray.push(text.substr(i, 2));
-        }
-        i += 1;
+      if (FontManager.isRegionalFlag(text, i)) {
+        currentChars = text.substr(i, 14);
       } else {
-        charactersArray.push(text.charAt(i));
+        secondCharCode = text.charCodeAt(i + 1);
+        // It's a surrogate pair (this is the Low surrogate)
+        if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
+          if (FontManager.isModifier(charCode, secondCharCode)) {
+            currentChars = text.substr(i, 2);
+            shouldCombine = true;
+          } else if (FontManager.isFlagEmoji(text.substr(i, 4))) {
+            currentChars = text.substr(i, 4);
+          } else {
+            currentChars = text.substr(i, 2);
+          }
+        }
       }
     } else if (charCode > 0xDBFF) {
       secondCharCode = text.charCodeAt(i + 1);
-      if (FontManager.isZeroWidthJoiner(charCode, secondCharCode)) {
+      if (FontManager.isVariationSelector(charCode)) {
         shouldCombine = true;
-        charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-        i += 1;
-      } else {
-        charactersArray.push(text.charAt(i));
       }
     } else if (FontManager.isZeroWidthJoiner(charCode)) {
-      charactersArray[charactersArray.length - 1] += text.charAt(i);
       shouldCombine = true;
-    } else {
-      charactersArray.push(text.charAt(i));
+      shouldCombineNext = true;
     }
-    i += 1;
+    if (shouldCombine) {
+      charactersArray[charactersArray.length - 1] += currentChars;
+      shouldCombine = false;
+    } else {
+      charactersArray.push(currentChars);
+    }
+    i += currentChars.length;
   }
   return charactersArray;
 };
