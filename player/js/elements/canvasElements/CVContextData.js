@@ -29,11 +29,23 @@ function CVContextData() {
   this.nativeContext = null;
   this.transformMat = new Matrix();
   this.currentOpacity = 1;
+  //
   this.currentFillStyle = '';
+  this.appliedFillStyle = '';
+  //
   this.currentStrokeStyle = '';
+  this.appliedStrokeStyle = '';
+  //
   this.currentLineWidth = '';
+  this.appliedLineWidth = '';
+  //
   this.currentLineCap = '';
+  this.appliedLineCap = '';
+  //
   this.currentLineJoin = '';
+  this.appliedLineJoin = '';
+  //
+  this.appliedMiterLimit = '';
   this.currentMiterLimit = '';
 }
 
@@ -61,35 +73,26 @@ CVContextData.prototype.restore = function (forceRestore) {
   for (i = 0; i < 16; i += 1) {
     arr[i] = transform[i];
   }
+  if (forceRestore) {
+    var prevStack = this.stack[this.cArrPos + 1];
+    this.appliedFillStyle = prevStack.fillStyle;
+    this.appliedStrokeStyle = prevStack.strokeStyle;
+    this.appliedLineWidth = prevStack.lineWidth;
+    this.appliedLineCap = prevStack.lineCap;
+    this.appliedLineJoin = prevStack.lineJoin;
+    this.appliedMiterLimit = prevStack.miterLimit;
+  }
   this.nativeContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
   if (forceRestore || (currentContext.opacity !== -1 && this.currentOpacity !== currentContext.opacity)) {
     this.nativeContext.globalAlpha = currentContext.opacity;
     this.currentOpacity = currentContext.opacity;
   }
-  if (forceRestore || (currentContext.fillStyle && this.currentFillStyle !== currentContext.fillStyle)) {
-    this.nativeContext.fillStyle = currentContext.fillStyle;
-    this.currentFillStyle = currentContext.fillStyle;
-  }
-  if (forceRestore || (currentContext.strokeStyle && this.currentStrokeStyle !== currentContext.strokeStyle)) {
-    this.nativeContext.strokeStyle = currentContext.strokeStyle;
-    this.currentStrokeStyle = currentContext.strokeStyle;
-  }
-  if (forceRestore || (currentContext.lineWidth && this.currentLineWidth !== currentContext.lineWidth)) {
-    this.nativeContext.lineWidth = currentContext.lineWidth;
-    this.currentLineWidth = currentContext.lineWidth;
-  }
-  if (forceRestore || (currentContext.lineCap && this.currentLineCap !== currentContext.lineCap)) {
-    this.nativeContext.lineCap = currentContext.lineCap;
-    this.currentLineCap = currentContext.lineCap;
-  }
-  if (forceRestore || (currentContext.lineJoin && this.currentLineJoin !== currentContext.lineJoin)) {
-    this.nativeContext.lineJoin = currentContext.lineJoin;
-    this.currentLineJoin = currentContext.lineJoin;
-  }
-  if (currentContext.miterLimit && this.currentMiterLimit !== currentContext.miterLimit) {
-    this.nativeContext.miterLimit = currentContext.miterLimit;
-    this.currentMiterLimit = currentContext.miterLimit;
-  }
+  this.currentFillStyle = currentContext.fillStyle;
+  this.currentStrokeStyle = currentContext.strokeStyle;
+  this.currentLineWidth = currentContext.lineWidth;
+  this.currentLineCap = currentContext.lineCap;
+  this.currentLineJoin = currentContext.lineJoin;
+  this.currentMiterLimit = currentContext.miterLimit;
 };
 
 CVContextData.prototype.save = function () {
@@ -124,60 +127,42 @@ CVContextData.prototype.setContext = function (value) {
 
 CVContextData.prototype.fillStyle = function (value) {
   if (this.stack[this.cArrPos].fillStyle !== value) {
-    if (this.currentFillStyle !== value) {
-      this.currentFillStyle = value;
-      this.nativeContext.fillStyle = value;
-    }
+    this.currentFillStyle = value;
     this.stack[this.cArrPos].fillStyle = value;
   }
 };
 
 CVContextData.prototype.strokeStyle = function (value) {
   if (this.stack[this.cArrPos].strokeStyle !== value) {
-    if (this.currentStrokeStyle !== value) {
-      this.nativeContext.strokeStyle = value;
-      this.currentStrokeStyle = value;
-    }
+    this.currentStrokeStyle = value;
     this.stack[this.cArrPos].strokeStyle = value;
   }
 };
 
 CVContextData.prototype.lineWidth = function (value) {
   if (this.stack[this.cArrPos].lineWidth !== value) {
-    if (this.currentLineWidth !== value) {
-      this.nativeContext.lineWidth = value;
-      this.currentLineWidth = value;
-    }
+    this.currentLineWidth = value;
     this.stack[this.cArrPos].lineWidth = value;
   }
 };
 
 CVContextData.prototype.lineCap = function (value) {
   if (this.stack[this.cArrPos].lineCap !== value) {
-    if (this.currentLineCap !== value) {
-      this.nativeContext.lineCap = value;
-      this.currentLineCap = value;
-    }
+    this.currentLineCap = value;
     this.stack[this.cArrPos].lineCap = value;
   }
 };
 
 CVContextData.prototype.lineJoin = function (value) {
   if (this.stack[this.cArrPos].lineJoin !== value) {
-    if (this.currentLineJoin !== value) {
-      this.nativeContext.lineJoin = value;
-      this.currentLineJoin = value;
-    }
+    this.currentLineJoin = value;
     this.stack[this.cArrPos].lineJoin = value;
   }
 };
 
 CVContextData.prototype.miterLimit = function (value) {
   if (this.stack[this.cArrPos].miterLimit !== value) {
-    if (this.currentMiterLimit !== value) {
-      this.nativeContext.miterLimit = value;
-      this.currentMiterLimit = value;
-    }
+    this.currentMiterLimit = value;
     this.stack[this.cArrPos].miterLimit = value;
   }
 };
@@ -205,6 +190,46 @@ CVContextData.prototype.opacity = function (op) {
     }
     this.stack[this.cArrPos].opacity = currentOpacity;
   }
+};
+
+CVContextData.prototype.fill = function (rule) {
+  if (this.appliedFillStyle !== this.currentFillStyle) {
+    this.appliedFillStyle = this.currentFillStyle;
+    this.nativeContext.fillStyle = this.appliedFillStyle;
+  }
+  this.nativeContext.fill(rule);
+};
+
+CVContextData.prototype.fillRect = function (x, y, w, h) {
+  if (this.appliedFillStyle !== this.currentFillStyle) {
+    this.appliedFillStyle = this.currentFillStyle;
+    this.nativeContext.fillStyle = this.appliedFillStyle;
+  }
+  this.nativeContext.fillRect(x, y, w, h);
+};
+
+CVContextData.prototype.stroke = function () {
+  if (this.appliedStrokeStyle !== this.currentStrokeStyle) {
+    this.appliedStrokeStyle = this.currentStrokeStyle;
+    this.nativeContext.strokeStyle = this.appliedStrokeStyle;
+  }
+  if (this.appliedLineWidth !== this.currentLineWidth) {
+    this.appliedLineWidth = this.currentLineWidth;
+    this.nativeContext.lineWidth = this.appliedLineWidth;
+  }
+  if (this.appliedLineCap !== this.currentLineCap) {
+    this.appliedLineCap = this.currentLineCap;
+    this.nativeContext.lineCap = this.appliedLineCap;
+  }
+  if (this.appliedLineJoin !== this.currentLineJoin) {
+    this.appliedLineJoin = this.currentLineJoin;
+    this.nativeContext.lineJoin = this.appliedLineJoin;
+  }
+  if (this.appliedMiterLimit !== this.currentMiterLimit) {
+    this.appliedMiterLimit = this.currentMiterLimit;
+    this.nativeContext.miterLimit = this.appliedMiterLimit;
+  }
+  this.nativeContext.stroke();
 };
 
 export default CVContextData;

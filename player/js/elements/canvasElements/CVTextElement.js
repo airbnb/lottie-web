@@ -191,7 +191,8 @@ CVTextElement.prototype.renderInnerContent = function () {
           }
         }
         this.globalData.canvasContext.closePath();
-        this.globalData.canvasContext.fill();
+        renderer.ctxFill();
+        // this.globalData.canvasContext.fill();
         /// ctx.fillText(this.textSpans[i].val,0,0);
       }
       if (this.stroke) {
@@ -229,7 +230,8 @@ CVTextElement.prototype.renderInnerContent = function () {
           }
         }
         this.globalData.canvasContext.closePath();
-        this.globalData.canvasContext.stroke();
+        renderer.ctxStroke();
+        // this.globalData.canvasContext.stroke();
         /// ctx.strokeText(letters[i].val,0,0);
       }
       if (renderedLetter) {

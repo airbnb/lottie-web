@@ -336,14 +336,16 @@ CVShapeElement.prototype.drawLayer = function () {
           }
         }
         if (type === 'st' || type === 'gs') {
-          ctx.stroke();
+          // ctx.stroke();
+          renderer.ctxStroke();
           if (currentStyle.da) {
             ctx.setLineDash(this.dashResetter);
           }
         }
       }
       if (type !== 'st' && type !== 'gs') {
-        ctx.fill(currentStyle.r);
+        // ctx.fill(currentStyle.r);
+        this.globalData.renderer.ctxFill(currentStyle.r);
       }
       renderer.restore();
     }

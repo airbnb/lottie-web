@@ -134,6 +134,30 @@ CanvasRendererBase.prototype.ctxMiterLimit = function (value) {
   this.contextData.miterLimit(value);
 };
 
+CanvasRendererBase.prototype.ctxFill = function (rule) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.fill(rule);
+    return;
+  }
+  this.contextData.fill(rule);
+};
+
+CanvasRendererBase.prototype.ctxFillRect = function (x, y, w, h) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.fillRect(x, y, w, h);
+    return;
+  }
+  this.contextData.fillRect(x, y, w, h);
+};
+
+CanvasRendererBase.prototype.ctxStroke = function () {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.stroke();
+    return;
+  }
+  this.contextData.stroke();
+};
+
 CanvasRendererBase.prototype.reset = function () {
   if (!this.renderConfig.clearCanvas) {
     this.canvasContext.restore();
