@@ -72,35 +72,66 @@ CanvasRendererBase.prototype.ctxTransform = function (props) {
     this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
     return;
   }
-  // Resetting the canvas transform matrix to the new transform
-  this.transformMat.cloneFromProps(props);
-  // Taking the last transform value from the stored stack of transforms
-  var currentTransform = this.contextData.getTransform();
-  // Applying the last transform value after the new transform to respect the order of transformations
-  this.transformMat.multiply(currentTransform);
-  // Storing the new transformed value in the stored transform
-  currentTransform.cloneFromProps(this.transformMat.props);
-  var trProps = currentTransform.props;
-  // Applying the new transform to the canvas
-  this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
+  this.contextData.transform(props);
 };
 
 CanvasRendererBase.prototype.ctxOpacity = function (op) {
   /* if(op === 1){
         return;
     } */
-  var currentOpacity = this.contextData.getOpacity();
   if (!this.renderConfig.clearCanvas) {
     this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-    this.globalData.currentGlobalAlpha = currentOpacity;
     return;
   }
-  currentOpacity *= op < 0 ? 0 : op;
-  this.contextData.setOpacity(currentOpacity);
-  if (this.globalData.currentGlobalAlpha !== currentOpacity) {
-    this.canvasContext.globalAlpha = currentOpacity;
-    this.globalData.currentGlobalAlpha = currentOpacity;
+  this.contextData.opacity(op);
+};
+
+CanvasRendererBase.prototype.ctxFillStyle = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.fillStyle = value;
+    return;
   }
+  this.contextData.fillStyle(value);
+};
+
+CanvasRendererBase.prototype.ctxStrokeStyle = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.strokeStyle = value;
+    return;
+  }
+  this.contextData.strokeStyle(value);
+};
+
+CanvasRendererBase.prototype.ctxLineWidth = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.lineWidth = value;
+    return;
+  }
+  this.contextData.lineWidth(value);
+};
+
+CanvasRendererBase.prototype.ctxLineCap = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.lineCap = value;
+    return;
+  }
+  this.contextData.lineCap(value);
+};
+
+CanvasRendererBase.prototype.ctxLineJoin = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.lineJoin = value;
+    return;
+  }
+  this.contextData.lineJoin(value);
+};
+
+CanvasRendererBase.prototype.ctxMiterLimit = function (value) {
+  if (!this.renderConfig.clearCanvas) {
+    this.canvasContext.miterLimit = value;
+    return;
+  }
+  this.contextData.miterLimit(value);
 };
 
 CanvasRendererBase.prototype.reset = function () {
@@ -119,7 +150,7 @@ CanvasRendererBase.prototype.save = function (actionFlag) {
   if (actionFlag) {
     this.canvasContext.save();
   }
-  this.contextData.push();
+  this.contextData.save();
 };
 
 CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -131,14 +162,7 @@ CanvasRendererBase.prototype.restore = function (actionFlag) {
     this.canvasContext.restore();
     this.globalData.blendMode = 'source-over';
   }
-  var popped = this.contextData.pop();
-  var transform = popped.transform;
-  var opacity = popped.opacity;
-  this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
-  if (this.globalData.currentGlobalAlpha !== opacity) {
-    this.canvasContext.globalAlpha = opacity;
-    this.globalData.currentGlobalAlpha = opacity;
-  }
+  this.contextData.restore(actionFlag);
 };
 
 CanvasRendererBase.prototype.configAnimation = function (animData) {
@@ -164,6 +188,7 @@ CanvasRendererBase.prototype.configAnimation = function (animData) {
   } else {
     this.canvasContext = this.renderConfig.context;
   }
+  this.contextData.setContext(this.canvasContext);
   this.data = animData;
   this.layers = animData.layers;
   this.transformCanvas = {
@@ -300,7 +325,7 @@ CanvasRendererBase.prototype.renderFrame = function (num, forceRender) {
     this.checkLayers(num);
   }
 
-  for (i = 0; i < len; i += 1) {
+  for (i = len - 1; i >= 0; i -= 1) {
     if (this.completeLayers || this.elements[i]) {
       this.elements[i].prepareFrame(num - this.layers[i].st);
     }

@@ -20,7 +20,8 @@ CVSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
 CVSolidElement.prototype.renderInnerContent = function () {
   var ctx = this.canvasContext;
-  ctx.fillStyle = this.data.sc;
+  this.globalData.renderer.ctxFillStyle(this.data.sc);
+  // ctx.fillStyle = this.data.sc;
   ctx.fillRect(0, 0, this.data.sw, this.data.sh);
   //
 };
