@@ -36,6 +36,20 @@ function CanvasRenderer(animationItem, config) {
   this.transformMat = new Matrix();
   this.completeLayers = false;
   this.rendererType = 'canvas';
+  if (this.renderConfig.clearCanvas) {
+    this.ctxTransform = this.contextData.transform.bind(this.contextData);
+    this.ctxOpacity = this.contextData.opacity.bind(this.contextData);
+    this.ctxFillStyle = this.contextData.fillStyle.bind(this.contextData);
+    this.ctxStrokeStyle = this.contextData.strokeStyle.bind(this.contextData);
+    this.ctxLineWidth = this.contextData.lineWidth.bind(this.contextData);
+    this.ctxLineCap = this.contextData.lineCap.bind(this.contextData);
+    this.ctxLineJoin = this.contextData.lineJoin.bind(this.contextData);
+    this.ctxMiterLimit = this.contextData.miterLimit.bind(this.contextData);
+    this.ctxFill = this.contextData.fill.bind(this.contextData);
+    this.ctxFillRect = this.contextData.fillRect.bind(this.contextData);
+    this.ctxStroke = this.contextData.stroke.bind(this.contextData);
+    this.save = this.contextData.save.bind(this.contextData);
+  }
 }
 extendPrototype([CanvasRendererBase], CanvasRenderer);
 

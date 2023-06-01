@@ -74,6 +74,7 @@ CVContextData.prototype.restore = function (forceRestore) {
     arr[i] = transform[i];
   }
   if (forceRestore) {
+    this.nativeContext.restore();
     var prevStack = this.stack[this.cArrPos + 1];
     this.appliedFillStyle = prevStack.fillStyle;
     this.appliedStrokeStyle = prevStack.strokeStyle;
@@ -95,7 +96,10 @@ CVContextData.prototype.restore = function (forceRestore) {
   this.currentMiterLimit = currentContext.miterLimit;
 };
 
-CVContextData.prototype.save = function () {
+CVContextData.prototype.save = function (saveOnNativeFlag) {
+  if (saveOnNativeFlag) {
+    this.nativeContext.save();
+  }
   var props = this.cTr.props;
   if (this._length <= this.cArrPos) {
     this.duplicate();

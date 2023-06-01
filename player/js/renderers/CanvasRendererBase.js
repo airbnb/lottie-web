@@ -6,43 +6,13 @@ import {
 } from '../utils/helpers/arrays';
 import createTag from '../utils/helpers/html_elements';
 import SVGRenderer from './SVGRenderer';
-import Matrix from '../3rd_party/transformation-matrix';
 import BaseRenderer from './BaseRenderer';
-import CVContextData from '../elements/canvasElements/CVContextData';
 import CVShapeElement from '../elements/canvasElements/CVShapeElement';
 import CVTextElement from '../elements/canvasElements/CVTextElement';
 import CVImageElement from '../elements/canvasElements/CVImageElement';
 import CVSolidElement from '../elements/canvasElements/CVSolidElement';
 
-function CanvasRendererBase(animationItem, config) {
-  this.animationItem = animationItem;
-  this.renderConfig = {
-    clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
-    context: (config && config.context) || null,
-    progressiveLoad: (config && config.progressiveLoad) || false,
-    preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-    imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
-    contentVisibility: (config && config.contentVisibility) || 'visible',
-    className: (config && config.className) || '',
-    id: (config && config.id) || '',
-  };
-  this.renderConfig.dpr = (config && config.dpr) || 1;
-  if (this.animationItem.wrapper) {
-    this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
-  }
-  this.renderedFrame = -1;
-  this.globalData = {
-    frameNum: -1,
-    _mdf: false,
-    renderConfig: this.renderConfig,
-    currentGlobalAlpha: -1,
-  };
-  this.contextData = new CVContextData();
-  this.elements = [];
-  this.pendingElements = [];
-  this.transformMat = new Matrix();
-  this.completeLayers = false;
-  this.rendererType = 'canvas';
+function CanvasRendererBase() {
 }
 extendPrototype([BaseRenderer], CanvasRendererBase);
 
@@ -68,94 +38,47 @@ CanvasRendererBase.prototype.ctxTransform = function (props) {
   if (props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {
     return;
   }
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
-    return;
-  }
-  this.contextData.transform(props);
+  this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
 };
 
 CanvasRendererBase.prototype.ctxOpacity = function (op) {
-  /* if(op === 1){
-        return;
-    } */
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-    return;
-  }
-  this.contextData.opacity(op);
+  this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
 };
 
 CanvasRendererBase.prototype.ctxFillStyle = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.fillStyle = value;
-    return;
-  }
-  this.contextData.fillStyle(value);
+  this.canvasContext.fillStyle = value;
 };
 
 CanvasRendererBase.prototype.ctxStrokeStyle = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.strokeStyle = value;
-    return;
-  }
-  this.contextData.strokeStyle(value);
+  this.canvasContext.strokeStyle = value;
 };
 
 CanvasRendererBase.prototype.ctxLineWidth = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.lineWidth = value;
-    return;
-  }
-  this.contextData.lineWidth(value);
+  this.canvasContext.lineWidth = value;
 };
 
 CanvasRendererBase.prototype.ctxLineCap = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.lineCap = value;
-    return;
-  }
-  this.contextData.lineCap(value);
+  this.canvasContext.lineCap = value;
 };
 
 CanvasRendererBase.prototype.ctxLineJoin = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.lineJoin = value;
-    return;
-  }
-  this.contextData.lineJoin(value);
+  this.canvasContext.lineJoin = value;
 };
 
 CanvasRendererBase.prototype.ctxMiterLimit = function (value) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.miterLimit = value;
-    return;
-  }
-  this.contextData.miterLimit(value);
+  this.canvasContext.miterLimit = value;
 };
 
 CanvasRendererBase.prototype.ctxFill = function (rule) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.fill(rule);
-    return;
-  }
-  this.contextData.fill(rule);
+  this.canvasContext.fill(rule);
 };
 
 CanvasRendererBase.prototype.ctxFillRect = function (x, y, w, h) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.fillRect(x, y, w, h);
-    return;
-  }
-  this.contextData.fillRect(x, y, w, h);
+  this.canvasContext.fillRect(x, y, w, h);
 };
 
 CanvasRendererBase.prototype.ctxStroke = function () {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.stroke();
-    return;
-  }
-  this.contextData.stroke();
+  this.canvasContext.stroke();
 };
 
 CanvasRendererBase.prototype.reset = function () {
@@ -166,15 +89,8 @@ CanvasRendererBase.prototype.reset = function () {
   this.contextData.reset();
 };
 
-CanvasRendererBase.prototype.save = function (actionFlag) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.save();
-    return;
-  }
-  if (actionFlag) {
-    this.canvasContext.save();
-  }
-  this.contextData.save();
+CanvasRendererBase.prototype.save = function () {
+  this.canvasContext.save();
 };
 
 CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -183,7 +99,6 @@ CanvasRendererBase.prototype.restore = function (actionFlag) {
     return;
   }
   if (actionFlag) {
-    this.canvasContext.restore();
     this.globalData.blendMode = 'source-over';
   }
   this.contextData.restore(actionFlag);
