@@ -163,6 +163,9 @@ TextProperty.prototype.buildFinalText = function (text) {
         if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
           charactersArray[charactersArray.length - 1] += text.substr(i, 2);
           shouldCombine = false;
+        } else if (FontManager.isFlagEmoji(text.substr(i, 4))) {
+          charactersArray.push(text.substr(i, 4));
+          i += 2;
         } else {
           charactersArray.push(text.substr(i, 2));
         }

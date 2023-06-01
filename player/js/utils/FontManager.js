@@ -296,18 +296,20 @@ const FontManager = (function () {
 
   function measureText(char, fontName, size) {
     var fontData = this.getFontByName(fontName);
-    var index = char.charCodeAt(0);
-    if (!fontData.cache[index + 1]) {
+    // Using the char instead of char.charCodeAt(0)
+    // to avoid collisions between equal chars
+    var index = char;
+    if (!fontData.cache[index]) {
       var tHelper = fontData.helper;
       if (char === ' ') {
         var doubleSize = tHelper.measureText('|' + char + '|');
         var singleSize = tHelper.measureText('||');
-        fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
+        fontData.cache[index] = (doubleSize - singleSize) / 100;
       } else {
-        fontData.cache[index + 1] = tHelper.measureText(char) / 100;
+        fontData.cache[index] = tHelper.measureText(char) / 100;
       }
     }
-    return fontData.cache[index + 1] * size;
+    return fontData.cache[index] * size;
   }
 
   function getFontByName(name) {
@@ -334,6 +336,17 @@ const FontManager = (function () {
     return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
   }
 
+  function isRegionalCode(string) {
+    if (string.codePointAt(0) >= 127462 && string.codePointAt(0) <= 127487) {
+      return true;
+    }
+    return false;
+  }
+
+  function isFlagEmoji(string) {
+    return isRegionalCode(string.substr(0, 2)) && isRegionalCode(string.substr(2, 2));
+  }
+
   function isCombinedCharacter(char) {
     return combinedCharacters.indexOf(char) !== -1;
   }
@@ -354,6 +367,8 @@ const FontManager = (function () {
   };
   Font.isModifier = isModifier;
   Font.isZeroWidthJoiner = isZeroWidthJoiner;
+  Font.isFlagEmoji = isFlagEmoji;
+  Font.isRegionalCode = isRegionalCode;
   Font.isCombinedCharacter = isCombinedCharacter;
 
   var fontPrototype = {
