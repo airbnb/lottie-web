@@ -70,7 +70,8 @@ TransformElement.prototype = {
           if (this.localTransforms[i]._mdf) {
             this.finalTransform._localMatMdf = true;
           }
-          if (this.localTransforms[i]._opMdf) {
+          if (this.localTransforms[i]._opMdf && !this.finalTransform._opMdf) {
+            this.finalTransform.localOpacity = this.finalTransform.mProp.o.v;
             this.finalTransform._opMdf = true;
           }
           i += 1;
