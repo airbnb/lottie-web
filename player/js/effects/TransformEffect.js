@@ -21,8 +21,9 @@ TransformEffect.prototype.renderFrame = function (forceFrame) {
     var effectElements = this.effectsManager.effectElements;
     var anchor = effectElements[0].p.v;
     var position = effectElements[1].p.v;
+    var isUniformScale = effectElements[2].p.v === 1;
     var scaleHeight = effectElements[3].p.v;
-    var scaleWidth = effectElements[4].p.v;
+    var scaleWidth = isUniformScale ? scaleHeight : effectElements[4].p.v;
     var skew = effectElements[5].p.v;
     var skewAxis = effectElements[6].p.v;
     var rotation = effectElements[7].p.v;
