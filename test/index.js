@@ -27,6 +27,21 @@ function createDirectoryPath(path) {
     }, '.')
 }
 
+const animations = [
+  {
+    fileName: 'adrock.json',
+    renderer: 'canvas',
+  },
+  {
+    fileName: 'bm_ronda.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'bodymovin.json',
+    renderer: 'svg',
+  }
+]
+
 const getSettings = async () => {
     const defaultValues = {
         step: 'create',
@@ -115,9 +130,9 @@ const startServer = async () => {
 
 const getBrowser = async () => puppeteer.launch({ defaultViewport: null });
 
-const startPage = async (browser, settings, path) => {
+const startPage = async (browser, path, renderer) => {
   const targetURL = `http://localhost:9999/test/index.html\
-?path=${encodeURIComponent(path)}`;
+?path=${encodeURIComponent(path)}&renderer=${renderer}`;
   const page = await browser.newPage();
   page.on('console', (msg) => console.log('PAGE LOG:', msg.text())); // eslint-disable-line no-console
   await page.setViewport({
@@ -216,21 +231,21 @@ const getDirFiles = async (directory) => (
   })
 );
 
-async function processPage(browser, settings, directory, fileName) {
-  const page = await startPage(browser, settings, directory + fileName);
+async function processPage(browser, settings, directory, animation) {
+  const fileName = animation.fileName;
+  const page = await startPage(browser, directory + fileName, animation.renderer);
   const fileNameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
-  await createIndividualAssets(page, fileNameWithoutExtension, settings);
+  await createIndividualAssets(page, `${fileNameWithoutExtension}_${animation.renderer}`, settings);
 }
 
 const iteratePages = async (browser, settings) => {
-  const files = await getDirFiles('.' + examplesDirectory);
-  const jsonFiles = files.filter((file) => file.indexOf('.json') !== -1);
   const failedAnimations = [];
-  for (let i = 0; i < jsonFiles.length; i += 1) {
-    const fileName = jsonFiles[i];
+  for (let i = 0; i < animations.length; i += 1) {
+    const animation = animations[i];
+    const fileName = animation.fileName;
     try {
         // eslint-disable-next-line no-await-in-loop
-        await processPage(browser, settings, examplesDirectory, fileName);
+        await processPage(browser, settings, examplesDirectory, animation);
     } catch (error) {
         if (settings.step === 'compare') {
             failedAnimations.push({
