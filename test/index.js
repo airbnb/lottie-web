@@ -259,7 +259,12 @@ const createIndividualAssets = async (page, folderName, settings) => {
       fullPage: false,
     });
     if (settings.step === 'compare') {
+      try {
         compareFiles(folderName, fileName);
+      } catch (err) {
+        console.log('FAILED AT FRAME: ', message.currentFrame);
+        throw err;
+      }
     }
     isLastFrame = message.isLast;
   }
