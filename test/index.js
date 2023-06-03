@@ -39,7 +39,52 @@ const animations = [
   {
     fileName: 'bodymovin.json',
     renderer: 'svg',
-  }
+  },
+  {
+    fileName: 'bodymovin.json',
+    renderer: 'canvas',
+  },
+  {
+    fileName: 'dalek.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'pigeon.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'banner.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'navidad.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'monster.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'bacon.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'lights.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'ripple.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'starfish.json',
+    renderer: 'svg',
+  },
+  {
+    directory: 'footage',
+    fileName: 'data.json',
+    renderer: 'svg',
+  },
 ]
 
 const getSettings = async () => {
@@ -117,7 +162,7 @@ const startServer = async () => {
         const file = await readFile(`.${req.originalUrl}`, 'utf8');
         res.send(file);
       } else {
-        const data = await readFile(`..${req.originalUrl}`);
+        const data = await readFile(`.${req.originalUrl}`);
         res.writeHead(200, { 'Content-Type': 'image/jpeg' });
         res.end(data);
       }
@@ -232,10 +277,18 @@ const getDirFiles = async (directory) => (
 );
 
 async function processPage(browser, settings, directory, animation) {
+  let fullDirectory = `${directory}`;
+  if (animation.directory) {
+    fullDirectory += `${animation.directory}/`;
+  }
   const fileName = animation.fileName;
-  const page = await startPage(browser, directory + fileName, animation.renderer);
+  const page = await startPage(browser, fullDirectory + fileName, animation.renderer);
   const fileNameWithoutExtension = fileName.replace(/\.[^/.]+$/, '');
-  await createIndividualAssets(page, `${fileNameWithoutExtension}_${animation.renderer}`, settings);
+  let fullName = `${fileNameWithoutExtension}_${animation.renderer}`
+  if (animation.directory) {
+    fullName = `${animation.directory}_` + fullName;
+  }
+  await createIndividualAssets(page, fullName, settings);
 }
 
 const iteratePages = async (browser, settings) => {
