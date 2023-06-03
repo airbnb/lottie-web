@@ -29,6 +29,14 @@ function createDirectoryPath(path) {
 
 const animations = [
   {
+    fileName: 'pigeon.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'banner.json',
+    renderer: 'svg',
+  },
+  {
     fileName: 'adrock.json',
     renderer: 'canvas',
   },
@@ -46,14 +54,6 @@ const animations = [
   },
   {
     fileName: 'dalek.json',
-    renderer: 'svg',
-  },
-  {
-    fileName: 'pigeon.json',
-    renderer: 'svg',
-  },
-  {
-    fileName: 'banner.json',
     renderer: 'svg',
   },
   {
@@ -229,6 +229,7 @@ const compareFiles = (folderName, fileName) => {
 
     const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0});
     if (result !== 0) {
+        console.log('RESULT NOT ZERO: ', result);
         throw new Error(`Animaiton failed: ${folderName} at frame: ${fileName}`)
     }
 }
