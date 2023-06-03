@@ -21,4 +21,4 @@ jobs:
     - run: npm install
     - run: npm run test:create
     # - run: npm run build
-    # - run: npm run test:compare
+    - run: npm run test:compare

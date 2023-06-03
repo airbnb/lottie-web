@@ -189,8 +189,8 @@ const createIndividualAssets = async (page, folderName, settings) => {
     page.evaluate(() => {
         window.continueExecution();
     });
-    console.log('MESSAGE: ', message.currentFrame);
     const message = await bridgeHelper.waitForMessage();
+    console.log('MESSAGE: ', message.currentFrame);
     const fileNumber = message.currentFrame.toString().padStart(5, '0');
     const fileName = `image_${fileNumber}.png`;
     const localDestinationPath = `${filePath}/${fileName}`;
