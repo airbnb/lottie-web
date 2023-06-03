@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body, html{
+            background-color:#fff;
+            margin: 0px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            width: 100%;
+            height: 100%;
+        }
+
+        #lottie{
+            background-color:#fff;
+            width:100%;
+            height:100%;
+            display:block;
+            overflow: hidden;
+            transform: translate3d(0,0,0);
+            pointer-events: none;
+            /*display:none;*/
+        }
+
+    </style>
+    <script src="/lottie.min.js" ></script>
+
+
+</head>
+<body>
+<div id="lottie"></div>
+<script>
+    const buildRenderSettings = (searchParams) => {
+        const defaultValues = {
+            path: '/test/animations/adrock.json',
+            renderer: 'svg',
+        };
+        searchParams.forEach((value, key) => {
+            defaultValues[key] = value;
+        });
+
+        return defaultValues;
+    };
+</script>
+<script>
+    const submitAndWaitForResponse = (currentFrame, isLast) => (
+    new Promise((resolve) => {
+        window.onMessageReceivedEvent({
+            currentFrame,
+            isLast,
+        });
+        resolve();
+    })
+    );
+</script>
+<script>
+    const waitContinueCommand = () => {
+        return new Promise((resolve) => {
+            window.continueExecution = resolve;
+        })
+    }
+</script>
+<script>
+
+    window.startProcess = () => {
+        const url = new URL(window.location);
+        const settings = buildRenderSettings(url.searchParams)
+        const animation = lottie.loadAnimation({
+            container: document.getElementById('lottie'),
+            path: settings.path,
+            autoplay: false,
+            loop: false,
+            renderer: settings.renderer,
+        })
+        animation.addEventListener('DOMLoaded', async () => {
+            window.onAnimationLoaded();
+            try {
+                let totalFrames = animation.totalFrames;
+                let currentFrame = 0;
+                while (currentFrame <= totalFrames) {
+                    await waitContinueCommand();
+                    animation.goToAndStop(currentFrame, true);
+                    await submitAndWaitForResponse(
+                        currentFrame,
+                        currentFrame === totalFrames,
+                    );
+                    currentFrame += 1;
+
+                }
+            } catch (error) {
+                console.log('ERROR', error.message);
+            }
+        })
+    }
+    // window.startProcess();
+</script>
+
+</body>
+</html>
