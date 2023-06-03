@@ -12,7 +12,7 @@ const commandLineArgs = require('command-line-args');
 const PNG = require('pngjs').PNG;
 const pixelmatch = require('pixelmatch');
 
-const examplesDirectory = './test/animations/';
+const examplesDirectory = '/test/animations/';
 const createDirectory = 'screenshots/create';
 const compareDirectory = 'screenshots/compare';
 
@@ -46,7 +46,6 @@ const getSettings = async () => {
     ...defaultValues,
     ...commandLineArgs(opts),
   };
-  console.log('settings', settings);
   return settings;
 };
 
@@ -87,7 +86,6 @@ const getContentTypeHeader = (() => {
 const startServer = async () => {
   const app = express();
   await Promise.all(filesData.map(async (file) => {
-    console.log('FILE', file);
     const fileData = await readFile(file.filePath, getEncoding(file.type));
     app.get(file.path, async (req, res) => {
       res.writeHead(200, getContentTypeHeader(file.type));
@@ -225,7 +223,7 @@ async function processPage(browser, settings, directory, fileName) {
 }
 
 const iteratePages = async (browser, settings) => {
-  const files = await getDirFiles(examplesDirectory);
+  const files = await getDirFiles('.' + examplesDirectory);
   const jsonFiles = files.filter((file) => file.indexOf('.json') !== -1);
   const failedAnimations = [];
   for (let i = 0; i < jsonFiles.length; i += 1) {

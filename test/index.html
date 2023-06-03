@@ -31,6 +31,18 @@
 <body>
 <div id="lottie"></div>
 <script>
+    const buildRenderSettings = (searchParams) => {
+        const defaultValues = {
+            path: '/test/animations/adrock.json',
+        };
+        searchParams.forEach((value, key) => {
+            defaultValues[key] = value;
+        });
+
+        return defaultValues;
+    };
+</script>
+<script>
     const submitAndWaitForResponse = (currentFrame, isLast) => (
     new Promise((resolve) => {
         window.onMessageReceivedEvent({
@@ -50,11 +62,14 @@
 </script>
 <script>
 
-    const url = new URL(window.location);
     window.startProcess = () => {
+        const url = new URL(window.location);
+        const settings = buildRenderSettings(url.searchParams)
         const animation = lottie.loadAnimation({
             container: document.getElementById('lottie'),
-            path: url.searchParams.path || '/test/animations/adrock.json'
+            path: settings.path,
+            autoplay: false,
+            loop: false,
         })
         animation.addEventListener('DOMLoaded', async () => {
             window.onAnimationLoaded();
