@@ -20,5 +20,5 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
     - run: npm install
     - run: npm run test:create
-    # - run: npm run build
+    - run: npm run build
     - run: npm run test:compare

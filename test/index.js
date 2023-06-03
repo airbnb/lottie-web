@@ -170,7 +170,9 @@ const compareFiles = (folderName, fileName) => {
     const diff = new PNG({width, height});
 
     const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0});
-    console.log('result', result);
+    if (result !== 0) {
+        throw new Error(`Animaiton failed: ${folderName} at frame: ${fileName}`)
+    }
 }
 
 const createIndividualAssets = async (page, folderName, settings) => {
@@ -190,7 +192,6 @@ const createIndividualAssets = async (page, folderName, settings) => {
         window.continueExecution();
     });
     const message = await bridgeHelper.waitForMessage();
-    console.log('MESSAGE: ', message.currentFrame);
     const fileNumber = message.currentFrame.toString().padStart(5, '0');
     const fileName = `image_${fileNumber}.png`;
     const localDestinationPath = `${filePath}/${fileName}`;
@@ -226,29 +227,40 @@ async function processPage(browser, settings, directory, fileName) {
 const iteratePages = async (browser, settings) => {
   const files = await getDirFiles(examplesDirectory);
   const jsonFiles = files.filter((file) => file.indexOf('.json') !== -1);
+  const failedAnimations = [];
   for (let i = 0; i < jsonFiles.length; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
-    await processPage(browser, settings, examplesDirectory, jsonFiles[i]);
+    const fileName = jsonFiles[i];
+    try {
+        // eslint-disable-next-line no-await-in-loop
+        await processPage(browser, settings, examplesDirectory, fileName);
+    } catch (error) {
+        if (settings.step === 'compare') {
+            failedAnimations.push({
+                animation: fileName
+            })
+        }
+    }
+  }
+  if (failedAnimations.length) {
+    failedAnimations.forEach(animation => {
+        console.log(`Animation failed: ${animation}`);
+    })
+    throw new Error();
   }
 };
 
 
 const takeImageStrip = async () => {
   try {
-    console.log('START 1');
     await startServer();
-    console.log('START 2');
     const settings = await getSettings();
-    console.log('START 3');
     await wait(1);
     const browser = await getBrowser();
-    console.log('START 4');
     await iteratePages(browser, settings);
-    console.log('START 5');
     process.exit(0);
   } catch (error) {
     console.log(error); // eslint-disable-line no-console
-    process.exit(0);
+    process.exit(1);
   }
 };
 
