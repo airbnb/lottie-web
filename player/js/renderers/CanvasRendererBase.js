@@ -6,43 +6,13 @@ import {
 } from '../utils/helpers/arrays';
 import createTag from '../utils/helpers/html_elements';
 import SVGRenderer from './SVGRenderer';
-import Matrix from '../3rd_party/transformation-matrix';
 import BaseRenderer from './BaseRenderer';
-import CVContextData from '../elements/canvasElements/CVContextData';
 import CVShapeElement from '../elements/canvasElements/CVShapeElement';
 import CVTextElement from '../elements/canvasElements/CVTextElement';
 import CVImageElement from '../elements/canvasElements/CVImageElement';
 import CVSolidElement from '../elements/canvasElements/CVSolidElement';
 
-function CanvasRendererBase(animationItem, config) {
-  this.animationItem = animationItem;
-  this.renderConfig = {
-    clearCanvas: (config && config.clearCanvas !== undefined) ? config.clearCanvas : true,
-    context: (config && config.context) || null,
-    progressiveLoad: (config && config.progressiveLoad) || false,
-    preserveAspectRatio: (config && config.preserveAspectRatio) || 'xMidYMid meet',
-    imagePreserveAspectRatio: (config && config.imagePreserveAspectRatio) || 'xMidYMid slice',
-    contentVisibility: (config && config.contentVisibility) || 'visible',
-    className: (config && config.className) || '',
-    id: (config && config.id) || '',
-  };
-  this.renderConfig.dpr = (config && config.dpr) || 1;
-  if (this.animationItem.wrapper) {
-    this.renderConfig.dpr = (config && config.dpr) || window.devicePixelRatio || 1;
-  }
-  this.renderedFrame = -1;
-  this.globalData = {
-    frameNum: -1,
-    _mdf: false,
-    renderConfig: this.renderConfig,
-    currentGlobalAlpha: -1,
-  };
-  this.contextData = new CVContextData();
-  this.elements = [];
-  this.pendingElements = [];
-  this.transformMat = new Matrix();
-  this.completeLayers = false;
-  this.rendererType = 'canvas';
+function CanvasRendererBase() {
 }
 extendPrototype([BaseRenderer], CanvasRendererBase);
 
@@ -68,39 +38,47 @@ CanvasRendererBase.prototype.ctxTransform = function (props) {
   if (props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {
     return;
   }
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
-    return;
-  }
-  // Resetting the canvas transform matrix to the new transform
-  this.transformMat.cloneFromProps(props);
-  // Taking the last transform value from the stored stack of transforms
-  var currentTransform = this.contextData.getTransform();
-  // Applying the last transform value after the new transform to respect the order of transformations
-  this.transformMat.multiply(currentTransform);
-  // Storing the new transformed value in the stored transform
-  currentTransform.cloneFromProps(this.transformMat.props);
-  var trProps = currentTransform.props;
-  // Applying the new transform to the canvas
-  this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
+  this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
 };
 
 CanvasRendererBase.prototype.ctxOpacity = function (op) {
-  /* if(op === 1){
-        return;
-    } */
-  var currentOpacity = this.contextData.getOpacity();
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-    this.globalData.currentGlobalAlpha = currentOpacity;
-    return;
-  }
-  currentOpacity *= op < 0 ? 0 : op;
-  this.contextData.setOpacity(currentOpacity);
-  if (this.globalData.currentGlobalAlpha !== currentOpacity) {
-    this.canvasContext.globalAlpha = currentOpacity;
-    this.globalData.currentGlobalAlpha = currentOpacity;
-  }
+  this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
+};
+
+CanvasRendererBase.prototype.ctxFillStyle = function (value) {
+  this.canvasContext.fillStyle = value;
+};
+
+CanvasRendererBase.prototype.ctxStrokeStyle = function (value) {
+  this.canvasContext.strokeStyle = value;
+};
+
+CanvasRendererBase.prototype.ctxLineWidth = function (value) {
+  this.canvasContext.lineWidth = value;
+};
+
+CanvasRendererBase.prototype.ctxLineCap = function (value) {
+  this.canvasContext.lineCap = value;
+};
+
+CanvasRendererBase.prototype.ctxLineJoin = function (value) {
+  this.canvasContext.lineJoin = value;
+};
+
+CanvasRendererBase.prototype.ctxMiterLimit = function (value) {
+  this.canvasContext.miterLimit = value;
+};
+
+CanvasRendererBase.prototype.ctxFill = function (rule) {
+  this.canvasContext.fill(rule);
+};
+
+CanvasRendererBase.prototype.ctxFillRect = function (x, y, w, h) {
+  this.canvasContext.fillRect(x, y, w, h);
+};
+
+CanvasRendererBase.prototype.ctxStroke = function () {
+  this.canvasContext.stroke();
 };
 
 CanvasRendererBase.prototype.reset = function () {
@@ -111,15 +89,8 @@ CanvasRendererBase.prototype.reset = function () {
   this.contextData.reset();
 };
 
-CanvasRendererBase.prototype.save = function (actionFlag) {
-  if (!this.renderConfig.clearCanvas) {
-    this.canvasContext.save();
-    return;
-  }
-  if (actionFlag) {
-    this.canvasContext.save();
-  }
-  this.contextData.push();
+CanvasRendererBase.prototype.save = function () {
+  this.canvasContext.save();
 };
 
 CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -128,17 +99,9 @@ CanvasRendererBase.prototype.restore = function (actionFlag) {
     return;
   }
   if (actionFlag) {
-    this.canvasContext.restore();
     this.globalData.blendMode = 'source-over';
   }
-  var popped = this.contextData.pop();
-  var transform = popped.transform;
-  var opacity = popped.opacity;
-  this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
-  if (this.globalData.currentGlobalAlpha !== opacity) {
-    this.canvasContext.globalAlpha = opacity;
-    this.globalData.currentGlobalAlpha = opacity;
-  }
+  this.contextData.restore(actionFlag);
 };
 
 CanvasRendererBase.prototype.configAnimation = function (animData) {
@@ -164,6 +127,7 @@ CanvasRendererBase.prototype.configAnimation = function (animData) {
   } else {
     this.canvasContext = this.renderConfig.context;
   }
+  this.contextData.setContext(this.canvasContext);
   this.data = animData;
   this.layers = animData.layers;
   this.transformCanvas = {
@@ -300,7 +264,7 @@ CanvasRendererBase.prototype.renderFrame = function (num, forceRender) {
     this.checkLayers(num);
   }
 
-  for (i = 0; i < len; i += 1) {
+  for (i = len - 1; i >= 0; i -= 1) {
     if (this.completeLayers || this.elements[i]) {
       this.elements[i].prepareFrame(num - this.layers[i].st);
     }
