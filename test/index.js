@@ -221,7 +221,7 @@ const createBridgeHelper = async (page) => {
 
 const compareFiles = (folderName, fileName) => {
     const createPath = `${createDirectory}/${folderName}/${fileName}`;
-    const comparePath = `${createDirectory}/${folderName}/${fileName}`;
+    const comparePath = `${compareDirectory}/${folderName}/${fileName}`;
     const img1 = PNG.sync.read(fs.readFileSync(createPath));
     const img2 = PNG.sync.read(fs.readFileSync(comparePath));
     const {width, height} = img1;
@@ -229,7 +229,7 @@ const compareFiles = (folderName, fileName) => {
 
     const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0});
     if (result !== 0) {
-        throw new Error(`Animaiton failed: ${folderName} at frame: ${fileName}`)
+        throw new Error(`Animation failed: ${folderName} at frame: ${fileName}`)
     }
 }
 
@@ -295,23 +295,32 @@ const iteratePages = async (browser, settings) => {
   const failedAnimations = [];
   for (let i = 0; i < animations.length; i += 1) {
     const animation = animations[i];
-    const fileName = animation.fileName;
+    let fileName =  `${animation.renderer}_${animation.fileName}`;
+    if (animation.directory) {
+      fileName = `${animation.directory}_` + fileName;
+    }
     try {
         // eslint-disable-next-line no-await-in-loop
         await processPage(browser, settings, examplesDirectory, animation);
+        if (settings.step === 'create') {
+          console.log(`Creating animation: ${fileName}`);
+        }
+        if (settings.step === 'compare') {
+            console.log(`Animation passed: ${fileName}`);
+        }
     } catch (error) {
         if (settings.step === 'compare') {
             failedAnimations.push({
-                animation: fileName
+              fileName: fileName
             })
         }
     }
   }
   if (failedAnimations.length) {
     failedAnimations.forEach(animation => {
-        console.log(`Animation failed: ${animation}`);
+        console.log(`Animation failed: ${animation.fileName}`);
     })
-    throw new Error();
+    throw new Error('Animations failed');
   }
 };
 
