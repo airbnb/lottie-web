@@ -130,9 +130,12 @@ CVTextElement.prototype.renderInnerContent = function () {
   this.validateText();
   var ctx = this.canvasContext;
   ctx.font = this.values.fValue;
-  ctx.lineCap = 'butt';
-  ctx.lineJoin = 'miter';
-  ctx.miterLimit = 4;
+  this.globalData.renderer.ctxLineCap('butt');
+  // ctx.lineCap = 'butt';
+  this.globalData.renderer.ctxLineJoin('miter');
+  // ctx.lineJoin = 'miter';
+  this.globalData.renderer.ctxMiterLimit(4);
+  // ctx.miterLimit = 4;
 
   if (!this.data.singleShape) {
     this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
@@ -155,23 +158,26 @@ CVTextElement.prototype.renderInnerContent = function () {
   var lastStrokeW = null;
   var commands;
   var pathArr;
+  var renderer = this.globalData.renderer;
   for (i = 0; i < len; i += 1) {
     if (!letters[i].n) {
       renderedLetter = renderedLetters[i];
       if (renderedLetter) {
-        this.globalData.renderer.save();
-        this.globalData.renderer.ctxTransform(renderedLetter.p);
-        this.globalData.renderer.ctxOpacity(renderedLetter.o);
+        renderer.save();
+        renderer.ctxTransform(renderedLetter.p);
+        renderer.ctxOpacity(renderedLetter.o);
       }
       if (this.fill) {
         if (renderedLetter && renderedLetter.fc) {
           if (lastFill !== renderedLetter.fc) {
+            renderer.ctxFillStyle(renderedLetter.fc);
             lastFill = renderedLetter.fc;
-            ctx.fillStyle = renderedLetter.fc;
+            // ctx.fillStyle = renderedLetter.fc;
           }
         } else if (lastFill !== this.values.fill) {
           lastFill = this.values.fill;
-          ctx.fillStyle = this.values.fill;
+          renderer.ctxFillStyle(this.values.fill);
+          // ctx.fillStyle = this.values.fill;
         }
         commands = this.textSpans[i].elem;
         jLen = commands.length;
@@ -185,27 +191,32 @@ CVTextElement.prototype.renderInnerContent = function () {
           }
         }
         this.globalData.canvasContext.closePath();
-        this.globalData.canvasContext.fill();
+        renderer.ctxFill();
+        // this.globalData.canvasContext.fill();
         /// ctx.fillText(this.textSpans[i].val,0,0);
       }
       if (this.stroke) {
         if (renderedLetter && renderedLetter.sw) {
           if (lastStrokeW !== renderedLetter.sw) {
             lastStrokeW = renderedLetter.sw;
-            ctx.lineWidth = renderedLetter.sw;
+            renderer.ctxLineWidth(renderedLetter.sw);
+            // ctx.lineWidth = renderedLetter.sw;
           }
         } else if (lastStrokeW !== this.values.sWidth) {
           lastStrokeW = this.values.sWidth;
-          ctx.lineWidth = this.values.sWidth;
+          renderer.ctxLineWidth(this.values.sWidth);
+          // ctx.lineWidth = this.values.sWidth;
         }
         if (renderedLetter && renderedLetter.sc) {
           if (lastStroke !== renderedLetter.sc) {
             lastStroke = renderedLetter.sc;
-            ctx.strokeStyle = renderedLetter.sc;
+            renderer.ctxStrokeStyle(renderedLetter.sc);
+            // ctx.strokeStyle = renderedLetter.sc;
           }
         } else if (lastStroke !== this.values.stroke) {
           lastStroke = this.values.stroke;
-          ctx.strokeStyle = this.values.stroke;
+          renderer.ctxStrokeStyle(this.values.stroke);
+          // ctx.strokeStyle = this.values.stroke;
         }
         commands = this.textSpans[i].elem;
         jLen = commands.length;
@@ -219,7 +230,8 @@ CVTextElement.prototype.renderInnerContent = function () {
           }
         }
         this.globalData.canvasContext.closePath();
-        this.globalData.canvasContext.stroke();
+        renderer.ctxStroke();
+        // this.globalData.canvasContext.stroke();
         /// ctx.strokeText(letters[i].val,0,0);
       }
       if (renderedLetter) {
