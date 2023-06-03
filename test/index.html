@@ -34,6 +34,7 @@
     const buildRenderSettings = (searchParams) => {
         const defaultValues = {
             path: '/test/animations/adrock.json',
+            renderer: 'svg',
         };
         searchParams.forEach((value, key) => {
             defaultValues[key] = value;
@@ -70,6 +71,7 @@
             path: settings.path,
             autoplay: false,
             loop: false,
+            renderer: settings.renderer,
         })
         animation.addEventListener('DOMLoaded', async () => {
             window.onAnimationLoaded();
