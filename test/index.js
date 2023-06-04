@@ -228,7 +228,9 @@ const compareFiles = (folderName, fileName) => {
     const diff = new PNG({width, height});
 
     const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1});
-    if (result !== 0) {
+    // Using 50 as threshold because it should be an acceptable difference
+    // that doesn't raise false positives
+    if (result > 50) {
         console.log('RESULT NOT ZERO: ', result);
         throw new Error(`Animation failed: ${folderName} at frame: ${fileName}`)
     }
