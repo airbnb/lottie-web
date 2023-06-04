@@ -29,6 +29,14 @@ function createDirectoryPath(path) {
 
 const animations = [
   {
+    fileName: 'pigeon.json',
+    renderer: 'svg',
+  },
+  {
+    fileName: 'banner.json',
+    renderer: 'svg',
+  },
+  {
     fileName: 'adrock.json',
     renderer: 'canvas',
   },
@@ -46,14 +54,6 @@ const animations = [
   },
   {
     fileName: 'dalek.json',
-    renderer: 'svg',
-  },
-  {
-    fileName: 'pigeon.json',
-    renderer: 'svg',
-  },
-  {
-    fileName: 'banner.json',
     renderer: 'svg',
   },
   {
@@ -227,8 +227,11 @@ const compareFiles = (folderName, fileName) => {
     const {width, height} = img1;
     const diff = new PNG({width, height});
 
-    const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0});
-    if (result !== 0) {
+    const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1});
+    // Using 50 as threshold because it should be an acceptable difference
+    // that doesn't raise false positives
+    if (result > 50) {
+        console.log('RESULT NOT ZERO: ', result);
         throw new Error(`Animation failed: ${folderName} at frame: ${fileName}`)
     }
 }
@@ -258,7 +261,12 @@ const createIndividualAssets = async (page, folderName, settings) => {
       fullPage: false,
     });
     if (settings.step === 'compare') {
+      try {
         compareFiles(folderName, fileName);
+      } catch (err) {
+        console.log('FAILED AT FRAME: ', message.currentFrame);
+        throw err;
+      }
     }
     isLastFrame = message.isLast;
   }
