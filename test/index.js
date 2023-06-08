@@ -226,7 +226,6 @@ const compareFiles = (folderName, fileName) => {
     const img2 = PNG.sync.read(fs.readFileSync(comparePath));
     const {width, height} = img1;
     const diff = new PNG({width, height});
-
     const result = pixelmatch(img1.data, img2.data, diff.data, width, height, {threshold: 0.1});
     // Using 50 as threshold because it should be an acceptable difference
     // that doesn't raise false positives
