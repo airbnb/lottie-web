@@ -1,3 +1,12 @@
+## V 5.12.1
+- FIX: Transform Effect opacity reset
+- FEATURE: esm support
+- FIX: Fix transform matrix precalc when adding effects
+- IMPROVEMENT: canvas renderer signifcantly improved in performance
+- IMPROVEMENT: improved text support for emojis
+- IMPROVEMENT: text renderer performance improvement when rendering out of the work area
+- FIX: canvas expressions render order
+
 ## V 5.12.0
 - FEATURE: Transform Effect support
 - FIX: play / pause behavior on worker

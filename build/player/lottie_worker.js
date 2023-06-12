@@ -5569,7 +5569,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.12.0';
+  lottie.version = '5.12.1';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -6298,7 +6298,10 @@
     }
 
     function precalculateMatrix() {
-      if (!this.a.k) {
+      this.appliedTransformations = 0;
+      this.pre.reset();
+
+      if (!this.a.effectsSequence.length) {
         this.pre.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         this.appliedTransformations = 1;
       } else {
@@ -7516,8 +7519,15 @@
     var combinedCharacters = []; // Hindi characters
 
     combinedCharacters = combinedCharacters.concat([2304, 2305, 2306, 2307, 2362, 2363, 2364, 2364, 2366, 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379, 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
+    var BLACK_FLAG_CODE_POINT = 127988;
+    var CANCEL_TAG_CODE_POINT = 917631;
+    var A_TAG_CODE_POINT = 917601;
+    var Z_TAG_CODE_POINT = 917626;
+    var VARIATION_SELECTOR_16_CODE_POINT = 65039;
+    var ZERO_WIDTH_JOINER_CODE_POINT = 8205;
+    var REGIONAL_CHARACTER_A_CODE_POINT = 127462;
+    var REGIONAL_CHARACTER_Z_CODE_POINT = 127487;
     var surrogateModifiers = ['d83cdffb', 'd83cdffc', 'd83cdffd', 'd83cdffe', 'd83cdfff'];
-    var zeroWidthJoiner = [65039, 8205];
 
     function trimFontOptions(font) {
       var familyArray = font.split(',');
@@ -7814,23 +7824,24 @@
     }
 
     function measureText(_char2, fontName, size) {
-      var fontData = this.getFontByName(fontName);
+      var fontData = this.getFontByName(fontName); // Using the char instead of char.charCodeAt(0)
+      // to avoid collisions between equal chars
 
-      var index = _char2.charCodeAt(0);
+      var index = _char2;
 
-      if (!fontData.cache[index + 1]) {
+      if (!fontData.cache[index]) {
         var tHelper = fontData.helper;
 
         if (_char2 === ' ') {
           var doubleSize = tHelper.measureText('|' + _char2 + '|');
           var singleSize = tHelper.measureText('||');
-          fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
+          fontData.cache[index] = (doubleSize - singleSize) / 100;
         } else {
-          fontData.cache[index + 1] = tHelper.measureText(_char2) / 100;
+          fontData.cache[index] = tHelper.measureText(_char2) / 100;
         }
       }
 
-      return fontData.cache[index + 1] * size;
+      return fontData.cache[index] * size;
     }
 
     function getFontByName(name) {
@@ -7848,21 +7859,86 @@
       return this.fonts[0];
     }
 
+    function getCodePoint(string) {
+      var codePoint = 0;
+      var first = string.charCodeAt(0);
+
+      if (first >= 0xD800 && first <= 0xDBFF) {
+        var second = string.charCodeAt(1);
+
+        if (second >= 0xDC00 && second <= 0xDFFF) {
+          codePoint = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+        }
+      }
+
+      return codePoint;
+    } // Skin tone modifiers
+
+
     function isModifier(firstCharCode, secondCharCode) {
       var sum = firstCharCode.toString(16) + secondCharCode.toString(16);
       return surrogateModifiers.indexOf(sum) !== -1;
     }
 
-    function isZeroWidthJoiner(firstCharCode, secondCharCode) {
-      if (!secondCharCode) {
-        return firstCharCode === zeroWidthJoiner[1];
+    function isZeroWidthJoiner(charCode) {
+      return charCode === ZERO_WIDTH_JOINER_CODE_POINT;
+    } // This codepoint may change the appearance of the preceding character.
+    // If that is a symbol, dingbat or emoji, U+FE0F forces it to be rendered
+    // as a colorful image as compared to a monochrome text variant.
+
+
+    function isVariationSelector(charCode) {
+      return charCode === VARIATION_SELECTOR_16_CODE_POINT;
+    } // The regional indicator symbols are a set of 26 alphabetic Unicode
+    /// characters (A–Z) intended to be used to encode ISO 3166-1 alpha-2
+    // two-letter country codes in a way that allows optional special treatment.
+
+
+    function isRegionalCode(string) {
+      var codePoint = getCodePoint(string);
+
+      if (codePoint >= REGIONAL_CHARACTER_A_CODE_POINT && codePoint <= REGIONAL_CHARACTER_Z_CODE_POINT) {
+        return true;
       }
 
-      return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
+      return false;
+    } // Some Emoji implementations represent combinations of
+    // two “regional indicator” letters as a single flag symbol.
+
+
+    function isFlagEmoji(string) {
+      return isRegionalCode(string.substr(0, 2)) && isRegionalCode(string.substr(2, 2));
     }
 
     function isCombinedCharacter(_char3) {
       return combinedCharacters.indexOf(_char3) !== -1;
+    } // Regional flags start with a BLACK_FLAG_CODE_POINT
+    // folowed by 5 chars in the TAG range
+    // and end with a CANCEL_TAG_CODE_POINT
+
+
+    function isRegionalFlag(text, index) {
+      var codePoint = getCodePoint(text.substr(index, 2));
+
+      if (codePoint !== BLACK_FLAG_CODE_POINT) {
+        return false;
+      }
+
+      var count = 0;
+      index += 2;
+
+      while (count < 5) {
+        codePoint = getCodePoint(text.substr(index, 2));
+
+        if (codePoint < A_TAG_CODE_POINT || codePoint > Z_TAG_CODE_POINT) {
+          return false;
+        }
+
+        count += 1;
+        index += 2;
+      }
+
+      return getCodePoint(text.substr(index, 2)) === CANCEL_TAG_CODE_POINT;
     }
 
     function setIsLoaded() {
@@ -7882,7 +7958,12 @@
 
     Font.isModifier = isModifier;
     Font.isZeroWidthJoiner = isZeroWidthJoiner;
+    Font.isFlagEmoji = isFlagEmoji;
+    Font.isRegionalCode = isRegionalCode;
     Font.isCombinedCharacter = isCombinedCharacter;
+    Font.isRegionalFlag = isRegionalFlag;
+    Font.isVariationSelector = isVariationSelector;
+    Font.BLACK_FLAG_CODE_POINT = BLACK_FLAG_CODE_POINT;
     var fontPrototype = {
       addChars: addChars,
       addFonts: addFonts,
@@ -8692,7 +8773,8 @@
               this.finalTransform._localMatMdf = true;
             }
 
-            if (this.localTransforms[i]._opMdf) {
+            if (this.localTransforms[i]._opMdf && !this.finalTransform._opMdf) {
+              this.finalTransform.localOpacity = this.finalTransform.mProp.o.v;
               this.finalTransform._opMdf = true;
             }
 
@@ -10840,45 +10922,53 @@
     var charCode;
     var secondCharCode;
     var shouldCombine = false;
+    var shouldCombineNext = false;
+    var currentChars = '';
 
     while (i < len) {
+      shouldCombine = shouldCombineNext;
+      shouldCombineNext = false;
       charCode = text.charCodeAt(i);
+      currentChars = text.charAt(i);
 
       if (FontManager.isCombinedCharacter(charCode)) {
-        charactersArray[charactersArray.length - 1] += text.charAt(i);
+        shouldCombine = true; // It's a potential surrogate pair (this is the High surrogate)
       } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-        secondCharCode = text.charCodeAt(i + 1);
-
-        if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
-          if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
-            charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-            shouldCombine = false;
-          } else {
-            charactersArray.push(text.substr(i, 2));
-          }
-
-          i += 1;
+        if (FontManager.isRegionalFlag(text, i)) {
+          currentChars = text.substr(i, 14);
         } else {
-          charactersArray.push(text.charAt(i));
+          secondCharCode = text.charCodeAt(i + 1); // It's a surrogate pair (this is the Low surrogate)
+
+          if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
+            if (FontManager.isModifier(charCode, secondCharCode)) {
+              currentChars = text.substr(i, 2);
+              shouldCombine = true;
+            } else if (FontManager.isFlagEmoji(text.substr(i, 4))) {
+              currentChars = text.substr(i, 4);
+            } else {
+              currentChars = text.substr(i, 2);
+            }
+          }
         }
       } else if (charCode > 0xDBFF) {
         secondCharCode = text.charCodeAt(i + 1);
 
-        if (FontManager.isZeroWidthJoiner(charCode, secondCharCode)) {
+        if (FontManager.isVariationSelector(charCode)) {
           shouldCombine = true;
-          charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-          i += 1;
-        } else {
-          charactersArray.push(text.charAt(i));
         }
       } else if (FontManager.isZeroWidthJoiner(charCode)) {
-        charactersArray[charactersArray.length - 1] += text.charAt(i);
         shouldCombine = true;
-      } else {
-        charactersArray.push(text.charAt(i));
+        shouldCombineNext = true;
       }
 
-      i += 1;
+      if (shouldCombine) {
+        charactersArray[charactersArray.length - 1] += currentChars;
+        shouldCombine = false;
+      } else {
+        charactersArray.push(currentChars);
+      }
+
+      i += currentChars.length;
     }
 
     return charactersArray;
@@ -13030,100 +13120,6 @@
     return new SVGCompElement(data, this.globalData, this);
   };
 
-  function CVContextData() {
-    this.saved = [];
-    this.cArrPos = 0;
-    this.cTr = new Matrix();
-    this.cO = 1;
-    var i;
-    var len = 15;
-    this.savedOp = createTypedArray('float32', len);
-
-    for (i = 0; i < len; i += 1) {
-      this.saved[i] = createTypedArray('float32', 16);
-    }
-
-    this._length = len;
-  }
-
-  CVContextData.prototype.duplicate = function () {
-    var newLength = this._length * 2;
-    var currentSavedOp = this.savedOp;
-    this.savedOp = createTypedArray('float32', newLength);
-    this.savedOp.set(currentSavedOp);
-    var i = 0;
-
-    for (i = this._length; i < newLength; i += 1) {
-      this.saved[i] = createTypedArray('float32', 16);
-    }
-
-    this._length = newLength;
-  };
-
-  CVContextData.prototype.reset = function () {
-    this.cArrPos = 0;
-    this.cTr.reset();
-    this.cO = 1;
-  };
-
-  CVContextData.prototype.popTransform = function () {
-    var popped = this.saved[this.cArrPos];
-    var i;
-    var arr = this.cTr.props;
-
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = popped[i];
-    }
-
-    return popped;
-  };
-
-  CVContextData.prototype.popOpacity = function () {
-    var popped = this.savedOp[this.cArrPos];
-    this.cO = popped;
-    return popped;
-  };
-
-  CVContextData.prototype.pop = function () {
-    this.cArrPos -= 1;
-    var transform = this.popTransform();
-    var opacity = this.popOpacity();
-    return {
-      transform: transform,
-      opacity: opacity
-    };
-  };
-
-  CVContextData.prototype.push = function () {
-    var props = this.cTr.props;
-
-    if (this._length <= this.cArrPos) {
-      this.duplicate();
-    }
-
-    var i;
-    var arr = this.saved[this.cArrPos];
-
-    for (i = 0; i < 16; i += 1) {
-      arr[i] = props[i];
-    }
-
-    this.savedOp[this.cArrPos] = this.cO;
-    this.cArrPos += 1;
-  };
-
-  CVContextData.prototype.getTransform = function () {
-    return this.cTr;
-  };
-
-  CVContextData.prototype.getOpacity = function () {
-    return this.cO;
-  };
-
-  CVContextData.prototype.setOpacity = function (value) {
-    this.cO = value;
-  };
-
   function ShapeTransformManager() {
     this.sequences = {};
     this.sequenceList = [];
@@ -13916,13 +13912,17 @@
         elems = currentStyle.elements;
 
         if (type === 'st' || type === 'gs') {
-          ctx.strokeStyle = type === 'st' ? currentStyle.co : currentStyle.grd;
-          ctx.lineWidth = currentStyle.wi;
-          ctx.lineCap = currentStyle.lc;
-          ctx.lineJoin = currentStyle.lj;
-          ctx.miterLimit = currentStyle.ml || 0;
+          renderer.ctxStrokeStyle(type === 'st' ? currentStyle.co : currentStyle.grd); // ctx.strokeStyle = type === 'st' ? currentStyle.co : currentStyle.grd;
+
+          renderer.ctxLineWidth(currentStyle.wi); // ctx.lineWidth = currentStyle.wi;
+
+          renderer.ctxLineCap(currentStyle.lc); // ctx.lineCap = currentStyle.lc;
+
+          renderer.ctxLineJoin(currentStyle.lj); // ctx.lineJoin = currentStyle.lj;
+
+          renderer.ctxMiterLimit(currentStyle.ml || 0); // ctx.miterLimit = currentStyle.ml || 0;
         } else {
-          ctx.fillStyle = type === 'fl' ? currentStyle.co : currentStyle.grd;
+          renderer.ctxFillStyle(type === 'fl' ? currentStyle.co : currentStyle.grd); // ctx.fillStyle = type === 'fl' ? currentStyle.co : currentStyle.grd;
         }
 
         renderer.ctxOpacity(currentStyle.coOp);
@@ -13958,7 +13958,8 @@
           }
 
           if (type === 'st' || type === 'gs') {
-            ctx.stroke();
+            // ctx.stroke();
+            renderer.ctxStroke();
 
             if (currentStyle.da) {
               ctx.setLineDash(this.dashResetter);
@@ -13967,7 +13968,8 @@
         }
 
         if (type !== 'st' && type !== 'gs') {
-          ctx.fill(currentStyle.r);
+          // ctx.fill(currentStyle.r);
+          this.globalData.renderer.ctxFill(currentStyle.r);
         }
 
         renderer.restore();
@@ -14292,9 +14294,11 @@
     this.validateText();
     var ctx = this.canvasContext;
     ctx.font = this.values.fValue;
-    ctx.lineCap = 'butt';
-    ctx.lineJoin = 'miter';
-    ctx.miterLimit = 4;
+    this.globalData.renderer.ctxLineCap('butt'); // ctx.lineCap = 'butt';
+
+    this.globalData.renderer.ctxLineJoin('miter'); // ctx.lineJoin = 'miter';
+
+    this.globalData.renderer.ctxMiterLimit(4); // ctx.miterLimit = 4;
 
     if (!this.data.singleShape) {
       this.textAnimator.getMeasures(this.textProperty.currentData, this.lettersChangedFlag);
@@ -14315,26 +14319,27 @@
     var lastStrokeW = null;
     var commands;
     var pathArr;
+    var renderer = this.globalData.renderer;
 
     for (i = 0; i < len; i += 1) {
       if (!letters[i].n) {
         renderedLetter = renderedLetters[i];
 
         if (renderedLetter) {
-          this.globalData.renderer.save();
-          this.globalData.renderer.ctxTransform(renderedLetter.p);
-          this.globalData.renderer.ctxOpacity(renderedLetter.o);
+          renderer.save();
+          renderer.ctxTransform(renderedLetter.p);
+          renderer.ctxOpacity(renderedLetter.o);
         }
 
         if (this.fill) {
           if (renderedLetter && renderedLetter.fc) {
             if (lastFill !== renderedLetter.fc) {
-              lastFill = renderedLetter.fc;
-              ctx.fillStyle = renderedLetter.fc;
+              renderer.ctxFillStyle(renderedLetter.fc);
+              lastFill = renderedLetter.fc; // ctx.fillStyle = renderedLetter.fc;
             }
           } else if (lastFill !== this.values.fill) {
             lastFill = this.values.fill;
-            ctx.fillStyle = this.values.fill;
+            renderer.ctxFillStyle(this.values.fill); // ctx.fillStyle = this.values.fill;
           }
 
           commands = this.textSpans[i].elem;
@@ -14352,28 +14357,29 @@
           }
 
           this.globalData.canvasContext.closePath();
-          this.globalData.canvasContext.fill(); /// ctx.fillText(this.textSpans[i].val,0,0);
+          renderer.ctxFill(); // this.globalData.canvasContext.fill();
+          /// ctx.fillText(this.textSpans[i].val,0,0);
         }
 
         if (this.stroke) {
           if (renderedLetter && renderedLetter.sw) {
             if (lastStrokeW !== renderedLetter.sw) {
               lastStrokeW = renderedLetter.sw;
-              ctx.lineWidth = renderedLetter.sw;
+              renderer.ctxLineWidth(renderedLetter.sw); // ctx.lineWidth = renderedLetter.sw;
             }
           } else if (lastStrokeW !== this.values.sWidth) {
             lastStrokeW = this.values.sWidth;
-            ctx.lineWidth = this.values.sWidth;
+            renderer.ctxLineWidth(this.values.sWidth); // ctx.lineWidth = this.values.sWidth;
           }
 
           if (renderedLetter && renderedLetter.sc) {
             if (lastStroke !== renderedLetter.sc) {
               lastStroke = renderedLetter.sc;
-              ctx.strokeStyle = renderedLetter.sc;
+              renderer.ctxStrokeStyle(renderedLetter.sc); // ctx.strokeStyle = renderedLetter.sc;
             }
           } else if (lastStroke !== this.values.stroke) {
             lastStroke = this.values.stroke;
-            ctx.strokeStyle = this.values.stroke;
+            renderer.ctxStrokeStyle(this.values.stroke); // ctx.strokeStyle = this.values.stroke;
           }
 
           commands = this.textSpans[i].elem;
@@ -14391,7 +14397,8 @@
           }
 
           this.globalData.canvasContext.closePath();
-          this.globalData.canvasContext.stroke(); /// ctx.strokeText(letters[i].val,0,0);
+          renderer.ctxStroke(); // this.globalData.canvasContext.stroke();
+          /// ctx.strokeText(letters[i].val,0,0);
         }
 
         if (renderedLetter) {
@@ -14455,43 +14462,14 @@
   CVSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
 
   CVSolidElement.prototype.renderInnerContent = function () {
-    var ctx = this.canvasContext;
-    ctx.fillStyle = this.data.sc;
-    ctx.fillRect(0, 0, this.data.sw, this.data.sh); //
+    // var ctx = this.canvasContext;
+    this.globalData.renderer.ctxFillStyle(this.data.sc); // ctx.fillStyle = this.data.sc;
+
+    this.globalData.renderer.ctxFillRect(0, 0, this.data.sw, this.data.sh); // ctx.fillRect(0, 0, this.data.sw, this.data.sh);
+    //
   };
 
-  function CanvasRendererBase(animationItem, config) {
-    this.animationItem = animationItem;
-    this.renderConfig = {
-      clearCanvas: config && config.clearCanvas !== undefined ? config.clearCanvas : true,
-      context: config && config.context || null,
-      progressiveLoad: config && config.progressiveLoad || false,
-      preserveAspectRatio: config && config.preserveAspectRatio || 'xMidYMid meet',
-      imagePreserveAspectRatio: config && config.imagePreserveAspectRatio || 'xMidYMid slice',
-      contentVisibility: config && config.contentVisibility || 'visible',
-      className: config && config.className || '',
-      id: config && config.id || ''
-    };
-    this.renderConfig.dpr = config && config.dpr || 1;
-
-    if (this.animationItem.wrapper) {
-      this.renderConfig.dpr = config && config.dpr || window.devicePixelRatio || 1;
-    }
-
-    this.renderedFrame = -1;
-    this.globalData = {
-      frameNum: -1,
-      _mdf: false,
-      renderConfig: this.renderConfig,
-      currentGlobalAlpha: -1
-    };
-    this.contextData = new CVContextData();
-    this.elements = [];
-    this.pendingElements = [];
-    this.transformMat = new Matrix();
-    this.completeLayers = false;
-    this.rendererType = 'canvas';
-  }
+  function CanvasRendererBase() {}
 
   extendPrototype([BaseRenderer], CanvasRendererBase);
 
@@ -14518,43 +14496,47 @@
       return;
     }
 
-    if (!this.renderConfig.clearCanvas) {
-      this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
-      return;
-    } // Resetting the canvas transform matrix to the new transform
-
-
-    this.transformMat.cloneFromProps(props); // Taking the last transform value from the stored stack of transforms
-
-    var currentTransform = this.contextData.getTransform(); // Applying the last transform value after the new transform to respect the order of transformations
-
-    this.transformMat.multiply(currentTransform); // Storing the new transformed value in the stored transform
-
-    currentTransform.cloneFromProps(this.transformMat.props);
-    var trProps = currentTransform.props; // Applying the new transform to the canvas
-
-    this.canvasContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
+    this.canvasContext.transform(props[0], props[1], props[4], props[5], props[12], props[13]);
   };
 
   CanvasRendererBase.prototype.ctxOpacity = function (op) {
-    /* if(op === 1){
-          return;
-      } */
-    var currentOpacity = this.contextData.getOpacity();
+    this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
+  };
 
-    if (!this.renderConfig.clearCanvas) {
-      this.canvasContext.globalAlpha *= op < 0 ? 0 : op;
-      this.globalData.currentGlobalAlpha = currentOpacity;
-      return;
-    }
+  CanvasRendererBase.prototype.ctxFillStyle = function (value) {
+    this.canvasContext.fillStyle = value;
+  };
 
-    currentOpacity *= op < 0 ? 0 : op;
-    this.contextData.setOpacity(currentOpacity);
+  CanvasRendererBase.prototype.ctxStrokeStyle = function (value) {
+    this.canvasContext.strokeStyle = value;
+  };
 
-    if (this.globalData.currentGlobalAlpha !== currentOpacity) {
-      this.canvasContext.globalAlpha = currentOpacity;
-      this.globalData.currentGlobalAlpha = currentOpacity;
-    }
+  CanvasRendererBase.prototype.ctxLineWidth = function (value) {
+    this.canvasContext.lineWidth = value;
+  };
+
+  CanvasRendererBase.prototype.ctxLineCap = function (value) {
+    this.canvasContext.lineCap = value;
+  };
+
+  CanvasRendererBase.prototype.ctxLineJoin = function (value) {
+    this.canvasContext.lineJoin = value;
+  };
+
+  CanvasRendererBase.prototype.ctxMiterLimit = function (value) {
+    this.canvasContext.miterLimit = value;
+  };
+
+  CanvasRendererBase.prototype.ctxFill = function (rule) {
+    this.canvasContext.fill(rule);
+  };
+
+  CanvasRendererBase.prototype.ctxFillRect = function (x, y, w, h) {
+    this.canvasContext.fillRect(x, y, w, h);
+  };
+
+  CanvasRendererBase.prototype.ctxStroke = function () {
+    this.canvasContext.stroke();
   };
 
   CanvasRendererBase.prototype.reset = function () {
@@ -14566,17 +14548,8 @@
     this.contextData.reset();
   };
 
-  CanvasRendererBase.prototype.save = function (actionFlag) {
-    if (!this.renderConfig.clearCanvas) {
-      this.canvasContext.save();
-      return;
-    }
-
-    if (actionFlag) {
-      this.canvasContext.save();
-    }
-
-    this.contextData.push();
+  CanvasRendererBase.prototype.save = function () {
+    this.canvasContext.save();
   };
 
   CanvasRendererBase.prototype.restore = function (actionFlag) {
@@ -14586,19 +14559,10 @@
     }
 
     if (actionFlag) {
-      this.canvasContext.restore();
       this.globalData.blendMode = 'source-over';
     }
 
-    var popped = this.contextData.pop();
-    var transform = popped.transform;
-    var opacity = popped.opacity;
-    this.canvasContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
-
-    if (this.globalData.currentGlobalAlpha !== opacity) {
-      this.canvasContext.globalAlpha = opacity;
-      this.globalData.currentGlobalAlpha = opacity;
-    }
+    this.contextData.restore(actionFlag);
   };
 
   CanvasRendererBase.prototype.configAnimation = function (animData) {
@@ -14627,6 +14591,7 @@
       this.canvasContext = this.renderConfig.context;
     }
 
+    this.contextData.setContext(this.canvasContext);
     this.data = animData;
     this.layers = animData.layers;
     this.transformCanvas = {
@@ -14772,7 +14737,7 @@
       this.checkLayers(num);
     }
 
-    for (i = 0; i < len; i += 1) {
+    for (i = len - 1; i >= 0; i -= 1) {
       if (this.completeLayers || this.elements[i]) {
         this.elements[i].prepareFrame(num - this.layers[i].st);
       }
@@ -14825,6 +14790,261 @@
 
   CanvasRendererBase.prototype.show = function () {
     this.animationItem.container.style.display = 'block';
+  };
+
+  function CanvasContext() {
+    this.opacity = -1;
+    this.transform = createTypedArray('float32', 16);
+    this.fillStyle = '';
+    this.strokeStyle = '';
+    this.lineWidth = '';
+    this.lineCap = '';
+    this.lineJoin = '';
+    this.miterLimit = '';
+    this.id = Math.random();
+  }
+
+  function CVContextData() {
+    this.stack = [];
+    this.cArrPos = 0;
+    this.cTr = new Matrix();
+    var i;
+    var len = 15;
+
+    for (i = 0; i < len; i += 1) {
+      var canvasContext = new CanvasContext();
+      this.stack[i] = canvasContext;
+    }
+
+    this._length = len;
+    this.nativeContext = null;
+    this.transformMat = new Matrix();
+    this.currentOpacity = 1; //
+
+    this.currentFillStyle = '';
+    this.appliedFillStyle = ''; //
+
+    this.currentStrokeStyle = '';
+    this.appliedStrokeStyle = ''; //
+
+    this.currentLineWidth = '';
+    this.appliedLineWidth = ''; //
+
+    this.currentLineCap = '';
+    this.appliedLineCap = ''; //
+
+    this.currentLineJoin = '';
+    this.appliedLineJoin = ''; //
+
+    this.appliedMiterLimit = '';
+    this.currentMiterLimit = '';
+  }
+
+  CVContextData.prototype.duplicate = function () {
+    var newLength = this._length * 2;
+    var i = 0;
+
+    for (i = this._length; i < newLength; i += 1) {
+      this.stack[i] = new CanvasContext();
+    }
+
+    this._length = newLength;
+  };
+
+  CVContextData.prototype.reset = function () {
+    this.cArrPos = 0;
+    this.cTr.reset();
+    this.stack[this.cArrPos].opacity = 1;
+  };
+
+  CVContextData.prototype.restore = function (forceRestore) {
+    this.cArrPos -= 1;
+    var currentContext = this.stack[this.cArrPos];
+    var transform = currentContext.transform;
+    var i;
+    var arr = this.cTr.props;
+
+    for (i = 0; i < 16; i += 1) {
+      arr[i] = transform[i];
+    }
+
+    if (forceRestore) {
+      this.nativeContext.restore();
+      var prevStack = this.stack[this.cArrPos + 1];
+      this.appliedFillStyle = prevStack.fillStyle;
+      this.appliedStrokeStyle = prevStack.strokeStyle;
+      this.appliedLineWidth = prevStack.lineWidth;
+      this.appliedLineCap = prevStack.lineCap;
+      this.appliedLineJoin = prevStack.lineJoin;
+      this.appliedMiterLimit = prevStack.miterLimit;
+    }
+
+    this.nativeContext.setTransform(transform[0], transform[1], transform[4], transform[5], transform[12], transform[13]);
+
+    if (forceRestore || currentContext.opacity !== -1 && this.currentOpacity !== currentContext.opacity) {
+      this.nativeContext.globalAlpha = currentContext.opacity;
+      this.currentOpacity = currentContext.opacity;
+    }
+
+    this.currentFillStyle = currentContext.fillStyle;
+    this.currentStrokeStyle = currentContext.strokeStyle;
+    this.currentLineWidth = currentContext.lineWidth;
+    this.currentLineCap = currentContext.lineCap;
+    this.currentLineJoin = currentContext.lineJoin;
+    this.currentMiterLimit = currentContext.miterLimit;
+  };
+
+  CVContextData.prototype.save = function (saveOnNativeFlag) {
+    if (saveOnNativeFlag) {
+      this.nativeContext.save();
+    }
+
+    var props = this.cTr.props;
+
+    if (this._length <= this.cArrPos) {
+      this.duplicate();
+    }
+
+    var currentStack = this.stack[this.cArrPos];
+    var i;
+
+    for (i = 0; i < 16; i += 1) {
+      currentStack.transform[i] = props[i];
+    }
+
+    this.cArrPos += 1;
+    var newStack = this.stack[this.cArrPos];
+    newStack.opacity = currentStack.opacity;
+    newStack.fillStyle = currentStack.fillStyle;
+    newStack.strokeStyle = currentStack.strokeStyle;
+    newStack.lineWidth = currentStack.lineWidth;
+    newStack.lineCap = currentStack.lineCap;
+    newStack.lineJoin = currentStack.lineJoin;
+    newStack.miterLimit = currentStack.miterLimit;
+  };
+
+  CVContextData.prototype.setOpacity = function (value) {
+    this.stack[this.cArrPos].opacity = value;
+  };
+
+  CVContextData.prototype.setContext = function (value) {
+    this.nativeContext = value;
+  };
+
+  CVContextData.prototype.fillStyle = function (value) {
+    if (this.stack[this.cArrPos].fillStyle !== value) {
+      this.currentFillStyle = value;
+      this.stack[this.cArrPos].fillStyle = value;
+    }
+  };
+
+  CVContextData.prototype.strokeStyle = function (value) {
+    if (this.stack[this.cArrPos].strokeStyle !== value) {
+      this.currentStrokeStyle = value;
+      this.stack[this.cArrPos].strokeStyle = value;
+    }
+  };
+
+  CVContextData.prototype.lineWidth = function (value) {
+    if (this.stack[this.cArrPos].lineWidth !== value) {
+      this.currentLineWidth = value;
+      this.stack[this.cArrPos].lineWidth = value;
+    }
+  };
+
+  CVContextData.prototype.lineCap = function (value) {
+    if (this.stack[this.cArrPos].lineCap !== value) {
+      this.currentLineCap = value;
+      this.stack[this.cArrPos].lineCap = value;
+    }
+  };
+
+  CVContextData.prototype.lineJoin = function (value) {
+    if (this.stack[this.cArrPos].lineJoin !== value) {
+      this.currentLineJoin = value;
+      this.stack[this.cArrPos].lineJoin = value;
+    }
+  };
+
+  CVContextData.prototype.miterLimit = function (value) {
+    if (this.stack[this.cArrPos].miterLimit !== value) {
+      this.currentMiterLimit = value;
+      this.stack[this.cArrPos].miterLimit = value;
+    }
+  };
+
+  CVContextData.prototype.transform = function (props) {
+    this.transformMat.cloneFromProps(props); // Taking the last transform value from the stored stack of transforms
+
+    var currentTransform = this.cTr; // Applying the last transform value after the new transform to respect the order of transformations
+
+    this.transformMat.multiply(currentTransform); // Storing the new transformed value in the stored transform
+
+    currentTransform.cloneFromProps(this.transformMat.props);
+    var trProps = currentTransform.props; // Applying the new transform to the canvas
+
+    this.nativeContext.setTransform(trProps[0], trProps[1], trProps[4], trProps[5], trProps[12], trProps[13]);
+  };
+
+  CVContextData.prototype.opacity = function (op) {
+    var currentOpacity = this.stack[this.cArrPos].opacity;
+    currentOpacity *= op < 0 ? 0 : op;
+
+    if (this.stack[this.cArrPos].opacity !== currentOpacity) {
+      if (this.currentOpacity !== op) {
+        this.nativeContext.globalAlpha = op;
+        this.currentOpacity = op;
+      }
+
+      this.stack[this.cArrPos].opacity = currentOpacity;
+    }
+  };
+
+  CVContextData.prototype.fill = function (rule) {
+    if (this.appliedFillStyle !== this.currentFillStyle) {
+      this.appliedFillStyle = this.currentFillStyle;
+      this.nativeContext.fillStyle = this.appliedFillStyle;
+    }
+
+    this.nativeContext.fill(rule);
+  };
+
+  CVContextData.prototype.fillRect = function (x, y, w, h) {
+    if (this.appliedFillStyle !== this.currentFillStyle) {
+      this.appliedFillStyle = this.currentFillStyle;
+      this.nativeContext.fillStyle = this.appliedFillStyle;
+    }
+
+    this.nativeContext.fillRect(x, y, w, h);
+  };
+
+  CVContextData.prototype.stroke = function () {
+    if (this.appliedStrokeStyle !== this.currentStrokeStyle) {
+      this.appliedStrokeStyle = this.currentStrokeStyle;
+      this.nativeContext.strokeStyle = this.appliedStrokeStyle;
+    }
+
+    if (this.appliedLineWidth !== this.currentLineWidth) {
+      this.appliedLineWidth = this.currentLineWidth;
+      this.nativeContext.lineWidth = this.appliedLineWidth;
+    }
+
+    if (this.appliedLineCap !== this.currentLineCap) {
+      this.appliedLineCap = this.currentLineCap;
+      this.nativeContext.lineCap = this.appliedLineCap;
+    }
+
+    if (this.appliedLineJoin !== this.currentLineJoin) {
+      this.appliedLineJoin = this.currentLineJoin;
+      this.nativeContext.lineJoin = this.appliedLineJoin;
+    }
+
+    if (this.appliedMiterLimit !== this.currentMiterLimit) {
+      this.appliedMiterLimit = this.currentMiterLimit;
+      this.nativeContext.miterLimit = this.appliedMiterLimit;
+    }
+
+    this.nativeContext.stroke();
   };
 
   function CVCompElement(data, globalData, comp) {
@@ -14909,6 +15129,21 @@
     this.transformMat = new Matrix();
     this.completeLayers = false;
     this.rendererType = 'canvas';
+
+    if (this.renderConfig.clearCanvas) {
+      this.ctxTransform = this.contextData.transform.bind(this.contextData);
+      this.ctxOpacity = this.contextData.opacity.bind(this.contextData);
+      this.ctxFillStyle = this.contextData.fillStyle.bind(this.contextData);
+      this.ctxStrokeStyle = this.contextData.strokeStyle.bind(this.contextData);
+      this.ctxLineWidth = this.contextData.lineWidth.bind(this.contextData);
+      this.ctxLineCap = this.contextData.lineCap.bind(this.contextData);
+      this.ctxLineJoin = this.contextData.lineJoin.bind(this.contextData);
+      this.ctxMiterLimit = this.contextData.miterLimit.bind(this.contextData);
+      this.ctxFill = this.contextData.fill.bind(this.contextData);
+      this.ctxFillRect = this.contextData.fillRect.bind(this.contextData);
+      this.ctxStroke = this.contextData.stroke.bind(this.contextData);
+      this.save = this.contextData.save.bind(this.contextData);
+    }
   }
 
   extendPrototype([CanvasRendererBase], CanvasRenderer);
@@ -16571,13 +16806,13 @@
     }
 
     function isNumerable(tOfV, v) {
-      return tOfV === 'number' || tOfV === 'boolean' || tOfV === 'string' || v instanceof Number;
+      return tOfV === 'number' || v instanceof Number || tOfV === 'boolean' || tOfV === 'string';
     }
 
     function $bm_neg(a) {
       var tOfA = _typeof$1(a);
 
-      if (tOfA === 'number' || tOfA === 'boolean' || a instanceof Number) {
+      if (tOfA === 'number' || a instanceof Number || tOfA === 'boolean') {
         return -a;
       }
 
@@ -16609,11 +16844,7 @@
 
       var tOfB = _typeof$1(b);
 
-      if (tOfA === 'string' || tOfB === 'string') {
-        return a + b;
-      }
-
-      if (isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
+      if (isNumerable(tOfA, a) && isNumerable(tOfB, b) || tOfA === 'string' || tOfB === 'string') {
         return a + b;
       }
 
@@ -20156,8 +20387,9 @@
       var effectElements = this.effectsManager.effectElements;
       var anchor = effectElements[0].p.v;
       var position = effectElements[1].p.v;
+      var isUniformScale = effectElements[2].p.v === 1;
       var scaleHeight = effectElements[3].p.v;
-      var scaleWidth = effectElements[4].p.v;
+      var scaleWidth = isUniformScale ? scaleHeight : effectElements[4].p.v;
       var skew = effectElements[5].p.v;
       var skewAxis = effectElements[6].p.v;
       var rotation = effectElements[7].p.v;

@@ -5273,7 +5273,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.12.0';
+  lottie.version = '5.12.1';
 
   function checkReady() {
     if (document.readyState === 'complete') {
@@ -6002,7 +6002,10 @@
     }
 
     function precalculateMatrix() {
-      if (!this.a.k) {
+      this.appliedTransformations = 0;
+      this.pre.reset();
+
+      if (!this.a.effectsSequence.length) {
         this.pre.translate(-this.a.v[0], -this.a.v[1], this.a.v[2]);
         this.appliedTransformations = 1;
       } else {
@@ -7220,8 +7223,15 @@
     var combinedCharacters = []; // Hindi characters
 
     combinedCharacters = combinedCharacters.concat([2304, 2305, 2306, 2307, 2362, 2363, 2364, 2364, 2366, 2367, 2368, 2369, 2370, 2371, 2372, 2373, 2374, 2375, 2376, 2377, 2378, 2379, 2380, 2381, 2382, 2383, 2387, 2388, 2389, 2390, 2391, 2402, 2403]);
+    var BLACK_FLAG_CODE_POINT = 127988;
+    var CANCEL_TAG_CODE_POINT = 917631;
+    var A_TAG_CODE_POINT = 917601;
+    var Z_TAG_CODE_POINT = 917626;
+    var VARIATION_SELECTOR_16_CODE_POINT = 65039;
+    var ZERO_WIDTH_JOINER_CODE_POINT = 8205;
+    var REGIONAL_CHARACTER_A_CODE_POINT = 127462;
+    var REGIONAL_CHARACTER_Z_CODE_POINT = 127487;
     var surrogateModifiers = ['d83cdffb', 'd83cdffc', 'd83cdffd', 'd83cdffe', 'd83cdfff'];
-    var zeroWidthJoiner = [65039, 8205];
 
     function trimFontOptions(font) {
       var familyArray = font.split(',');
@@ -7518,23 +7528,24 @@
     }
 
     function measureText(_char2, fontName, size) {
-      var fontData = this.getFontByName(fontName);
+      var fontData = this.getFontByName(fontName); // Using the char instead of char.charCodeAt(0)
+      // to avoid collisions between equal chars
 
-      var index = _char2.charCodeAt(0);
+      var index = _char2;
 
-      if (!fontData.cache[index + 1]) {
+      if (!fontData.cache[index]) {
         var tHelper = fontData.helper;
 
         if (_char2 === ' ') {
           var doubleSize = tHelper.measureText('|' + _char2 + '|');
           var singleSize = tHelper.measureText('||');
-          fontData.cache[index + 1] = (doubleSize - singleSize) / 100;
+          fontData.cache[index] = (doubleSize - singleSize) / 100;
         } else {
-          fontData.cache[index + 1] = tHelper.measureText(_char2) / 100;
+          fontData.cache[index] = tHelper.measureText(_char2) / 100;
         }
       }
 
-      return fontData.cache[index + 1] * size;
+      return fontData.cache[index] * size;
     }
 
     function getFontByName(name) {
@@ -7552,21 +7563,86 @@
       return this.fonts[0];
     }
 
+    function getCodePoint(string) {
+      var codePoint = 0;
+      var first = string.charCodeAt(0);
+
+      if (first >= 0xD800 && first <= 0xDBFF) {
+        var second = string.charCodeAt(1);
+
+        if (second >= 0xDC00 && second <= 0xDFFF) {
+          codePoint = (first - 0xD800) * 0x400 + second - 0xDC00 + 0x10000;
+        }
+      }
+
+      return codePoint;
+    } // Skin tone modifiers
+
+
     function isModifier(firstCharCode, secondCharCode) {
       var sum = firstCharCode.toString(16) + secondCharCode.toString(16);
       return surrogateModifiers.indexOf(sum) !== -1;
     }
 
-    function isZeroWidthJoiner(firstCharCode, secondCharCode) {
-      if (!secondCharCode) {
-        return firstCharCode === zeroWidthJoiner[1];
+    function isZeroWidthJoiner(charCode) {
+      return charCode === ZERO_WIDTH_JOINER_CODE_POINT;
+    } // This codepoint may change the appearance of the preceding character.
+    // If that is a symbol, dingbat or emoji, U+FE0F forces it to be rendered
+    // as a colorful image as compared to a monochrome text variant.
+
+
+    function isVariationSelector(charCode) {
+      return charCode === VARIATION_SELECTOR_16_CODE_POINT;
+    } // The regional indicator symbols are a set of 26 alphabetic Unicode
+    /// characters (A–Z) intended to be used to encode ISO 3166-1 alpha-2
+    // two-letter country codes in a way that allows optional special treatment.
+
+
+    function isRegionalCode(string) {
+      var codePoint = getCodePoint(string);
+
+      if (codePoint >= REGIONAL_CHARACTER_A_CODE_POINT && codePoint <= REGIONAL_CHARACTER_Z_CODE_POINT) {
+        return true;
       }
 
-      return firstCharCode === zeroWidthJoiner[0] && secondCharCode === zeroWidthJoiner[1];
+      return false;
+    } // Some Emoji implementations represent combinations of
+    // two “regional indicator” letters as a single flag symbol.
+
+
+    function isFlagEmoji(string) {
+      return isRegionalCode(string.substr(0, 2)) && isRegionalCode(string.substr(2, 2));
     }
 
     function isCombinedCharacter(_char3) {
       return combinedCharacters.indexOf(_char3) !== -1;
+    } // Regional flags start with a BLACK_FLAG_CODE_POINT
+    // folowed by 5 chars in the TAG range
+    // and end with a CANCEL_TAG_CODE_POINT
+
+
+    function isRegionalFlag(text, index) {
+      var codePoint = getCodePoint(text.substr(index, 2));
+
+      if (codePoint !== BLACK_FLAG_CODE_POINT) {
+        return false;
+      }
+
+      var count = 0;
+      index += 2;
+
+      while (count < 5) {
+        codePoint = getCodePoint(text.substr(index, 2));
+
+        if (codePoint < A_TAG_CODE_POINT || codePoint > Z_TAG_CODE_POINT) {
+          return false;
+        }
+
+        count += 1;
+        index += 2;
+      }
+
+      return getCodePoint(text.substr(index, 2)) === CANCEL_TAG_CODE_POINT;
     }
 
     function setIsLoaded() {
@@ -7586,7 +7662,12 @@
 
     Font.isModifier = isModifier;
     Font.isZeroWidthJoiner = isZeroWidthJoiner;
+    Font.isFlagEmoji = isFlagEmoji;
+    Font.isRegionalCode = isRegionalCode;
     Font.isCombinedCharacter = isCombinedCharacter;
+    Font.isRegionalFlag = isRegionalFlag;
+    Font.isVariationSelector = isVariationSelector;
+    Font.BLACK_FLAG_CODE_POINT = BLACK_FLAG_CODE_POINT;
     var fontPrototype = {
       addChars: addChars,
       addFonts: addFonts,
@@ -8396,7 +8477,8 @@
               this.finalTransform._localMatMdf = true;
             }
 
-            if (this.localTransforms[i]._opMdf) {
+            if (this.localTransforms[i]._opMdf && !this.finalTransform._opMdf) {
+              this.finalTransform.localOpacity = this.finalTransform.mProp.o.v;
               this.finalTransform._opMdf = true;
             }
 
@@ -10544,45 +10626,53 @@
     var charCode;
     var secondCharCode;
     var shouldCombine = false;
+    var shouldCombineNext = false;
+    var currentChars = '';
 
     while (i < len) {
+      shouldCombine = shouldCombineNext;
+      shouldCombineNext = false;
       charCode = text.charCodeAt(i);
+      currentChars = text.charAt(i);
 
       if (FontManager.isCombinedCharacter(charCode)) {
-        charactersArray[charactersArray.length - 1] += text.charAt(i);
+        shouldCombine = true; // It's a potential surrogate pair (this is the High surrogate)
       } else if (charCode >= 0xD800 && charCode <= 0xDBFF) {
-        secondCharCode = text.charCodeAt(i + 1);
-
-        if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
-          if (shouldCombine || FontManager.isModifier(charCode, secondCharCode)) {
-            charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-            shouldCombine = false;
-          } else {
-            charactersArray.push(text.substr(i, 2));
-          }
-
-          i += 1;
+        if (FontManager.isRegionalFlag(text, i)) {
+          currentChars = text.substr(i, 14);
         } else {
-          charactersArray.push(text.charAt(i));
+          secondCharCode = text.charCodeAt(i + 1); // It's a surrogate pair (this is the Low surrogate)
+
+          if (secondCharCode >= 0xDC00 && secondCharCode <= 0xDFFF) {
+            if (FontManager.isModifier(charCode, secondCharCode)) {
+              currentChars = text.substr(i, 2);
+              shouldCombine = true;
+            } else if (FontManager.isFlagEmoji(text.substr(i, 4))) {
+              currentChars = text.substr(i, 4);
+            } else {
+              currentChars = text.substr(i, 2);
+            }
+          }
         }
       } else if (charCode > 0xDBFF) {
         secondCharCode = text.charCodeAt(i + 1);
 
-        if (FontManager.isZeroWidthJoiner(charCode, secondCharCode)) {
+        if (FontManager.isVariationSelector(charCode)) {
           shouldCombine = true;
-          charactersArray[charactersArray.length - 1] += text.substr(i, 2);
-          i += 1;
-        } else {
-          charactersArray.push(text.charAt(i));
         }
       } else if (FontManager.isZeroWidthJoiner(charCode)) {
-        charactersArray[charactersArray.length - 1] += text.charAt(i);
         shouldCombine = true;
-      } else {
-        charactersArray.push(text.charAt(i));
+        shouldCombineNext = true;
       }
 
-      i += 1;
+      if (shouldCombine) {
+        charactersArray[charactersArray.length - 1] += currentChars;
+        shouldCombine = false;
+      } else {
+        charactersArray.push(currentChars);
+      }
+
+      i += currentChars.length;
     }
 
     return charactersArray;
@@ -14453,13 +14543,13 @@
     }
 
     function isNumerable(tOfV, v) {
-      return tOfV === 'number' || tOfV === 'boolean' || tOfV === 'string' || v instanceof Number;
+      return tOfV === 'number' || v instanceof Number || tOfV === 'boolean' || tOfV === 'string';
     }
 
     function $bm_neg(a) {
       var tOfA = _typeof$1(a);
 
-      if (tOfA === 'number' || tOfA === 'boolean' || a instanceof Number) {
+      if (tOfA === 'number' || a instanceof Number || tOfA === 'boolean') {
         return -a;
       }
 
@@ -14491,11 +14581,7 @@
 
       var tOfB = _typeof$1(b);
 
-      if (tOfA === 'string' || tOfB === 'string') {
-        return a + b;
-      }
-
-      if (isNumerable(tOfA, a) && isNumerable(tOfB, b)) {
+      if (isNumerable(tOfA, a) && isNumerable(tOfB, b) || tOfA === 'string' || tOfB === 'string') {
         return a + b;
       }
 
@@ -18038,8 +18124,9 @@
       var effectElements = this.effectsManager.effectElements;
       var anchor = effectElements[0].p.v;
       var position = effectElements[1].p.v;
+      var isUniformScale = effectElements[2].p.v === 1;
       var scaleHeight = effectElements[3].p.v;
-      var scaleWidth = effectElements[4].p.v;
+      var scaleWidth = isUniformScale ? scaleHeight : effectElements[4].p.v;
       var skew = effectElements[5].p.v;
       var skewAxis = effectElements[6].p.v;
       var rotation = effectElements[7].p.v;
