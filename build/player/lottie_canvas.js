@@ -5273,7 +5273,7 @@
   lottie.useWebWorker = setWebWorker;
   lottie.setIDPrefix = setPrefix;
   lottie.__getFactory = getFactory;
-  lottie.version = '5.12.1';
+  lottie.version = '5.12.2';
 
   function checkReady() {
     if (document.readyState === 'complete') {
