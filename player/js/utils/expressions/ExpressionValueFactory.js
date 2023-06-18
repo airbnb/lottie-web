@@ -54,6 +54,7 @@ const ExpressionPropertyInterface = (function () {
       if (expressionValue.value !== val) {
         expressionValue = new Number(val); // eslint-disable-line no-new-wrappers
         expressionValue.value = val;
+        expressionValue[0] = val;
         completeProperty(expressionValue, property, 'unidimensional');
       }
       return expressionValue;
