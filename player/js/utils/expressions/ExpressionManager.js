@@ -401,6 +401,7 @@ const ExpressionManager = (function () {
     var content;
     var effect;
     var thisProperty = property;
+    thisProperty._name = elem.data.nm;
     thisProperty.valueAtTime = thisProperty.getValueAtTime;
     Object.defineProperty(thisProperty, 'value', {
       get: function () {
