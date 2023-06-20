@@ -12739,7 +12739,7 @@
       // the input can be string that needs eval (issue with CSP 'unsafe-eval') or can be passes as function
       var isFunctionData = typeof val === 'function';
       // val = val.replace(/(\\?"|')((http)(s)?(:\/))?\/.*?(\\?"|')/g, "\"\""); // deter potential network calls
-      var expression_function = isFunctionData ? val() : eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+      var expression_function = isFunctionData ? val : eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
       var numKeys = property.kf ? data.k.length : 0;
       var active = !this.data || this.data.hd !== true;
       var wiggle = function wiggle(freq, amp) {
