@@ -742,6 +742,8 @@ const ExpressionManager = (function () {
           numKeys,
           nearestKey,
           key,
+          thisLayer,
+          thisComp,
         });
       } else {
         expression_function();
