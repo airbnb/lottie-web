@@ -9280,11 +9280,12 @@
     isShapeInAnimatedModifiers: function isShapeInAnimatedModifiers(data) {
       var i = 0;
       var len = this.shapeModifiers.length;
-
+      
       while (i < len) {
         if (this.shapeModifiers[i].isAnimatedWithShape(data)) {
           return true;
         }
+        i++; // Increment the value of 'i' to avoid an endless loop
       }
 
       return false;
