@@ -485,7 +485,7 @@ const dataManager = (function () {
 
           function completeText(data) {
             if (data.t.a.length === 0 && !('m' in data.t.p)) {
-              // data.singleShape = true;
+              data.singleShape = true;
             }
           }
 
