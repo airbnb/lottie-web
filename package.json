@@ -7,6 +7,7 @@
     "type": "git",
     "url": "https://github.com/airbnb/lottie-web.git"
   },
+  "sideEffects": false,
   "scripts": {
     "build": "npx eslint ./player/js/**/* && rollup -c && node tasks/build_worker",
     "build_test": "node tasks/build.js",
