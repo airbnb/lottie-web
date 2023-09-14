@@ -530,6 +530,10 @@ function workerContent() {
       if (animations[payload.id]) {
         animations[payload.id].animation.playSegments(payload.arr, payload.forceFlag);
       }
+    } else if (type === 'resetSegments') {
+      if (animations[payload.id]) {
+        animations[payload.id].animation.resetSegments(payload.forceFlag);
+      }
     } else if (type === 'updateDocumentData') {
       animations[payload.id].animation.updateDocumentData(payload.path, payload.documentData, payload.index);
     }
