@@ -27,6 +27,7 @@ const AnimationItem = function () {
   this.name = '';
   this.path = '';
   this.isLoaded = false;
+  this.dataFailed = false;
   this.currentFrame = 0;
   this.currentRawFrame = 0;
   this.firstFrame = 0;
@@ -115,6 +116,7 @@ AnimationItem.prototype.setParams = function (params) {
 };
 
 AnimationItem.prototype.onSetupError = function () {
+  this.dataFailed = true;
   this.trigger('data_failed');
 };
 
