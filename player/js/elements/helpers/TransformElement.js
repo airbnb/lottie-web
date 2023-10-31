@@ -53,7 +53,7 @@ TransformElement.prototype = {
         }
       }
     }
-    if (this.finalTransform._matMdf) {
+    if (!this.localTransforms || this.finalTransform._matMdf) {
       this.finalTransform._localMatMdf = this.finalTransform._matMdf;
     }
     if (this.finalTransform._opMdf) {
