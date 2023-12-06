@@ -99,6 +99,7 @@ export type AnimationItem = {
 export type BaseRendererConfig = {
     imagePreserveAspectRatio?: string;
     className?: string;
+    runExpressions?: boolean;
 };
 
 export type SVGRendererConfig = BaseRendererConfig & {
