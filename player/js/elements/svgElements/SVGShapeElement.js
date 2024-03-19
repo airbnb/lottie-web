@@ -211,7 +211,7 @@ SVGShapeElement.prototype.setElementStyles = function (elementData) {
   var j;
   var jLen = this.stylesList.length;
   for (j = 0; j < jLen; j += 1) {
-    if (!this.stylesList[j].closed) {
+    if (arr.indexOf(this.stylesList[j]) === -1 && !this.stylesList[j].closed) {
       arr.push(this.stylesList[j]);
     }
   }
