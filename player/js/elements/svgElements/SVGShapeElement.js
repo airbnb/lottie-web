@@ -255,7 +255,7 @@ SVGShapeElement.prototype.searchShapes = function (arr, itemsData, prevViewData,
       if (!processedPos) {
         itemsData[i] = this.createStyleElement(arr[i], level);
       } else {
-        itemsData[i].style.closed = false;
+        itemsData[i].style.closed = arr[i].hd;
       }
       if (arr[i]._render) {
         if (itemsData[i].style.pElem.parentNode !== container) {
