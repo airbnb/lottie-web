@@ -145,6 +145,18 @@ BaseRenderer.prototype.getElementById = function (ind) {
   return null;
 };
 
+BaseRenderer.prototype.getElementByRelativePos = function (element, relativeIndex) {
+  var i;
+  var len = this.elements.length;
+  for (i = 0; i < len; i += 1) {
+    if (this.elements[i] === element && this.elements[i + relativeIndex]) {
+      return this.elements[i + relativeIndex];
+    }
+  }
+  // Returning element in index 0 to avoid errors
+  return this.elements[0];
+};
+
 BaseRenderer.prototype.getElementByPath = function (path) {
   var pathValue = path.shift();
   var element;
