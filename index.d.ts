@@ -118,6 +118,7 @@ export type CanvasRendererConfig = BaseRendererConfig & {
     context?: CanvasRenderingContext2D;
     progressiveLoad?: boolean;
     preserveAspectRatio?: string;
+    dpr?: number;
 };
 
 export type HTMLRendererConfig = BaseRendererConfig & {
