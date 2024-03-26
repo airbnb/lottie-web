@@ -84,7 +84,7 @@ export type AnimationItem = {
     resetSegments(forceFlag: boolean): void;
     hide(): void;
     show(): void;
-    resize(): void;
+    resize(width?: number, height?: number): void;
     setSpeed(speed: number): void;
     setDirection(direction: AnimationDirection): void;
     setLoop(isLooping: boolean): void;
