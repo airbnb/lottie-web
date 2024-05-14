@@ -317,17 +317,36 @@ class Shaper {
    * @param {Number} width
    */
   layout(width) {
-    // TODO: deal with locales
-    this.#clearOutputs();
-    this.#extractSegments("grapheme", Properties.graphemeStart);
-    this.#extractSegments("word", Properties.wordStart);
+      // TODO: deal with locales
+      this.#clearOutputs();
+      this.#extractSegments("grapheme", Properties.graphemeStart);
+      this.#extractSegments("word", Properties.wordStart);
 
-    const div = document.createElement("div");
-    div.style = `width:${width}px; left: 0px; right: 0px; margin: 0px; padding: 0px; border: 0px; visibility: collapsed`;
-    document.body.appendChild(div);
-    this.#generateSpanStructures(div);
-    this.#extractInfo(div);
-    document.removeChild(div);
+      if (this.coloredId === undefined) {
+          this.coloredId = "undefined";
+          this.measurementId = "undefined";
+      }
+
+      let span = document.getElementById(this.coloredId);
+      let rect = document.getElementById(this.measurementId);
+
+      span.style = `width:${width}px; margin: 0px; padding: 0px; border: 0px; visibility: colapse`;
+
+      this.#generateSpanStructures(span);
+      this.#extractInfo(span);
+
+      if (rect !== null) {
+          rect.style = "margin: 0px; padding: 0px; border: 0px";
+          const size = this.measurement();
+          rect.innerText = `[${size.left.toFixed(2)},${size.top.toFixed()}, ${(size.right - size.left).toFixed(2)}x${(size.bottom - size.top).toFixed(2)}]`;
+      }
+
+      if (this.coloredId === "undefined") {
+          document.body.removeChild(span);
+          document.body.removeChild(rect);
+      } else {
+        span.style.visibility = "visible";
+      }
   }
 
   /**
@@ -403,9 +422,9 @@ class Shaper {
    * Extract all information from the browser corresponding it to the generated <span> structures
    * @param {Element} div
    */
-  #extractInfo(div) {
+  #extractInfo(span) {
     // Bounding box
-    const measurements = div.getClientRects();
+    const measurements = span.getClientRects();
     console.assert(measurements.length === 1);
     this.#bounds.assign(measurements[0]);
 
@@ -417,7 +436,7 @@ class Shaper {
     let textIndex = 0;
     let prevGraphemeRect;
     let prevGraphemeTextDirection;
-    for (let word of div.children) {
+    for (let word of span.children) {
       if (word.tagName.toUpperCase() !== "SPAN") {
         // Skip <br/>
         continue;
@@ -511,9 +530,7 @@ class Shaper {
         // Run break should also break the word and we have to assert that
         if (textDirectionSwitch) {
           // Let's break the word if not empty (end the collected one and start another)
-          console.log("New run\n");
           if (currentWord.textRange.start < currentWord.textRange.end) {
-            console.log(`Add word "${currentWord.text}" ${currentRun.textDirection}/${prevGraphemeTextDirection} ${currentWord.textRange.start}:${currentWord.textRange.end} ${currentWord.glyphRange.start}:${currentWord.glyphRange.end}\n`);
             this.words.push(structuredClone(currentWord));
           }
           currentWord.startFrom(currentCluster);
@@ -522,7 +539,6 @@ class Shaper {
           currentRun.textRange.end = textIndex;
           currentRun.glyphRange.end = this.graphemes.length;
           currentRun.wordRange.end = this.words.length;
-          console.log(`Add run ${currentRun.textDirection}/${prevGraphemeTextDirection} ${currentRun.textRange.start}:${currentRun.textRange.end} ${currentRun.glyphRange.start}:${currentRun.glyphRange.end}\n`);
           this.runs.push(structuredClone(currentRun));
 
           // Let's start the new run
@@ -534,7 +550,6 @@ class Shaper {
         currentCluster.glyphRange.end = this.graphemes.length + 1;
         currentCluster.text = grapheme.innerText;
         currentCluster.isWhitespaces = word.classList.contains("whitespaces");
-        console.log(`Add graphemes "${currentCluster.text}" ${currentRun.textDirection}/${graphemeTextDirection} ${currentCluster.textRange.start}:${currentCluster.textRange.end} ${currentCluster.glyphRange.start}:${currentCluster.glyphRange.end}\n`);
         this.graphemes.push(structuredClone(currentCluster));
 
         // Extend all the cursors: word, run and line
@@ -568,7 +583,6 @@ class Shaper {
       console.assert(currentWord.textRange.end === textIndex);
       currentLine.wordRange.end = this.words.length + 1;
       currentRun.wordRange.end = this.words.length + 1;
-      console.log(`Add word "${currentWord.text}" ${currentRun.textDirection} ${currentWord.textRange.start}:${currentWord.textRange.end} ${currentWord.glyphRange.start}:${currentWord.glyphRange.end}\n`);
       this.words.push(structuredClone(currentWord));
       currentWord.startFrom(currentCluster);
     }
@@ -580,9 +594,7 @@ class Shaper {
     currentRun.wordRange.end = this.words.length;
 
     // Add collected run and line to the list
-    console.log(`Add run  ${currentRun.textDirection} ${currentRun.textRange.start}:${currentRun.textRange.end} ${currentRun.glyphRange.start}:${currentRun.glyphRange.end}\n`);
     this.runs.push(structuredClone(currentRun));
-    console.log(`Add line ${currentLine.textRange.start}:${currentLine.textRange.end} ${currentLine.glyphRange.start}:${currentLine.glyphRange.end}\n`);
     this.lines.push(structuredClone(currentLine));
     this.#layoutPerformed = true;
   }
@@ -764,7 +776,13 @@ class Shaper {
     head.appendChild(style);
     style.appendChild(document.createTextNode("th, td {text-align: left; vertical-align: center; }"));
     style.appendChild(document.createTextNode("td {padding: 2px; }"));
-    style.appendChild(document.createTextNode("        div div table tbody tr.line, tr.grapheme, tr.word, tr.run, tr.whitespaces {display: none;}"));
+    //style.appendChild(document.createTextNode("tr.line, tr.grapheme, tr.word, tr.run, tr.whitespaces {display: none;}"));
+
+    style.appendChild(document.createTextNode("#showGraphemes:checked { ~ * .grapheme { display: table-row; } }"));
+    style.appendChild(document.createTextNode("#showWords:checked { ~ * .word { display: table-row; } }"));
+    style.appendChild(document.createTextNode("#showWhitespaces:checked { ~ * .whitespaces { display: table-row; } }"));
+    style.appendChild(document.createTextNode("#showTextRuns:checked { ~ * .run { display: table-row; } }"));
+    style.appendChild(document.createTextNode("#showLines:checked { ~ * .line { display: table-row; } }"));
 
     let tbody = document.getElementById("tbody");
     let lineCount = 0;
@@ -809,7 +827,6 @@ class Shaper {
       }
     }
     table.appendChild(tbody);
-    console.log(table.outerHTML);
   }
 
   // Input
