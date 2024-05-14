@@ -69,15 +69,18 @@ class Rect {
     this.bottom = y + height;
   }
 
-  extend(/*Rect*/rect) {
-    if (rect.left <= rect.right) {
-      // Left to right
-      this.left = Math.min(this.left, rect.left);
-      this.right = Math.max(this.right, rect.right);
+  extend(/*Rect*/rect, /*Boolean*/indirected) {
+    if (indirected) {
+        this.left = Math.min(this.left, rect.left, rect.right);
+        this.right = Math.max(this.right, rect.left, rect.right);
+    } else if (rect.left <= rect.right) {
+        // Left to right
+        this.left = Math.min(this.left, rect.left);
+        this.right = Math.max(this.right, rect.right);
     } else {
-      // Right to left
-      this.left = Math.max(this.left, rect.left);
-      this.right = Math.min(this.right, rect.right);
+        // Right to left
+        this.left = Math.max(this.left, rect.left);
+        this.right = Math.min(this.right, rect.right);
     }
     this.top = Math.min(this.top, rect.top);
     this.bottom = Math.max(this.bottom, rect.bottom);
@@ -330,7 +333,7 @@ class Shaper {
       let span = document.getElementById(this.coloredId);
       let rect = document.getElementById(this.measurementId);
 
-      span.style = `width:${width}px; margin: 0px; padding: 0px; border: 0px; visibility: colapse`;
+      span.style = `max-width:${width}px; margin: 0px; padding: 0px;  border: 2px solid black; visibility: colapse`;
 
       this.#generateSpanStructures(span);
       this.#extractInfo(span);
@@ -338,7 +341,7 @@ class Shaper {
       if (rect !== null) {
           rect.style = "margin: 0px; padding: 0px; border: 0px";
           const size = this.measurement();
-          rect.innerText = `[${size.left.toFixed(2)},${size.top.toFixed()}, ${(size.right - size.left).toFixed(2)}x${(size.bottom - size.top).toFixed(2)}]`;
+          rect.innerText = `${(size.right - size.left).toFixed(2)} x ${(size.bottom - size.top).toFixed(2)}`;
       }
 
       if (this.coloredId === "undefined") {
@@ -366,7 +369,20 @@ class Shaper {
       const isWhitespaces = this.#properties[i] & Properties.whiteSpace;
       if (property & Properties.graphemeStart && isGrapheme) {
         // Finish the grapheme
-        html += this.text.substring(start, i);
+        const text = this.text.substring(start, i);
+        if (isWhitespaces) {
+          let corrected = "";
+          for (let c of text) {
+            if (c === ' ') {
+              corrected += "&nbsp;";
+            } else {
+              corrected += c;
+            }
+          }
+          html += corrected;
+        } else {
+          html += text;
+        }
         html += "</span>";
         isGrapheme = false;
       }
@@ -412,10 +428,10 @@ class Shaper {
     div.innerHTML = html;
   }
 
-  #extend(parent, glyphCluster) {
+  #extend(parent, glyphCluster, indirected) {
     parent.textRange.end = glyphCluster.textRange.end;
     parent.glyphRange.end = glyphCluster.glyphRange.end;
-    parent.bounds.extend(glyphCluster.bounds);
+    parent.bounds.extend(glyphCluster.bounds, indirected);
   }
 
   /**
@@ -553,11 +569,11 @@ class Shaper {
         this.graphemes.push(structuredClone(currentCluster));
 
         // Extend all the cursors: word, run and line
-        this.#extend(currentWord, currentCluster);
+        this.#extend(currentWord, currentCluster, false);
         currentWord.text += grapheme.innerText;
         currentWord.isWhitespaces = currentCluster.isWhitespaces;
-        this.#extend(currentRun, currentCluster);
-        this.#extend(currentLine, currentCluster);
+        this.#extend(currentRun, currentCluster, false);
+        this.#extend(currentLine, currentCluster, true);
 
         prevGraphemeRect = graphemeRects[0];
         prevGraphemeTextDirection = graphemeTextDirection;
@@ -755,10 +771,11 @@ class Shaper {
     tr.innerHTML += `<th scope='row'>${unitType}[${index1}${(index2 >= 0 ? "/" + index2 : "")}]</th>`;
     tr.innerHTML += "<td>" + text + "</td>";
 
-    const corrected = new Rect(Math.min(rect.left, rect.right),
+    const corrected = new Rect(
+      Math.min(rect.left, rect.right) - lineRect.left,
       rect.top - lineRect.top,
       Math.abs(rect.right - rect.left),
-      rect.bottom - rect.top);
+      Math.abs(rect.bottom - rect.top));
     tr.innerHTML += "<td>" + corrected.left.toFixed(2) + "</td>";
     tr.innerHTML += "<td>" + corrected.top.toFixed(2) + "</td>";
     tr.innerHTML += "<td>" + corrected.right.toFixed(2) + "</td>";
@@ -768,65 +785,67 @@ class Shaper {
 
   /** Updates #tbody element with all the extracted information */
   printTable() {
-    const table = document.getElementById("table");
+      const table = document.getElementById("table");
+      let tbody = document.getElementById("tbody");
+      if (table.styled === undefined) {
+          var head = document.head || document.getElementsByTagName('head')[0];
+          var style = document.createElement('style');
+          head.appendChild(style);
+          style.appendChild(document.createTextNode("th, td {text-align: left; vertical-align: center; }"));
+          style.appendChild(document.createTextNode("td {padding: 2px; }"));
+          //style.appendChild(document.createTextNode("tr.line, tr.grapheme, tr.word, tr.run, tr.whitespaces {display: none;}"));
 
-    var css = "";
-    var head = document.head || document.getElementsByTagName('head')[0];
-    var style = document.createElement('style');
-    head.appendChild(style);
-    style.appendChild(document.createTextNode("th, td {text-align: left; vertical-align: center; }"));
-    style.appendChild(document.createTextNode("td {padding: 2px; }"));
-    //style.appendChild(document.createTextNode("tr.line, tr.grapheme, tr.word, tr.run, tr.whitespaces {display: none;}"));
-
-    style.appendChild(document.createTextNode("#showGraphemes:checked { ~ * .grapheme { display: table-row; } }"));
-    style.appendChild(document.createTextNode("#showWords:checked { ~ * .word { display: table-row; } }"));
-    style.appendChild(document.createTextNode("#showWhitespaces:checked { ~ * .whitespaces { display: table-row; } }"));
-    style.appendChild(document.createTextNode("#showTextRuns:checked { ~ * .run { display: table-row; } }"));
-    style.appendChild(document.createTextNode("#showLines:checked { ~ * .line { display: table-row; } }"));
-
-    let tbody = document.getElementById("tbody");
-    let lineCount = 0;
-    let runCount = 0;
-    let wordCount = 0;
-    let clusterCount = 0;
-    for (let line of this.lines) {
-      this.#generateRow(tbody, "line", "line", lineCount, -1, "", line.bounds, line.bounds);
-      ++lineCount;
-      for (let runIndex = line.runRange.start; runIndex < line.runRange.end; ++runIndex) {
-        const run = this.runs[runIndex];
-        let textRun = `${run.textDirection} graphemes[${run.glyphRange.start}:${run.glyphRange.end}] words[${run.wordRange.start}:${run.wordRange.end}]`;
-        ++runCount;
-        this.#generateRow(tbody, "run", "run", runCount, -1, textRun, run.bounds, line.bounds);
-        for (let wordIndex = run.wordRange.start; wordIndex < run.wordRange.end; ++wordIndex) {
-          const word = this.words[wordIndex];
-          // Few cases: whitespaces or word == cluster
-          let types = "word";
-          let classes = "word";
-          let secondCount = -1;
-          if (word.isWhitespaces) {
-            types += "/whitespaces";
-            classes += " whitespaces";
-          }
-          if (word.glyphRange.start + 1 === word.glyphRange.end) {
-            types += "/grapheme";
-            classes += " grapheme";
-            secondCount = clusterCount;
-            ++clusterCount;
-          }
-          this.#generateRow(tbody, types, classes, wordCount, secondCount, word.text, word.bounds, line.bounds);
-          ++wordCount;
-
-          if (word.glyphRange.start + 1 !== word.glyphRange.end) {
-            for (let clusterIndex = word.glyphRange.start; clusterIndex < word.glyphRange.end; ++clusterIndex) {
-              const cluster = this.graphemes[clusterIndex];
-              this.#generateRow(tbody, "grapheme", "grapheme", clusterCount, -1, cluster.text, cluster.bounds, line.bounds);
-              ++clusterCount;
-            }
-          }
-        }
+          style.appendChild(document.createTextNode("#showGraphemes:checked { ~ * .grapheme { display: table-row; } }"));
+          style.appendChild(document.createTextNode("#showWords:checked { ~ * .word { display: table-row; } }"));
+          style.appendChild(document.createTextNode("#showWhitespaces:checked { ~ * .whitespaces { display: table-row; } }"));
+          style.appendChild(document.createTextNode("#showTextRuns:checked { ~ * .run { display: table-row; } }"));
+          style.appendChild(document.createTextNode("#showLines:checked { ~ * .line { display: table-row; } }"));
+          table.styled = true;
+      } else {
+          tbody.innerHTML = "";
       }
-    }
-    table.appendChild(tbody);
+
+      let lineCount = 0;
+      let runCount = 0;
+      let wordCount = 0;
+      let clusterCount = 0;
+      for (let line of this.lines) {
+          this.#generateRow(tbody, "line", "line", lineCount, -1, "", line.bounds, line.bounds);
+          ++lineCount;
+          for (let runIndex = line.runRange.start; runIndex < line.runRange.end; ++runIndex) {
+              const run = this.runs[runIndex];
+              let textRun = `${run.textDirection} graphemes[${run.glyphRange.start}:${run.glyphRange.end}] words[${run.wordRange.start}:${run.wordRange.end}]`;
+              ++runCount;
+              this.#generateRow(tbody, "run", "run", runCount, -1, textRun, run.bounds, line.bounds);
+              for (let wordIndex = run.wordRange.start; wordIndex < run.wordRange.end; ++wordIndex) {
+                  const word = this.words[wordIndex];
+                  // Few cases: whitespaces or word == cluster
+                  let types = "word";
+                  let classes = "word";
+                  let secondCount = -1;
+                  if (word.isWhitespaces) {
+                      types += "/whitespaces";
+                      classes += " whitespaces";
+                  }
+                  if (word.glyphRange.start + 1 === word.glyphRange.end) {
+                      types += "/grapheme";
+                      classes += " grapheme";
+                      secondCount = clusterCount;
+                      ++clusterCount;
+                  }
+                  this.#generateRow(tbody, types, classes, wordCount, secondCount, word.text, word.bounds, line.bounds);
+                  ++wordCount;
+
+                  if (word.glyphRange.start + 1 !== word.glyphRange.end) {
+                      for (let clusterIndex = word.glyphRange.start; clusterIndex < word.glyphRange.end; ++clusterIndex) {
+                          const cluster = this.graphemes[clusterIndex];
+                          this.#generateRow(tbody, "glypheme", "grapheme", clusterCount, -1, cluster.text, cluster.bounds, line.bounds);
+                          ++clusterCount;
+                      }
+                  }
+              }
+          }
+      }
   }
 
   // Input

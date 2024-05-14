@@ -23,11 +23,8 @@
         span.word {
             word-break: keep-all;
         }
-        span.word:nth-child(2n) {
-            text-decoration: darkred overline;
-        }
-        span.word:nth-child(2n+1) {
-            text-decoration: darkblue underline;
+        span.word:hover {
+            background-color: darkgrey;
         }
         span.grapheme {
             color: yellow;
@@ -67,7 +64,7 @@
     <div class="row">
         <div id="screen" class="column"></div>
         <div id="result" class="column invisible">
-            <div><label for="showGraphemes">Show graphemes</label><input type="checkbox" id="showGraphemes" name="graphemes" checked></div>
+            <div><label for="showGraphemes">Show glypheme clusters</label><input type="checkbox" id="showGraphemes" name="graphemes" checked></div>
             <div><label for="showWords">Show words</label><input type="checkbox" id="showWords" name="words" checked></div>
             <div><label for="showTextRuns">Show text runs</label><input type="checkbox" id="showTextRuns" name="textRuns" checked></div>
             <div><label for="showLines">Show lines</label><input type="checkbox" id="showLines" name="lines" checked></div>
@@ -109,8 +106,10 @@
         </div>
         <div style="width:100%;" class="row">
             <label for="text${num}">ShapedText:</label>
-            <span id="text${num}" style="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;"></span>
+            <span id="text${num}" style="border: 2px solid black; font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;"></span>
         </div>
+        <br/>
+        <br/>
     </div>`;
         }
         generateText(1, "Hello world!");
@@ -128,7 +127,7 @@
             form.shaper.addText(text, style);
             form.shaper.layout(800);
             form.shaper.coloredId = coloredId;
-            document.querySelector("label[for='showGraphemes']").innerText = "Show graphemes (" + form.shaper.graphemes.length + ")";
+            document.querySelector("label[for='showGraphemes']").innerText = "Show glypheme clusters (" + form.shaper.graphemes.length + ")";
             document.querySelector("label[for='showWords']").innerText = "Show words (" + form.shaper.words.length + ")";
             document.querySelector("label[for='showTextRuns']").innerText = "Show text runs (" + form.shaper.runs.length + ")";
             document.querySelector("label[for='showLines']").innerText = "Show lines (" + form.shaper.lines.length + ")";
