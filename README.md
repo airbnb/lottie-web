@@ -9,7 +9,6 @@ For the first time, designers can create **and ship** beautiful animations witho
 # View documentation, FAQ, help, examples, and more at [airbnb.io/lottie](https://airbnb.io/lottie/)
 
 
-
 ![Example1](gifs/Example1.gif)
 
 
