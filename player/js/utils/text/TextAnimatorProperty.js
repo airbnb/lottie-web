@@ -91,6 +91,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   var tanAngle;
   var mask;
   if (this._hasMaskedPath) {
+    // TODO: For later
     mask = this._pathData.m;
     if (!this._pathData.n || this._pathData._mdf) {
       var paths = mask.v;
@@ -193,6 +194,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
 
   //
   if (documentData.j === 2 || documentData.j === 1) {
+    // This is text alignment code must go away
     var animatorJustifyOffset = 0;
     var animatorFirstCharOffset = 0;
     var justifyOffsetMult = documentData.j === 2 ? -0.5 : -1;
@@ -239,6 +241,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
   }
   //
 
+  // This is the main shaping loop (accordingly to Florin)
   for (i = 0; i < len; i += 1) {
     matrixHelper.reset();
     elemOpacity = 1;
@@ -360,6 +363,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         animatorProps = animators[j].a;
         if (animatorProps.t.propType) {
           animatorSelector = animators[j].s;
+          // Using a range of letters
           mult = animatorSelector.getMult(letters[i].anIndexes[j], textData.a[j].s.totalChars);
           // This condition is to prevent applying tracking to first character in each line. Might be better to use a boolean "isNewLine"
           if (xPos !== 0 || documentData.j !== 0) {
@@ -571,6 +575,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         matrixHelper.translate(0, -documentData.ls);
         matrixHelper.translate(offf, 0, 0);
         matrixHelper.translate((alignment[0] * letters[i].an) * 0.005, (alignment[1] * yOff) * 0.01, 0);
+        // TODO: This is not going to work for RTL!
         xPos += letters[i].l + (documentData.tr * 0.001) * documentData.finalSize;
       }
       if (renderType === 'html') {
@@ -583,6 +588,7 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
       letterO = elemOpacity;
     }
 
+    // Reusing what has been calculated before
     if (renderedLettersCount <= i) {
       letterValue = new LetterProps(letterO, letterSw, letterSc, letterFc, letterM, letterP);
       this.renderedLetters.push(letterValue);

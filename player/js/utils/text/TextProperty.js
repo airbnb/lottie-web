@@ -3,6 +3,9 @@ import {
 } from '../../main';
 import getFontProperties from '../getFontProperties';
 import FontManager from '../FontManager';
+import {
+  Shaper,
+} from '../../elements/browserElements/api';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
@@ -55,7 +58,8 @@ function TextProperty(elem, data) {
   this.copyData(this.currentData, this.data.d.k[0].s);
 
   if (!this.searchProperty()) {
-    this.completeTextData(this.currentData);
+    // SKIA: this.completeTextData(this.currentData);
+    this.skia_completeTextData(this.currentData);
   }
 }
 
@@ -72,7 +76,8 @@ TextProperty.prototype.copyData = function (obj, data) {
 
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
-    this.completeTextData(data);
+    // SKIA: this.completeTextData(data);
+    this.skia_completeTextData(this.currentData);
   }
   this.currentData = data;
   this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
@@ -146,6 +151,7 @@ TextProperty.prototype.getKeyframeValue = function () {
   return this.data.d.k[this.keysIndex].s;
 };
 
+// Just returns a list of graphemes
 TextProperty.prototype.buildFinalText = function (text) {
   var charactersArray = [];
   var i = 0;
@@ -198,6 +204,97 @@ TextProperty.prototype.buildFinalText = function (text) {
     i += currentChars.length;
   }
   return charactersArray;
+};
+
+TextProperty.prototype.skia_completeTextData = function (documentData) {
+  documentData.__complete = true;
+  var fontManager = this.elem.globalData.fontManager;
+  var fontData = fontManager.getFontByName(documentData.f);
+  const fontText = documentData.f + " " + documentData.s;
+
+  const oneLineShaper = new Shaper();
+  oneLineShaper.addText(documentData.t, fontText);
+  oneLineShaper.layout(-1);
+
+  var fontProps = getFontProperties(fontData);
+  documentData.fWeight = fontProps.weight;
+  documentData.fStyle = fontProps.style;
+  documentData.finalSize = documentData.s;
+  documentData.finalText = oneLineShaper.lottie_glyphemeClusters();
+  documentData.finalLineHeight = oneLineShaper.measurement().height();
+
+  // Formatting and resizing text
+  let multiLineShaper = oneLineShaper;
+  if (documentData.sz) {
+    var boxWidth = documentData.sz[0];
+    var boxHeight = documentData.sz[1];
+    while (true) {
+      // SKIA
+      multiLineShaper = new Shaper();
+      multiLineShaper.addText(documentData.t, fontData);
+      multiLineShaper.layout(boxWidth);
+
+      if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < multiLineShaper.measurement().height()) {
+        // Adjusting the font size to make the text fit the requirements
+        documentData.finalSize -= 1;
+        console.assert(documentData.finalSize > 0);
+        documentData.finalLineHeight = (documentData.finalSize * documentData.lines().length) / documentData.s;
+      } else {
+        documentData.finalText = multiLineShaper.lottie_glyphemeClusters();
+        break;
+      }
+    }
+  }
+
+  // Fill out add the data
+  const lineWidths = [];
+  const letters = [];
+  let lineIndex = 0;
+  for (const line of multiLineShaper.lines) {
+    for (let g = line.glyphRange.start; g < line.glyphRange.end; ++g) {
+      const glypheme = multiLineShaper.graphemes[g];
+      letters.push({
+        l: glypheme.bounds().length, // Glypheme width
+        an: glypheme.bounds().length, // Glypheme width
+        add: glypheme.bounds.right, // Glypheme advance
+        n: false, // TODO: new line indicator
+        anIndexes: [],
+        val: glypheme.text, // Glypheme text
+        line: lineIndex,
+        animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+      });
+    }
+    lineWidths.push(line.bounds().width);
+    lineIndex += 1;
+  }
+
+  documentData.l = letters;
+  documentData.lineWidths = lineWidths;
+  if (documentData.sz) {
+    documentData.boxWidth = documentData.sz[0];
+    documentData.justifyOffset = 0;
+  } else {
+    // We only do alignment for a single line???
+    documentData.boxWidth = multiLineShaper.measurement().width;
+    switch (documentData.j) {
+      case 1:
+        // right
+        documentData.justifyOffset = -documentData.boxWidth;
+        break;
+      case 2:
+        // center
+        documentData.justifyOffset = -documentData.boxWidth / 2;
+        break;
+      default:
+        // left
+        documentData.justifyOffset = 0;
+    }
+  }
+
+  // TODO: There was a puzzling piece of code doing something for animation
+  documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
+  documentData.ls = documentData.ls || 0;
+  documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
 };
 
 TextProperty.prototype.completeTextData = function (documentData) {
