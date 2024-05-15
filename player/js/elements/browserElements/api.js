@@ -191,7 +191,7 @@ class GlyphWord {
     this.textRange = new TextRange(currentCluster.textRange.start, currentCluster.textRange.start);
     this.glyphRange = new TextRange(currentCluster.glyphRange.start, currentCluster.glyphRange.start);
     this.bounds = new Rect(
-      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.left : currentCluster.bounds.right,
+      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.right : currentCluster.bounds.left,
       currentCluster.bounds.top,
       0,
       currentCluster.bounds.bottom - currentCluster.bounds.top);
@@ -220,7 +220,7 @@ class GlyphRun {
     this.glyphRange = new TextRange(currentCluster.glyphRange.start, currentCluster.glyphRange.start);
     this.wordRange = new TextRange(this.wordRange.end, this.wordRange.end);
     this.bounds = new Rect(
-      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.left : currentCluster.bounds.right,
+      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.right : currentCluster.bounds.left,
       currentCluster.bounds.top,
       0,
       currentCluster.bounds.bottom - currentCluster.bounds.top);
@@ -250,7 +250,7 @@ class GlyphLine {
     this.wordRange = new TextRange(this.wordRange.end, this.wordRange.end);
     this.runRange = new TextRange(this.runRange.end, this.runRange.end);
     this.bounds = new Rect(
-      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.left : currentCluster.bounds.right,
+      (currentCluster.textDirection() === TextDirection.RTL) ? currentCluster.bounds.right : currentCluster.bounds.left,
       currentCluster.bounds.top,
       0,
       currentCluster.bounds.bottom - currentCluster.bounds.top);
@@ -334,7 +334,7 @@ class Shaper {
       let rect = document.getElementById(this.measurementId);
 
       span.style = `max-width:${width}px; margin: 0px; padding: 0px;  border: 2px solid black; visibility: colapse`;
-
+      span.style += this.#fontStyleRanges[0];
       this.#generateSpanStructures(span);
       this.#extractInfo(span);
 
@@ -475,7 +475,6 @@ class Shaper {
       }
       let graphemeIndex = 0;
       for (let grapheme of word.children) {
-
         const graphemeRects = grapheme.getClientRects();
         console.assert(graphemeRects.length === 1);
         console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
@@ -583,6 +582,7 @@ class Shaper {
         currentCluster.textRange.start = currentCluster.textRange.end;
         currentCluster.glyphRange.start = currentCluster.glyphRange.end;
         currentCluster.text = "";
+        currentCluster.bounds.left = currentCluster.bounds.right;
         currentCluster.isWhitespaces = false;
 
         // Increment textIndex here: the current position in the text
@@ -771,6 +771,8 @@ class Shaper {
     tr.innerHTML += `<th scope='row'>${unitType}[${index1}${(index2 >= 0 ? "/" + index2 : "")}]</th>`;
     tr.innerHTML += "<td>" + text + "</td>";
 
+    const left = Math.min(rect.left, rect.right) - lineRect.left;
+    const width = Math.abs(rect.right - rect.left);
     const corrected = new Rect(
       Math.min(rect.left, rect.right) - lineRect.left,
       rect.top - lineRect.top,
@@ -781,6 +783,7 @@ class Shaper {
     tr.innerHTML += "<td>" + corrected.right.toFixed(2) + "</td>";
     tr.innerHTML += "<td>" + corrected.bottom.toFixed(2) + "</td>";
     tbody.appendChild(tr);
+    return corrected;
   }
 
   /** Updates #tbody element with all the extracted information */
@@ -809,14 +812,22 @@ class Shaper {
       let runCount = 0;
       let wordCount = 0;
       let clusterCount = 0;
+      let lineCursor = new Rect(0,0,0,0);
+      let runCursor = new Rect(0,0,0,0);
+      let wordCursor = new Rect(0,0,0,0);
+      let clusterCursor = new Rect(0,0,0,0);
       for (let line of this.lines) {
-          this.#generateRow(tbody, "line", "line", lineCount, -1, "", line.bounds, line.bounds);
+          const nextLine = this.#generateRow(tbody, "line", "line", lineCount, -1, "", line.bounds, line.bounds);
+          console.assert(lineCursor.right === nextLine.left);
+          lineCursor = nextLine;
           ++lineCount;
           for (let runIndex = line.runRange.start; runIndex < line.runRange.end; ++runIndex) {
               const run = this.runs[runIndex];
               let textRun = `${run.textDirection} graphemes[${run.glyphRange.start}:${run.glyphRange.end}] words[${run.wordRange.start}:${run.wordRange.end}]`;
               ++runCount;
-              this.#generateRow(tbody, "run", "run", runCount, -1, textRun, run.bounds, line.bounds);
+              const nextRun = this.#generateRow(tbody, "run", "run", runCount, -1, textRun, run.bounds, line.bounds);
+              console.assert(runCursor.right === nextRun.left);
+              runCursor = nextRun;
               for (let wordIndex = run.wordRange.start; wordIndex < run.wordRange.end; ++wordIndex) {
                   const word = this.words[wordIndex];
                   // Few cases: whitespaces or word == cluster
@@ -833,13 +844,17 @@ class Shaper {
                       secondCount = clusterCount;
                       ++clusterCount;
                   }
-                  this.#generateRow(tbody, types, classes, wordCount, secondCount, word.text, word.bounds, line.bounds);
+                  const nextWord = this.#generateRow(tbody, types, classes, wordCount, secondCount, word.text, word.bounds, line.bounds);
+                  //console.assert(wordCursor.right === nextWord.left);
+                  wordCursor = nextWord;
                   ++wordCount;
 
                   if (word.glyphRange.start + 1 !== word.glyphRange.end) {
                       for (let clusterIndex = word.glyphRange.start; clusterIndex < word.glyphRange.end; ++clusterIndex) {
                           const cluster = this.graphemes[clusterIndex];
-                          this.#generateRow(tbody, "glypheme", "grapheme", clusterCount, -1, cluster.text, cluster.bounds, line.bounds);
+                          const nextCluster = this.#generateRow(tbody, "glypheme", "grapheme", clusterCount, -1, cluster.text, cluster.bounds, line.bounds);
+                          //console.assert(clusterCursor.right === nextCluster.left);
+                          clusterCursor = nextCluster;
                           ++clusterCount;
                       }
                   }
