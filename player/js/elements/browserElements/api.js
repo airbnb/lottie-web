@@ -812,10 +812,8 @@ class Shaper {
       let runCount = 0;
       let wordCount = 0;
       let clusterCount = 0;
-      let lineCursor = new Rect(0,0,0,0);
       let runCursor = new Rect(0,0,0,0);
-      let wordCursor = new Rect(0,0,0,0);
-      let clusterCursor = new Rect(0,0,0,0);
+      let lineCursor = new Rect(0,0,0,0);
       for (let line of this.lines) {
           const nextLine = this.#generateRow(tbody, "line", "line", lineCount, -1, "", line.bounds, line.bounds);
           console.assert(lineCursor.right === nextLine.left);
@@ -828,6 +826,12 @@ class Shaper {
               const nextRun = this.#generateRow(tbody, "run", "run", runCount, -1, textRun, run.bounds, line.bounds);
               console.assert(runCursor.right === nextRun.left);
               runCursor = nextRun;
+              let wordCursor = run.textDirection === TextDirection.LTR
+                                ? new Rect(nextRun.left, nextRun.top,0,0)
+                                : new Rect(nextRun.right, nextRun.top,0,0);
+              let clusterCursor = run.textDirection === TextDirection.LTR
+                                ? new Rect(nextRun.left, nextRun.top,0,0)
+                                : new Rect(nextRun.right, nextRun.top,0,0);
               for (let wordIndex = run.wordRange.start; wordIndex < run.wordRange.end; ++wordIndex) {
                   const word = this.words[wordIndex];
                   // Few cases: whitespaces or word == cluster
@@ -845,15 +849,31 @@ class Shaper {
                       ++clusterCount;
                   }
                   const nextWord = this.#generateRow(tbody, types, classes, wordCount, secondCount, word.text, word.bounds, line.bounds);
-                  //console.assert(wordCursor.right === nextWord.left);
+                  if (run.textDirection === TextDirection.LTR) {
+                      console.assert(wordCursor.right === nextWord.left);
+                  } else {
+                      console.assert(wordCursor.left === nextWord.right);
+                  }
                   wordCursor = nextWord;
+                  if (secondCount != -1) {
+                      if (run.textDirection === TextDirection.LTR) {
+                          console.assert(clusterCursor.right === nextWord.left);
+                      } else {
+                          console.assert(clusterCursor.left === nextWord.right);
+                      }
+                      clusterCursor = nextWord;
+                  }
                   ++wordCount;
 
                   if (word.glyphRange.start + 1 !== word.glyphRange.end) {
                       for (let clusterIndex = word.glyphRange.start; clusterIndex < word.glyphRange.end; ++clusterIndex) {
                           const cluster = this.graphemes[clusterIndex];
                           const nextCluster = this.#generateRow(tbody, "glypheme", "grapheme", clusterCount, -1, cluster.text, cluster.bounds, line.bounds);
-                          //console.assert(clusterCursor.right === nextCluster.left);
+                          if (run.textDirection === TextDirection.LTR) {
+                              console.assert(clusterCursor.right === nextCluster.left);
+                          } else {
+                              console.assert(clusterCursor.left === nextCluster.right);
+                          }
                           clusterCursor = nextCluster;
                           ++clusterCount;
                       }
