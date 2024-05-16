@@ -3,9 +3,7 @@ import {
 } from '../../main';
 import getFontProperties from '../getFontProperties';
 import FontManager from '../FontManager';
-import {
-  Shaper,
-} from '../../elements/browserElements/api';
+import Shaper from '../../elements/browserElements/api';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
@@ -59,7 +57,13 @@ function TextProperty(elem, data) {
 
   if (!this.searchProperty()) {
     // SKIA: this.completeTextData(this.currentData);
+    const cloned = structuredClone(this.currentData);
+    this.completeTextData(cloned);
+    console.log('Old lottie:');
+    console.log(cloned);
     this.skia_completeTextData(this.currentData);
+    console.log('Skia:');
+    console.log(this.currentData);
   }
 }
 
@@ -77,7 +81,11 @@ TextProperty.prototype.copyData = function (obj, data) {
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
     // SKIA: this.completeTextData(data);
+    const cloned = structuredClone(this.currentData);
+    this.completeTextData(cloned);
+    console.log(cloned);
     this.skia_completeTextData(this.currentData);
+    console.log(this.currentData);
   }
   this.currentData = data;
   this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
@@ -210,7 +218,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   documentData.__complete = true;
   var fontManager = this.elem.globalData.fontManager;
   var fontData = fontManager.getFontByName(documentData.f);
-  const fontText = documentData.f + " " + documentData.s;
+  const fontText = documentData.f + ' ' + documentData.s;
 
   const oneLineShaper = new Shaper();
   oneLineShaper.addText(documentData.t, fontText);
@@ -251,20 +259,25 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   const letters = [];
   let lineIndex = 0;
   for (const line of multiLineShaper.lines) {
-    for (let g = line.glyphRange.start; g < line.glyphRange.end; ++g) {
+    console.log(`${lineIndex}: line[${line.glyphRange.start}:${line.glyphRange.end}] ${multiLineShaper.graphemes.length}`);
+    for (let g = line.glyphRange.start; g < line.glyphRange.end; g += 1) {
       const glypheme = multiLineShaper.graphemes[g];
-      letters.push({
-        l: glypheme.bounds().length, // Glypheme width
-        an: glypheme.bounds().length, // Glypheme width
-        add: glypheme.bounds.right, // Glypheme advance
-        n: false, // TODO: new line indicator
-        anIndexes: [],
-        val: glypheme.text, // Glypheme text
-        line: lineIndex,
-        animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
-      });
+      if (glypheme === undefined) {
+        console.log(`glypheme #${g} is undefined!`);
+      } else {
+        letters.push({
+          l: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
+          an: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
+          add: glypheme.bounds.right, // Glypheme advance
+          n: false, // TODO: new line indicator
+          anIndexes: [],
+          val: glypheme.text, // Glypheme text
+          line: lineIndex,
+          animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+        });
+      }
     }
-    lineWidths.push(line.bounds().width);
+    lineWidths.push(line.bounds.right - line.bounds.left);
     lineIndex += 1;
   }
 

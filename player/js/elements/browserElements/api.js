@@ -1,3 +1,8 @@
+/* eslint-disable max-classes-per-file */
+/* eslint-disable no-continue */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-bitwise */
+
 const utils = {
   css: function (element, property) {
     return window.getComputedStyle(element, null).getPropertyValue(property);
@@ -13,27 +18,31 @@ const utils = {
     } if (rects.length === 1) {
       return TextDirection.LTR;
     }
-    let right = rects[0].left;
-    let left = rects[0].right;
+    let left = rects[0].left;
+    let right = rects[0].right;
     let goingRight;
     let goingLeft;
-    for (rect of rects) {
-      if (left === rect.left && right === rect.right) {
+    for (const rect of rects) {
+      if (goingRight === undefined && goingLeft === undefined) {
         // First rectangle
-        continue;
-      }
-
-      if (right === rect.left) { // We are going sequentially right
+        if (rects[0].left <= rects[rects.length - 1].right) {
+          goingLeft = false;
+          goingRight = true;
+        } else {
+          goingLeft = true;
+          goingRight = false;
+        }
+      } else if (right === rect.left) { // We are going sequentially right
         if (goingLeft) {
           return TextDirection.Mixed;
         }
-        goingLeft = true;
+        console.assert(goingRight);
         right = rect.right;
       } else if (left === rect.right) { // We are going sequentially left
         if (goingRight) {
           return TextDirection.Mixed;
         }
-        goingRight = true;
+        console.assert(goingLeft);
         left = rect.left;
       } else {
         return TextDirection.Mixed;
@@ -125,6 +134,16 @@ class Rect {
       [this.left, this.right] = [this.right, this.left];
     }
   }
+
+  /** Rectangle height
+   * @return {number}
+   */
+  height() { return this.bottom - this.top; }
+
+  /** Rectangle width
+   * @return {number}
+   */
+  width() { return this.right - this.left; }
 
   /*
     left;
@@ -281,6 +300,7 @@ class GlyphLine {
 }
 
 // TODO: Implement multiple styles
+// eslint-disable-next-line no-unused-vars
 class fontStyleRanges {
   constructor(/* TextRange */textRange, /* String */fontStyle) {
     this.textRange = textRange;
@@ -293,6 +313,7 @@ class fontStyleRanges {
 }
 
 // Collecting text properties and glyph information
+// eslint-disable-next-line no-unused-vars
 class Shaper {
   constructor() {
     this.clearInputs();
@@ -339,20 +360,16 @@ class Shaper {
     this.extractSegments('grapheme', Properties.graphemeStart);
     this.extractSegments('word', Properties.wordStart);
 
-    if (this.coloredId === undefined) {
+    let span;
+    let rect = null;
+    if (this.coloredId !== undefined) {
+      span = document.getElementById(this.coloredId);
+      rect = document.getElementById(this.measurementId);
+    } else {
       this.coloredId = 'undefined';
       this.measurementId = 'undefined';
-    }
-
-    let span;
-    let rect;
-    if (this.coloredId !== 'undefined') {
-        span = document.getElementById(this.coloredId);
-        rect = document.getElementById(this.measurementId);
-    } else {
-        span = document.createElement("span");
-        document.body.appendChild(span);
-        rect = document.createElement("span");
+      span = document.createElement('span');
+      document.body.appendChild(span);
     }
 
     span.style = (width > 0) ? `max-width:${width}px;` : ''
@@ -369,7 +386,6 @@ class Shaper {
 
     if (this.coloredId === 'undefined') {
       document.body.removeChild(span);
-      document.body.removeChild(rect);
     } else {
       span.style.visibility = 'visible';
     }
@@ -387,13 +403,13 @@ class Shaper {
     let g = 0;
     let w = 0;
     let start = 0;
+    let hadWhitespaces = false;
     for (let i = 0; i < this.properties.length; ++i) {
       const property = this.properties[i];
-      const isWhitespaces = this.properties[i] & Properties.whiteSpace;
-      if (property & (Properties.graphemeStart && isGrapheme)) {
+      if (((property & Properties.graphemeStart) === Properties.graphemeStart) && isGrapheme) {
         // Finish the grapheme
         const text = this.text.substring(start, i);
-        if (isWhitespaces) {
+        if (hadWhitespaces) {
           let corrected = '';
           for (const c of text) {
             if (c === ' ') {
@@ -409,7 +425,7 @@ class Shaper {
         html += '</span>';
         isGrapheme = false;
       }
-      if ((property & Properties.wordStart) && isWord) {
+      if (((property & Properties.wordStart) === Properties.wordStart) && isWord) {
         // Finish the word
         html += '</span>';
         isWord = false;
@@ -422,14 +438,15 @@ class Shaper {
         html += '<br/>';
         continue;
       }
-      if (property & Properties.wordStart) {
+      if ((property & Properties.wordStart) === Properties.wordStart) {
         // Start the word
         html += `<span id='w${w}' class='`;
-        html += (isWhitespaces ? 'whitespaces ' : '') + "word'>";
+        html += (hadWhitespaces ? 'whitespaces ' : '') + "word'>";
         w += 1;
         isWord = true;
       }
-      if (property & Properties.graphemeStart) {
+      hadWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
+      if ((property & Properties.graphemeStart) === Properties.graphemeStart) {
         // Start the grapheme
         html += `<span id='g${g}' class='grapheme'>`;
         g += 1;
@@ -439,7 +456,20 @@ class Shaper {
     }
     if (isGrapheme) {
       // Finish the grapheme
-      html += this.text.substring(start);
+      const text = this.text.substring(start);
+      if (hadWhitespaces) {
+        let corrected = '';
+        for (const c of text) {
+          if (c === ' ') {
+            corrected += '&nbsp;';
+          } else {
+            corrected += c;
+          }
+        }
+        html += corrected;
+      } else {
+        html += text;
+      }
       html += '</span>';
       // isGrapheme = false;
     }
@@ -451,6 +481,7 @@ class Shaper {
     div.innerHTML = html;
   }
 
+  // eslint-disable-next-line class-methods-use-this
   extend(parent, glyphCluster, indirected) {
     parent.textRange.end = glyphCluster.textRange.end;
     parent.glyphRange.end = glyphCluster.glyphRange.end;
@@ -464,7 +495,7 @@ class Shaper {
   extractInfo(span) {
     // Bounding box
     const measurements = span.getClientRects();
-    //console.assert(measurements.length === 1);
+    // console.assert(measurements.length === 1);
     this.bounds.assign(measurements[0]);
 
     const currentCluster = new GlyphCluster();
@@ -474,7 +505,7 @@ class Shaper {
 
     let textIndex = 0;
     let prevGraphemeRect;
-    let prevGraphemeTextDirection;
+    let prevGraphemeTextDirection = TextDirection.Undefined;
     for (const word of span.children) {
       if (word.tagName.toUpperCase() !== 'SPAN') {
         // Skip <br/>
@@ -656,6 +687,7 @@ class Shaper {
    * @param {String} text
    * @return {Boolean} yes, it's whitespaces
    */
+  // eslint-disable-next-line class-methods-use-this
   isWhitespaces(text) {
     // TODO: Make it a proper hardcode
     for (const c of text) {
@@ -670,9 +702,10 @@ class Shaper {
    * Returns a list of glypheme clusters as strings
    * @return {Array}
    */
+  // eslint-disable-next-line camelcase
   lottie_glyphemeClusters() {
     const result = [];
-    for (cluster of this.graphemes) {
+    for (const cluster of this.graphemes) {
       result.push(cluster.text);
     }
     return result;
@@ -694,7 +727,7 @@ class Shaper {
       // Let's check for whitespaces
       const whitespaces = granularity === 'grapheme' && this.isWhitespaces(this.text.substring(index, index + len));
       if (whitespaces) {
-        for (let i = index; i < index + len; ++i) {
+        for (let i = index; i < index + len; i += 1) {
           this.properties[i] |= Properties.whiteSpace;
         }
       }
@@ -800,6 +833,7 @@ class Shaper {
    * @param {Rect} rect
    * @param {Rect} lineRect
    */
+  // eslint-disable-next-line class-methods-use-this
   generateRow(tbody, unitType, classes, index1, index2, text, rect, lineRect) {
     const tr = document.createElement('tr');
     tr.classList = classes;
@@ -809,9 +843,9 @@ class Shaper {
     const left = Math.min(rect.left, rect.right) - lineRect.left;
     const width = Math.abs(rect.right - rect.left);
     const corrected = new Rect(
-      Math.min(rect.left, rect.right) - lineRect.left,
+      left,
       rect.top - lineRect.top,
-      Math.abs(rect.right - rect.left),
+      width,
       Math.abs(rect.bottom - rect.top)
     );
     tr.innerHTML += '<td>' + corrected.left.toFixed(2) + '</td>';
@@ -891,7 +925,7 @@ class Shaper {
             console.assert(wordCursor.left === nextWord.right);
           }
           wordCursor = nextWord;
-          if (secondCount != -1) {
+          if (secondCount !== -1) {
             if (run.textDirection === TextDirection.LTR) {
               console.assert(clusterCursor.right === nextWord.left);
             } else {
@@ -934,3 +968,4 @@ class Shaper {
   lines;              // List of all lines
 */
 }
+export default Shaper;
