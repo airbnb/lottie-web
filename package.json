@@ -10,9 +10,11 @@
   "sideEffects": false,
   "scripts": {
     "build": "npx eslint ./player/js/**/* && rollup -c && node tasks/build_worker",
+    "build_dev": "npx rollup -c rollup.dev.config.js -w",
     "build_test": "node tasks/build.js",
     "lint": "npx eslint ./player/js/**/*",
     "lint:fix": "npx eslint ./player/js/**/* --fix",
+    "serve_dev": "python3 -m http.server",
     "test:create": "node test/index.js",
     "test:compare": "node test/index.js -s compare"
   },
