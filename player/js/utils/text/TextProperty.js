@@ -57,12 +57,11 @@ function TextProperty(elem, data) {
 
   if (!this.searchProperty()) {
     // SKIA: this.completeTextData(this.currentData);
+    console.log(this.currentData.text);
     const cloned = structuredClone(this.currentData);
     this.completeTextData(cloned);
-    console.log('Old lottie:');
     console.log(cloned);
     this.skia_completeTextData(this.currentData);
-    console.log('Skia:');
     console.log(this.currentData);
   }
 }
@@ -81,6 +80,7 @@ TextProperty.prototype.copyData = function (obj, data) {
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
     // SKIA: this.completeTextData(data);
+    console.log(this.currentData.text);
     const cloned = structuredClone(this.currentData);
     this.completeTextData(cloned);
     console.log(cloned);
@@ -218,13 +218,19 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   documentData.__complete = true;
   var fontManager = this.elem.globalData.fontManager;
   var fontData = fontManager.getFontByName(documentData.f);
-  const fontText = documentData.f + ' ' + documentData.s;
-
+  var fontProps = getFontProperties(fontData);
+  var font = {
+    className: fontData.fClass,
+    family: fontData.fFamily,
+    name: fontData.fName,
+    size: documentData.s,
+    weight: fontProps.weight,
+    style: fontProps.style,
+  };
   const oneLineShaper = new Shaper();
-  oneLineShaper.addText(documentData.t, fontText);
+  oneLineShaper.addText(documentData.t, font);
   oneLineShaper.layout(-1);
 
-  var fontProps = getFontProperties(fontData);
   documentData.fWeight = fontProps.weight;
   documentData.fStyle = fontProps.style;
   documentData.finalSize = documentData.s;
@@ -239,7 +245,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     while (true) {
       // SKIA
       multiLineShaper = new Shaper();
-      multiLineShaper.addText(documentData.t, fontData);
+      multiLineShaper.addText(documentData.t, font);
       multiLineShaper.layout(boxWidth);
 
       if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < multiLineShaper.measurement().height()) {
@@ -268,12 +274,14 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         letters.push({
           l: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
           an: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
-          add: glypheme.bounds.right, // Glypheme advance
+          add: 0, // Glypheme advance (glypheme.bounds.right)
           n: false, // TODO: new line indicator
           anIndexes: [],
           val: glypheme.text, // Glypheme text
           line: lineIndex,
           animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+          ind: g, // glypheme cluster index
+          extra: 0,
         });
       }
     }
@@ -288,7 +296,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     documentData.justifyOffset = 0;
   } else {
     // We only do alignment for a single line???
-    documentData.boxWidth = multiLineShaper.measurement().width;
+    documentData.boxWidth = multiLineShaper.measurement().width();
     switch (documentData.j) {
       case 1:
         // right

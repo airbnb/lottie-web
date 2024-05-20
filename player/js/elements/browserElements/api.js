@@ -32,13 +32,13 @@ const utils = {
           goingLeft = true;
           goingRight = false;
         }
-      } else if (right === rect.left) { // We are going sequentially right
+      } else if (utils.equal(right, rect.left)) { // We are going sequentially right
         if (goingLeft) {
           return TextDirection.Mixed;
         }
         console.assert(goingRight);
         right = rect.right;
-      } else if (left === rect.right) { // We are going sequentially left
+      } else if (utils.equal(left, rect.right)) { // We are going sequentially left
         if (goingRight) {
           return TextDirection.Mixed;
         }
@@ -51,6 +51,9 @@ const utils = {
     console.assert(goingRight !== goingLeft);
     return goingRight ? TextDirection.LTR : TextDirection.RTL;
   },
+
+  equal: function (a, b) { return Math.abs(a - b) < 0.001; },
+
 };
 
 // Text unit properties
@@ -301,7 +304,7 @@ class GlyphLine {
 
 // TODO: Implement multiple styles
 // eslint-disable-next-line no-unused-vars
-class fontStyleRanges {
+class FontStyleRanges {
   constructor(/* TextRange */textRange, /* String */fontStyle) {
     this.textRange = textRange;
     this.fontStyle = fontStyle;
@@ -346,7 +349,7 @@ class Shaper {
       return;
     }
     const textUnit = new TextRange(this.text.length, this.text.length + text.length);
-    this.fontStyleRanges.push(textUnit, fontStyle);
+    this.fontStyleRanges.push(new FontStyleRanges(textUnit, fontStyle));
     this.text += text;
   }
 
@@ -372,16 +375,31 @@ class Shaper {
       document.body.appendChild(span);
     }
 
-    span.style = (width > 0) ? `max-width:${width}px;` : ''
-      + 'margin: 0px; padding: 0px;  border: 2px solid black; visibility: colapse';
-    span.style += this.fontStyleRanges[0];
+    const font = this.fontStyleRanges[0].fontStyle;
+    if (width > 0) {
+      span.style.maxWidth = `${width}px`;
+    } else {
+      // Trying to use a heuristics to get a decent text width that fit the entire text
+      span.style.width = `${font.size * this.text.length * 2}px`;
+    }
+    span.style.float = 'left';
+    span.style.margin = '0px';
+    span.style.padding = '0px';
+    span.style.border = '2px solid black';
+    span.style.visibility = 'collapse';
+    if (font.className !== undefined) {
+      span.style.class = font.className;
+    } else {
+      span.style.fontFamily = font.fontFamily;
+    }
+    span.style.fontSize = font.fontSize;
     this.generateSpanStructures(span);
     this.extractInfo(span);
 
     if (rect !== null) {
       rect.style = 'margin: 0px; padding: 0px; border: 0px';
       const size = this.measurement();
-      rect.innerText = `${(size.right - size.left).toFixed(2)} x ${(size.bottom - size.top).toFixed(2)}`;
+      rect.innerHTML = `${(size.right - size.left).toFixed(2)} x ${(size.bottom - size.top).toFixed(2)}`;
     }
 
     if (this.coloredId === 'undefined') {
@@ -402,10 +420,11 @@ class Shaper {
     let html = '';
     let g = 0;
     let w = 0;
-    let start = 0;
     let hadWhitespaces = false;
+    let start = 0;
     for (let i = 0; i < this.properties.length; ++i) {
       const property = this.properties[i];
+      hadWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
       if (((property & Properties.graphemeStart) === Properties.graphemeStart) && isGrapheme) {
         // Finish the grapheme
         const text = this.text.substring(start, i);
@@ -441,11 +460,10 @@ class Shaper {
       if ((property & Properties.wordStart) === Properties.wordStart) {
         // Start the word
         html += `<span id='w${w}' class='`;
-        html += (hadWhitespaces ? 'whitespaces ' : '') + "word'>";
+        html += (hadWhitespaces ? 'whitespaces ' : '') + "word' style='word-break: keep-all;'>";
         w += 1;
         isWord = true;
       }
-      hadWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
       if ((property & Properties.graphemeStart) === Properties.graphemeStart) {
         // Start the grapheme
         html += `<span id='g${g}' class='grapheme'>`;
@@ -527,6 +545,7 @@ class Shaper {
           prevGraphemeTextDirection = TextDirection.RTL;
         }
       }
+      const wordIsWhitespaces = word.classList.contains('whitespaces');
       let graphemeIndex = 0;
       for (const grapheme of word.children) {
         const graphemeRects = grapheme.getClientRects();
@@ -535,16 +554,18 @@ class Shaper {
         // Correct the cluster bounds and the visual left position
         const textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
         let graphemeTextDirection = wordTextDirection;
-        if (prevGraphemeRect.right === graphemeRects[0].left) {
+        if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
           // Sequential LTR: 1,2,3,4,5
           console.assert(prevGraphemeTextDirection === TextDirection.LTR);
           graphemeTextDirection = TextDirection.LTR;
+        } else if (prevGraphemeRect.bottom <= graphemeRects[0].top) {
+          // New line
         } else if (prevGraphemeRect.left > graphemeRects[0].right) {
           // Switching direction (4->5):
           // RTL->LTR: 5,6,...4,3,2,1
           // LTR->RTL: 5,6,...1,2,3,4
           graphemeTextDirection = prevGraphemeTextDirection === TextDirection.LTR ? TextDirection.RTL : TextDirection.LTR;
-        } else if (prevGraphemeRect.left === graphemeRects[0].right) {
+        } else if (utils.equal(prevGraphemeRect.left, graphemeRects[0].right)) {
           // Sequential RTL: 5,4,3,2,1
           console.assert(prevGraphemeTextDirection === TextDirection.RTL);
           graphemeTextDirection = TextDirection.RTL;
@@ -560,16 +581,16 @@ class Shaper {
 
         if (textIndex === 0) {
           // Initialize the new cluster, word, run and line
-          currentCluster.textRange = new TextRange(textIndex, textIndex + grapheme.innerText.length);
+          currentCluster.textRange = new TextRange(textIndex, textIndex + grapheme.innerHTML.length);
           currentCluster.glyphRange = new GlyphRange(0, 1);
           currentCluster.text = '';
-          currentCluster.isWhitespaces = word.classList.contains('whitespaces');
+          currentCluster.isWhitespaces = wordIsWhitespaces;
 
           currentWord.startFrom(currentCluster);
           currentRun.startFrom(currentCluster);
           currentLine.startFrom(currentCluster);
 
-          textIndex += grapheme.innerText.length;
+          textIndex += grapheme.innerHTML.length;
         }
 
         // Detect the line break.
@@ -615,16 +636,16 @@ class Shaper {
         }
 
         // Finish the current grapheme
-        currentCluster.textRange.end = textIndex + grapheme.innerText.length;
+        currentCluster.textRange.end = textIndex + grapheme.innerHTML.length;
         currentCluster.glyphRange.end = this.graphemes.length + 1;
-        currentCluster.text = grapheme.innerText;
-        currentCluster.isWhitespaces = word.classList.contains('whitespaces');
+        currentCluster.text = grapheme.innerHTML;
+        currentCluster.isWhitespaces = wordIsWhitespaces;
         this.graphemes.push(structuredClone(currentCluster));
 
         // Extend all the cursors: word, run and line
         this.extend(currentWord, currentCluster, false);
-        currentWord.text += grapheme.innerText;
-        currentWord.isWhitespaces = currentCluster.isWhitespaces;
+        currentWord.text += grapheme.innerHTML;
+        currentWord.isWhitespaces = wordIsWhitespaces;
         this.extend(currentRun, currentCluster, false);
         this.extend(currentLine, currentCluster, true);
 
@@ -640,7 +661,7 @@ class Shaper {
         currentCluster.isWhitespaces = false;
 
         // Increment textIndex here: the current position in the text
-        textIndex += grapheme.innerText.length;
+        textIndex += grapheme.innerHTML.length;
       }
 
       // Finish the current word, start the new one
@@ -648,8 +669,7 @@ class Shaper {
       console.assert(wordRects.length === word.children.length);
       const wordRect = new Rect(0, 0, 0, 0);
       wordRect.merge(wordRects, wordTextDirection);
-      console.assert(word.innerText.endsWith(currentWord.text));
-      console.assert(currentWord.isWhitespaces === word.classList.contains('whitespaces'));
+      console.assert(currentWord.isWhitespaces === wordIsWhitespaces);
       console.assert(currentWord.textRange.end === textIndex);
       currentLine.wordRange.end = this.words.length + 1;
       currentRun.wordRange.end = this.words.length + 1;
@@ -706,7 +726,11 @@ class Shaper {
   lottie_glyphemeClusters() {
     const result = [];
     for (const cluster of this.graphemes) {
-      result.push(cluster.text);
+      const text = cluster.text;
+      if (cluster.isWhitespaces) {
+        text.replaceAll('&nbsp;', ' ');
+      }
+      result.push(text);
     }
     return result;
   }
