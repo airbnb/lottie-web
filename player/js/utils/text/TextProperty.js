@@ -59,9 +59,9 @@ function TextProperty(elem, data) {
     // SKIA: this.completeTextData(this.currentData);
     console.log(this.currentData.text);
     const cloned = structuredClone(this.currentData);
-    this.completeTextData(cloned);
+    this.skia_completeTextData(cloned);
     console.log(cloned);
-    this.skia_completeTextData(this.currentData);
+    this.completeTextData(this.currentData);
     console.log(this.currentData);
   }
 }
@@ -82,9 +82,9 @@ TextProperty.prototype.setCurrentData = function (data) {
     // SKIA: this.completeTextData(data);
     console.log(this.currentData.text);
     const cloned = structuredClone(this.currentData);
-    this.completeTextData(cloned);
+    this.skia_completeTextData(cloned);
     console.log(cloned);
-    this.skia_completeTextData(this.currentData);
+    this.completeTextData(this.currentData);
     console.log(this.currentData);
   }
   this.currentData = data;
@@ -275,7 +275,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
           l: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
           an: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
           add: 0, // Glypheme advance (glypheme.bounds.right)
-          n: false, // TODO: new line indicator
+          n: glypheme.isNewLine, // TODO: new line indicator for '\n'
           anIndexes: [],
           val: glypheme.text, // Glypheme text
           line: lineIndex,

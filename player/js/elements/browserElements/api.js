@@ -187,6 +187,7 @@ class GlyphCluster {
     this.bounds = new Rect(0, 0, 0, 0);
     this.text = '';
     this.isWhitespaces = false;
+    this.isNewLine = false;
   }
 
   textDirection() {
@@ -552,14 +553,15 @@ class Shaper {
         console.assert(graphemeRects.length === 1);
         console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
         // Correct the cluster bounds and the visual left position
-        const textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
+        let textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
         let graphemeTextDirection = wordTextDirection;
         if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
           // Sequential LTR: 1,2,3,4,5
           console.assert(prevGraphemeTextDirection === TextDirection.LTR);
           graphemeTextDirection = TextDirection.LTR;
         } else if (prevGraphemeRect.bottom <= graphemeRects[0].top) {
-          // New line
+          // This is a new line, not a text direction switch
+          textDirectionSwitch = false;
         } else if (prevGraphemeRect.left > graphemeRects[0].right) {
           // Switching direction (4->5):
           // RTL->LTR: 5,6,...4,3,2,1
@@ -598,12 +600,14 @@ class Shaper {
         // We also use the same code to initialize the structures (textIndex === 0)
         if (currentCluster.bounds.top >= currentLine.bounds.bottom) {
           // Finish word, run and line
-          currentLine.glyphRange.end = this.graphemes.length + 1;
+          currentLine.glyphRange.end = this.graphemes.length;
           currentLine.wordRange.end = this.words.length + 1;
           currentLine.runRange.end = this.runs.length + 1;
-          currentRun.glyphRange.end = this.graphemes.length + 1;
+          currentRun.glyphRange.end = this.graphemes.length;
           currentRun.wordRange.end = this.words.length + 1;
-          currentWord.glyphRange.end = this.graphemes.length + 1;
+          currentWord.glyphRange.end = this.graphemes.length;
+
+          this.graphemes[this.graphemes.length - 1].isNewLine = true;
 
           // Add collected word, run and line to the list
           this.words.push(structuredClone(currentWord));
