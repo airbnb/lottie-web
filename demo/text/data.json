@@ -13,11 +13,11 @@
             {
                 "origin": 1,
                 "fPath": "",
-                "fClass": "bangers-regular",
-                "fFamily": "Bangers",
+                "fClass": "",
+                "fFamily": "Arial",
                 "fWeight": "",
-                "fStyle": "Regular",
-                "fName": "Bangers-Regular",
+                "fStyle": "Italic",
+                "fName": "Arial-Italic",
                 "ascent": 76.4484497718513
             }
         ]
@@ -78,7 +78,7 @@
                         {
                             "s": {
                                 "s": 19,
-                                "f": "Bangers-Regular",
+                                "f": "Arial-Italic",
                                 "t": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
                                 "ca": 0,
                                 "j": 2,
@@ -235,8 +235,8 @@
                                     -89.0850677490234
                                 ],
                                 "s": 19,
-                                "f": "Bangers-Regular",
-                                "t": "Suspendisse ligula justo, imperdiet malesuada enim luctus, pretium laoreet mauris. Sed et feugiat sapien. Suspendisse maximus nulla vitae turpis tempus finibus. Maecenas et convallis ligula. Vestibulum imperdiet lectus id tortor aliquet condimentum. Pellentesque venenatis ipsum ac tempus egestas. Cras blandit odio tincidunt ante interdum, non bibendum purus feugiat.",
+                                "f": "Arial-Italic",
+                                "t": "Suspendisse ligula justo, imperdiet malesuada enim luctus, pretium laoreet mauris. Sed et feugiat sapien. Suspendisse maximus nulla vitae turpis tempus finibus. Maecenas et convallis ligula. Vestibulum imperdiet lectus id tortor aliquet condimentum. Pellentesque venenatis ipsum ac tempus egestas. Cras blandit odio.",
                                 "ca": 0,
                                 "j": 2,
                                 "tr": 0,
