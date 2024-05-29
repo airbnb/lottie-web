@@ -8,19 +8,39 @@
 
 <div style="width:1024px;height:1024px;background-color:#333;position: absolute;left:0;right:0;top:0;bottom:0;margin:auto" id="bodymovin"></div>
 
+<select id="sample_select" onchange="update_animation()">
+  <option value="basic.json" selected>Basic line and paragraph</option>
+  <option value="rtl.json">RTL</option>
+  <option value="bidi.json">BiDi</option>
+  <option value="transform.json">Transformed</option>
+</select>
+
 <script>
+  const sample_select = document.getElementById('sample_select');
+  const url_params = new URLSearchParams(window.location.search);
+  const sample = (new URLSearchParams(window.location.search)).get('sample');
 
-    var animData = {
-        wrapper: document.getElementById('bodymovin'),
-        animType: 'svg',
-        loop: true,
-        prerender: true,
-        autoplay: true,
-        path: 'data.json'
+  if (sample) {
+    sample_select.value = sample;
+  }
 
-    };
-    var anim = bodymovin.loadAnimation(animData);
-    bodymovin.setSubframeRendering(false);
+  bodymovin.setSubframeRendering(false);
+
+  let anim_data = {
+    wrapper: document.getElementById('bodymovin'),
+    animType: 'html',
+    loop: true,
+    prerender: true,
+    autoplay: true
+  };
+
+  function update_animation() {
+    console.log('Loading ' + sample_select.value);
+    anim_data.path = sample_select.value;
+    bodymovin.loadAnimation(anim_data);
+  }
+
+  update_animation();
 </script>
 </body>
 </html>
