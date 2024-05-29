@@ -578,6 +578,9 @@ TextAnimatorProperty.prototype.getMeasures = function (documentData, lettersChan
         // TODO: This is not going to work for RTL!
         xPos += letters[i].l + (documentData.tr * 0.001) * documentData.finalSize;
       }
+      if (window.useSkia) {
+        matrixHelper.props[12] = 0.0;
+      }
       if (renderType === 'html') {
         letterM = matrixHelper.toCSS();
       } else if (renderType === 'svg') {

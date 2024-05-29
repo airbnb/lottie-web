@@ -379,21 +379,26 @@ class Shaper {
     const font = this.fontStyleRanges[0].fontStyle;
     if (width > 0) {
       span.style.maxWidth = `${width}px`;
-    } else {
+    } else if (this.coloredId !== 'undefined') {
       // Trying to use a heuristics to get a decent text width that fit the entire text
       span.style.width = `${font.size * this.text.length * 2}px`;
+    } else {
+      span.style.whiteSpace = 'nowrap';
+      span.style.overflow = 'hidden';
     }
     span.style.float = 'left';
     span.style.margin = '0px';
     span.style.padding = '0px';
     span.style.border = '2px solid black';
     span.style.visibility = 'collapse';
-    if (font.className !== undefined) {
+    if (font.className !== undefined && font.className !== '') {
       span.style.class = font.className;
     } else {
-      span.style.fontFamily = font.fontFamily;
+      span.style.fontFamily = font.family;
     }
-    span.style.fontSize = font.fontSize;
+    span.style.fontSize = `${font.size}px`;
+    span.style.fontStyle = font.style;
+    span.style.fontWeight = font.weight;
     this.generateSpanStructures(span);
     this.extractInfo(span);
 
@@ -404,6 +409,7 @@ class Shaper {
     }
 
     if (this.coloredId === 'undefined') {
+      console.log(span.outerHTML);
       document.body.removeChild(span);
     } else {
       span.style.visibility = 'visible';
