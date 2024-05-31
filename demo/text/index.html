@@ -8,15 +8,24 @@
 
 <div style="width:1024px;height:1024px;background-color:#333;position: absolute;left:0;right:0;top:0;bottom:0;margin:auto" id="bodymovin"></div>
 
-<select id="sample_select" onchange="update_animation()">
+<div style="display:inline;">Sample:</div>
+<select id="sample_select" onchange="reload_animation()">
   <option value="basic.json" selected>Basic line and paragraph</option>
   <option value="rtl.json">RTL</option>
   <option value="bidi.json">BiDi</option>
   <option value="transform.json">Transformed</option>
 </select>
+<br>
+
+<div style="display:inline;">Shaper:</div>
+<select id="shaper_select" onchange="reload_animation()">
+  <option value="lottie">Lottie (legacy)</option>
+  <option value="skia">Skia (awesome)</option>
+</select>
 
 <script>
   const sample_select = document.getElementById('sample_select');
+  const shaper_select = document.getElementById('shaper_select');
   const url_params = new URLSearchParams(window.location.search);
   const sample = (new URLSearchParams(window.location.search)).get('sample');
 
@@ -34,13 +43,14 @@
     autoplay: true
   };
 
-  function update_animation() {
-    console.log('Loading ' + sample_select.value);
+  function reload_animation() {
     anim_data.path = sample_select.value;
     bodymovin.loadAnimation(anim_data);
+
+    window.setSkia = shaper_select.value === 'skia' ? 1 : 0;
   }
 
-  update_animation();
+  reload_animation();
 </script>
 </body>
 </html>
