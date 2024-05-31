@@ -268,8 +268,39 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   const lineWidths = [];
   const letters = [];
   let lineIndex = 0;
+  // Scan glyphs in the visual order (taking in account LTR/RTL)
   for (const line of multiLineShaper.lines) {
-    console.log(`${lineIndex}: line[${line.glyphRange.start}:${line.glyphRange.end}] ${multiLineShaper.graphemes.length}`);
+    for (let r = line.runRange.start; r < line.runRange.end; r += 1) {
+      const run = multiLineShaper.runs[r];
+      let start = run.glyphRange.start;
+      let end = run.glyphRange.end;
+      let step = 1;
+      if (run.textDirection === 'RTL') {
+        start = run.glyphRange.end - 1;
+        end = run.glyphRange.start - 1;
+        step = -1;
+      }
+      for (let g = start; (step > 0 && g < end) || (step < 0 && g > end); g += step) {
+        const glypheme = multiLineShaper.graphemes[g];
+        if (glypheme === undefined) {
+          console.log(`glypheme #${g} is undefined!`);
+        } else {
+          letters.push({
+            l: Math.abs(glypheme.bounds.right - glypheme.bounds.left), // Glypheme width
+            an: Math.abs(glypheme.bounds.right - glypheme.bounds.left), // Glypheme width
+            add: 0, // Glypheme advance (glypheme.bounds.right)
+            n: glypheme.isNewLine, // TODO: new line indicator for '\n'
+            anIndexes: [],
+            val: glypheme.text, // Glypheme text
+            line: lineIndex,
+            animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+            ind: g, // glypheme cluster index
+            extra: 0,
+          });
+        }
+      }
+    }
+    /*
     for (let g = line.glyphRange.start; g < line.glyphRange.end; g += 1) {
       const glypheme = multiLineShaper.graphemes[g];
       if (glypheme === undefined) {
@@ -289,6 +320,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         });
       }
     }
+     */
     lineWidths.push(line.bounds.right - line.bounds.left);
     lineIndex += 1;
   }
