@@ -382,14 +382,16 @@ class Shaper {
     } else if (this.coloredId !== 'undefined') {
       // Trying to use a heuristics to get a decent text width that fit the entire text
       span.style.width = `${font.size * this.text.length * 2}px`;
+      span.style.border = '2px solid black';
     } else {
       span.style.whiteSpace = 'nowrap';
       span.style.overflow = 'hidden';
     }
+    span.style.padding = '0px';
+    span.style.margin = '0px';
     span.style.float = 'left';
     span.style.margin = '0px';
     span.style.padding = '0px';
-    span.style.border = '2px solid black';
     span.style.visibility = 'collapse';
     if (font.className !== undefined && font.className !== '') {
       span.style.class = font.className;
@@ -467,13 +469,13 @@ class Shaper {
       if ((property & Properties.wordStart) === Properties.wordStart) {
         // Start the word
         html += `<span id='w${w}' class='`;
-        html += (hadWhitespaces ? 'whitespaces ' : '') + "word' style='word-break: keep-all;'>";
+        html += (hadWhitespaces ? 'whitespaces ' : '') + "word' style='word-break: keep-all; margin: 0px; padding: 0px;'>";
         w += 1;
         isWord = true;
       }
       if ((property & Properties.graphemeStart) === Properties.graphemeStart) {
         // Start the grapheme
-        html += `<span id='g${g}' class='grapheme'>`;
+        html += `<span id='g${g}' class='grapheme' style='margin: 0px; padding: 0px;'>`;
         g += 1;
         isGrapheme = true;
         start = i;

@@ -19,7 +19,6 @@ import {
 } from '../../utils/helpers/shapeEnums';
 import {
   styleDiv,
-  styleSpan,
 } from '../../utils/common';
 
 function HTextElement(data, globalData, comp) {
@@ -122,13 +121,8 @@ HTextElement.prototype.buildNewText = function () {
       } else {
         tParent = createTag('span');
         tSpan = createTag('span');
-        if (window.useSkia) {
-          styleSpan(tParent);
-          // styleSpan(tSpan);
-        } else {
-          styleDiv(tParent);
-          styleDiv(tSpan);
-        }
+        styleDiv(tParent);
+        styleDiv(tSpan);
         tParent.appendChild(tSpan);
       }
     } else {
@@ -193,11 +187,7 @@ HTextElement.prototype.buildNewText = function () {
     } else {
       this.textSpans[cnt] = tSpan;
     }
-    if (window.useSkia) {
-      this.textSpans[cnt].style.display = 'inline';
-    } else {
-      this.textSpans[cnt].style.display = 'block';
-    }
+    this.textSpans[cnt].style.display = 'block';
     this.textPaths[cnt] = tSpan;
     cnt += 1;
   }

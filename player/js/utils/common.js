@@ -67,19 +67,6 @@ function styleDiv(element) {
   element.style.webkitTransformStyle = 'preserve-3d';
   element.style.mozTransformStyle = 'preserve-3d';
 }
-function styleSpan(element) {
-  element.style.position = 'relative';
-  element.style.top = 0;
-  element.style.left = 0;
-  element.style.display = 'inline';
-  element.style.transformOrigin = '0 0';
-  element.style.webkitTransformOrigin = '0 0';
-  element.style.backfaceVisibility = 'visible';
-  element.style.webkitBackfaceVisibility = 'visible';
-  element.style.transformStyle = 'preserve-3d';
-  element.style.webkitTransformStyle = 'preserve-3d';
-  element.style.mozTransformStyle = 'preserve-3d';
-}
 
 function BMEnterFrameEvent(type, currentTime, totalTime, frameMultiplier) {
   this.type = type;
@@ -271,7 +258,6 @@ export {
   degToRads,
   roundCorner,
   styleDiv,
-  styleSpan,
   bmRnd,
   roundValues,
   BMEnterFrameEvent,

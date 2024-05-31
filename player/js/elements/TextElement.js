@@ -85,13 +85,6 @@ ITextElement.prototype.destroy = function () {
 
 ITextElement.prototype.validateText = function () {
   if (this.textProperty._mdf || this.textProperty._isFirstFrame) {
-    if (window.useSkia) {
-      // const newElement = document.createElement('span');
-      // newElement.style = this.baseElement.style;
-      // newElement.append(this.baseElement.children);
-      // this.baseElement = newElement;
-      this.baseElement.style.whiteSpace = 'nowrap';
-    }
     this.buildNewText();
     this.textProperty._isFirstFrame = false;
     this.textProperty._mdf = false;
