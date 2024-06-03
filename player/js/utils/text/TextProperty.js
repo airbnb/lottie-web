@@ -239,7 +239,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   documentData.fStyle = fontProps.style;
   documentData.finalSize = documentData.s;
   documentData.finalText = oneLineShaper.lottie_glyphemeClusters();
-  documentData.finalLineHeight = oneLineShaper.measurement().height();
+  documentData.finalLineHeight = documentData.lh;// oneLineShaper.measurement().height();
 
   // Formatting and resizing text
   let multiLineShaper = oneLineShaper;
