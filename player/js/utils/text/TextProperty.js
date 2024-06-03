@@ -349,6 +349,53 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   }
 
   // TODO: There was a puzzling piece of code doing something for animation
+  documentData.lineWidths = lineWidths;
+  var data = this.data;
+  var i; var j;
+  var len = documentData.finalText.length;
+  var animators = data.a; var animatorData; var
+    letterData;
+  var jLen = animators.length;
+  var based; var ind; var
+    indexes = [];
+  for (j = 0; j < jLen; j += 1) {
+    animatorData = animators[j];
+    if (animatorData.a.sc) {
+      documentData.strokeColorAnim = true;
+    }
+    if (animatorData.a.sw) {
+      documentData.strokeWidthAnim = true;
+    }
+    if (animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb) {
+      documentData.fillColorAnim = true;
+    }
+    ind = 0;
+    based = animatorData.s.b;
+    for (i = 0; i < len; i += 1) {
+      letterData = letters[i];
+      letterData.anIndexes[j] = ind;
+      if ((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) { // eslint-disable-line eqeqeq
+        if (animatorData.s.rn === 1) {
+          indexes.push(ind);
+        }
+        ind += 1;
+      }
+    }
+    data.a[j].s.totalChars = ind;
+    var currentInd = -1; var
+      newInd;
+    if (animatorData.s.rn === 1) {
+      for (i = 0; i < len; i += 1) {
+        letterData = letters[i];
+        if (currentInd != letterData.anIndexes[j]) { // eslint-disable-line eqeqeq
+          currentInd = letterData.anIndexes[j];
+          newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
+        }
+        letterData.anIndexes[j] = newInd;
+      }
+    }
+  }
+
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
