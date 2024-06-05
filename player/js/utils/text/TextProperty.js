@@ -285,9 +285,14 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         if (glypheme === undefined) {
           console.log(`glypheme #${g} is undefined!`);
         } else {
+          let len = Math.abs(glypheme.bounds.right - glypheme.bounds.left);
+          if (fontManager.chars) {
+            const charData = fontManager.getCharData(documentData.finalText[g], fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
+            len = (charData.w * documentData.finalSize) / 100;
+          }
           letters.push({
-            l: Math.abs(glypheme.bounds.right - glypheme.bounds.left), // Glypheme width
-            an: Math.abs(glypheme.bounds.right - glypheme.bounds.left), // Glypheme width
+            l: len, // Glypheme width
+            an: len, // Glypheme width
             add: 0, // Glypheme advance (glypheme.bounds.right)
             n: glypheme.isNewLine, // TODO: new line indicator for '\n'
             anIndexes: [],
