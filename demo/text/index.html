@@ -6,7 +6,7 @@
 
 <body style="background-color:#ccc; margin: 0;height: 100%;">
 
-<div style="width:1024px;height:1024px;background-color:#333;position: absolute;left:0;right:0;top:0;bottom:0;margin:auto" id="bodymovin"></div>
+<div style="width:1024px;height:1024px;background-color:#333;position: absolute;left:0;right:0;top:0;bottom:0;margin:auto" id="lottie"></div>
 
 <div style="display:inline;">Sample:</div>
 <select id="sample_select" onchange="reload_animation()">
@@ -14,7 +14,9 @@
   <option value="rtl.json">RTL</option>
   <option value="bidi.json">BiDi</option>
   <option value="zalgo.json">Scary looking zalgo text</option>
-  <option value="transform.json">Transformed</option>
+  <option value="animation-1.json">Animation 1</option>
+  <option value="animation-2.json">Animation 2</option>
+  <option value="animation-3.json">Animation 2</option>
   <option value="banner.json">Banner</option>
 </select>
 <br>
@@ -30,6 +32,7 @@
   const shaper_select = document.getElementById('shaper_select');
   const url_params = new URLSearchParams(window.location.search);
   const sample = (new URLSearchParams(window.location.search)).get('sample');
+  let current_animation;
 
   if (sample) {
     sample_select.value = sample;
@@ -38,7 +41,7 @@
   bodymovin.setSubframeRendering(false);
 
   let anim_data = {
-    wrapper: document.getElementById('bodymovin'),
+    wrapper: document.getElementById('lottie'),
     animType: 'html',
     loop: true,
     prerender: true,
@@ -46,8 +49,12 @@
   };
 
   function reload_animation() {
+    if (current_animation) {
+      current_animation.destroy();
+    }
+
     anim_data.path = sample_select.value;
-    bodymovin.loadAnimation(anim_data);
+    current_animation = bodymovin.loadAnimation(anim_data);
 
     window.setSkia = shaper_select.value === 'skia' ? 1 : 0;
   }
