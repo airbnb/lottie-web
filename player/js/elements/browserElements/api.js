@@ -405,6 +405,7 @@ class Shaper {
     span.style.fontWeight = font.weight;
     this.generateSpanStructures(span);
     this.extractInfo(span);
+    this.lottie_convertWhitespaces();
     if (rect !== null) {
       rect.style = 'margin: 0px; padding: 0px; border: 0px';
       const size = this.measurement();
@@ -780,13 +781,18 @@ class Shaper {
   lottie_glyphemeClusters() {
     const result = [];
     for (const cluster of this.graphemes) {
-      let text = cluster.text;
-      if (cluster.isWhitespaces) {
-        text = text.replaceAll('&nbsp;', ' ');
-      }
-      result.push(text);
+      result.push(cluster.text);
     }
     return result;
+  }
+
+  // eslint-disable-next-line camelcase
+  lottie_convertWhitespaces() {
+    for (const cluster of this.graphemes) {
+      if (cluster.isWhitespaces) {
+        cluster.text = cluster.text.replaceAll('&nbsp;', ' ');
+      }
+    }
   }
 
   /**
