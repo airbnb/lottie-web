@@ -188,6 +188,8 @@ class GlyphCluster {
     this.text = '';
     this.isWhitespaces = false;
     this.isNewLine = false;
+    this.isTrailingSpaces = false;
+    this.isLeadingSpaces = false;
   }
 
   textDirection() {
@@ -403,7 +405,6 @@ class Shaper {
     span.style.fontWeight = font.weight;
     this.generateSpanStructures(span);
     this.extractInfo(span);
-
     if (rect !== null) {
       rect.style = 'margin: 0px; padding: 0px; border: 0px';
       const size = this.measurement();
@@ -689,10 +690,10 @@ class Shaper {
       currentWord.startFrom(currentCluster);
     }
     // Finish run and line
-    currentLine.glyphRange.end = this.graphemes.length + 1;
+    currentLine.glyphRange.end = this.graphemes.length;
     currentLine.runRange.end = this.runs.length + 1;
     currentLine.wordRange.end = this.words.length;
-    currentRun.glyphRange.end = this.graphemes.length + 1;
+    currentRun.glyphRange.end = this.graphemes.length;
     currentRun.wordRange.end = this.words.length;
 
     // Add collected run and line to the list
@@ -701,6 +702,47 @@ class Shaper {
     this.layoutPerformed = true;
   }
 
+  /**
+   * Mark leading and trailing spaces
+   */
+  /*
+  markSpaces() {
+    for (const line of this.lines) {
+      for (let r = line.runRange.start; r < line.runRange.end; r += 1) {
+        const run = this.runs[r];
+        let start = run.glyphRange.start;
+        let end = run.glyphRange.end;
+        let step = 1;
+        if (run.textDirection === 'RTL') {
+          start = run.glyphRange.end - 1;
+          end = run.glyphRange.start - 1;
+          step = -1;
+        }
+
+        var leading = true;
+        for (let g = start; (step > 0 && g < end) || (step < 0 && g > end); g += step) {
+          const glypheme = this.graphemes[g];
+          if (leading && glypheme.isWhitespaces) {
+            glypheme.isLeadingSpaces = true;
+          } else {
+            break;
+          }
+        }
+
+        step = run.textDirection === 'RTL' ? 1 : -1;
+        var trailing = true;
+        for (let g = end; (step > 0 && g < start) || (step < 0 && g > start); g += step) {
+          const glypheme = this.graphemes[g + step];
+          if (trailing && glypheme.isWhitespaces) {
+            glypheme.isTrailingSpaces = true;
+          } else {
+            break;
+          }
+        }
+      }
+    }
+  }
+  */
   /**
    * Extracts properties by the utf16 index in the text
    * (will return all properties that are actually applicable to the entire grapheme)
@@ -738,9 +780,9 @@ class Shaper {
   lottie_glyphemeClusters() {
     const result = [];
     for (const cluster of this.graphemes) {
-      const text = cluster.text;
+      let text = cluster.text;
       if (cluster.isWhitespaces) {
-        text.replaceAll('&nbsp;', ' ');
+        text = text.replaceAll('&nbsp;', ' ');
       }
       result.push(text);
     }
