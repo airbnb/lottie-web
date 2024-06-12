@@ -220,6 +220,11 @@ TextProperty.prototype.buildFinalText = function (text) {
 
 TextProperty.prototype.skia_completeTextData = function (documentData) {
   documentData.__complete = true;
+
+  var anchorGrouping = this.data.m.g;
+  var currentSize = 0;
+  var currentPos = 0;
+  var index = 0;
   var fontManager = this.elem.globalData.fontManager;
   var fontData = fontManager.getFontByName(documentData.f);
   var fontProps = getFontProperties(fontData);
@@ -302,30 +307,44 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
             ind: g, // glypheme cluster index
             extra: 0,
           });
+          if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
+            currentSize += len;
+            if (glypheme.text === '' || glypheme.text === ' ' || i === len - 1) {
+              if (glypheme.text === '' || glypheme.text === ' ') {
+                currentSize -= len;
+              }
+              while (currentPos <= i) {
+                letters[currentPos].an = currentSize;
+                letters[currentPos].ind = index;
+                letters[currentPos].extra = len;
+                currentPos += 1;
+              }
+              index += 1;
+              currentSize = 0;
+            }
+          } else if (anchorGrouping == 3) { // eslint-disable-line eqeqeq
+            currentSize += len;
+            if (glypheme.text === '' || i === len - 1) {
+              if (glypheme.text === '') {
+                currentSize -= len;
+              }
+              while (currentPos <= i) {
+                letters[currentPos].an = currentSize;
+                letters[currentPos].ind = index;
+                letters[currentPos].extra = len;
+                currentPos += 1;
+              }
+              currentSize = 0;
+              index += 1;
+            }
+          } else {
+            letters[index].ind = index;
+            letters[index].extra = 0;
+            index += 1;
+          }
         }
       }
     }
-    /*
-    for (let g = line.glyphRange.start; g < line.glyphRange.end; g += 1) {
-      const glypheme = multiLineShaper.graphemes[g];
-      if (glypheme === undefined) {
-        console.log(`glypheme #${g} is undefined!`);
-      } else {
-        letters.push({
-          l: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
-          an: glypheme.bounds.right - glypheme.bounds.left, // Glypheme width
-          add: 0, // Glypheme advance (glypheme.bounds.right)
-          n: glypheme.isNewLine, // TODO: new line indicator for '\n'
-          anIndexes: [],
-          val: glypheme.text, // Glypheme text
-          line: lineIndex,
-          animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
-          ind: g, // glypheme cluster index
-          extra: 0,
-        });
-      }
-    }
-     */
     lineWidths.push(line.bounds.right - line.bounds.left);
     lineIndex += 1;
   }
@@ -379,7 +398,10 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     for (i = 0; i < len; i += 1) {
       letterData = letters[i];
       letterData.anIndexes[j] = ind;
-      if ((based == 1 && letterData.val !== '') || (based == 2 && letterData.val !== '' && letterData.val !== ' ') || (based == 3 && (letterData.n || letterData.val == ' ' || i == len - 1)) || (based == 4 && (letterData.n || i == len - 1))) { // eslint-disable-line eqeqeq
+      if ((based === 1 && letterData.val !== '') // chars
+          || (based === 2 && letterData.val !== '' && letterData.val !== ' ') // chars-excluding-whitespace
+          || (based === 3 && (letterData.n || letterData.val === ' ' || i === len - 1)) // words
+          || (based === 4 && (letterData.n || i === len - 1))) { // eslint-disable-line eqeqeq
         if (animatorData.s.rn === 1) {
           indexes.push(ind);
         }
@@ -392,7 +414,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     if (animatorData.s.rn === 1) {
       for (i = 0; i < len; i += 1) {
         letterData = letters[i];
-        if (currentInd != letterData.anIndexes[j]) { // eslint-disable-line eqeqeq
+        if (currentInd !== letterData.anIndexes[j]) { // eslint-disable-line eqeqeq
           currentInd = letterData.anIndexes[j];
           newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
         }
@@ -400,7 +422,14 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
       }
     }
   }
-
+  var nums = '';
+  for (i = 0; i < len; i += 1) {
+    letterData = letters[i];
+    for (ind of letterData.anIndexes) {
+      nums += ` ${ind}`;
+    }
+  }
+  console.log(`Skia "${documentData.t}": ${nums}`);
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
@@ -629,6 +658,15 @@ TextProperty.prototype.completeTextData = function (documentData) {
       }
     }
   }
+
+  var nums = '';
+  for (i = 0; i < len; i += 1) {
+    letterData = letters[i];
+    for (ind of letterData.anIndexes) {
+      nums += ` ${ind}`;
+    }
+  }
+  console.log(`Lottie "${documentData.t}": ${nums}`);
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
