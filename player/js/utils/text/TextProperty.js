@@ -298,22 +298,21 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
           letters.push({
             l: len, // Glypheme width
             an: len, // Glypheme width
-            add: 0, // Glypheme advance (glypheme.bounds.right)
+            add: currentSize, // Glypheme advance (glypheme.bounds.right)
             n: glypheme.isNewLine, // TODO: new line indicator for '\n'
             anIndexes: [],
             val: glypheme.text, // Glypheme text
             line: lineIndex,
             animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
-            ind: g, // glypheme cluster index
             extra: 0,
           });
           if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
             currentSize += len;
-            if (glypheme.text === '' || glypheme.text === ' ' || i === len - 1) {
+            if (glypheme.text === '' || glypheme.text === ' ' || letters.length === documentData.finalText.length) {
               if (glypheme.text === '' || glypheme.text === ' ') {
                 currentSize -= len;
               }
-              while (currentPos <= i) {
+              while (currentPos <= letters.length - 1) {
                 letters[currentPos].an = currentSize;
                 letters[currentPos].ind = index;
                 letters[currentPos].extra = len;
@@ -322,13 +321,13 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
               index += 1;
               currentSize = 0;
             }
-          } else if (anchorGrouping == 3) { // eslint-disable-line eqeqeq
+          } else if (anchorGrouping === 3) { // eslint-disable-line eqeqeq
             currentSize += len;
-            if (glypheme.text === '' || i === len - 1) {
+            if (glypheme.text === '' || letters.length === documentData.finalText.length) {
               if (glypheme.text === '') {
                 currentSize -= len;
               }
-              while (currentPos <= i) {
+              while (currentPos <= letters.length - 1) {
                 letters[currentPos].an = currentSize;
                 letters[currentPos].ind = index;
                 letters[currentPos].extra = len;
@@ -422,14 +421,6 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
       }
     }
   }
-  var nums = '';
-  for (i = 0; i < len; i += 1) {
-    letterData = letters[i];
-    for (ind of letterData.anIndexes) {
-      nums += ` ${ind}`;
-    }
-  }
-  console.log(`Skia "${documentData.t}": ${nums}`);
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
@@ -659,14 +650,6 @@ TextProperty.prototype.completeTextData = function (documentData) {
     }
   }
 
-  var nums = '';
-  for (i = 0; i < len; i += 1) {
-    letterData = letters[i];
-    for (ind of letterData.anIndexes) {
-      nums += ` ${ind}`;
-    }
-  }
-  console.log(`Lottie "${documentData.t}": ${nums}`);
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
