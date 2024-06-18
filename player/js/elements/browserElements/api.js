@@ -54,6 +54,8 @@ const utils = {
 
   equal: function (a, b) { return Math.abs(a - b) < 0.001; },
 
+  less: function (a, b) { return a - b < 0.001; },
+
 };
 
 // Text unit properties
@@ -403,6 +405,7 @@ class Shaper {
     span.style.fontSize = `${font.size}px`;
     span.style.fontStyle = font.style;
     span.style.fontWeight = font.weight;
+    span.style.fontVariantLigatures = 'none';
     this.generateSpanStructures(span);
     this.extractInfo(span);
     this.lottie_convertWhitespaces();
@@ -535,6 +538,7 @@ class Shaper {
     let textIndex = 0;
     let prevGraphemeRect;
     let prevGraphemeTextDirection = TextDirection.Undefined;
+    let startNewLine = true;
     for (const word of span.children) {
       if (word.tagName.toUpperCase() !== 'SPAN') {
         // Skip <br/>
@@ -547,12 +551,13 @@ class Shaper {
       // Start a new word
       const first = allBounds[0];
       const last = allBounds[allBounds.length - 1];
-      if (textIndex === 0) {
-        if (wordTextDirection === TextDirection.LTR || first.left <= last.right) {
+      if (startNewLine) {
+        startNewLine = false;
+        if (wordTextDirection === TextDirection.LTR || (first.bottom <= last.top || first.right <= last.left)) {
           prevGraphemeRect = new Rect(first.left, first.top, 0, first.height);
           prevGraphemeTextDirection = TextDirection.LTR;
         } else {
-          prevGraphemeRect = new Rect(first.right, first.top, 0, first.width);
+          prevGraphemeRect = new Rect(first.right, first.top, 0, first.height);
           prevGraphemeTextDirection = TextDirection.RTL;
         }
       }
@@ -562,10 +567,14 @@ class Shaper {
         const graphemeRects = grapheme.getClientRects();
         console.assert(graphemeRects.length === 1);
         console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
+        const nextLine = utils.less(prevGraphemeRect.bottom, graphemeRects[0].top);
         // Correct the cluster bounds and the visual left position
         let textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
         let graphemeTextDirection = wordTextDirection;
-        if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
+        // console.assert(startNewLine === nextLine);
+        if (nextLine) {
+          textDirectionSwitch = false;
+        } else if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
           // Sequential LTR: 1,2,3,4,5
           console.assert(prevGraphemeTextDirection === TextDirection.LTR);
           graphemeTextDirection = TextDirection.LTR;
@@ -608,7 +617,7 @@ class Shaper {
         // Detect the line break.
         // Line break breaks also the run and the word (just to keep everything in order)
         // We also use the same code to initialize the structures (textIndex === 0)
-        if (currentCluster.bounds.top >= currentLine.bounds.bottom) {
+        if (nextLine /* currentCluster.bounds.top >= currentLine.bounds.bottom */) {
           // Finish word, run and line
           currentLine.glyphRange.end = this.graphemes.length;
           currentLine.wordRange.end = this.words.length + 1;
@@ -628,6 +637,8 @@ class Shaper {
           currentWord.startFrom(currentCluster);
           currentRun.startFrom(currentCluster);
           currentLine.startFrom(currentCluster);
+
+          startNewLine = true;
         }
 
         // Check if the current grapheme has a different text direction (run break)
