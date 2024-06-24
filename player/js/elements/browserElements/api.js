@@ -52,6 +52,18 @@ const utils = {
     return goingRight ? TextDirection.LTR : TextDirection.RTL;
   },
 
+  nonEmptyRects: function (word) {
+    const result = [];
+    for (const child of word.children) {
+      const rect = child.getClientRects()[0];
+      if (child.id === '') { // utils.equal(rect.left, rect.right)) {
+        continue;
+      }
+      result.push(rect);
+    }
+    return result;
+  },
+
   equal: function (a, b) { return Math.abs(a - b) < 0.001; },
 
   less: function (a, b) { return a - b < 0.001; },
@@ -385,11 +397,12 @@ class Shaper {
       span.style.maxWidth = `${width}px`;
     } else if (this.coloredId !== 'undefined') {
       // Trying to use a heuristics to get a decent text width that fit the entire text
-      span.style.width = `${font.size * this.text.length * 2}px`;
+      span.style.width = `${font.size * this.text.length * 10}px`;
       span.style.border = '2px solid black';
     } else {
-      span.style.whiteSpace = 'nowrap';
-      span.style.overflow = 'hidden';
+      span.style.width = `${font.size * this.text.length * 10}px`;
+      // span.style.whiteSpace = 'nowrap';
+      // span.style.overflow = 'hidden';
     }
     span.style.padding = '0px';
     span.style.margin = '0px';
@@ -434,27 +447,13 @@ class Shaper {
     let html = '';
     let g = 0;
     let w = 0;
-    let hadWhitespaces = false;
     let start = 0;
     for (let i = 0; i < this.properties.length; ++i) {
       const property = this.properties[i];
-      hadWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
       if (((property & Properties.graphemeStart) === Properties.graphemeStart) && isGrapheme) {
         // Finish the grapheme
         const text = this.text.substring(start, i);
-        if (hadWhitespaces) {
-          let corrected = '';
-          for (const c of text) {
-            if (c === ' ') {
-              corrected += '&nbsp;';
-            } else {
-              corrected += c;
-            }
-          }
-          html += corrected;
-        } else {
-          html += text;
-        }
+        html += text;
         html += '</span>';
         isGrapheme = false;
       }
@@ -473,14 +472,21 @@ class Shaper {
       }
       if ((property & Properties.wordStart) === Properties.wordStart) {
         // Start the word
+        const hasWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
+        const inlineBlock = hasWhitespaces ? '' : ' display: inline-block;';
+        html += '<span style="width: 0px; padding: 0px; margin: 0px; display: inline-block; visibility: collapse;" xml:space="preserve"> </span>';
         html += `<span id='w${w}' class='`;
-        html += (hadWhitespaces ? 'whitespaces ' : '') + "word' style='word-break: keep-all; margin: 0px; padding: 0px;'>";
+        html += (hasWhitespaces ? 'whitespaces ' : '') + `word' style='word-break: keep-all; margin: 0px; padding: 0px;${inlineBlock}'>`;
         w += 1;
         isWord = true;
       }
       if ((property & Properties.graphemeStart) === Properties.graphemeStart) {
         // Start the grapheme
-        html += `<span id='g${g}' class='grapheme' style='margin: 0px; padding: 0px;'>`;
+        const hasWhitespaces = (this.properties[i] & Properties.whiteSpace) === Properties.whiteSpace;
+        html += '<span style="width: 0px; padding: 0px; margin: 0px; display: inline-block; visibility: collapse;" xml:space="preserve"> </span>';
+        const inlineBlock = hasWhitespaces ? '' : ' display: inline-block;';
+        const preserve = hasWhitespaces ? ' xml:space="preserve"' : '';
+        html += `<span id='g${g}' class='grapheme' style='margin: 0px; padding: 0px;${inlineBlock}' ${preserve}>`;
         g += 1;
         isGrapheme = true;
         start = i;
@@ -489,21 +495,8 @@ class Shaper {
     if (isGrapheme) {
       // Finish the grapheme
       const text = this.text.substring(start);
-      if (hadWhitespaces) {
-        let corrected = '';
-        for (const c of text) {
-          if (c === ' ') {
-            corrected += '&nbsp;';
-          } else {
-            corrected += c;
-          }
-        }
-        html += corrected;
-      } else {
-        html += text;
-      }
+      html += text;
       html += '</span>';
-      // isGrapheme = false;
     }
     if (isWord) {
       // Finish the word
@@ -543,9 +536,12 @@ class Shaper {
       if (word.tagName.toUpperCase() !== 'SPAN') {
         // Skip <br/>
         continue;
+      } else if (word.id === '') {
+        // Skip invisible spans
+        continue;
       }
 
-      const allBounds = word.getClientRects();
+      const allBounds = utils.nonEmptyRects(word);
       const wordTextDirection = utils.detectTextDirection(allBounds);
 
       // Start a new word
@@ -564,6 +560,10 @@ class Shaper {
       const wordIsWhitespaces = word.classList.contains('whitespaces');
       let graphemeIndex = 0;
       for (const grapheme of word.children) {
+        if (grapheme.id === '') {
+          // Skip invisible spans
+          continue;
+        }
         const graphemeRects = grapheme.getClientRects();
         console.assert(graphemeRects.length === 1);
         console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
@@ -690,8 +690,7 @@ class Shaper {
       }
 
       // Finish the current word, start the new one
-      const wordRects = word.getClientRects();
-      console.assert(wordRects.length === word.children.length);
+      const wordRects = utils.nonEmptyRects(word);
       const wordRect = new Rect(0, 0, 0, 0);
       wordRect.merge(wordRects, wordTextDirection);
       console.assert(currentWord.isWhitespaces === wordIsWhitespaces);
