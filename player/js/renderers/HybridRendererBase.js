@@ -32,6 +32,7 @@ function HybridRendererBase(animationItem, config) {
       x: (config && config.filterSize && config.filterSize.x) || '-100%',
       y: (config && config.filterSize && config.filterSize.y) || '-100%',
     },
+    useSkriptShaping: (config && config.useSkriptShaping) || false,
   };
   this.globalData = {
     _mdf: false,

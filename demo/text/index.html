@@ -6,10 +6,9 @@
 
 <body style="background-color:#ccc; margin: 0;height: 100%;">
 
-<div style="width:1024px;height:1024px;background-color:#333;position: absolute;left:0;right:0;top:0;bottom:0;margin:auto" id="lottie"></div>
 
 <div style="display:inline;">Sample:</div>
-<select id="sample_select" onchange="reload_animation()">
+<select id="sample_select" onchange="reload_animations()">
   <option value="basic.json" selected>Basic line and paragraph</option>
   <option value="rtl.json">RTL</option>
   <option value="bidi.json">BiDi</option>
@@ -24,11 +23,16 @@
 </select>
 <br>
 
-<div style="display:inline;">Shaper:</div>
-<select id="shaper_select" onchange="reload_animation()">
-  <option value="lottie">Lottie</option>
-  <option value="skia">Skript</option>
-</select>
+<div style="display:inline-block; text-align:center;">
+ <div style="width:1024px;height:1024px;background-color:#333;display:inline-block;" id="lottie1"></div>
+ <br>
+ Lottie
+</div>
+<div style="display:inline-block; text-align:center;">
+  <div style="width:1024px;height:1024px;background-color:#333;display:inline-block;" id="lottie2"></div>
+  <br>
+  Skript
+</div>
 
 <script>
   const sample_select = document.getElementById('sample_select');
@@ -43,26 +47,33 @@
 
   bodymovin.setSubframeRendering(false);
 
-  let anim_data = {
-    wrapper: document.getElementById('lottie'),
-    animType: 'svg',
-    loop: true,
-    prerender: true,
-    autoplay: true
-  };
-
-  function reload_animation() {
-    if (current_animation) {
-      current_animation.destroy();
-    }
-
-    anim_data.path = sample_select.value;
-    current_animation = bodymovin.loadAnimation(anim_data);
-
-    window.setSkia = shaper_select.value === 'skia' ? 1 : 0;
+  function load_animation(path, container, useSkript) {
+    return bodymovin.loadAnimation({
+      path: path,
+      wrapper: container,
+      animType: 'svg',
+      loop: true,
+      prerender: true,
+      autoplay: true,
+      rendererSettings: {
+        useSkriptShaping: useSkript,
+      },
+    });
   }
 
-  reload_animation();
+  let active_animations = [];
+
+  function reload_animations() {
+    for (anim of active_animations) {
+      anim.destroy();
+    }
+    active_animations = [
+      load_animation(sample_select.value, document.getElementById('lottie1'), false),
+      load_animation(sample_select.value, document.getElementById('lottie2'), true),
+    ];
+  }
+
+  reload_animations();
 </script>
 </body>
 </html>

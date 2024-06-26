@@ -56,15 +56,13 @@ function TextProperty(elem, data) {
   this.copyData(this.currentData, this.data.d.k[0].s);
 
   if (!this.searchProperty()) {
-    if (window.setSkia) {
-      console.log(this.currentData.text);
+    console.log(this.currentData.text);
+    if (this.elem.globalData.renderConfig.useSkriptShaping) {
       this.skia_completeTextData(this.currentData);
-      console.log(this.currentData);
     } else {
-      console.log(this.currentData.text);
       this.completeTextData(this.currentData);
-      console.log(this.currentData);
     }
+    console.log(this.currentData);
   }
 }
 
@@ -81,15 +79,14 @@ TextProperty.prototype.copyData = function (obj, data) {
 
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
-    if (window.setSkia) {
-      console.log(this.currentData.text);
+    console.log(this.currentData.text);
+    if (this.elem.globalData.renderConfig.useSkriptShaping) {
+      console.log('*** yaay');
       this.skia_completeTextData(this.currentData);
-      console.log(this.currentData);
     } else {
-      console.log(this.currentData.text);
       this.completeTextData(this.currentData);
-      console.log(this.currentData);
     }
+    console.log(this.currentData);
   }
   this.currentData = data;
   this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
