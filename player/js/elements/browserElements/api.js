@@ -54,8 +54,6 @@ const utils = {
 
   equal: function (a, b) { return Math.abs(a - b) < 0.001; },
 
-  less: function (a, b) { return a - b < 0.001; },
-
 };
 
 // Text unit properties
@@ -405,7 +403,6 @@ class Shaper {
     span.style.fontSize = `${font.size}px`;
     span.style.fontStyle = font.style;
     span.style.fontWeight = font.weight;
-    span.style.fontVariantLigatures = 'none';
     this.generateSpanStructures(span);
     this.extractInfo(span);
     this.lottie_convertWhitespaces();
@@ -465,10 +462,13 @@ class Shaper {
         // Grapheme does not cross the word edges
         console.assert(property && Properties.graphemeStart);
       }
-      const isNewline = (i < this.properties.length - 1) && (this.text.substring(i, i + 1) === '\n');
+      const char = this.text.substring(i, i + 1);
+      const isNewline = (i < this.properties.length - 1) && (char === '\r');
       if (isNewline) {
         console.assert(!isWord && !isGrapheme);
-        html += '<br/>';
+        // Multiple <br/> will be reduced to one line break;
+        // it's not what we want here
+        html += '<br>';
         continue;
       }
       if ((property & Properties.wordStart) === Properties.wordStart) {
@@ -538,10 +538,11 @@ class Shaper {
     let textIndex = 0;
     let prevGraphemeRect;
     let prevGraphemeTextDirection = TextDirection.Undefined;
-    let startNewLine = true;
+    let numberOfLineBreaks = 0;
     for (const word of span.children) {
       if (word.tagName.toUpperCase() !== 'SPAN') {
-        // Skip <br/>
+        // Skip <br>
+        numberOfLineBreaks += 1;
         continue;
       }
 
@@ -551,13 +552,12 @@ class Shaper {
       // Start a new word
       const first = allBounds[0];
       const last = allBounds[allBounds.length - 1];
-      if (startNewLine) {
-        startNewLine = false;
-        if (wordTextDirection === TextDirection.LTR || (first.bottom <= last.top || first.right <= last.left)) {
+      if (textIndex === 0) {
+        if (wordTextDirection === TextDirection.LTR || first.left <= last.right) {
           prevGraphemeRect = new Rect(first.left, first.top, 0, first.height);
           prevGraphemeTextDirection = TextDirection.LTR;
         } else {
-          prevGraphemeRect = new Rect(first.right, first.top, 0, first.height);
+          prevGraphemeRect = new Rect(first.right, first.top, 0, first.width);
           prevGraphemeTextDirection = TextDirection.RTL;
         }
       }
@@ -567,14 +567,10 @@ class Shaper {
         const graphemeRects = grapheme.getClientRects();
         console.assert(graphemeRects.length === 1);
         console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
-        const nextLine = utils.less(prevGraphemeRect.bottom, graphemeRects[0].top);
         // Correct the cluster bounds and the visual left position
         let textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
         let graphemeTextDirection = wordTextDirection;
-        // console.assert(startNewLine === nextLine);
-        if (nextLine) {
-          textDirectionSwitch = false;
-        } else if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
+        if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
           // Sequential LTR: 1,2,3,4,5
           console.assert(prevGraphemeTextDirection === TextDirection.LTR);
           graphemeTextDirection = TextDirection.LTR;
@@ -617,7 +613,8 @@ class Shaper {
         // Detect the line break.
         // Line break breaks also the run and the word (just to keep everything in order)
         // We also use the same code to initialize the structures (textIndex === 0)
-        if (nextLine /* currentCluster.bounds.top >= currentLine.bounds.bottom */) {
+        // Keep in mind that there could be few empty lines, too
+        if (currentCluster.bounds.top >= currentLine.bounds.bottom) {
           // Finish word, run and line
           currentLine.glyphRange.end = this.graphemes.length;
           currentLine.wordRange.end = this.words.length + 1;
@@ -628,17 +625,27 @@ class Shaper {
 
           this.graphemes[this.graphemes.length - 1].isNewLine = true;
 
-          // Add collected word, run and line to the list
+          // Add collected word, run and line(s) to the list
           this.words.push(structuredClone(currentWord));
           this.runs.push(structuredClone(currentRun));
+
+          // No line breaks - wrapping or just one - the next line
+          // Othrwise we have few line breaks
           this.lines.push(structuredClone(currentLine));
+          if (numberOfLineBreaks > 1) {
+            currentLine.glyphRange.start = currentLine.glyphRange.end;
+            currentLine.wordRange.start = currentLine.wordRange.end;
+            currentLine.run.start = currentLine.runRange.end;
+            // Add extra lines for all the rest of line breaks
+            for (let l = 0; l < numberOfLineBreaks - 1; ++l) {
+              this.lines.push(structuredClone(currentLine));
+            }
+          }
 
           // Start the new word, run and line
           currentWord.startFrom(currentCluster);
           currentRun.startFrom(currentCluster);
           currentLine.startFrom(currentCluster);
-
-          startNewLine = true;
         }
 
         // Check if the current grapheme has a different text direction (run break)
@@ -687,6 +694,7 @@ class Shaper {
 
         // Increment textIndex here: the current position in the text
         textIndex += grapheme.innerHTML.length;
+        numberOfLineBreaks = 0;
       }
 
       // Finish the current word, start the new one
