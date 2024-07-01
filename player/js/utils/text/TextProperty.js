@@ -56,13 +56,11 @@ function TextProperty(elem, data) {
   this.copyData(this.currentData, this.data.d.k[0].s);
 
   if (!this.searchProperty()) {
-    console.log(this.currentData.text);
     if (this.elem.globalData.renderConfig.useSkriptShaping) {
       this.skia_completeTextData(this.currentData);
     } else {
       this.completeTextData(this.currentData);
     }
-    console.log(this.currentData);
   }
 }
 

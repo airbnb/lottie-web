@@ -463,7 +463,7 @@ class Shaper {
         console.assert(property && Properties.graphemeStart);
       }
       const char = this.text.substring(i, i + 1);
-      const isNewline = (i < this.properties.length - 1) && (char === '\r');
+      const isNewline = (char === '\r');
       if (isNewline) {
         console.assert(!isWord && !isGrapheme);
         // Multiple <br/> will be reduced to one line break;
@@ -486,6 +486,20 @@ class Shaper {
         start = i;
       }
     }
+
+    for (; start < this.text.length; start += 1) {
+      const char = this.text.substring(start, start + 1);
+      const isNewline = (char === '\r');
+      if (isNewline) {
+        console.assert(!isWord && !isGrapheme);
+        // Multiple <br/> will be reduced to one line break;
+        // it's not what we want here
+        html += '<br>';
+      } else {
+        break;
+      }
+    }
+
     if (isGrapheme) {
       // Finish the grapheme
       const text = this.text.substring(start);
@@ -536,23 +550,64 @@ class Shaper {
     const currentLine = new GlyphLine();
 
     let textIndex = 0;
-    let prevGraphemeRect;
+    let prevGraphemeRect = new Rect(0, 0, 0, 0);
     let prevGraphemeTextDirection = TextDirection.Undefined;
-    let numberOfLineBreaks = 0;
     for (const word of span.children) {
+      let wordTextDirection = TextDirection.LTR;
+      let wordIsWhitespaces = false;
       if (word.tagName.toUpperCase() !== 'SPAN') {
-        // Skip <br>
-        numberOfLineBreaks += 1;
+        // <br> is translated into \r, but it's really hacky
+        // the text is not empty and the cluster, too;
+        // word and run are empty for \r
+        // Add an empty cluster
+        currentCluster.textRange = { start: textIndex, end: textIndex + 1 };
+        currentCluster.glyphRange = { start: this.graphemes.length, end: this.graphemes.length + 1 };
+        currentCluster.text = '';
+        currentCluster.isWhitespaces = false;
+        currentCluster.isNewLine = true;
+        this.graphemes.push(structuredClone(currentCluster));
+        // Finish the previous run (not including this cluster)
+        this.runs.push(structuredClone(currentRun));
+        // Add an empty run
+        currentRun.textRange = structuredClone(currentCluster.textRange);
+        currentRun.glyphRange = structuredClone(currentCluster.glyphRange);
+        currentRun.wordRange = { start: this.words.length, end: this.words.length };
+        this.runs.push(structuredClone(currentRun));
+        // Finish the previous line (including the new run but not this cluster)
+        currentLine.runRange.end = this.runs.length - 1;
+        this.lines.push(structuredClone(currentLine));
+        // Add en empty line
+        currentLine.textRange = structuredClone(currentCluster.textRange);
+        currentLine.glyphRange = structuredClone(currentCluster.glyphRange);
+        currentLine.wordRange = { start: this.words.length, end: this.words.length };
+        currentLine.runRange = { start: this.runs.length - 1, end: this.runs.length };
+        this.lines.push(structuredClone(currentLine));
+        // Start a new cluster
+        currentCluster.textRange.start = currentCluster.textRange.end;
+        currentCluster.glyphRange.start = currentCluster.glyphRange.end;
+        currentCluster.isWhitespaces = false;
+        currentCluster.isNewLine = false;
+        // Start the new run
+        currentRun.textRange.start = currentCluster.textRange.end;
+        currentRun.glyphRange.start = currentCluster.glyphRange.end;
+        currentRun.wordRange.start = this.words.length;
+        // Start the new line
+        currentLine.textRange.start = textIndex + 1;
+        currentLine.glyphRange.start = this.graphemes.length;
+        currentLine.wordRange.start = this.words.length;
+        currentLine.runRange.start = this.runs.length;
+        // Go to the next character
+        textIndex += 1;
         continue;
       }
 
       const allBounds = word.getClientRects();
-      const wordTextDirection = utils.detectTextDirection(allBounds);
+      wordTextDirection = utils.detectTextDirection(allBounds);
 
       // Start a new word
       const first = allBounds[0];
       const last = allBounds[allBounds.length - 1];
-      if (textIndex === 0) {
+      if (prevGraphemeTextDirection === TextDirection.Undefined) {
         if (wordTextDirection === TextDirection.LTR || first.left <= last.right) {
           prevGraphemeRect = new Rect(first.left, first.top, 0, first.height);
           prevGraphemeTextDirection = TextDirection.LTR;
@@ -561,7 +616,7 @@ class Shaper {
           prevGraphemeTextDirection = TextDirection.RTL;
         }
       }
-      const wordIsWhitespaces = word.classList.contains('whitespaces');
+      wordIsWhitespaces = word.classList.contains('whitespaces');
       let graphemeIndex = 0;
       for (const grapheme of word.children) {
         const graphemeRects = grapheme.getClientRects();
@@ -606,15 +661,14 @@ class Shaper {
           currentWord.startFrom(currentCluster);
           currentRun.startFrom(currentCluster);
           currentLine.startFrom(currentCluster);
-
-          textIndex += grapheme.innerHTML.length;
         }
 
         // Detect the line break.
         // Line break breaks also the run and the word (just to keep everything in order)
         // We also use the same code to initialize the structures (textIndex === 0)
         // Keep in mind that there could be few empty lines, too
-        if (currentCluster.bounds.top >= currentLine.bounds.bottom) {
+        const forcedNewLine = (this.graphemes.length > 0) && (this.graphemes[this.graphemes.length - 1].isNewLine);
+        if (!forcedNewLine && (currentCluster.bounds.top >= currentLine.bounds.bottom)) {
           // Finish word, run and line
           currentLine.glyphRange.end = this.graphemes.length;
           currentLine.wordRange.end = this.words.length + 1;
@@ -623,24 +677,13 @@ class Shaper {
           currentRun.wordRange.end = this.words.length + 1;
           currentWord.glyphRange.end = this.graphemes.length;
 
+          // There is no explicit line break - just the result of text wrapping
           this.graphemes[this.graphemes.length - 1].isNewLine = true;
 
           // Add collected word, run and line(s) to the list
           this.words.push(structuredClone(currentWord));
           this.runs.push(structuredClone(currentRun));
-
-          // No line breaks - wrapping or just one - the next line
-          // Othrwise we have few line breaks
           this.lines.push(structuredClone(currentLine));
-          if (numberOfLineBreaks > 1) {
-            currentLine.glyphRange.start = currentLine.glyphRange.end;
-            currentLine.wordRange.start = currentLine.wordRange.end;
-            currentLine.run.start = currentLine.runRange.end;
-            // Add extra lines for all the rest of line breaks
-            for (let l = 0; l < numberOfLineBreaks - 1; ++l) {
-              this.lines.push(structuredClone(currentLine));
-            }
-          }
 
           // Start the new word, run and line
           currentWord.startFrom(currentCluster);
@@ -694,19 +737,18 @@ class Shaper {
 
         // Increment textIndex here: the current position in the text
         textIndex += grapheme.innerHTML.length;
-        numberOfLineBreaks = 0;
       }
-
-      // Finish the current word, start the new one
       const wordRects = word.getClientRects();
       console.assert(wordRects.length === word.children.length);
       const wordRect = new Rect(0, 0, 0, 0);
       wordRect.merge(wordRects, wordTextDirection);
       console.assert(currentWord.isWhitespaces === wordIsWhitespaces);
       console.assert(currentWord.textRange.end === textIndex);
-      currentLine.wordRange.end = this.words.length + 1;
-      currentRun.wordRange.end = this.words.length + 1;
+
+      // Finish the current word, start the new one
       this.words.push(structuredClone(currentWord));
+      currentLine.wordRange.end = this.words.length;
+      currentRun.wordRange.end = this.words.length;
       currentWord.startFrom(currentCluster);
     }
     // Finish run and line
