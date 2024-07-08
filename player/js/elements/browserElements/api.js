@@ -228,6 +228,7 @@ class GlyphWord {
       currentCluster.bounds.bottom - currentCluster.bounds.top
     );
   }
+
 /*
   textRange;
   glyphRange;
@@ -354,6 +355,55 @@ class Shaper {
     const textUnit = new TextRange(this.text.length, this.text.length + text.length);
     this.fontStyleRanges.push(new FontStyleRanges(textUnit, fontStyle));
     this.text += text;
+  }
+
+  /**
+   * @param {GlyphLine} line
+   */
+  finishLine(line) {
+    // Make sure the grapheme, the run and the word are finished by now
+    line.glyphRange.end = this.graphemes.length;
+    line.runRange.end = this.runs.length;
+    line.wordRange.end = this.words.length;
+    this.lines.push(structuredClone(line));
+  }
+
+  /**
+   * @param {GlyphRun} run
+   */
+  finishRun(run) {
+    // Make sure the grapheme and the word are finished by now
+    run.glyphRange.end = this.graphemes.length;
+    run.wordRange.end = this.words.length;
+    this.runs.push(structuredClone(run));
+  }
+
+  /**
+   * @param {GlyphWord} word
+   */
+  finishWord(word) {
+    // Make sure the grapheme is finished
+    word.glyphRange.end = this.graphemes.length;
+    this.words.push(structuredClone(word));
+  }
+
+  /**
+   * @param {GlyphCluster} cluster
+   * @param {Number} textStart
+   * @param {Number} textEnd
+   * @param {Number} graphemeStart
+   * @param {Number} graphemeEnd
+   * @param {String} text
+   * @param {Boolean} whitespaces
+   * @param {Boolean} newLines
+   */
+  addCluster(cluster, textStart, textEnd, graphemeStart, graphemeEnd, text, whitespaces, newLines) {
+    cluster.textRange = { start: textStart, end: textEnd };
+    cluster.glyphRange = { start: graphemeStart, end: graphemeEnd };
+    cluster.text = text;
+    cluster.isWhitespaces = whitespaces;
+    cluster.isNewLine = newLines;
+    this.graphemes.push(structuredClone(cluster));
   }
 
   /**
@@ -558,44 +608,29 @@ class Shaper {
       if (word.tagName.toUpperCase() !== 'SPAN') {
         // <br> is translated into \r, but it's really hacky
         // the text is not empty and the cluster, too;
-        // word and run are empty for \r
-        // Add an empty cluster
-        currentCluster.textRange = { start: textIndex, end: textIndex + 1 };
-        currentCluster.glyphRange = { start: this.graphemes.length, end: this.graphemes.length + 1 };
+        // Add a cluster for \r, also a run and a line?
+        this.addCluster(currentCluster, textIndex, textIndex + 1,
+          this.graphemes.length, this.graphemes.length + 1, '', false, true);
+        // No word for \r?
+        // Finish the current run
+        this.finishRun(currentRun);
+        // Add special a run for \r
+        currentRun.startFrom(currentCluster);
+        this.finishRun(currentRun);
+        // Finish the current line
+        this.finishLine(currentLine);
+        // Add a special line for \r
+        currentLine.startFrom(currentCluster);
+        this.finishLine(currentLine);
+
+        // Initialize the new cluster, word, run and line
+        currentCluster.textRange = new TextRange(textIndex + 1, textIndex + 1);
+        currentCluster.glyphRange = new GlyphRange(this.graphemes.length, this.graphemes.length);
         currentCluster.text = '';
         currentCluster.isWhitespaces = false;
-        currentCluster.isNewLine = true;
-        this.graphemes.push(structuredClone(currentCluster));
-        // Finish the previous run (not including this cluster)
-        this.runs.push(structuredClone(currentRun));
-        // Add an empty run
-        currentRun.textRange = structuredClone(currentCluster.textRange);
-        currentRun.glyphRange = structuredClone(currentCluster.glyphRange);
-        currentRun.wordRange = { start: this.words.length, end: this.words.length };
-        this.runs.push(structuredClone(currentRun));
-        // Finish the previous line (including the new run but not this cluster)
-        currentLine.runRange.end = this.runs.length - 1;
-        this.lines.push(structuredClone(currentLine));
-        // Add en empty line
-        currentLine.textRange = structuredClone(currentCluster.textRange);
-        currentLine.glyphRange = structuredClone(currentCluster.glyphRange);
-        currentLine.wordRange = { start: this.words.length, end: this.words.length };
-        currentLine.runRange = { start: this.runs.length - 1, end: this.runs.length };
-        this.lines.push(structuredClone(currentLine));
-        // Start a new cluster
-        currentCluster.textRange.start = currentCluster.textRange.end;
-        currentCluster.glyphRange.start = currentCluster.glyphRange.end;
-        currentCluster.isWhitespaces = false;
-        currentCluster.isNewLine = false;
-        // Start the new run
-        currentRun.textRange.start = currentCluster.textRange.end;
-        currentRun.glyphRange.start = currentCluster.glyphRange.end;
-        currentRun.wordRange.start = this.words.length;
-        // Start the new line
-        currentLine.textRange.start = textIndex + 1;
-        currentLine.glyphRange.start = this.graphemes.length;
-        currentLine.wordRange.start = this.words.length;
-        currentLine.runRange.start = this.runs.length;
+        currentRun.startFrom(currentCluster);
+        currentLine.startFrom(currentCluster);
+
         // Go to the next character
         textIndex += 1;
         continue;
@@ -652,12 +687,11 @@ class Shaper {
         currentCluster.bounds.assignDirectionally(graphemeRects[0], graphemeTextDirection);
 
         if (textIndex === 0) {
-          // Initialize the new cluster, word, run and line
+          // Initialize the new cluster, word, run and line (for the very first time)
           currentCluster.textRange = new TextRange(textIndex, textIndex + grapheme.innerHTML.length);
           currentCluster.glyphRange = new GlyphRange(0, 1);
-          currentCluster.text = '';
+          currentCluster.text = grapheme.innerHTML;
           currentCluster.isWhitespaces = wordIsWhitespaces;
-
           currentWord.startFrom(currentCluster);
           currentRun.startFrom(currentCluster);
           currentLine.startFrom(currentCluster);
@@ -669,21 +703,13 @@ class Shaper {
         // Keep in mind that there could be few empty lines, too
         const forcedNewLine = (this.graphemes.length > 0) && (this.graphemes[this.graphemes.length - 1].isNewLine);
         if (!forcedNewLine && (currentCluster.bounds.top >= currentLine.bounds.bottom)) {
-          // Finish word, run and line
-          currentLine.glyphRange.end = this.graphemes.length;
-          currentLine.wordRange.end = this.words.length + 1;
-          currentLine.runRange.end = this.runs.length + 1;
-          currentRun.glyphRange.end = this.graphemes.length;
-          currentRun.wordRange.end = this.words.length + 1;
-          currentWord.glyphRange.end = this.graphemes.length;
+          // Finish word, run and line - order is important
+          this.finishWord(currentWord);
+          this.finishRun(currentRun);
+          this.finishLine(currentLine);
 
           // There is no explicit line break - just the result of text wrapping
           this.graphemes[this.graphemes.length - 1].isNewLine = true;
-
-          // Add collected word, run and line(s) to the list
-          this.words.push(structuredClone(currentWord));
-          this.runs.push(structuredClone(currentRun));
-          this.lines.push(structuredClone(currentLine));
 
           // Start the new word, run and line
           currentWord.startFrom(currentCluster);
@@ -697,25 +723,19 @@ class Shaper {
           // Let's break the word if not empty (end the collected one and start another)
           if (currentWord.textRange.start < currentWord.textRange.end) {
             this.words.push(structuredClone(currentWord));
+            currentWord.startFrom(currentCluster);
           }
-          currentWord.startFrom(currentCluster);
 
-          // Let's end the previous run (and the run if it's not empty)
-          currentRun.textRange.end = textIndex;
-          currentRun.glyphRange.end = this.graphemes.length;
-          currentRun.wordRange.end = this.words.length;
-          this.runs.push(structuredClone(currentRun));
-
-          // Let's start the new run
+          // Let's end the previous run and start a new one
+          this.finishRun(currentRun);
           currentRun.startFrom(currentCluster);
         }
 
         // Finish the current grapheme
-        currentCluster.textRange.end = textIndex + grapheme.innerHTML.length;
-        currentCluster.glyphRange.end = this.graphemes.length + 1;
-        currentCluster.text = grapheme.innerHTML;
-        currentCluster.isWhitespaces = wordIsWhitespaces;
-        this.graphemes.push(structuredClone(currentCluster));
+        this.addCluster(currentCluster, currentCluster.textRange.start,
+          textIndex + grapheme.innerHTML.length,
+          currentCluster.glyphRange.start, this.graphemes.length + 1,
+          grapheme.innerHTML, wordIsWhitespaces, false);
 
         // Extend all the cursors: word, run and line
         this.extend(currentWord, currentCluster, false);
@@ -738,6 +758,8 @@ class Shaper {
         // Increment textIndex here: the current position in the text
         textIndex += grapheme.innerHTML.length;
       }
+
+      // Just for assert
       const wordRects = word.getClientRects();
       console.assert(wordRects.length === word.children.length);
       const wordRect = new Rect(0, 0, 0, 0);
@@ -746,21 +768,17 @@ class Shaper {
       console.assert(currentWord.textRange.end === textIndex);
 
       // Finish the current word, start the new one
-      this.words.push(structuredClone(currentWord));
+      this.finishWord(currentWord);
+      currentWord.startFrom(currentCluster);
+      // Update the run and the line
       currentLine.wordRange.end = this.words.length;
       currentRun.wordRange.end = this.words.length;
-      currentWord.startFrom(currentCluster);
     }
-    // Finish run and line
-    currentLine.glyphRange.end = this.graphemes.length;
-    currentLine.runRange.end = this.runs.length + 1;
-    currentLine.wordRange.end = this.words.length;
-    currentRun.glyphRange.end = this.graphemes.length;
-    currentRun.wordRange.end = this.words.length;
 
-    // Add collected run and line to the list
-    this.runs.push(structuredClone(currentRun));
-    this.lines.push(structuredClone(currentLine));
+    // Finish the run and the line, add them to the collected lists
+    this.finishRun(currentRun);
+    this.finishLine(currentLine);
+
     this.layoutPerformed = true;
   }
 
