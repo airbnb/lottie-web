@@ -474,7 +474,6 @@ class Shaper {
     }
 
     if (this.coloredId === 'undefined') {
-      console.log(span.outerHTML);
       document.body.removeChild(span);
     } else {
       span.style.visibility = 'visible';
@@ -622,32 +621,36 @@ class Shaper {
 
         // Finish the current word, start a new one for \r
         this.finishWord(currentWord, textIndex);
-        currentWord.startFrom(currentCluster);
+        // currentWord.startFrom(currentCluster);
 
         // Finish the current run, start a new one for \r
         this.finishRun(currentRun, textIndex);
-        currentRun.startFrom(currentCluster);
+        // currentRun.startFrom(currentCluster);
 
         // Finish the current line, start a new one for \r
         this.finishLine(currentLine, textIndex);
-        currentLine.startFrom(currentCluster);
+        // currentLine.startFrom(currentCluster);
 
         // Add a cluster for \r (so it will be included into word, run and line)
+        // const graphemeRects = word.getClientRects();
+        // console.assert(graphemeRects.length === 1);
+        // currentCluster.bounds.assignDirectionally(graphemeRects[0], TextDirection.LTR);
+        currentCluster.bounds.assign(new DOMRect(0, 0, 0, 0));
         this.addCluster(currentCluster, textIndex, textIndex + 1,
-          this.graphemes.length, this.graphemes.length + 1, '', false, true);
+          this.graphemes.length, this.graphemes.length + 1, '\r', false, true);
         // Finish special word, run and line for \r
-        this.finishWord(currentWord, textIndex + 1);
-        this.finishRun(currentRun, textIndex + 1);
-        this.finishLine(currentLine, textIndex + 1);
+        // this.finishWord(currentWord, textIndex + 1);
+        // this.finishRun(currentRun, textIndex + 1);
+        // this.finishLine(currentLine, textIndex + 1);
+        currentWord.startFrom(currentCluster);
+        currentRun.startFrom(currentCluster);
+        currentLine.startFrom(currentCluster);
 
         // Initialize the new cluster, word, run and line
         currentCluster.textRange = new TextRange(textIndex + 1, textIndex + 1);
         currentCluster.glyphRange = new GlyphRange(this.graphemes.length, this.graphemes.length);
         currentCluster.text = '';
         currentCluster.isWhitespaces = false;
-        currentWord.startFrom(currentCluster);
-        currentRun.startFrom(currentCluster);
-        currentLine.startFrom(currentCluster);
 
         // Go to the next character
         textIndex += 1;

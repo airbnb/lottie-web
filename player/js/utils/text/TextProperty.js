@@ -77,14 +77,11 @@ TextProperty.prototype.copyData = function (obj, data) {
 
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
-    console.log(this.currentData.text);
     if (this.elem.globalData.renderConfig.useSkriptShaping) {
-      console.log('*** yaay');
       this.skia_completeTextData(this.currentData);
     } else {
       this.completeTextData(this.currentData);
     }
-    console.log(this.currentData);
   }
   this.currentData = data;
   this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
@@ -282,60 +279,64 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
       }
       for (let g = start; (step > 0 && g < end) || (step < 0 && g > end); g += step) {
         const glypheme = multiLineShaper.graphemes[g];
+        let val = glypheme.text;
+        let len = 0;
         if (glypheme === undefined) {
           console.log(`glypheme #${g} is undefined!`);
-        } else {
-          let len = Math.abs(glypheme.bounds.right - glypheme.bounds.left);
+        } else if (val !== '\r') {
+          len = Math.abs(glypheme.bounds.right - glypheme.bounds.left);
           if (fontManager.chars) {
-            const charData = fontManager.getCharData(documentData.finalText[g], fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
+            const charData = fontManager.getCharData(val, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             len = (charData.w * documentData.finalSize) / 100;
           }
-          letters.push({
-            l: len, // Glypheme width
-            an: len, // Glypheme width
-            add: currentSize, // Glypheme advance (glypheme.bounds.right)
-            n: glypheme.isNewLine, // TODO: new line indicator for '\n'
-            anIndexes: [],
-            val: glypheme.text, // Glypheme text
-            line: lineIndex,
-            animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
-            extra: 0,
-          });
-          if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
-            currentSize += len;
-            if (glypheme.text === '' || glypheme.text === ' ' || letters.length === documentData.finalText.length) {
-              if (glypheme.text === '' || glypheme.text === ' ') {
-                currentSize -= len;
-              }
-              while (currentPos <= letters.length - 1) {
-                letters[currentPos].an = currentSize;
-                letters[currentPos].ind = index;
-                letters[currentPos].extra = len;
-                currentPos += 1;
-              }
-              index += 1;
-              currentSize = 0;
+        } else {
+          val = '';
+        }
+        letters.push({
+          l: len, // Glypheme width
+          an: len, // Glypheme width
+          add: currentSize, // Glypheme advance (glypheme.bounds.right)
+          n: glypheme.isNewLine, // TODO: new line indicator for '\n'
+          anIndexes: [],
+          val: val, // Glypheme text
+          line: lineIndex,
+          animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+          extra: 0,
+        });
+        if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
+          currentSize += len;
+          if (glypheme.text === '' || glypheme.text === ' ' || letters.length === documentData.finalText.length) {
+            if (glypheme.text === '' || glypheme.text === ' ') {
+              currentSize -= len;
             }
-          } else if (anchorGrouping === 3) { // eslint-disable-line eqeqeq
-            currentSize += len;
-            if (glypheme.text === '' || letters.length === documentData.finalText.length) {
-              if (glypheme.text === '') {
-                currentSize -= len;
-              }
-              while (currentPos <= letters.length - 1) {
-                letters[currentPos].an = currentSize;
-                letters[currentPos].ind = index;
-                letters[currentPos].extra = len;
-                currentPos += 1;
-              }
-              currentSize = 0;
-              index += 1;
+            while (currentPos <= letters.length - 1) {
+              letters[currentPos].an = currentSize;
+              letters[currentPos].ind = index;
+              letters[currentPos].extra = len;
+              currentPos += 1;
             }
-          } else {
-            letters[index].ind = index;
-            letters[index].extra = 0;
+            index += 1;
+            currentSize = 0;
+          }
+        } else if (anchorGrouping === 3) { // eslint-disable-line eqeqeq
+          currentSize += len;
+          if (glypheme.text === '' || letters.length === documentData.finalText.length) {
+            if (glypheme.text === '') {
+              currentSize -= len;
+            }
+            while (currentPos <= letters.length - 1) {
+              letters[currentPos].an = currentSize;
+              letters[currentPos].ind = index;
+              letters[currentPos].extra = len;
+              currentPos += 1;
+            }
+            currentSize = 0;
             index += 1;
           }
+        } else {
+          letters[index].ind = index;
+          letters[index].extra = 0;
+          index += 1;
         }
       }
     }
