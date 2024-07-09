@@ -359,8 +359,13 @@ class Shaper {
 
   /**
    * @param {GlyphLine} line
+   * @param {Number} end
    */
-  finishLine(line) {
+  finishLine(line, end) {
+    if (line.textRange.start === end) {
+      // The line has not started really
+      return;
+    }
     // Make sure the grapheme, the run and the word are finished by now
     line.glyphRange.end = this.graphemes.length;
     line.runRange.end = this.runs.length;
@@ -370,9 +375,15 @@ class Shaper {
 
   /**
    * @param {GlyphRun} run
+   * @param {Number} end
    */
-  finishRun(run) {
+  finishRun(run, end) {
+    if (run.textRange.start === end) {
+      // The run has not really started
+      return;
+    }
     // Make sure the grapheme and the word are finished by now
+    run.textRange.end = end;
     run.glyphRange.end = this.graphemes.length;
     run.wordRange.end = this.words.length;
     this.runs.push(structuredClone(run));
@@ -608,26 +619,33 @@ class Shaper {
       if (word.tagName.toUpperCase() !== 'SPAN') {
         // <br> is translated into \r, but it's really hacky
         // the text is not empty and the cluster, too;
-        // Add a cluster for \r, also a run and a line?
+
+        // Finish the current word, start a new one for \r
+        this.finishWord(currentWord, textIndex);
+        currentWord.startFrom(currentCluster);
+
+        // Finish the current run, start a new one for \r
+        this.finishRun(currentRun, textIndex);
+        currentRun.startFrom(currentCluster);
+
+        // Finish the current line, start a new one for \r
+        this.finishLine(currentLine, textIndex);
+        currentLine.startFrom(currentCluster);
+
+        // Add a cluster for \r (so it will be included into word, run and line)
         this.addCluster(currentCluster, textIndex, textIndex + 1,
           this.graphemes.length, this.graphemes.length + 1, '', false, true);
-        // No word for \r?
-        // Finish the current run
-        this.finishRun(currentRun);
-        // Add special a run for \r
-        currentRun.startFrom(currentCluster);
-        this.finishRun(currentRun);
-        // Finish the current line
-        this.finishLine(currentLine);
-        // Add a special line for \r
-        currentLine.startFrom(currentCluster);
-        this.finishLine(currentLine);
+        // Finish special word, run and line for \r
+        this.finishWord(currentWord, textIndex + 1);
+        this.finishRun(currentRun, textIndex + 1);
+        this.finishLine(currentLine, textIndex + 1);
 
         // Initialize the new cluster, word, run and line
         currentCluster.textRange = new TextRange(textIndex + 1, textIndex + 1);
         currentCluster.glyphRange = new GlyphRange(this.graphemes.length, this.graphemes.length);
         currentCluster.text = '';
         currentCluster.isWhitespaces = false;
+        currentWord.startFrom(currentCluster);
         currentRun.startFrom(currentCluster);
         currentLine.startFrom(currentCluster);
 
@@ -705,8 +723,8 @@ class Shaper {
         if (!forcedNewLine && (currentCluster.bounds.top >= currentLine.bounds.bottom)) {
           // Finish word, run and line - order is important
           this.finishWord(currentWord);
-          this.finishRun(currentRun);
-          this.finishLine(currentLine);
+          this.finishRun(currentRun, textIndex);
+          this.finishLine(currentLine, textIndex);
 
           // There is no explicit line break - just the result of text wrapping
           this.graphemes[this.graphemes.length - 1].isNewLine = true;
@@ -727,7 +745,7 @@ class Shaper {
           }
 
           // Let's end the previous run and start a new one
-          this.finishRun(currentRun);
+          this.finishRun(currentRun, textIndex);
           currentRun.startFrom(currentCluster);
         }
 
@@ -776,8 +794,8 @@ class Shaper {
     }
 
     // Finish the run and the line, add them to the collected lists
-    this.finishRun(currentRun);
-    this.finishLine(currentLine);
+    this.finishRun(currentRun, textIndex);
+    this.finishLine(currentLine, textIndex);
 
     this.layoutPerformed = true;
   }
