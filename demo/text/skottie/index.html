@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html style="width: 100%;height: 100%">
+<head>
+  <script src="../../../build/player/lottie.js"></script>
+</head>
+
+<body style="background-color:#ccc; margin: 0;height: 100%;">
+
+
+<div style="display:inline;">Sample:</div>
+<select id="sample_select" onchange="reload_animations()">
+  <option value="test.json">test</option>
+  <option value="skottie-text-allcaps.json">01</option>
+  <option value="skottie-text-animatedglyphs-01.json">02</option>
+  <option value="skottie-text-animatedglyphs-02.json">03</option>
+  <option value="skottie-text-animatedglyphs-03.json">04</option>
+  <option value="skottie-text-animatedglyphs-04.json">05</option>
+  <option value="skottie-text-animator-1.json">06</option>
+  <option value="skottie-text-animator-2.json">07</option>
+  <option value="skottie-text-animator-3.json">08</option>
+  <option value="skottie-text-animator-4.json">09</option>
+  <option value="skottie-text-animator-5.json">10</option>
+  <option value="skottie-text-animator-6.json">11</option>
+  <option value="skottie-text-animator-7.json">12</option>
+  <option value="skottie-text-animator-8.json">13</option>
+  <option value="skottie-text-animator-fillstrokeopacity.json">14</option>
+  <option value="skottie-text-animator-linespacing.json">15</option>
+  <option value="skottie-text-animator-opacity.json">16</option>
+  <option value="skottie-text-animator-strokewidth.json">17</option>
+  <option value="skottie-text-baseline-shift.json">18</option>
+  <option value="skottie-text-blur.json">19</option>
+  <option value="skottie-text-emptylines.json">20</option>
+  <option value="skottie-text-fill-over-stroke.json">21</option>
+  <option value="skottie-text-grouping-alignment-2.json">22</option>
+  <option value="skottie-text-grouping-alignment.json">23</option>
+  <option value="skottie-textpath-01.json">24</option>
+  <option value="skottie-textpath-02.json">25</option>
+  <option value="skottie-textpath-03.json">26</option>
+  <option value="skottie-textpath-04.json">27</option>
+  <option value="skottie-textpath-05.json">28</option>
+  <option value="skottie-textpath-paragraph-01.json">29</option>
+  <option value="skottie-textpath-paragraph-02.json">30</option>
+  <option value="skottie-textpath-paragraph-03.json">31</option>
+  <option value="skottie-textpath-tracking.json">32</option>
+  <option value="skottie-text-perchar-3d.json">33</option>
+  <option value="skottie-text-pointmode-downscaletofit.json">34</option>
+  <option value="skottie-text-pointmode-scaletofit.json">35</option>
+  <option value="skottie-text-resize-to-fit.json">36</option>
+  <option value="skottie-text-rtl.json">37</option>
+  <option value="skottie-text-scale-to-fit.json">38</option>
+  <option value="skottie-text-scale-to-fit-maxlines.json">39</option>
+  <option value="skottie-text-scale-to-fit-minmax.json">40</option>
+  <option value="skottie-text-strokejoin.json">41</option>
+  <option value="skottie-text-strokescale.json">42</option>
+  <option value="skottie-text-valign-2.json">43</option>
+  <option value="skottie-text-valign-bottom.json">44</option>
+  <option value="skottie-text-valign.json">45</option>
+  <option value="skottie-text-valign-scaletofit.json">46</option>
+  <option value="skottie-text-valign-visual-2.json">47</option>
+  <option value="skottie-text-valign-visual-scaletofit.json">48</option>
+  <option value="skottie-text-vertical-clip.json">49</option>
+  <option value="skottie-text-whitespace-align.json">50</option>
+</select>
+<br>
+
+<div style="display:inline-block; text-align:center;">
+  <div style="width:1024px;height:1024px;background-color:#333;display:inline-block;" id="lottie1"></div>
+  <br>
+  Lottie
+</div>
+<div style="display:inline-block; text-align:center;">
+  <div style="width:1024px;height:1024px;background-color:#333;display:inline-block;" id="lottie2"></div>
+  <br>
+  Skript
+</div>
+
+<script>
+  const sample_select = document.getElementById('sample_select');
+  const shaper_select = document.getElementById('shaper_select');
+  const url_params = new URLSearchParams(window.location.search);
+  const sample = (new URLSearchParams(window.location.search)).get('sample');
+  let current_animation;
+
+  if (sample) {
+    sample_select.value = sample;
+  }
+
+  bodymovin.setSubframeRendering(false);
+
+  function load_animation(path, container, useSkript) {
+    return bodymovin.loadAnimation({
+      path: path,
+      wrapper: container,
+      animType: 'svg',
+      loop: true,
+      prerender: true,
+      autoplay: true,
+      rendererSettings: {
+        useSkriptShaping: useSkript,
+      },
+    });
+  }
+
+  let active_animations = [];
+
+  function reload_animations() {
+    for (anim of active_animations) {
+      anim.destroy();
+    }
+    if (sample_select.value !== 'test.json') {
+    active_animations = [
+      load_animation(sample_select.value, document.getElementById('lottie1'), false),
+      load_animation(sample_select.value, document.getElementById('lottie2'), true),
+    ];
+      document.getElementById('lottie1').style.visibility = "";
+    } else {
+      active_animations = [
+        load_animation(sample_select.value, document.getElementById('lottie2'), true),
+      ];
+      document.getElementById('lottie1').style.visibility = "hidden";
+    }
+  }
+
+  reload_animations();
+</script>
+</body>
+</html>
+
