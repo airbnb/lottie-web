@@ -266,7 +266,11 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   const letters = [];
   let lineIndex = 0;
   // Scan glyphs in the visual order (taking in account LTR/RTL)
+  const trackingOffset = (documentData.tr / 1000) * documentData.finalSize;
+  let maxLineWidth = 0;
   for (const line of multiLineShaper.lines) {
+    // let trailingSpaces = 0;
+    let nonSpaces = 0;
     for (let r = line.runRange.start; r < line.runRange.end; r += 1) {
       const run = multiLineShaper.runs[r];
       let start = run.glyphRange.start;
@@ -289,6 +293,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
             const charData = fontManager.getCharData(val, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             len = (charData.w * documentData.finalSize) / 100;
           }
+          nonSpaces += 1;
         } else {
           val = '';
         }
@@ -303,6 +308,23 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
           animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
           extra: 0,
         });
+        /*
+        if (glypheme.isNewLine && val === ' ') {
+          // Let's correct all the trailing spaces
+          let lastNonSpace = letters.length - 1;
+          for (; lastNonSpace >= 0; lastNonSpace -= 1) {
+            if (!letters[lastNonSpace].n) {
+              break;
+            }
+          }
+          for (let i = letters.length - 1; i > lastNonSpace; i -= 1) {
+            trailingSpaces += letters[i].l;
+            letters[i].an = 0;
+            letters[i].l = 0;
+            letters[i].line += 1;
+          }
+        }
+        */
         if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
           currentSize += len;
           if (glypheme.text === '' || glypheme.text === ' ' || letters.length === documentData.finalText.length) {
@@ -340,7 +362,9 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         }
       }
     }
-    lineWidths.push(line.bounds.right - line.bounds.left);
+    const lineWidth = line.bounds.right - line.bounds.left + trackingOffset * nonSpaces;
+    maxLineWidth = Math.max(maxLineWidth, lineWidth);
+    lineWidths.push(line.bounds.right - line.bounds.left + trackingOffset * nonSpaces);
     lineIndex += 1;
   }
 
@@ -351,7 +375,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     documentData.justifyOffset = 0;
   } else {
     // We only do alignment for a single line???
-    documentData.boxWidth = multiLineShaper.measurement().width();
+    documentData.boxWidth = maxLineWidth; // multiLineShaper.measurement().width();
     switch (documentData.j) {
       case 1:
         // right
