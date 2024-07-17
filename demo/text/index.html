@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html style="width: 100%;height: 100%">
 <head>
-     <script src="../../build/player/lottie.js"></script>
+  <script src="../../build/player/lottie.js"></script>
+  <script src="https://skottie.skia.org/static/canvaskit.js"></script>
 </head>
 
 <body style="background-color:#ccc; margin: 0;height: 100%;">
 
 
 <div style="display:inline;">Sample:</div>
-<select id="sample_select" onchange="reload_animations()">
+<select id="sample_select" onchange="sample_changed()">
   <option value="basic.json" selected>Basic line and paragraph</option>
   <option value="rtl.json">RTL</option>
   <option value="bidi.json">BiDi</option>
@@ -28,10 +29,17 @@
  <br>
  Lottie
 </div>
+
 <div style="display:inline-block; text-align:center;">
   <div style="width:1024px;height:1024px;background-color:#333;display:inline-block;" id="lottie2"></div>
   <br>
   Skript
+</div>
+
+<div style="display:inline-block; text-align:center;">
+  <canvas width="1024" height="1024" style="background-color:#333;display:inline-block;" id="skottie"></canvas>
+  <br>
+  Skottie
 </div>
 
 <script>
@@ -39,7 +47,12 @@
   const shaper_select = document.getElementById('shaper_select');
   const url_params = new URLSearchParams(window.location.search);
   const sample = (new URLSearchParams(window.location.search)).get('sample');
-  let current_animation;
+
+  let canvas_kit = null;
+  let canvas_kit_surface = null;
+  let active_lottie_animations = [];
+  let skottie_animation = null;
+  let skottie_time_base = null;
 
   if (sample) {
     sample_select.value = sample;
@@ -47,9 +60,21 @@
 
   bodymovin.setSubframeRendering(false);
 
-  function load_animation(path, container, useSkript) {
+  function drawSkottieFrame(canvas) {
+    if (!skottie_animation) { return; }
+
+    const seek = ((Date.now() - skottie_time_base) / skottie_animation.duration() / 1000) % 1.0;
+    skottie_animation.seek(seek);
+
+    canvas.clear(canvas_kit.TRANSPARENT);
+    skottie_animation.render(canvas, canvas_kit.LTRBRect(0, 0, 1024, 1024));
+
+    canvas_kit_surface.requestAnimationFrame(drawSkottieFrame);
+  }
+
+  function load_lottie_animation(json, container, useSkript) {
     return bodymovin.loadAnimation({
-      path: path,
+      animationData: json,
       wrapper: container,
       animType: 'svg',
       loop: true,
@@ -61,19 +86,83 @@
     });
   }
 
-  let active_animations = [];
+  function load_skottie_animation(json_str, json) {
+    skottie_time_base = Date.now();
 
-  function reload_animations() {
-    for (anim of active_animations) {
+    const cdn = 'https://storage.googleapis.com/skia-cdn/google-web-fonts/';
+
+    const sanitize = (family) => {
+      return family.replace(/\s+/g, '');
+    };
+
+    let font_names = [];
+    let font_loaders = [];
+    if (json.fonts?.list) {
+      for (let font of json.fonts.list) {
+        const font_url = cdn + sanitize(font.fFamily) + '-' + font.fStyle + '.ttf';
+        console.log('*** fetching ' + font_url + ' (' + font.fName + ')');
+        font_names.push(font.fName);
+        font_loaders.push(fetch(font_url).then((response) => response.arrayBuffer()));
+      }
+    }
+
+    Promise.all(font_loaders).then((font_blobs) => {
+      let assets = {};
+      for (let i = 0; i < font_blobs.length; ++i) {
+        assets[font_names[i]] = font_blobs[i];
+      }
+
+      const animation = canvas_kit.MakeManagedAnimation(JSON.stringify(json), assets);
+
+
+      if (!skottie_animation) {
+        canvas_kit_surface.requestAnimationFrame(drawSkottieFrame);
+      }
+      skottie_animation = animation;
+    });
+  }
+
+  function sample_changed() {
+    fetch(sample_select.value)
+      .then((response) => response.text())
+      .then((json_str) => {
+        reload_animations(json_str);
+      });
+  }
+
+  function reload_animations(json_str) {
+    const json = JSON.parse(json_str);
+
+    // Substitute fonts unavailable from Google Fonts.
+    const font_subs = { 'Arial': 'OpenSans' };
+    const fonts = json.fonts?.list;
+    if (fonts) {
+      for (let font of fonts) {
+        const sub_family = font_subs[font.fFamily];
+        if (sub_family) {
+          font.fFamily = sub_family;
+        }
+        console.log(font);
+      }
+    }
+
+    load_skottie_animation(json_str, json);
+
+    for (anim of active_lottie_animations) {
       anim.destroy();
     }
-    active_animations = [
-      load_animation(sample_select.value, document.getElementById('lottie1'), false),
-      load_animation(sample_select.value, document.getElementById('lottie2'), true),
+    active_lottie_animations = [
+      load_lottie_animation(structuredClone(json), document.getElementById('lottie1'), false),
+      load_lottie_animation(structuredClone(json), document.getElementById('lottie2'), true),
     ];
   }
 
-  reload_animations();
+  CanvasKitInit({locateFile: (file) => 'https://skottie.skia.org/static/' + file}).then((ck) => {
+    canvas_kit = ck;
+    canvas_kit_surface = ck.MakeCanvasSurface('skottie');
+    sample_changed();
+  });
+
 </script>
 </body>
 </html>
