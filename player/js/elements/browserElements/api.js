@@ -421,7 +421,7 @@ class Shaper {
    * Performs the text layout
    * @param {Number} width
    */
-  layout(width) {
+  layout(width, fontManager) {
     // TODO: deal with locales
     this.clearOutputs();
     this.extractSegments('grapheme', Properties.graphemeStart);
@@ -441,15 +441,20 @@ class Shaper {
 
     const font = this.fontStyleRanges[0].fontStyle;
     if (width > 0) {
-      span.style.maxWidth = `${width}px`;
+      span.style.width = `${width}px`;
+      span.style.whiteSpace = 'pre-wrap';
+      span.style.overflow = 'hidden';
     } else if (this.coloredId !== 'undefined') {
       // Trying to use a heuristics to get a decent text width that fit the entire text
       span.style.width = `${font.size * this.text.length * 2}px`;
       span.style.border = '2px solid black';
     } else {
-      span.style.whiteSpace = 'nowrap';
+      span.style.whiteSpace = 'pre-wrap';
       span.style.overflow = 'hidden';
     }
+    span.style.position = 'absolute';
+    span.style.left = '0px';
+    span.style.top = '0px';
     span.style.padding = '0px';
     span.style.margin = '0px';
     span.style.float = 'left';
@@ -464,7 +469,7 @@ class Shaper {
     span.style.fontSize = `${font.size}px`;
     span.style.fontStyle = font.style;
     span.style.fontWeight = font.weight;
-    this.generateSpanStructures(span);
+    this.generateSpanStructures(span, fontManager, font);
     this.extractInfo(span);
     this.lottie_convertWhitespaces();
     if (rect !== null) {
@@ -485,7 +490,7 @@ class Shaper {
    * the shaped results
    * @param {Element}
    */
-  generateSpanStructures(div) {
+  generateSpanStructures(div, fontManager, font) {
     let isGrapheme = false;
     let isWord = false;
     let html = '';
@@ -499,19 +504,17 @@ class Shaper {
       if (((property & Properties.graphemeStart) === Properties.graphemeStart) && isGrapheme) {
         // Finish the grapheme
         const text = this.text.substring(start, i);
-        if (hadWhitespaces) {
-          let corrected = '';
+        if (fontManager.chars) {
+          let width = 0;
           for (const c of text) {
-            if (c === ' ') {
-              corrected += '&nbsp;';
-            } else {
-              corrected += c;
-            }
+            const charData = fontManager.getCharData(c, font.style, font.family);
+            width += (charData.w * font.size) / 100;
           }
-          html += corrected;
+          html += `width:${width}px'>`;
         } else {
-          html += text;
+          html += '\'>';
         }
+        html += text;
         html += '</span>';
         isGrapheme = false;
       }
@@ -540,7 +543,7 @@ class Shaper {
       }
       if ((property & Properties.graphemeStart) === Properties.graphemeStart) {
         // Start the grapheme
-        html += `<span id='g${g}' class='grapheme' style='margin: 0px; padding: 0px;'>`;
+        html += `<span id='g${g}' class='grapheme' style='margin: 0px; padding: 0px;`;
         g += 1;
         isGrapheme = true;
         start = i;
@@ -563,19 +566,17 @@ class Shaper {
     if (isGrapheme) {
       // Finish the grapheme
       const text = this.text.substring(start);
-      if (hadWhitespaces) {
-        let corrected = '';
+      if (fontManager.chars) {
+        let width = 0;
         for (const c of text) {
-          if (c === ' ') {
-            corrected += '&nbsp;';
-          } else {
-            corrected += c;
-          }
+          const charData = fontManager.getCharData(c, font.style, font.family);
+          width += (charData.w * font.size) / 100;
         }
-        html += corrected;
+        html += `width:${width}px'>`;
       } else {
-        html += text;
+        html += '\'>';
       }
+      html += text;
       html += '</span>';
       // isGrapheme = false;
     }
@@ -621,27 +622,15 @@ class Shaper {
 
         // Finish the current word, start a new one for \r
         this.finishWord(currentWord, textIndex);
-        // currentWord.startFrom(currentCluster);
-
         // Finish the current run, start a new one for \r
         this.finishRun(currentRun, textIndex);
-        // currentRun.startFrom(currentCluster);
-
         // Finish the current line, start a new one for \r
         this.finishLine(currentLine, textIndex);
-        // currentLine.startFrom(currentCluster);
 
         // Add a cluster for \r (so it will be included into word, run and line)
-        // const graphemeRects = word.getClientRects();
-        // console.assert(graphemeRects.length === 1);
-        // currentCluster.bounds.assignDirectionally(graphemeRects[0], TextDirection.LTR);
         currentCluster.bounds.assign(new DOMRect(0, 0, 0, 0));
         this.addCluster(currentCluster, textIndex, textIndex + 1,
           this.graphemes.length, this.graphemes.length + 1, '\r', false, true);
-        // Finish special word, run and line for \r
-        // this.finishWord(currentWord, textIndex + 1);
-        // this.finishRun(currentRun, textIndex + 1);
-        // this.finishLine(currentLine, textIndex + 1);
         currentWord.startFrom(currentCluster);
         currentRun.startFrom(currentCluster);
         currentLine.startFrom(currentCluster);

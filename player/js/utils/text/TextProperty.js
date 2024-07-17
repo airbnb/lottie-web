@@ -226,11 +226,12 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
     name: fontData.fName,
     size: documentData.s,
     weight: fontProps.weight,
-    style: fontProps.style,
+    style: fontData.fStyle,
+    f: fontData.f,
   };
   const oneLineShaper = new Shaper();
   oneLineShaper.addText(documentData.t, font);
-  oneLineShaper.layout(-1);
+  oneLineShaper.layout(-1, fontManager);
 
   documentData.fWeight = fontProps.weight;
   documentData.fStyle = fontProps.style;
@@ -247,7 +248,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
       // SKIA
       multiLineShaper = new Shaper();
       multiLineShaper.addText(documentData.t, font);
-      multiLineShaper.layout(boxWidth);
+      multiLineShaper.layout(boxWidth, fontManager);
 
       if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < multiLineShaper.measurement().height()) {
         // Adjusting the font size to make the text fit the requirements
@@ -266,11 +267,9 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
   const letters = [];
   let lineIndex = 0;
   // Scan glyphs in the visual order (taking in account LTR/RTL)
-  const trackingOffset = (documentData.tr / 1000) * documentData.finalSize;
   let maxLineWidth = 0;
   for (const line of multiLineShaper.lines) {
-    // let trailingSpaces = 0;
-    let nonSpaces = 0;
+    let lineWidth = 0;
     for (let r = line.runRange.start; r < line.runRange.end; r += 1) {
       const run = multiLineShaper.runs[r];
       let start = run.glyphRange.start;
@@ -281,6 +280,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         end = run.glyphRange.start - 1;
         step = -1;
       }
+      let whitespaces = 0;
       for (let g = start; (step > 0 && g < end) || (step < 0 && g > end); g += step) {
         const glypheme = multiLineShaper.graphemes[g];
         let val = glypheme.text;
@@ -293,20 +293,35 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
             const charData = fontManager.getCharData(val, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
             len = (charData.w * documentData.finalSize) / 100;
           }
-          nonSpaces += 1;
+          if (val === ' ') {
+            if (glypheme.isNewLine) {
+              val = '';
+              len = 0;
+              whitespaces = 0;
+            } else {
+              whitespaces += len;
+            }
+          } else {
+            lineWidth += whitespaces;
+            lineWidth += len;
+            whitespaces = 0;
+          }
         } else {
           val = '';
+          len = 0;
+          whitespaces = 0;
+          lineWidth = 0;
         }
         letters.push({
           l: len, // Glypheme width
           an: len, // Glypheme width
           add: currentSize, // Glypheme advance (glypheme.bounds.right)
-          n: glypheme.isNewLine, // TODO: new line indicator for '\n'
+          n: glypheme.isNewLine,
           anIndexes: [],
           val: val, // Glypheme text
-          line: lineIndex,
+          line: glypheme.isNewLine ? lineIndex + 1 : lineIndex,
           animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
-          extra: 0,
+          // extra: 0,
         });
         /*
         if (glypheme.isNewLine && val === ' ') {
@@ -362,9 +377,9 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         }
       }
     }
-    const lineWidth = line.bounds.right - line.bounds.left + trackingOffset * nonSpaces;
+    // const lineWidth = line.bounds.right - line.bounds.left - totalWhitespaces;
     maxLineWidth = Math.max(maxLineWidth, lineWidth);
-    lineWidths.push(line.bounds.right - line.bounds.left + trackingOffset * nonSpaces);
+    lineWidths.push(lineWidth); // line.bounds.right - line.bounds.left);
     lineIndex += 1;
   }
 
