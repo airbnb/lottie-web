@@ -120,8 +120,8 @@ HTextElement.prototype.buildNewText = function () {
         tSpan = this.textPaths[cnt];
       } else {
         tParent = createTag('span');
-        tSpan = createTag('span');
         styleDiv(tParent);
+        tSpan = createTag('span');
         styleDiv(tSpan);
         tParent.appendChild(tSpan);
       }

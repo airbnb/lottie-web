@@ -155,7 +155,6 @@ TextProperty.prototype.getKeyframeValue = function () {
   return this.data.d.k[this.keysIndex].s;
 };
 
-// Just returns a list of graphemes
 TextProperty.prototype.buildFinalText = function (text) {
   var charactersArray = [];
   var i = 0;
@@ -684,7 +683,6 @@ TextProperty.prototype.completeTextData = function (documentData) {
       }
     }
   }
-
   documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
   documentData.ls = documentData.ls || 0;
   documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
