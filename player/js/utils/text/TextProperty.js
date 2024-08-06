@@ -3,7 +3,7 @@ import {
 } from '../../main';
 import getFontProperties from '../getFontProperties';
 import FontManager from '../FontManager';
-import Shaper from '../../elements/browserElements/api';
+import Shaper from './SkriptShaper';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
