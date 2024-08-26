@@ -186,7 +186,7 @@ const SVGElementsRenderer = (function () {
           itemData.of.setAttribute('r', rad);
         }
       }
-      if (itemData.e._mdf || itemData.h._mdf || itemData.a._mdf || isFirstFrame) {
+      if (itemData.s._mdf || itemData.e._mdf || itemData.h._mdf || itemData.a._mdf || isFirstFrame) {
         if (!rad) {
           rad = Math.sqrt(Math.pow(pt1[0] - pt2[0], 2) + Math.pow(pt1[1] - pt2[1], 2));
         }
