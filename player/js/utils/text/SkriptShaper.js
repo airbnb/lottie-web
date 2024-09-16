@@ -36,19 +36,25 @@ const utils = {
         if (goingLeft) {
           return TextDirection.Mixed;
         }
-        console.assert(goingRight);
+        if (!goingRight) {
+          console.log('Broken expectations: TextDirection must be RTL\n');
+        }
         right = rect.right;
       } else if (utils.equal(left, rect.right)) { // We are going sequentially left
-        if (goingRight) {
+        if (goingLeft) {
           return TextDirection.Mixed;
         }
-        console.assert(goingLeft);
+        if (!goingRight) {
+          console.log('Broken expectations: TextDirection must be LTR\n');
+        }
         left = rect.left;
       } else {
         return TextDirection.Mixed;
       }
     }
-    console.assert(goingRight !== goingLeft);
+    if (goingRight === goingLeft) {
+      console.log('Broken expectations: TextDirection must be exclusively LTR or RTL\n');
+    }
     return goingRight ? TextDirection.LTR : TextDirection.RTL;
   },
 
@@ -427,30 +433,14 @@ class Shaper {
     this.extractSegments('grapheme', Properties.graphemeStart);
     this.extractSegments('word', Properties.wordStart);
 
-    let span;
-    let rect = null;
-    if (this.coloredId !== undefined) {
-      span = document.getElementById(this.coloredId);
-      rect = document.getElementById(this.measurementId);
-    } else {
-      this.coloredId = 'undefined';
-      this.measurementId = 'undefined';
-      span = document.createElement('span');
-      document.body.appendChild(span);
-    }
+    const span = document.createElement('span');
+    document.body.appendChild(span);
 
     const font = this.fontStyleRanges[0].fontStyle;
+    span.style.whiteSpace = 'pre-wrap';
+    span.style.overflow = 'hidden';
     if (width > 0) {
       span.style.width = `${width}px`;
-      span.style.whiteSpace = 'pre-wrap';
-      span.style.overflow = 'hidden';
-    } else if (this.coloredId !== 'undefined') {
-      // Trying to use a heuristics to get a decent text width that fit the entire text
-      span.style.width = `${font.size * this.text.length * 2}px`;
-      span.style.border = '2px solid black';
-    } else {
-      span.style.whiteSpace = 'pre-wrap';
-      span.style.overflow = 'hidden';
     }
     span.style.position = 'absolute';
     span.style.left = '0px';
@@ -472,17 +462,7 @@ class Shaper {
     this.generateSpanStructures(span, fontManager, font);
     this.extractInfo(span);
     this.lottie_convertWhitespaces();
-    if (rect !== null) {
-      rect.style = 'margin: 0px; padding: 0px; border: 0px';
-      const size = this.measurement();
-      rect.innerHTML = `${(size.right - size.left).toFixed(2)} x ${(size.bottom - size.top).toFixed(2)}`;
-    }
-
-    if (this.coloredId === 'undefined') {
-      document.body.removeChild(span);
-    } else {
-      span.style.visibility = 'visible';
-    }
+    document.body.removeChild(span);
   }
 
   /**
