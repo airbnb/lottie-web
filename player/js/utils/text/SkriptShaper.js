@@ -3,6 +3,13 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-bitwise */
 
+export const LOGGER = window.ENABLE_SKRIPT_LOGGING ? console : {
+  error: function () {},
+  warn: function () {},
+  info: function () {},
+  assert: function () {},
+};
+
 const utils = {
   css: function (element, property) {
     return window.getComputedStyle(element, null).getPropertyValue(property);
@@ -37,7 +44,7 @@ const utils = {
           return TextDirection.Mixed;
         }
         if (!goingRight) {
-          console.log('Broken expectations: TextDirection must be RTL\n');
+          LOGGER.error('Broken expectations: TextDirection must be RTL');
         }
         right = rect.right;
       } else if (utils.equal(left, rect.right)) { // We are going sequentially left
@@ -45,7 +52,7 @@ const utils = {
           return TextDirection.Mixed;
         }
         if (!goingRight) {
-          console.log('Broken expectations: TextDirection must be LTR\n');
+          LOGGER.error('Broken expectations: TextDirection must be LTR');
         }
         left = rect.left;
       } else {
@@ -53,7 +60,7 @@ const utils = {
       }
     }
     if (goingRight === goingLeft) {
-      console.log('Broken expectations: TextDirection must be exclusively LTR or RTL\n');
+      LOGGER.error('Broken expectations: TextDirection must be exclusively LTR or RTL');
     }
     return goingRight ? TextDirection.LTR : TextDirection.RTL;
   },
@@ -116,7 +123,7 @@ class Rect {
     if (wordTextDirection === TextDirection.RTL) {
       [this.left, this.right] = [this.right, this.left];
     }
-    console.assert((this.left <= this.right) === (wordTextDirection === TextDirection.LTR));
+    LOGGER.assert((this.left <= this.right) === (wordTextDirection === TextDirection.LTR));
   }
 
   /** Merge rects
@@ -124,24 +131,26 @@ class Rect {
    * @param {TextDirection} textDirection
    */
   merge(rects, textDirection) {
-    console.assert(rects.length > 0);
-    let left = rects[0].left;
-    let right = rects[0].right;
-    let top = rects[0].top;
-    let bottom = rects[0].bottom;
+    let left = Number.MAX_VALUE;
+    let right = Number.MIN_VALUE;
+    let top = Number.MAX_VALUE;
+    let bottom = Number.MIN_VALUE;
     for (const rect of rects) {
       left = Math.min(left, rect.left);
       right = Math.max(right, rect.right);
       top = Math.min(top, rect.top);
       bottom = Math.max(bottom, rect.bottom);
     }
+    if (left > right || top > bottom) {
+      [left, top, right, bottom] = [0, 0, 0, 0];
+    }
+    if (textDirection === TextDirection.RTL) {
+      [left, right] = [right, left];
+    }
     this.left = left;
     this.right = right;
     this.top = top;
     this.bottom = bottom;
-    if (textDirection === TextDirection.RTL) {
-      [this.left, this.right] = [this.right, this.left];
-    }
   }
 
   /** Rectangle height
@@ -355,7 +364,7 @@ class Shaper {
    */
   addText(text, fontStyle) {
     if (this.layoutPerformed) {
-      alert('Cannot modify the text after layout');
+      LOGGER.error('Cannot modify the text after layout');
       return;
     }
     const textUnit = new TextRange(this.text.length, this.text.length + text.length);
@@ -503,12 +512,12 @@ class Shaper {
         html += '</span>';
         isWord = false;
         // Grapheme does not cross the word edges
-        console.assert(property && Properties.graphemeStart);
+        LOGGER.assert(property && Properties.graphemeStart);
       }
       const char = this.text.substring(i, i + 1);
       const isNewline = (char === '\r');
       if (isNewline) {
-        console.assert(!isWord && !isGrapheme);
+        LOGGER.assert(!isWord && !isGrapheme);
         // Multiple <br/> will be reduced to one line break;
         // it's not what we want here
         html += '<br>';
@@ -534,7 +543,7 @@ class Shaper {
       const char = this.text.substring(start, start + 1);
       const isNewline = (char === '\r');
       if (isNewline) {
-        console.assert(!isWord && !isGrapheme);
+        LOGGER.assert(!isWord && !isGrapheme);
         // Multiple <br/> will be reduced to one line break;
         // it's not what we want here
         html += '<br>';
@@ -582,7 +591,6 @@ class Shaper {
   extractInfo(span) {
     // Bounding box
     const measurements = span.getClientRects();
-    // console.assert(measurements.length === 1);
     this.bounds.assign(measurements[0]);
 
     const currentCluster = new GlyphCluster();
@@ -645,14 +653,14 @@ class Shaper {
       let graphemeIndex = 0;
       for (const grapheme of word.children) {
         const graphemeRects = grapheme.getClientRects();
-        console.assert(graphemeRects.length === 1);
-        console.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
+        LOGGER.assert(graphemeRects.length === 1);
+        LOGGER.assert(utils.compare(allBounds[graphemeIndex], graphemeRects[0]));
         // Correct the cluster bounds and the visual left position
         let textDirectionSwitch = prevGraphemeRect.left > graphemeRects[0].right || prevGraphemeRect.right < graphemeRects[0].left;
         let graphemeTextDirection = wordTextDirection;
         if (utils.equal(prevGraphemeRect.right, graphemeRects[0].left)) {
           // Sequential LTR: 1,2,3,4,5
-          console.assert(prevGraphemeTextDirection === TextDirection.LTR);
+          LOGGER.assert(prevGraphemeTextDirection === TextDirection.LTR);
           graphemeTextDirection = TextDirection.LTR;
         } else if (prevGraphemeRect.bottom <= graphemeRects[0].top) {
           // This is a new line, not a text direction switch
@@ -664,7 +672,7 @@ class Shaper {
           graphemeTextDirection = prevGraphemeTextDirection === TextDirection.LTR ? TextDirection.RTL : TextDirection.LTR;
         } else if (utils.equal(prevGraphemeRect.left, graphemeRects[0].right)) {
           // Sequential RTL: 5,4,3,2,1
-          console.assert(prevGraphemeTextDirection === TextDirection.RTL);
+          LOGGER.assert(prevGraphemeTextDirection === TextDirection.RTL);
           graphemeTextDirection = TextDirection.RTL;
         } else if (prevGraphemeRect.right < graphemeRects[0].left) {
           // Switching direction (4->5):
@@ -672,7 +680,7 @@ class Shaper {
           // RTL->LTR: 4,3,2,1,...5,6
           graphemeTextDirection = prevGraphemeTextDirection === TextDirection.LTR ? TextDirection.RTL : TextDirection.LTR;
         } else {
-          console.assert(false);
+          LOGGER.assert(false);
         }
         currentCluster.bounds.assignDirectionally(graphemeRects[0], graphemeTextDirection);
 
@@ -751,11 +759,11 @@ class Shaper {
 
       // Just for assert
       const wordRects = word.getClientRects();
-      console.assert(wordRects.length === word.children.length);
+      LOGGER.assert(wordRects.length === word.children.length);
       const wordRect = new Rect(0, 0, 0, 0);
       wordRect.merge(wordRects, wordTextDirection);
-      console.assert(currentWord.isWhitespaces === wordIsWhitespaces);
-      console.assert(currentWord.textRange.end === textIndex);
+      LOGGER.assert(currentWord.isWhitespaces === wordIsWhitespaces);
+      LOGGER.assert(currentWord.textRange.end === textIndex);
 
       // Finish the current word, start the new one
       this.finishWord(currentWord);
@@ -914,7 +922,7 @@ class Shaper {
    */
   measurement() {
     if (!this.layoutPerformed) {
-      alert('Cannot query information without performing layout');
+      LOGGER.error('Cannot query information without performing layout');
       return null;
     }
     return this.bounds;
@@ -926,7 +934,7 @@ class Shaper {
    */
   queryGraphemes() {
     if (!this.layoutPerformed) {
-      alert('Cannot query information without performing layout');
+      LOGGER.error('Cannot query information without performing layout');
       return null;
     }
     return this.graphemes;
@@ -938,7 +946,7 @@ class Shaper {
    */
   queryWords() {
     if (!this.layoutPerformed) {
-      alert('Cannot query information without performing layout');
+      LOGGER.error('Cannot query information without performing layout');
       return null;
     }
     return this.words;
@@ -951,7 +959,7 @@ class Shaper {
    */
   queryLine(index) {
     if (!this.layoutPerformed) {
-      alert('Cannot query information without performing layout');
+      LOGGER.error('Cannot query information without performing layout');
       return null;
     }
     if (index < 0 && index >= this.shapedLines.count()) {
@@ -967,7 +975,7 @@ class Shaper {
    */
   queryRun(index) {
     if (!this.layoutPerformed) {
-      alert('Cannot query information without performing layout');
+      LOGGER.error('Cannot query information without performing layout');
       return null;
     }
     if (index < 0 && index >= this.glyphRuns.count()) {

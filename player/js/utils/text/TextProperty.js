@@ -3,7 +3,7 @@ import {
 } from '../../main';
 import getFontProperties from '../getFontProperties';
 import FontManager from '../FontManager';
-import Shaper from './SkriptShaper';
+import Shaper, { LOGGER as SKRIPT_LOGGER } from './SkriptShaper';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
@@ -252,7 +252,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
       if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < multiLineShaper.measurement().height()) {
         // Adjusting the font size to make the text fit the requirements
         documentData.finalSize -= 1;
-        console.assert(documentData.finalSize > 0);
+        SKRIPT_LOGGER.assert(documentData.finalSize > 0);
         documentData.finalLineHeight = (documentData.finalSize * documentData.lines().length) / documentData.s;
       } else {
         documentData.finalText = multiLineShaper.lottie_glyphemeClusters();
@@ -285,7 +285,7 @@ TextProperty.prototype.skia_completeTextData = function (documentData) {
         let val = glypheme.text;
         let len = 0;
         if (glypheme === undefined) {
-          console.log(`glypheme #${g} is undefined!`);
+          SKRIPT_LOGGER.error(`glypheme #${g} is undefined!`);
         } else if (val !== '\r') {
           len = Math.abs(glypheme.bounds.right - glypheme.bounds.left);
           if (fontManager.chars) {
