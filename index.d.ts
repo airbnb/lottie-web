@@ -72,6 +72,7 @@ export type AnimationItem = {
     segmentPos: number;
     isSubframeEnabled: boolean;
     segments: AnimationSegment | AnimationSegment[];
+    markers: {time: number, duration?: number, payload: {name: string}}[]
     play(name?: string): void;
     stop(name?: string): void;
     togglePause(name?: string): void;
