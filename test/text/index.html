@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>This is a set of tests for browser text shaper</title>
+    <style>
+        label {
+            display: inline-block;
+            width: 300px;
+            text-align: right;
+            font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali';
+            font-size: 20px;
+        }
+        input {
+            font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali';
+            font-size: 20px;
+        }
+        .visible {
+            visibility: visible;
+        }
+        .invisible {
+            visibility: collapse;
+        }
+        span.word {
+            word-break: keep-all;
+        }
+        span.word:hover {
+            background-color: darkgrey;
+        }
+        span.grapheme {
+            color: yellow;
+        }
+        span.grapheme:nth-child(2n) {
+            color: red;
+        }
+        span.grapheme:nth-child(2n+1) {
+            color: blue;
+        }
+        th, td {
+            text-align: left;
+            vertical-align: center;
+        }
+        td {
+            padding: 2px;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+            flex-basis: 100%;
+            flex: 1;
+        }
+
+    </style>
+    <script src="../../player/js/utils/text/SkriptShaper.js"></script>
+</head>
+<body style="margin: 0px; padding: 0px; border: 0px; font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;">
+    <div class="row">
+        <div id="screen" class="column"></div>
+        <div id="result" class="column invisible">
+            <div><label for="showGraphemes">Show glypheme clusters</label><input type="checkbox" id="showGraphemes" name="graphemes" checked></div>
+            <div><label for="showWords">Show words</label><input type="checkbox" id="showWords" name="words" checked></div>
+            <div><label for="showTextRuns">Show text runs</label><input type="checkbox" id="showTextRuns" name="textRuns" checked></div>
+            <div><label for="showLines">Show lines</label><input type="checkbox" id="showLines" name="lines" checked></div>
+                <table border="1" id="table" style="font-size: 20px; background-color: lightcyan">
+                    <thead>
+                    <tr>
+                        <th scope="col" style="width: 20%">Type</th>
+                        <th scope="col" style="width: 40%">Text</th>
+                        <th scope="col">Left</th>
+                        <th scope="col">Top</th>
+                        <th scope="col">Right</th>
+                        <th scope="col">Bottom</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+    </div>
+</div>
+    <script>
+        function generateText(/*Number*/num, /*String*/text) {
+            let screen = document.getElementById("screen");
+            screen.innerHTML +=
+`    <div class="form" id="form${num}" class="row" shaper=undefined>
+        <div style="width:100%;">
+            <label for="textStyle${num}">Font style:</label>
+            <input type="text" id="textStyle${num}" style="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;" value="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;" />
+        </div>
+        <div style="width:100%;">
+            <label for="textInput${num}">Font text:</label>
+            <input type="text" id="textInput${num}" style="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;" value="${text}" />
+        </div>
+        <div style="width:100%;">
+            <label for="button${num}">Action:</label>
+            <input type="button" id='button${num}' style="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;" onclick="showInfo('form${num}', 'button${num}', 'textInput${num}', 'textStyle${num}', 'measurement${num}', 'text${num}')" value="Render Text" />
+        </div>
+        <div style="width:100%;">
+            <label for="measurement${num}">Measurement:</label>
+            <span id="measurement${num}" style="font-family:'Noto Sans', 'Noto Sans Arabic', 'Noto Sans Emoji', 'Noto Sans Bengali'; font-size: 20px;"></span>
+        </div>
+        <div style="width:100%;" class="row">
+            <label for="text${num}">ShapedText:</label>
+            <span id="text${num}" style="border: 2px solid black;"></span>
+        </div>
+        <br/>
+        <br/>
+    </div>`;
+        }
+        generateText(1, "Hello world!");
+        generateText(2, "همه خوب helloهمه خوب");
+    </script>
+
+    <script>
+        function collectInfo(formId, textId, styleId, measurementId, coloredId) {
+            const form = document.getElementById(formId);
+            const text = document.getElementById(textId).value;
+            const style = document.getElementById(styleId).value;
+            form.shaper = new Shaper();
+            form.shaper.coloredId = coloredId;
+            form.shaper.measurementId = measurementId;
+            form.shaper.addText(text, style);
+            form.shaper.layout(800);
+            form.shaper.coloredId = coloredId;
+            document.querySelector("label[for='showGraphemes']").innerText = "Show glypheme clusters (" + form.shaper.graphemes.length + ")";
+            document.querySelector("label[for='showWords']").innerText = "Show words (" + form.shaper.words.length + ")";
+            document.querySelector("label[for='showTextRuns']").innerText = "Show text runs (" + form.shaper.runs.length + ")";
+            document.querySelector("label[for='showLines']").innerText = "Show lines (" + form.shaper.lines.length + ")";
+        }
+
+        function showResults(formId) {
+            const form = document.getElementById(formId);
+            form.shaper.printTable();
+
+        }
+
+        function showInfo(formId, buttonId, textId, styleId, measurementId, coloredId) {
+
+            let action = document.getElementById(buttonId);
+            let result = document.getElementById("result");
+            const form = document.getElementById(formId);
+
+            if (action.value === "Render Text") {
+                collectInfo(formId, textId, styleId, measurementId, coloredId);
+                action.value = "Show Results";
+                result.classList.remove("visible");
+                result.classList.add("invisible");
+            } else {
+                form.shaper.printTable();
+                action.value = "Render Text";
+                result.classList.add("visible");
+                result.classList.remove("invisible");
+            }
+
+        }
+    </script>
+</body>
+</html>

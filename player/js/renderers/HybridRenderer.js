@@ -20,6 +20,7 @@ function HybridRenderer(animationItem, config) {
       y: (config && config.filterSize && config.filterSize.y) || '-100%',
     },
     runExpressions: !config || config.runExpressions === undefined || config.runExpressions,
+    useSkriptShaping: (config && config.useSkriptShaping) || false,
   };
   this.globalData = {
     _mdf: false,

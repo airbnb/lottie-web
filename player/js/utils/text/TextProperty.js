@@ -3,6 +3,7 @@ import {
 } from '../../main';
 import getFontProperties from '../getFontProperties';
 import FontManager from '../FontManager';
+import Shaper, { LOGGER as SKRIPT_LOGGER } from './SkriptShaper';
 
 function TextProperty(elem, data) {
   this._frameId = initialDefaultFrame;
@@ -55,7 +56,11 @@ function TextProperty(elem, data) {
   this.copyData(this.currentData, this.data.d.k[0].s);
 
   if (!this.searchProperty()) {
-    this.completeTextData(this.currentData);
+    if (this.elem.globalData.renderConfig.useSkriptShaping) {
+      this.skia_completeTextData(this.currentData);
+    } else {
+      this.completeTextData(this.currentData);
+    }
   }
 }
 
@@ -72,7 +77,11 @@ TextProperty.prototype.copyData = function (obj, data) {
 
 TextProperty.prototype.setCurrentData = function (data) {
   if (!data.__complete) {
-    this.completeTextData(data);
+    if (this.elem.globalData.renderConfig.useSkriptShaping) {
+      this.skia_completeTextData(this.currentData);
+    } else {
+      this.completeTextData(this.currentData);
+    }
   }
   this.currentData = data;
   this.currentData.boxWidth = this.currentData.boxWidth || this.defaultBoxWidth;
@@ -198,6 +207,257 @@ TextProperty.prototype.buildFinalText = function (text) {
     i += currentChars.length;
   }
   return charactersArray;
+};
+
+TextProperty.prototype.skia_completeTextData = function (documentData) {
+  documentData.__complete = true;
+
+  var anchorGrouping = this.data.m.g;
+  var currentSize = 0;
+  var currentPos = 0;
+  var index = 0;
+  var fontManager = this.elem.globalData.fontManager;
+  var fontData = fontManager.getFontByName(documentData.f);
+  var fontProps = getFontProperties(fontData);
+  var font = {
+    className: fontData.fClass,
+    family: fontData.fFamily,
+    name: fontData.fName,
+    size: documentData.s,
+    weight: fontProps.weight,
+    style: fontData.fStyle,
+    f: fontData.f,
+  };
+  const oneLineShaper = new Shaper();
+  oneLineShaper.addText(documentData.t, font);
+  oneLineShaper.layout(-1, fontManager);
+
+  documentData.fWeight = fontProps.weight;
+  documentData.fStyle = fontProps.style;
+  documentData.finalSize = documentData.s;
+  documentData.finalText = oneLineShaper.lottie_glyphemeClusters();
+  documentData.finalLineHeight = documentData.lh;// oneLineShaper.measurement().height();
+
+  // Formatting and resizing text
+  let multiLineShaper = oneLineShaper;
+  if (documentData.sz) {
+    var boxWidth = documentData.sz[0];
+    var boxHeight = documentData.sz[1];
+    while (true) {
+      // SKIA
+      multiLineShaper = new Shaper();
+      multiLineShaper.addText(documentData.t, font);
+      multiLineShaper.layout(boxWidth, fontManager);
+
+      if (this.canResize && documentData.finalSize > this.minimumFontSize && boxHeight < multiLineShaper.measurement().height()) {
+        // Adjusting the font size to make the text fit the requirements
+        documentData.finalSize -= 1;
+        SKRIPT_LOGGER.assert(documentData.finalSize > 0);
+        documentData.finalLineHeight = (documentData.finalSize * documentData.lines().length) / documentData.s;
+      } else {
+        documentData.finalText = multiLineShaper.lottie_glyphemeClusters();
+        break;
+      }
+    }
+  }
+
+  // Fill out add the data
+  const lineWidths = [];
+  const letters = [];
+  let lineIndex = 0;
+  // Scan glyphs in the visual order (taking in account LTR/RTL)
+  let maxLineWidth = 0;
+  for (const line of multiLineShaper.lines) {
+    let lineWidth = 0;
+    for (let r = line.runRange.start; r < line.runRange.end; r += 1) {
+      const run = multiLineShaper.runs[r];
+      let start = run.glyphRange.start;
+      let end = run.glyphRange.end;
+      let step = 1;
+      if (run.textDirection === 'RTL') {
+        start = run.glyphRange.end - 1;
+        end = run.glyphRange.start - 1;
+        step = -1;
+      }
+      let whitespaces = 0;
+      for (let g = start; (step > 0 && g < end) || (step < 0 && g > end); g += step) {
+        const glypheme = multiLineShaper.graphemes[g];
+        let val = glypheme.text;
+        let len = 0;
+        if (glypheme === undefined) {
+          SKRIPT_LOGGER.error(`glypheme #${g} is undefined!`);
+        } else if (val !== '\r') {
+          len = Math.abs(glypheme.bounds.right - glypheme.bounds.left);
+          if (fontManager.chars) {
+            const charData = fontManager.getCharData(val, fontData.fStyle, fontManager.getFontByName(documentData.f).fFamily);
+            len = (charData.w * documentData.finalSize) / 100;
+          }
+          if (val === ' ') {
+            if (glypheme.isNewLine) {
+              val = '';
+              len = 0;
+              whitespaces = 0;
+            } else {
+              whitespaces += len;
+            }
+          } else {
+            lineWidth += whitespaces;
+            lineWidth += len;
+            whitespaces = 0;
+          }
+        } else {
+          val = '';
+          len = 0;
+          whitespaces = 0;
+          lineWidth = 0;
+        }
+        letters.push({
+          l: len, // Glypheme width
+          an: len, // Glypheme width
+          add: currentSize, // Glypheme advance (glypheme.bounds.right)
+          n: glypheme.isNewLine,
+          anIndexes: [],
+          val: val, // Glypheme text
+          line: glypheme.isNewLine ? lineIndex + 1 : lineIndex,
+          animatorJustifyOffset: 0, // TODO: animatorJustifyOffset
+          // extra: 0,
+        });
+        /*
+        if (glypheme.isNewLine && val === ' ') {
+          // Let's correct all the trailing spaces
+          let lastNonSpace = letters.length - 1;
+          for (; lastNonSpace >= 0; lastNonSpace -= 1) {
+            if (!letters[lastNonSpace].n) {
+              break;
+            }
+          }
+          for (let i = letters.length - 1; i > lastNonSpace; i -= 1) {
+            trailingSpaces += letters[i].l;
+            letters[i].an = 0;
+            letters[i].l = 0;
+            letters[i].line += 1;
+          }
+        }
+        */
+        if (anchorGrouping == 2) { // eslint-disable-line eqeqeq
+          currentSize += len;
+          if (glypheme.text === '' || glypheme.text === ' ' || letters.length === documentData.finalText.length) {
+            if (glypheme.text === '' || glypheme.text === ' ') {
+              currentSize -= len;
+            }
+            while (currentPos <= letters.length - 1) {
+              letters[currentPos].an = currentSize;
+              letters[currentPos].ind = index;
+              letters[currentPos].extra = len;
+              currentPos += 1;
+            }
+            index += 1;
+            currentSize = 0;
+          }
+        } else if (anchorGrouping === 3) { // eslint-disable-line eqeqeq
+          currentSize += len;
+          if (glypheme.text === '' || letters.length === documentData.finalText.length) {
+            if (glypheme.text === '') {
+              currentSize -= len;
+            }
+            while (currentPos <= letters.length - 1) {
+              letters[currentPos].an = currentSize;
+              letters[currentPos].ind = index;
+              letters[currentPos].extra = len;
+              currentPos += 1;
+            }
+            currentSize = 0;
+            index += 1;
+          }
+        } else {
+          letters[index].ind = index;
+          letters[index].extra = 0;
+          index += 1;
+        }
+      }
+    }
+    // const lineWidth = line.bounds.right - line.bounds.left - totalWhitespaces;
+    maxLineWidth = Math.max(maxLineWidth, lineWidth);
+    lineWidths.push(lineWidth); // line.bounds.right - line.bounds.left);
+    lineIndex += 1;
+  }
+
+  documentData.l = letters;
+  documentData.lineWidths = lineWidths;
+  if (documentData.sz) {
+    documentData.boxWidth = documentData.sz[0];
+    documentData.justifyOffset = 0;
+  } else {
+    // We only do alignment for a single line???
+    documentData.boxWidth = maxLineWidth; // multiLineShaper.measurement().width();
+    switch (documentData.j) {
+      case 1:
+        // right
+        documentData.justifyOffset = -documentData.boxWidth;
+        break;
+      case 2:
+        // center
+        documentData.justifyOffset = -documentData.boxWidth / 2;
+        break;
+      default:
+        // left
+        documentData.justifyOffset = 0;
+    }
+  }
+
+  // TODO: There was a puzzling piece of code doing something for animation
+  documentData.lineWidths = lineWidths;
+  var data = this.data;
+  var i; var j;
+  var len = documentData.finalText.length;
+  var animators = data.a; var animatorData; var
+    letterData;
+  var jLen = animators.length;
+  var based; var ind; var
+    indexes = [];
+  for (j = 0; j < jLen; j += 1) {
+    animatorData = animators[j];
+    if (animatorData.a.sc) {
+      documentData.strokeColorAnim = true;
+    }
+    if (animatorData.a.sw) {
+      documentData.strokeWidthAnim = true;
+    }
+    if (animatorData.a.fc || animatorData.a.fh || animatorData.a.fs || animatorData.a.fb) {
+      documentData.fillColorAnim = true;
+    }
+    ind = 0;
+    based = animatorData.s.b;
+    for (i = 0; i < len; i += 1) {
+      letterData = letters[i];
+      letterData.anIndexes[j] = ind;
+      if ((based === 1 && letterData.val !== '') // chars
+          || (based === 2 && letterData.val !== '' && letterData.val !== ' ') // chars-excluding-whitespace
+          || (based === 3 && (letterData.n || letterData.val === ' ' || i === len - 1)) // words
+          || (based === 4 && (letterData.n || i === len - 1))) { // eslint-disable-line eqeqeq
+        if (animatorData.s.rn === 1) {
+          indexes.push(ind);
+        }
+        ind += 1;
+      }
+    }
+    data.a[j].s.totalChars = ind;
+    var currentInd = -1; var
+      newInd;
+    if (animatorData.s.rn === 1) {
+      for (i = 0; i < len; i += 1) {
+        letterData = letters[i];
+        if (currentInd !== letterData.anIndexes[j]) { // eslint-disable-line eqeqeq
+          currentInd = letterData.anIndexes[j];
+          newInd = indexes.splice(Math.floor(Math.random() * indexes.length), 1)[0];
+        }
+        letterData.anIndexes[j] = newInd;
+      }
+    }
+  }
+  documentData.yOffset = documentData.finalLineHeight || documentData.finalSize * 1.2;
+  documentData.ls = documentData.ls || 0;
+  documentData.ascent = (fontData.ascent * documentData.finalSize) / 100;
 };
 
 TextProperty.prototype.completeTextData = function (documentData) {

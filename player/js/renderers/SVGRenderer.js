@@ -59,6 +59,7 @@ function SVGRenderer(animationItem, config) {
     width: (config && config.width),
     height: (config && config.height),
     runExpressions: !config || config.runExpressions === undefined || config.runExpressions,
+    useSkriptShaping: (config && config.useSkriptShaping) || false,
   };
 
   this.globalData = {
