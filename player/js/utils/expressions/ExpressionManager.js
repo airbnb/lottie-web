@@ -394,7 +394,7 @@ const ExpressionManager = (function () {
 
     var val = data.x;
     var needsVelocity = /velocity(?![\w\d])/.test(val);
-    var _needsRandom = val.indexOf('random') !== -1;
+    var _needsRandom = val.toString().indexOf('random') !== -1;
     var elemType = elem.data.ty;
     var transform;
     var $bm_transform;
@@ -436,8 +436,10 @@ const ExpressionManager = (function () {
     var velocityAtTime;
 
     var scoped_bm_rt;
+    // the input can be string that needs eval (issue with CSP 'unsafe-eval') or can be passes as function
+    var isFunctionData = typeof val === 'function';
     // val = val.replace(/(\\?"|')((http)(s)?(:\/))?\/.*?(\\?"|')/g, "\"\""); // deter potential network calls
-    var expression_function = eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
+    var expression_function = isFunctionData ? val : eval('[function _expression_function(){' + val + ';scoped_bm_rt=$bm_rt}]')[0]; // eslint-disable-line no-eval
     var numKeys = property.kf ? data.k.length : 0;
 
     var active = !this.data || this.data.hd !== true;
@@ -728,7 +730,25 @@ const ExpressionManager = (function () {
       if (needsVelocity) {
         velocity = velocityAtTime(time);
       }
-      expression_function();
+
+      // if input is a function we need to call her with current params and get the scoped_bm_rt back
+      if (isFunctionData) {
+        scoped_bm_rt = expression_function({
+          $bm_sum,
+          $bm_mul,
+          $bm_div,
+          value,
+          $bm_sub,
+          time,
+          numKeys,
+          nearestKey,
+          key,
+          thisLayer,
+          thisComp,
+        });
+      } else {
+        expression_function();
+      }
       this.frameExpressionId = elem.globalData.frameId;
 
       // TODO: Check if it's possible to return on ShapeInterface the .v value
