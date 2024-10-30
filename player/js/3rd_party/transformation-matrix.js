@@ -255,6 +255,9 @@ const Matrix = (function () {
     for (i = 0; i < 16; i += 1) {
       matr.props[i] = this.props[i];
     }
+    if (typeof matr._identityCalculated === 'boolean') {
+      matr._identityCalculated = false;
+    }
     return matr;
   }
 
@@ -263,6 +266,7 @@ const Matrix = (function () {
     for (i = 0; i < 16; i += 1) {
       this.props[i] = props[i];
     }
+    this._identityCalculated = false;
   }
 
   function applyToPoint(x, y, z) {
