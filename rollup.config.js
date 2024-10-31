@@ -14,7 +14,7 @@ const injectVersion = (options = {}) => {
 
 const addNavigatorValidation = (options = {}) => {
   return {
-    name: 'inject-version',
+    name: 'add-navigator-validation',
     renderChunk: (code) => {
       return '(typeof navigator !== "undefined") && '  + code
     },
@@ -23,7 +23,7 @@ const addNavigatorValidation = (options = {}) => {
 
 const addDocumentValidation = (options = {}) => {
   return {
-    name: 'inject-version',
+    name: 'add-document-validation',
     renderChunk: (code) => {
       return '(typeof document !== "undefined") && ' + code;
     },
