@@ -28,7 +28,7 @@ For the first time, designers can create **and ship** beautiful animations witho
 # Plugin installation
 
 ### Option 1 (Recommended):
-**Download it from from aescripts + aeplugins:**
+**Download it from aescripts + aeplugins:**
 https://aescripts.com/bodymovin/
 
 ### Option 2:
