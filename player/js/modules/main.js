@@ -69,7 +69,7 @@ function setQuality(value) {
 }
 
 function inBrowser() {
-  return typeof navigator !== 'undefined';
+  return globalThis.window === globalThis && typeof globalThis.document !== 'undefined';
 }
 
 function installPlugin(type, plugin) {
