@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { createNoise2D } from 'simplex-noise';
 
 import {
   degToRads,
@@ -442,36 +443,25 @@ const ExpressionManager = (function () {
 
     var active = !this.data || this.data.hd !== true;
 
+    var noise = createNoise2D();
+
     var wiggle = function wiggle(freq, amp) {
-      var iWiggle;
-      var j;
-      var lenWiggle = this.pv.length ? this.pv.length : 1;
-      var addedAmps = createTypedArray('float32', lenWiggle);
-      freq = 5;
-      var iterations = Math.floor(time * freq);
-      iWiggle = 0;
-      j = 0;
-      while (iWiggle < iterations) {
-        // var rnd = BMMath.random();
-        for (j = 0; j < lenWiggle; j += 1) {
-          addedAmps[j] += -amp + amp * 2 * BMMath.random();
-          // addedAmps[j] += -amp + amp*2*rnd;
+      const noisePosition = (time * freq) / 2;
+
+      if (this.pv.length) {
+        const result = createTypedArray('float32', this.pv.length);
+
+        for (let i = 0; i < this.pv.length; i += 1) {
+          const noiseValue = noise(noisePosition, i) * amp;
+
+          result[i] = this.pv[i] + noiseValue;
         }
-        iWiggle += 1;
+
+        return result;
       }
-      // var rnd2 = BMMath.random();
-      var periods = time * freq;
-      var perc = periods - Math.floor(periods);
-      var arr = createTypedArray('float32', lenWiggle);
-      if (lenWiggle > 1) {
-        for (j = 0; j < lenWiggle; j += 1) {
-          arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp * 2 * BMMath.random()) * perc;
-          // arr[j] = this.pv[j] + addedAmps[j] + (-amp + amp*2*rnd)*perc;
-          // arr[i] = this.pv[i] + addedAmp + amp1*perc + amp2*(1-perc);
-        }
-        return arr;
-      }
-      return this.pv + addedAmps[0] + (-amp + amp * 2 * BMMath.random()) * perc;
+
+      const noiseValue = noise(noisePosition, 0) * amp;
+      return this.pv + noiseValue;
     }.bind(this);
 
     if (thisProperty.loopIn) {
