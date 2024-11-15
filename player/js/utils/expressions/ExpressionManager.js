@@ -443,9 +443,11 @@ const ExpressionManager = (function () {
 
     var active = !this.data || this.data.hd !== true;
 
-    var noise = createNoise2D();
+    var noise;
 
     var wiggle = function wiggle(freq, amp) {
+      if (!noise) noise = createNoise2D();
+
       const noisePosition = (time * freq) / 2;
 
       if (this.pv.length) {
