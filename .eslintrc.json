@@ -41,6 +41,12 @@
         "no-param-reassign": "off",
         "vars-on-top": "off",
         "no-use-before-define": "off",
-        "-------": "off"
+        "-------": "off",
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": true
+            }
+        ]
     }
 }
