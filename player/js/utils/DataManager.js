@@ -236,7 +236,7 @@ const dataManager = (function () {
                 var len = animationData.chars.length;
                 for (i = 0; i < len; i += 1) {
                   var charData = animationData.chars[i];
-                  if (charData.data && charData.data.shapes) {
+                  if (charData.data && charData.data.shapes && charData.data.shapes.length > 0) {
                     completeShapes(charData.data.shapes);
                     charData.data.ip = 0;
                     charData.data.op = 99999;
