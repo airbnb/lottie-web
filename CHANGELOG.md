@@ -1,3 +1,13 @@
+## V 5.13.0
+- FIX: rollup config updated to prevent lottie-web from running in Server-Side Rendering contexts
+- FIX: fixed renderGradient() cache invalidation issue so that both start and end points are checked for changes
+- IMPROVEMENT: avoid recalculating static transform matrices, results in a significant performance improvement
+- FIX: reloadShapes() no longer has the side effect of creating duplicate styles
+- FEATURE: Web Worker supports resetSegments
+- FIX: hidden styles were forcibly set as visible when using searchShapes()
+- IMPROVEMENT: expressions can access unidimensional values by index
+- IMPROVEMENT: expression support for thisProperty.name
+
 ## V 5.12.1
 - FIX: Transform Effect opacity reset
 - FEATURE: esm support
