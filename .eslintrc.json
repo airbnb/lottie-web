@@ -26,7 +26,7 @@
             "exports": "always-multiline",
             "functions": "never"
         }],
-        
+
         "no-restricted-properties": "off",
         "prefer-spread": "off",
         "no-restricted-globals": "off",
@@ -42,5 +42,8 @@
         "vars-on-top": "off",
         "no-use-before-define": "off",
         "-------": "off"
+    },
+    "globals": {
+        "globalThis": "readonly"
     }
 }

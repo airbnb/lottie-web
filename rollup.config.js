@@ -16,7 +16,7 @@ const addNavigatorValidation = (options = {}) => {
   return {
     name: 'add-navigator-validation',
     renderChunk: (code) => {
-      return '(typeof navigator !== "undefined") && '  + code
+      return '(globalThis.window === globalThis && typeof globalThis.document !== "undefined") && '  + code
     },
   }
 }

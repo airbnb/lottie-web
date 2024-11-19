@@ -52,7 +52,7 @@ function uglifyCode(code) {
 
 async function modularizeCode(code, build) {
 	const globalScope = (build =='canvas_worker' || build =='lottie_worker') ? 'self' : 'window'
-	return `(typeof navigator !== "undefined") && (function(root, factory) {
+	return `(globalThis.window === globalThis && typeof globalThis.document !== "undefined") && (function(root, factory) {
     if (typeof define === "function" && define.amd) {
         define(function() {
             return factory(root);
