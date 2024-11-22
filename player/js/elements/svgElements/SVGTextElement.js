@@ -6,12 +6,12 @@ import {
 } from '../../utils/helpers/arrays';
 import createNS from '../../utils/helpers/svg_elements';
 import BaseElement from '../BaseElement';
+import ITextElement from '../TextElement';
+import FrameElement from '../helpers/FrameElement';
+import HierarchyElement from '../helpers/HierarchyElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
 import TransformElement from '../helpers/TransformElement';
 import SVGBaseElement from './SVGBaseElement';
-import HierarchyElement from '../helpers/HierarchyElement';
-import FrameElement from '../helpers/FrameElement';
-import RenderableDOMElement from '../helpers/RenderableDOMElement';
-import ITextElement from '../TextElement';
 import SVGCompElement from './SVGCompElement'; // eslint-disable-line
 import SVGShapeElement from './SVGShapeElement';
 
@@ -130,18 +130,18 @@ SVGTextLottieElement.prototype.buildNewText = function () {
     len = textContent.length;
     yPos = documentData.ps ? documentData.ps[1] + documentData.ascent : 0;
     for (i = 0; i < len; i += 1) {
-      tSpan = this.textSpans[i].span || createNS('tspan');
-      tSpan.textContent = textContent[i];
-      tSpan.setAttribute('x', 0);
-      tSpan.setAttribute('y', yPos);
-      tSpan.style.display = 'inherit';
-      tElement.appendChild(tSpan);
       if (!this.textSpans[i]) {
         this.textSpans[i] = {
           span: null,
           glyph: null,
         };
       }
+      tSpan = this.textSpans[i].span || createNS('tspan');
+      tSpan.textContent = textContent[i];
+      tSpan.setAttribute('x', 0);
+      tSpan.setAttribute('y', yPos);
+      tSpan.style.display = 'inherit';
+      tElement.appendChild(tSpan);
       this.textSpans[i].span = tSpan;
       yPos += documentData.finalLineHeight;
     }
