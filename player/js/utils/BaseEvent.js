@@ -1,6 +1,7 @@
 function BaseEvent() {}
 BaseEvent.prototype = {
   triggerEvent: function (eventName, args) {
+    if (!this._cbs) return;
     if (this._cbs[eventName]) {
       var callbacks = this._cbs[eventName];
       for (var i = 0; i < callbacks.length; i += 1) {
@@ -9,16 +10,19 @@ BaseEvent.prototype = {
     }
   },
   addEventListener: function (eventName, callback) {
-    if (!this._cbs[eventName]) {
-      this._cbs[eventName] = [];
+    if (this._cbs) {
+      if (!this._cbs[eventName]) {
+        this._cbs[eventName] = [];
+      }
+      this._cbs[eventName].push(callback);
     }
-    this._cbs[eventName].push(callback);
 
     return function () {
       this.removeEventListener(eventName, callback);
     }.bind(this);
   },
   removeEventListener: function (eventName, callback) {
+    if (!this._cbs) return;
     if (!callback) {
       this._cbs[eventName] = null;
     } else if (this._cbs[eventName]) {
