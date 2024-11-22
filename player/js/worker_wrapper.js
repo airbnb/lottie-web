@@ -263,6 +263,7 @@ function workerContent() {
     return new ProxyElement(type, namespace);
   }
 
+  var module; // eslint-disable-line no-redeclare, no-unused-vars
   var window = self; // eslint-disable-line no-redeclare, no-unused-vars
 
   var document = { // eslint-disable-line no-redeclare
