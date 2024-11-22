@@ -65,6 +65,25 @@ SVGShapeElement.prototype.createContent = function () {
   this.filterUniqueShapes();
 };
 
+SVGShapeElement.prototype.sourceRectAtTime = function () {
+  var largestBox = {
+    width: 0, height: 0, x: 0, y: 0,
+  };
+  var largestArea = 0;
+  this.stylesList.forEach((style) => {
+    const bbox = style.pElem.getBBox();
+    var area = bbox.width * bbox.height;
+    if (area > largestArea) largestBox = bbox;
+  });
+
+  return {
+    left: largestBox.x,
+    top: largestBox.y,
+    width: largestBox.width,
+    height: largestBox.height,
+  };
+};
+
 /*
 This method searches for multiple shapes that affect a single element and one of them is animated
 */
