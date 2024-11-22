@@ -17956,6 +17956,15 @@ var lottie = (function () {
           },
         });
       },
+      resetSegments: function (forceFlag) {
+        workerInstance.postMessage({
+          type: 'resetSegments',
+          payload: {
+            id: animationId,
+            forceFlag: forceFlag,
+          },
+        });
+      },
       setSubframe: function (value) {
         workerInstance.postMessage({
           type: 'setSubframe',
