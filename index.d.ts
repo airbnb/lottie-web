@@ -111,6 +111,8 @@ export type SVGRendererConfig = BaseRendererConfig & {
     viewBoxSize?: string;
     focusable?: boolean;
     filterSize?: FilterSizeConfig;
+    width?: string, 
+    height?: string;
 };
 
 export type CanvasRendererConfig = BaseRendererConfig & {
