@@ -89,7 +89,7 @@ CVTextElement.prototype.buildNewText = function () {
       yPos += firstLine ? 1 : 0;
       firstLine = false;
     }
-    shapes = shapeData.shapes ? shapeData.shapes[0].it : [];
+    shapes = shapeData.shapes && shapeData.shapes[0] ? shapeData.shapes[0].it : [];
     jLen = shapes.length;
     matrixHelper.scale(documentData.finalSize / 100, documentData.finalSize / 100);
     if (singleShape) {
