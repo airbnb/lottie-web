@@ -3,22 +3,18 @@
 
 name: Node.js CI
 
-on:
-  pull_request
+on: pull_request
 
 jobs:
-
   create_snapshots:
-  
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js 16.x
-      uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-    - run: npm install
-    - run: npm run test:create
-    - run: npm run build
-    - run: npm run test:compare
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22.11.0"
+      - run: npm install
+      - run: npm run test:create
+      - run: npm run build
+      - run: npm run test:compare
