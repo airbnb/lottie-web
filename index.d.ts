@@ -136,6 +136,7 @@ export type AnimationConfig<T extends RendererType = 'svg'> = {
     name?: string;
     assetsPath?: string;
     rendererSettings?: {
+        runExpressions?: boolean;
         svg: SVGRendererConfig;
         canvas: CanvasRendererConfig;
         html: HTMLRendererConfig;
