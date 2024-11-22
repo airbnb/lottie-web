@@ -2,6 +2,7 @@
 player/exports/
 player/tests/
 node_modules/
+test/
 tests/
 demo/
 esprima/
