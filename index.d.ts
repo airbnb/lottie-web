@@ -53,6 +53,7 @@ export interface BMSegmentStartEvent {
 export type AnimationItem = {
     name: string;
     isLoaded: boolean;
+    dataFailed: boolean;
     currentFrame: number;
     currentRawFrame: number;
     firstFrame: number;
