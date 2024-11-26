@@ -307,11 +307,15 @@ CanvasRendererBase.prototype.checkPendingElements = function () {
 };
 
 CanvasRendererBase.prototype.hide = function () {
-  this.animationItem.container.style.display = 'none';
+  if (this.animationItem.container) {
+    this.animationItem.container.style.display = 'none';
+  }
 };
 
 CanvasRendererBase.prototype.show = function () {
-  this.animationItem.container.style.display = 'block';
+  if (this.animationItem.container) {
+    this.animationItem.container.style.display = 'block';
+  }
 };
 
 export default CanvasRendererBase;
