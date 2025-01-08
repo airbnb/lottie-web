@@ -1,0 +1,64 @@
+name: Generate Unit Tests with AI on PR
+
+on:
+  workflow_dispatch:
+  pull_request:
+   types: [opened, synchronize]
+
+jobs:
+  generate-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code from the PR
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      # Step 2: Set up Python
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install openai==0.27.2
+
+      # Step 4: Run Unit Test Generator Script
+      - name: Run Unit Test Generator
+        run: python workflow_scripts/generate_tests.py
+        env:
+          OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
+
+      # Step 5: Configure Git
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      # Step 6: Check if there are changes
+      - name: Check for changes
+        id: git_status
+        run: |
+          git add tests/
+          if [ -n "$(git diff --cached)" ]; then
+            echo "##[set-output name=changes_detected;]true"
+          else
+            echo "##[set-output name=changes_detected;]false"
+          fi
+
+      # Step 7: Commit and push generated unit tests back to the repository if changes were detected
+      - name: Commit and push generated tests
+        if: steps.git_status.outputs.changes_detected == 'true'
+        run: |
+          git commit -m "Add generated unit tests by AI"
+          git push origin HEAD:${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPEN_AI_KEY: ${{ secrets.OPEN_AI_KEY }}
