@@ -80,4 +80,69 @@ GroupEffect.prototype.init = function (data, element) {
   }
 };
 
+class EffectsManager {
+  // Add new blur effect
+  applyBlurEffect(element, intensity = 5, duration = 1000) {
+    const initialFilter = element.style.filter || 'blur(0px)';
+    
+    return {
+      animate: (progress) => {
+        const blurAmount = intensity * progress;
+        element.style.filter = `blur(${blurAmount}px)`;
+      },
+      reset: () => {
+        element.style.filter = initialFilter;
+      }
+    };
+  }
+
+  // Add color overlay effect
+  applyColorOverlay(element, color = '#000000', opacity = 0.5, duration = 1000) {
+    const overlay = document.createElement('div');
+    overlay.style.position = 'absolute';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = color;
+    overlay.style.opacity = '0';
+    overlay.style.pointerEvents = 'none';
+    
+    element.appendChild(overlay);
+    
+    return {
+      animate: (progress) => {
+        overlay.style.opacity = (opacity * progress).toString();
+      },
+      reset: () => {
+        element.removeChild(overlay);
+      }
+    };
+  }
+
+  // Add shake effect
+  applyShakeEffect(element, intensity = 5, duration = 1000) {
+    const originalPosition = {
+      x: element.offsetLeft,
+      y: element.offsetTop
+    };
+    
+    return {
+      animate: (progress) => {
+        if (progress < 1) {
+          const shakeX = (Math.random() - 0.5) * 2 * intensity;
+          const shakeY = (Math.random() - 0.5) * 2 * intensity;
+          
+          element.style.transform = `translate(${shakeX}px, ${shakeY}px)`;
+        } else {
+          element.style.transform = 'translate(0, 0)';
+        }
+      },
+      reset: () => {
+        element.style.transform = 'translate(0, 0)';
+      }
+    };
+  }
+}
+
 export default EffectsManager;
