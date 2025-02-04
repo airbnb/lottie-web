@@ -229,6 +229,17 @@ const rgbToHex = (function () {
   };
 }());
 
+function lerp(p0, p1, factor) {
+  return p0 * (1 - factor) + p1 * factor;
+}
+
+function lerpFactor(p0, p1, p) {
+  if (p1 === p0) {
+    return 0.5; // Any value between 0 and 1 is technically correct
+  }
+  return (p - p0) / (p1 - p0);
+}
+
 const setSubframeEnabled = (flag) => { subframeEnabled = !!flag; };
 const getSubframeEnabled = () => subframeEnabled;
 const setExpressionsPlugin = (value) => { expressionsPlugin = value; };
@@ -273,6 +284,8 @@ export {
   addBrightnessToRGB,
   addHueToRGB,
   rgbToHex,
+  lerp,
+  lerpFactor,
   setIdPrefix,
   getIdPrefix,
   BMMath,

@@ -477,15 +477,24 @@ CVShapeElement.prototype.renderGradientFill = function (styleData, itemData, gro
     }
 
     var i;
-    var len = styleData.g.p;
-    var cValues = itemData.g.c;
-    var opacity = 1;
-
-    for (i = 0; i < len; i += 1) {
-      if (itemData.g._hasOpacity && itemData.g._collapsable) {
-        opacity = itemData.g.o[i * 2 + 1];
+    var len;
+    if (!itemData.g._hasOpacity || itemData.g._collapsable) {
+      len = styleData.g.p;
+      var cValues = itemData.g.c;
+      var opacity = 1;
+      for (i = 0; i < len; i += 1) {
+        if (itemData.g._hasOpacity) {
+          opacity = itemData.g.o[i * 2 + 1];
+        }
+        grd.addColorStop(cValues[i * 4] / 100, 'rgba(' + cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ',' + cValues[i * 4 + 3] + ',' + opacity + ')');
       }
-      grd.addColorStop(cValues[i * 4] / 100, 'rgba(' + cValues[i * 4 + 1] + ',' + cValues[i * 4 + 2] + ',' + cValues[i * 4 + 3] + ',' + opacity + ')');
+    } else {
+      itemData.g.mergeStops();
+      len = itemData.g._mergedStopsLen;
+      var stops = itemData.g._mergedStops;
+      for (i = 0; i < len; i += 1) {
+        grd.addColorStop(stops[i][0] / 100, 'rgba(' + stops[i][1] + ',' + stops[i][2] + ',' + stops[i][3] + ',' + stops[i][4] / 255 + ')');
+      }
     }
     styleElem.grd = grd;
   }

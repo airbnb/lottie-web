@@ -1,13 +1,13 @@
+import {
+  lerp,
+} from './common';
+
 function floatEqual(a, b) {
   return Math.abs(a - b) * 100000 <= Math.min(Math.abs(a), Math.abs(b));
 }
 
 function floatZero(f) {
   return Math.abs(f) <= 0.00001;
-}
-
-function lerp(p0, p1, amount) {
-  return p0 * (1 - amount) + p1 * amount;
 }
 
 function lerpPoint(p0, p1, amount) {
