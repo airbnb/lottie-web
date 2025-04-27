@@ -3,6 +3,21 @@
   "version": "5.13.0",
   "description": "After Effects plugin for exporting animations to SVG + JavaScript or canvas + JavaScript",
   "main": "./build/player/lottie.js",
+  "exports": {
+    ".": {
+      "types": "./build/player/lottie.d.ts",
+      "import": "./build/player/esm/lottie.min.js",
+      "require": "./build/player/cjs/lottie.min.js",
+      "default": "./build/player/lottie.js"
+    },
+    "./light": {
+      "types": "./build/player/lottie_light.d.ts",
+      "import": "./build/player/esm/lottie_light.min.js",
+      "require": "./build/player/cjs/lottie_light.min.js",
+      "default": "./build/player/lottie_light.js"
+    },
+    "./package.json": "./package.json"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/airbnb/lottie-web.git"
