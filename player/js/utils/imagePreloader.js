@@ -4,15 +4,18 @@ import dataManager from './DataManager';
 import createTag from './helpers/html_elements';
 
 const ImagePreloader = (function () {
-  var proxyImage = (function () {
+  var proxyImage; 
+  function getProxyImage() {
+    if (proxyImage) return proxyImage;
     var canvas = createTag('canvas');
     canvas.width = 1;
     canvas.height = 1;
     var ctx = canvas.getContext('2d');
     ctx.fillStyle = 'rgba(0,0,0,0)';
     ctx.fillRect(0, 0, 1, 1);
+    proxyImage = canvas;
     return canvas;
-  }());
+  }
 
   function imageLoaded() {
     this.loadedAssets += 1;
@@ -70,7 +73,7 @@ const ImagePreloader = (function () {
       img.addEventListener('load', this._imageLoaded, false);
     }
     img.addEventListener('error', function () {
-      ob.img = proxyImage;
+      ob.img = getProxyImage();
       this._imageLoaded();
     }.bind(this), false);
     img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', path);
@@ -92,7 +95,7 @@ const ImagePreloader = (function () {
     img.crossOrigin = 'anonymous';
     img.addEventListener('load', this._imageLoaded, false);
     img.addEventListener('error', function () {
-      ob.img = proxyImage;
+      ob.img = getProxyImage();
       this._imageLoaded();
     }.bind(this), false);
     img.src = path;
