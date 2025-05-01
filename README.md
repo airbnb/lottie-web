@@ -71,11 +71,30 @@ Skip directly to "Install third-party extensions"
 
 ### Option 6:
 
-Install with [Homebrew](https://brew.sh)-[adobe](https://github.com/danielbayley/homebrew-adobe):
-```bash
-brew tap danielbayley/adobe
-brew cask install lottie
+Homebrew installations will not work because Adobe has deprecated ExManCmd in favor of the Unified Plugin Installer Agent (UPIA) for managing extensions. UPIA is automatically installed with the Creative Cloud Desktop app version 5.5 and later.
+
+1. Download the .zxp file for the Bodymovin extension from the [Releases](https://github.com/airbnb/lottie-web/releases) section. 
+
+2.	Locate the UPIA executable on your system:
+- **Windows:**
+```cmd
+C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe
 ```
+- **Mac:**
+```bash
+/Library/Application\ Support/Adobe/Adobe\ Desktop\ Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent
+```
+
+3. Install the extension using the command line
+- **Windows:**
+```cmd
+"C:\Program Files\Common Files\Adobe\Adobe Desktop Common\RemoteComponents\UPI\UnifiedPluginInstallerAgent\UnifiedPluginInstallerAgent.exe" /install "C:\path\to\bodymovin.zxp"
+```
+- **MacOS:**
+```bash
+sudo /Library/Application\ Support/Adobe/Adobe\ Desktop\ Common/RemoteComponents/UPI/UnifiedPluginInstallerAgent/UnifiedPluginInstallerAgent.app/Contents/MacOS/UnifiedPluginInstallerAgent --install /path/to/bodymovin.zxp
+```
+(Replace /path/to/bodymovin.zxp with the actual path to your downloaded .zxp file.)
 
 ### After installing
 - **Windows:** Go to Edit > Preferences > Scripting & Expressions... > and check on "Allow Scripts to Write Files and Access Network"
@@ -84,6 +103,7 @@ brew cask install lottie
 **Old Versions**
 - **Windows:** Go to Edit > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
 - **Mac:** Go to Adobe After Effects > Preferences > General > and check on "Allow Scripts to Write Files and Access Network"
+
 
 # HTML player installation
 ```bash
