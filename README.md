@@ -246,6 +246,7 @@ lottie.loadAnimation({
     preserveAspectRatio: 'xMinYMin slice', // Supports the same options as the svg element's preserveAspectRatio property
     title: 'Accessible Title', // Adds SVG title element for accessible animation title
     description: 'Accessible description.', // Adds SVG desc element for accessible long description of animation
+    role: 'Accessible role', // Adds WAI-ARIA role attribute
     clearCanvas: false,
     progressiveLoad: false, // Boolean, only svg renderer, loads dom elements when needed. Might speed up initialization for large number of elements.
     hideOnTransparent: true, //Boolean, only svg renderer, hides elements when opacity reaches 0 (defaults to true)

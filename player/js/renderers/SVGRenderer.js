@@ -34,6 +34,9 @@ function SVGRenderer(animationItem, config) {
   if (ariaLabel) {
     this.svgElement.setAttribute('aria-labelledby', ariaLabel);
   }
+  if (config && config.role) {
+    this.svgElement.setAttribute('role', config.role);
+  }
   var defs = createNS('defs');
   this.svgElement.appendChild(defs);
   var maskElement = createNS('g');
