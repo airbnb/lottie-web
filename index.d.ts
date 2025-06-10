@@ -104,6 +104,7 @@ export type BaseRendererConfig = {
 export type SVGRendererConfig = BaseRendererConfig & {
     title?: string;
     description?: string;
+    role?: string;
     preserveAspectRatio?: string;
     progressiveLoad?: boolean;
     hideOnTransparent?: boolean;
