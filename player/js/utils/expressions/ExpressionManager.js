@@ -22,6 +22,10 @@ const ExpressionManager = (function () {
   var XMLHttpRequest = null;
   var fetch = null;
   var frames = null;
+  var top = null;
+  var self = null;
+  var setTimeout = null;
+  var Image = null;
   var _lottieGlobal = {};
   seedrandom(BMMath);
 
