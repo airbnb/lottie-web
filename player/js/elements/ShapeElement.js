@@ -12,14 +12,9 @@ IShapeElement.prototype = {
     }
   },
   isShapeInAnimatedModifiers: function (data) {
-    var i = 0;
-    var len = this.shapeModifiers.length;
-    while (i < len) {
-      if (this.shapeModifiers[i].isAnimatedWithShape(data)) {
-        return true;
-      }
-    }
-    return false;
+    return this.shapeModifiers.some(function (mod) {
+      return mod.isAnimatedWithShape(data);
+    });
   },
   renderModifiers: function () {
     if (!this.shapeModifiers.length) {
