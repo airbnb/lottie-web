@@ -5,17 +5,17 @@ import pooling from './pooling';
 
 const poolFactory = (function () {
   return function (initialLength, _create, _release) {
-    var _length = 0;
-    var _maxLength = initialLength;
-    var pool = createSizedArray(_maxLength);
+    let _length = 0;
+    let _maxLength = initialLength;
+    let pool = createSizedArray(_maxLength);
 
-    var ob = {
+    const ob = {
       newElement: newElement,
       release: release,
     };
 
     function newElement() {
-      var element;
+      let element;
       if (_length) {
         _length -= 1;
         element = pool[_length];
