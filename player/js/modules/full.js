@@ -32,6 +32,7 @@ import SVGMatte3Effect from '../elements/svgElements/effects/SVGMatte3Effect';
 import SVGGaussianBlurEffect from '../elements/svgElements/effects/SVGGaussianBlurEffect';
 import SVGTransformEffect from '../elements/svgElements/effects/SVGTransformEffect';
 import CVTransformEffect from '../elements/canvasElements/effects/CVTransformEffect';
+import CVGaussianBlurEffect from '../elements/canvasElements/effects/CVGaussianBlurEffect';
 import { registerEffect as canvasRegisterEffect } from '../elements/canvasElements/CVEffects';
 
 // Registering renderers
@@ -63,6 +64,7 @@ registerEffect(25, SVGDropShadowEffect, true);
 registerEffect(28, SVGMatte3Effect, false);
 registerEffect(29, SVGGaussianBlurEffect, true);
 registerEffect(35, SVGTransformEffect, false);
+canvasRegisterEffect(29, CVGaussianBlurEffect);
 canvasRegisterEffect(35, CVTransformEffect);
 
 export default lottie;

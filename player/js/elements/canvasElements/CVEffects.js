@@ -19,13 +19,25 @@ function CVEffects(elem) {
   if (this.filters.length) {
     elem.addRenderableComponent(this);
   }
+  this.globalData = elem.globalData;
 }
 
 CVEffects.prototype.renderFrame = function (_isFirstFrame) {
   var i;
   var len = this.filters.length;
+  var filterStrings = [];
+
   for (i = 0; i < len; i += 1) {
     this.filters[i].renderFrame(_isFirstFrame);
+    if (this.filters[i].filterString) {
+      filterStrings.push(this.filters[i].filterString);
+    }
+  }
+
+  var canvasContext = this.globalData.canvasContext;
+
+  if (canvasContext && filterStrings.length > 0) {
+    canvasContext.filter = filterStrings.join(' ');
   }
 };
 
