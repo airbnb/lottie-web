@@ -393,7 +393,7 @@ const ExpressionManager = (function () {
     }
 
     var val = data.x;
-    var needsVelocity = /velocity(?![\w\d])/.test(val);
+    var needsVelocity = new RegExp('velocity(?![\\w\\d])').test(val);
     var _needsRandom = val.indexOf('random') !== -1;
     var elemType = elem.data.ty;
     var transform;
