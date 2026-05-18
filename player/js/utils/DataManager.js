@@ -615,6 +615,9 @@ const dataManager = (function () {
         var id = data.id;
         var process = processes[id];
         processes[id] = null;
+        if (!process) {
+          return;
+        }
         if (data.status === 'success') {
           process.onComplete(data.payload);
         } else if (process.onError) {
