@@ -5,12 +5,12 @@ import {
   createSizedArray,
 } from '../utils/helpers/arrays';
 import createTag from '../utils/helpers/html_elements';
-import SVGRenderer from './SVGRenderer';
 import BaseRenderer from './BaseRenderer';
 import CVShapeElement from '../elements/canvasElements/CVShapeElement';
 import CVTextElement from '../elements/canvasElements/CVTextElement';
 import CVImageElement from '../elements/canvasElements/CVImageElement';
 import CVSolidElement from '../elements/canvasElements/CVSolidElement';
+import createNull from './createNullElement';
 
 function CanvasRendererBase() {
 }
@@ -32,7 +32,7 @@ CanvasRendererBase.prototype.createSolid = function (data) {
   return new CVSolidElement(data, this.globalData, this);
 };
 
-CanvasRendererBase.prototype.createNull = SVGRenderer.prototype.createNull;
+CanvasRendererBase.prototype.createNull = createNull;
 
 CanvasRendererBase.prototype.ctxTransform = function (props) {
   if (props[0] === 1 && props[1] === 0 && props[4] === 0 && props[5] === 1 && props[12] === 0 && props[13] === 0) {

@@ -17,6 +17,7 @@ import HCameraElement from '../elements/htmlElements/HCameraElement';
 import HImageElement from '../elements/htmlElements/HImageElement';
 import ISolidElement from '../elements/SolidElement';
 import SVGTextLottieElement from '../elements/svgElements/SVGTextElement';
+import createNull from './createNullElement';
 
 function HybridRendererBase(animationItem, config) {
   this.animationItem = animationItem;
@@ -126,7 +127,7 @@ HybridRendererBase.prototype.createSolid = function (data) {
   return new HSolidElement(data, this.globalData, this);
 };
 
-HybridRendererBase.prototype.createNull = SVGRenderer.prototype.createNull;
+HybridRendererBase.prototype.createNull = createNull;
 
 HybridRendererBase.prototype.getThreeDContainerByPos = function (pos) {
   var i = 0;

@@ -7,16 +7,15 @@ import TransformElement from '../helpers/TransformElement';
 import HierarchyElement from '../helpers/HierarchyElement';
 import FrameElement from '../helpers/FrameElement';
 import CVBaseElement from './CVBaseElement';
-import IImageElement from '../ImageElement';
-import SVGShapeElement from '../svgElements/SVGShapeElement';
+import RenderableDOMElement from '../helpers/RenderableDOMElement';
 
 function CVSolidElement(data, globalData, comp) {
   this.initElement(data, globalData, comp);
 }
 extendPrototype([BaseElement, TransformElement, CVBaseElement, HierarchyElement, FrameElement, RenderableElement], CVSolidElement);
 
-CVSolidElement.prototype.initElement = SVGShapeElement.prototype.initElement;
-CVSolidElement.prototype.prepareFrame = IImageElement.prototype.prepareFrame;
+CVSolidElement.prototype.initElement = RenderableDOMElement.prototype.initElement;
+CVSolidElement.prototype.prepareFrame = RenderableDOMElement.prototype.prepareFrame;
 
 CVSolidElement.prototype.renderInnerContent = function () {
   // var ctx = this.canvasContext;

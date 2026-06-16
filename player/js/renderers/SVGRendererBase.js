@@ -15,16 +15,14 @@ import IImageElement from '../elements/ImageElement';
 import SVGShapeElement from '../elements/svgElements/SVGShapeElement';
 import SVGTextLottieElement from '../elements/svgElements/SVGTextElement'; // eslint-disable-line import/no-cycle
 import ISolidElement from '../elements/SolidElement';
-import NullElement from '../elements/NullElement';
+import createNull from './createNullElement';
 
 function SVGRendererBase() {
 }
 
 extendPrototype([BaseRenderer], SVGRendererBase);
 
-SVGRendererBase.prototype.createNull = function (data) {
-  return new NullElement(data, this.globalData, this);
-};
+SVGRendererBase.prototype.createNull = createNull;
 
 SVGRendererBase.prototype.createShape = function (data) {
   return new SVGShapeElement(data, this.globalData, this);
