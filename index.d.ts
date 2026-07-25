@@ -1,10 +1,10 @@
-export type AnimationDirection = 1 | -1;
-export type AnimationSegment = [number, number];
-export type AnimationEventName = 'drawnFrame' | 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
-export type AnimationEventCallback<T = any> = (args: T) => void;
+type AnimationDirection = 1 | -1;
+type AnimationSegment = [number, number];
+type AnimationEventName = 'drawnFrame' | 'enterFrame' | 'loopComplete' | 'complete' | 'segmentStart' | 'destroy' | 'config_ready' | 'data_ready' | 'DOMLoaded' | 'error' | 'data_failed' | 'loaded_images';
+type AnimationEventCallback<T = any> = (args: T) => void;
 
 /** Specifies the data for each event type. */
-export interface AnimationEvents {
+interface AnimationEvents {
   DOMLoaded: undefined;
   complete: BMCompleteEvent;
   config_ready: undefined;
@@ -19,23 +19,23 @@ export interface AnimationEvents {
   segmentStart: BMSegmentStartEvent;
 }
 
-export interface BMCompleteEvent {
+interface BMCompleteEvent {
   direction: number;
   type: "complete";
 }
 
-export interface BMCompleteLoopEvent {
+interface BMCompleteLoopEvent {
   currentLoop: number;
   direction: number;
   totalLoops: number;
   type: "loopComplete";
 }
 
-export interface BMDestroyEvent {
+interface BMDestroyEvent {
   type: "destroy";
 }
 
-export interface BMEnterFrameEvent {
+interface BMEnterFrameEvent {
   /** The current time in frames. */
   currentTime: number;
   direction: number;
@@ -44,13 +44,13 @@ export interface BMEnterFrameEvent {
   type: "enterFrame";
 }
 
-export interface BMSegmentStartEvent {
+interface BMSegmentStartEvent {
   firstFrame: number;
   totalFrames: number;
   type: "segmentStart";
 }
 
-export type AnimationItem = {
+type AnimationItem = {
     name: string;
     isLoaded: boolean;
     currentFrame: number;
@@ -96,12 +96,12 @@ export type AnimationItem = {
     removeEventListener<T extends AnimationEventName>(name: T, callback?: AnimationEventCallback<AnimationEvents[T]>): void;
 }
 
-export type BaseRendererConfig = {
+type BaseRendererConfig = {
     imagePreserveAspectRatio?: string;
     className?: string;
 };
 
-export type SVGRendererConfig = BaseRendererConfig & {
+type SVGRendererConfig = BaseRendererConfig & {
     title?: string;
     description?: string;
     preserveAspectRatio?: string;
@@ -113,7 +113,7 @@ export type SVGRendererConfig = BaseRendererConfig & {
     filterSize?: FilterSizeConfig;
 };
 
-export type CanvasRendererConfig = BaseRendererConfig & {
+type CanvasRendererConfig = BaseRendererConfig & {
     clearCanvas?: boolean;
     context?: CanvasRenderingContext2D;
     progressiveLoad?: boolean;
@@ -121,13 +121,13 @@ export type CanvasRendererConfig = BaseRendererConfig & {
     dpr?: number;
 };
 
-export type HTMLRendererConfig = BaseRendererConfig & {
+type HTMLRendererConfig = BaseRendererConfig & {
     hideOnTransparent?: boolean;
 };
 
-export type RendererType = 'svg' | 'canvas' | 'html';
+type RendererType = 'svg' | 'canvas' | 'html';
 
-export type AnimationConfig<T extends RendererType = 'svg'> = {
+type AnimationConfig<T extends RendererType = 'svg'> = {
     container: Element;
     renderer?: T;
     loop?: boolean | number;
@@ -149,7 +149,7 @@ export type AnimationConfig<T extends RendererType = 'svg'> = {
     }
 }
 
-export type TextDocumentData = {
+type TextDocumentData = {
     t?: string;
     s?: number;
     f?: string;
@@ -161,22 +161,22 @@ export type TextDocumentData = {
     fc?: [number, number, number];
 }
 
-export type AnimationConfigWithPath<T extends RendererType = 'svg'> = AnimationConfig<T> & {
+type AnimationConfigWithPath<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     path?: string;
 }
 
-export type AnimationConfigWithData<T extends RendererType = 'svg'> = AnimationConfig<T> & {
+type AnimationConfigWithData<T extends RendererType = 'svg'> = AnimationConfig<T> & {
     animationData?: any;
 }
 
-export type FilterSizeConfig = {
+type FilterSizeConfig = {
     width: string;
     height: string;
     x: string;
     y: string;
 };
 
-export type LottiePlayer = {
+type LottiePlayer = {
     play(name?: string): void;
     pause(name?: string): void;
     stop(name?: string): void;
@@ -194,4 +194,31 @@ export type LottiePlayer = {
 
 declare const Lottie: LottiePlayer;
 
-export default Lottie;
+declare namespace Lottie {
+    export {
+        AnimationDirection,
+        AnimationSegment,
+        AnimationEventName,
+        AnimationEventCallback,
+        AnimationEvents,
+        BMCompleteEvent,
+        BMCompleteLoopEvent,
+        BMDestroyEvent,
+        BMEnterFrameEvent,
+        BMSegmentStartEvent,
+        AnimationItem,
+        BaseRendererConfig,
+        SVGRendererConfig,
+        CanvasRendererConfig,
+        HTMLRendererConfig,
+        RendererType,
+        AnimationConfig,
+        TextDocumentData,
+        AnimationConfigWithPath,
+        AnimationConfigWithData,
+        FilterSizeConfig,
+        LottiePlayer,
+    };
+}
+
+export = Lottie;
