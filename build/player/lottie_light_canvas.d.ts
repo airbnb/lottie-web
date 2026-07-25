@@ -1,5 +1,3 @@
-import { default as Lottie } from '../../index';
+import Lottie = require('../../index');
 
-export * from '../../index';
-
-export default Lottie;
+export = Lottie;
