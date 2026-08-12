@@ -459,7 +459,7 @@ AnimationItem.prototype.goToAndStop = function (value, isFrame, name) {
   if (isNaN(numValue)) {
     var marker = this.getMarkerData(value);
     if (marker) {
-      this.goToAndStop(marker.time, true);
+      this.goToAndStop(marker.time - this.firstFrame, true);
     }
   } else if (isFrame) {
     this.setCurrentRawFrameValue(value);
