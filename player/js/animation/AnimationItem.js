@@ -498,7 +498,7 @@ AnimationItem.prototype.advanceTime = function (value) {
   // Checking if nextValue > totalFrames - 1 for addressing non looping and looping animations.
   // If animation won't loop, it should stop at totalFrames - 1. If it will loop it should complete the last frame and then loop.
   if (nextValue >= this.totalFrames - 1 && this.frameModifier > 0) {
-    if (!this.loop || this.playCount === this.loop) {
+    if (!this.loop || (this.loop !== true && this.playCount >= this.loop)) {
       if (!this.checkSegments(nextValue > this.totalFrames ? nextValue % this.totalFrames : 0)) {
         _isComplete = true;
         nextValue = this.totalFrames - 1;
