@@ -87,7 +87,7 @@ export type AnimationItem = {
     resize(width?: number, height?: number): void;
     setSpeed(speed: number): void;
     setDirection(direction: AnimationDirection): void;
-    setLoop(isLooping: boolean): void;
+    setLoop(isLooping: boolean | number): void;
     playSegments(segments: AnimationSegment | AnimationSegment[], forceFlag?: boolean): void;
     setSubframe(useSubFrames: boolean): void;
     getDuration(inFrames?: boolean): number;
