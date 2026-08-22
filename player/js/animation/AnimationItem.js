@@ -655,7 +655,18 @@ AnimationItem.prototype.setDirection = function (val) {
 };
 
 AnimationItem.prototype.setLoop = function (isLooping) {
-  this.loop = isLooping;
+  // Match setParams loop coercion so string values from data attributes
+  // (e.g. "3") become numbers and can complete against playCount.
+  if (isLooping === ''
+        || isLooping === null
+        || isLooping === undefined
+        || isLooping === true) {
+    this.loop = true;
+  } else if (isLooping === false) {
+    this.loop = false;
+  } else {
+    this.loop = parseInt(isLooping, 10);
+  }
 };
 
 AnimationItem.prototype.setVolume = function (val, name) {
