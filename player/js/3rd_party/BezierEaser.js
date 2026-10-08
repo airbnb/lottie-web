@@ -2,7 +2,8 @@
 const BezierFactory = (function () {
   /**
      * BezierEasing - use bezier curve for transition easing function
-     * by Gaëtan Renaudeau 2014 - 2015 – MIT License
+     * by Gaëtan Renaudeau 2014 - 2026 – MIT License
+     * https://github.com/gre/bezier-easing
      *
      * Credits: is based on Firefox's nsSMILKeySpline.cpp
      * Usage:
@@ -25,6 +26,35 @@ const BezierFactory = (function () {
     return bezEasing;
   }
 
+  // Fallback for environments without Math.cbrt
+  var cbrt = Math.cbrt || function (x) { return x < 0 ? -Math.pow(-x, 1 / 3) : Math.pow(x, 1 / 3); };
+
+  // Solves x(t) = ((2a * t + 3b) * t + 3c) * t = x for t, with x in (0, 1):
+  // u = 1/t is the largest real root of x·u³ − 3c·u² − 3b·u − 2a = 0
+  function solveTForX(x, a, b, c) {
+    var j = 1 / Math.max(c, Math.sqrt(x));
+    var k = x * j;
+    var l = k * j;
+    var s = c * j;
+    var q = b * l;
+    var m = s * s + q;
+    var h = -s * (s * s + 1.5 * q) - a * k * l;
+    var D = h * h - m * m * m;
+    var v;
+    if (m === 0 || D > 1e-12 * h * h) {
+      // one real root (Cardano)
+      var U = -cbrt(h < 0 ? h - Math.sqrt(D) : h + Math.sqrt(D));
+      v = (U + m / U) || 0;
+    } else {
+      // three real roots, take the largest
+      var r = Math.sqrt(m);
+      v = 2 * r * Math.cos(Math.acos(Math.max(-1, Math.min(1, -h / (m * r)))) / 3);
+    }
+    return Math.min(1, k / (v + s));
+  }
+
+  // The iterative search below is kept for curves with x1 or x2 outside [0, 1]
+  // (not monotonic, solveTForX does not apply) and for x outside (0, 1).
   // These values are established by empiricism with tests (tradeoff: performance VS precision)
   var NEWTON_ITERATIONS = 4;
   var NEWTON_MIN_SLOPE = 0.001;
@@ -81,8 +111,20 @@ const BezierFactory = (function () {
      */
   function BezierEasing(points) {
     this._p = points;
-    this._mSampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
+    this._mSampleValues = null;
     this._precomputed = false;
+    var mX1 = points[0],
+      mY1 = points[1],
+      mX2 = points[2],
+      mY2 = points[3];
+    this._linear = mX1 === mY1 && mX2 === mY2;
+    this._monotonic = mX1 >= 0 && mX1 <= 1 && mX2 >= 0 && mX2 <= 1;
+    this._a = (3 * mX1 - 3 * mX2 + 1) / 2;
+    this._b = mX2 - 2 * mX1;
+    this._c = mX1;
+    this._ay = 3 * mY1 - 3 * mY2 + 1;
+    this._by = 3 * (mY2 - 2 * mY1);
+    this._cy = 3 * mY1;
 
     this.get = this.get.bind(this);
   }
@@ -90,16 +132,16 @@ const BezierFactory = (function () {
   BezierEasing.prototype = {
 
     get: function (x) {
-      var mX1 = this._p[0],
-        mY1 = this._p[1],
-        mX2 = this._p[2],
-        mY2 = this._p[3];
-      if (!this._precomputed) this._precompute();
-      if (mX1 === mY1 && mX2 === mY2) return x; // linear
+      if (this._linear) return x;
+      if (x > 0 && x < 1 && this._monotonic) {
+        var t = solveTForX(x, this._a, this._b, this._c);
+        return ((this._ay * t + this._by) * t + this._cy) * t;
+      }
       // Because JavaScript number are imprecise, we should guarantee the extremes are right.
       if (x === 0) return 0;
       if (x === 1) return 1;
-      return calcBezier(this._getTForX(x), mY1, mY2);
+      if (!this._precomputed) this._precompute();
+      return calcBezier(this._getTForX(x), this._p[1], this._p[3]);
     },
 
     // Private part
@@ -116,6 +158,7 @@ const BezierFactory = (function () {
     _calcSampleValues: function () {
       var mX1 = this._p[0],
         mX2 = this._p[2];
+      this._mSampleValues = float32ArraySupported ? new Float32Array(kSplineTableSize) : new Array(kSplineTableSize);
       for (var i = 0; i < kSplineTableSize; ++i) {
         this._mSampleValues[i] = calcBezier(i * kSampleStepSize, mX1, mX2);
       }
