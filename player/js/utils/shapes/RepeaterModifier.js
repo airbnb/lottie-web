@@ -1,3 +1,4 @@
+import { klona } from 'klona/json';
 import {
   extendPrototype,
 } from '../functionExtensions';
@@ -78,7 +79,7 @@ RepeaterModifier.prototype.resetElements = function (elements) {
 };
 
 RepeaterModifier.prototype.cloneElements = function (elements) {
-  var newElements = JSON.parse(JSON.stringify(elements));
+  var newElements = klona(elements);
   this.resetElements(newElements);
   return newElements;
 };
