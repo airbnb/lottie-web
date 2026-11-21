@@ -378,6 +378,14 @@ const FontManager = (function () {
   }
 
   function isCombinedCharacter(char) {
+    if (
+      (char >= 0x064B && char <= 0x065F) ||
+      char === 0x0670 ||
+      (char >= 0x06D6 && char <= 0x06ED) ||
+      (char >= 0x0300 && char <= 0x036F)
+    ) {
+      return true;
+    }
     return combinedCharacters.indexOf(char) !== -1;
   }
 
